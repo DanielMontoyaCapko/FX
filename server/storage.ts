@@ -24,6 +24,8 @@ export class MemStorage implements IStorage {
     const lead: Lead = { 
       ...insertLead, 
       id,
+      phone: insertLead.phone || null,
+      message: insertLead.message || null,
       createdAt: new Date()
     };
     this.leads.set(id, lead);
@@ -39,6 +41,7 @@ export class MemStorage implements IStorage {
     const result: CalculatorResult = {
       ...insertResult,
       id,
+      leadId: insertResult.leadId || null,
       createdAt: new Date()
     };
     this.calculatorResults.set(id, result);
