@@ -14,8 +14,10 @@ export default function Header() {
     return false;
   };
 
-  const showContactForm = () => {
-    window.location.href = "/contacto";
+  const [, setLocation] = useLocation();
+  
+  const goToContact = () => {
+    setLocation("/contacto");
     setIsOpen(false);
   };
 
@@ -65,7 +67,7 @@ export default function Header() {
         </div>
         
         <Button 
-          onClick={showContactForm}
+          onClick={goToContact}
           className="hidden md:block gradient-navy px-6 py-3 text-white font-semibold hover:opacity-90"
         >
           Quiero más información
@@ -115,7 +117,7 @@ export default function Header() {
                 Contacto
               </Link>
               <Button 
-                onClick={showContactForm}
+                onClick={goToContact}
                 className="gradient-navy text-white font-semibold hover:opacity-90"
               >
                 Quiero más información

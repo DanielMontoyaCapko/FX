@@ -1,11 +1,11 @@
 import { Button } from "@/components/ui/button";
+import { useLocation } from "wouter";
 
 export default function Hero() {
-  const scrollToContact = () => {
-    const element = document.getElementById("contacto");
-    if (element) {
-      element.scrollIntoView({ behavior: "smooth" });
-    }
+  const [, setLocation] = useLocation();
+  
+  const goToContact = () => {
+    setLocation("/contacto");
   };
 
   return (
@@ -23,7 +23,7 @@ export default function Hero() {
         </p>
         
         <Button 
-          onClick={scrollToContact}
+          onClick={goToContact}
           className="bg-gold text-black px-12 py-4 text-xl font-bold hover:bg-gold/90 transition-colors shadow-xl h-auto"
         >
           Quiero más información

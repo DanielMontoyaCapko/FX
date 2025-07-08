@@ -1,5 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { Handshake, CheckCircle, ShieldQuestion, Star, Users } from "lucide-react";
+import { useLocation } from "wouter";
 
 export default function Advisors() {
   const benefits = [
@@ -25,11 +26,10 @@ export default function Advisors() {
     }
   ];
 
-  const showAdvisorForm = () => {
-    const element = document.getElementById("contacto");
-    if (element) {
-      element.scrollIntoView({ behavior: "smooth" });
-    }
+  const [, setLocation] = useLocation();
+  
+  const goToContact = () => {
+    setLocation("/contacto");
   };
 
   return (
@@ -74,10 +74,10 @@ export default function Advisors() {
           
           <div className="text-center">
             <Button 
-              onClick={showAdvisorForm}
+              onClick={goToContact}
               className="gradient-navy px-8 py-4 text-white font-semibold hover:opacity-90 h-auto"
             >
-              Ver condiciones de colaboración
+              Quiero más información
             </Button>
           </div>
         </div>

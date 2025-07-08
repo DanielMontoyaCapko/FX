@@ -1,10 +1,12 @@
 import { Button } from "@/components/ui/button";
 import { Users } from "lucide-react";
+import { useLocation } from "wouter";
 
 export default function Story() {
-  const showFullVision = () => {
-    // In a real implementation, this could open a modal or navigate to a detailed page
-    console.log("Showing full vision");
+  const [, setLocation] = useLocation();
+  
+  const goToContact = () => {
+    setLocation("/contacto");
   };
 
   return (
@@ -31,10 +33,10 @@ export default function Story() {
                   del capital por encima de todo.
                 </p>
                 <Button 
-                  onClick={showFullVision}
+                  onClick={goToContact}
                   className="gradient-navy px-6 py-3 text-white hover:opacity-90"
                 >
-                  Ver la visión completa
+                  Quiero más información
                 </Button>
               </div>
               
