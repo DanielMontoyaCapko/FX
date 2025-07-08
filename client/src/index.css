@@ -18,16 +18,16 @@
   --primary-foreground: hsl(0, 0%, 100%);
   --secondary: hsl(0, 0%, 10%);
   --secondary-foreground: hsl(0, 0%, 98%);
-  --accent: hsl(51, 84%, 55%);
-  --accent-foreground: hsl(0, 0%, 0%);
+  --accent: hsl(142, 35%, 38%);
+  --accent-foreground: hsl(0, 0%, 100%);
   --destructive: hsl(0, 84%, 60%);
   --destructive-foreground: hsl(60, 9%, 98%);
-  --ring: hsl(51, 84%, 55%);
+  --ring: hsl(142, 35%, 38%);
   --radius: 0.5rem;
   
   /* Custom colors */
   --navy: hsl(210, 100%, 12%);
-  --gold: hsl(51, 84%, 55%);
+  --gold: hsl(142, 35%, 38%);
   --silver-100: hsl(0, 0%, 90%);
   --silver-300: hsl(0, 0%, 75%);
   --silver-500: hsl(0, 0%, 50%);
