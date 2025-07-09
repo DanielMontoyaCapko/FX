@@ -8,6 +8,8 @@ import Inversiones from "@/pages/inversiones";
 import Nosotros from "@/pages/nosotros";
 import Calculadora from "@/pages/calculadora";
 import Contacto from "@/pages/contacto";
+import Login from "@/pages/login";
+import Dashboard from "@/pages/dashboard";
 import NotFound from "@/pages/not-found";
 
 function Router() {
@@ -18,6 +20,8 @@ function Router() {
       <Route path="/nosotros" component={Nosotros} />
       <Route path="/calculadora" component={Calculadora} />
       <Route path="/contacto" component={Contacto} />
+      <Route path="/login" component={Login} />
+      <Route path="/dashboard" component={Dashboard} />
       <Route component={NotFound} />
     </Switch>
   );

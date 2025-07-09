@@ -63,6 +63,12 @@ export default function Header() {
           >
             Contacto
           </Link>
+          <Link 
+            href="/login" 
+            className="bg-[#344e41] hover:bg-[#2d4235] text-white px-4 py-2 rounded-lg transition-colors"
+          >
+            Asesores
+          </Link>
         </div>
         
         <Button 
@@ -114,6 +120,13 @@ export default function Header() {
                 onClick={() => setIsOpen(false)}
               >
                 Contacto
+              </Link>
+              <Link 
+                href="/login" 
+                className="bg-[#344e41] hover:bg-[#2d4235] text-white px-4 py-2 rounded-lg transition-colors text-center"
+                onClick={() => setIsOpen(false)}
+              >
+                Asesores
               </Link>
               <Button 
                 onClick={goToContact}
