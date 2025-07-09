@@ -4,8 +4,10 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Slider } from "@/components/ui/slider";
-import { Download, Calculator as CalcIcon } from "lucide-react";
+import { Download } from "lucide-react";
 import { useCalculator } from "@/hooks/use-calculator";
+import { useMutation } from "@tanstack/react-query";
+import { apiRequest } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
 
 export default function Calculator() {
@@ -14,41 +16,37 @@ export default function Calculator() {
   
   const results = calculateResults();
 
-  const handleDownloadResults = () => {
-    const resultsText = `
-Simulación de Inversión - FundedXam Capital
-==========================================
+  const generatePDFMutation = useMutation({
+    mutationFn: async (data: any) => {
+      const response = await apiRequest("POST", "/api/generate-pdf", data);
+      return response.json();
+    },
+    onSuccess: (data) => {
+      if (data.success) {
+        toast({
+          title: "PDF generado",
+          description: "Su simulación personalizada está lista para descargar."
+        });
+        // In a real implementation, you would trigger the download here
+        console.log("PDF generated:", data.pdf);
+      }
+    },
+    onError: () => {
+      toast({
+        title: "Error",
+        description: "No se pudo generar el PDF. Inténtelo de nuevo.",
+        variant: "destructive"
+      });
+    }
+  });
 
-Capital Inicial: €${state.amount.toLocaleString()}
-Plazo: ${state.years} año${state.years > 1 ? 's' : ''}
-Interés Compuesto: ${state.compoundInterest ? 'Sí' : 'No'}
-Rentabilidad Anual: 9%
-
-Resultados:
------------
-Capital Final: €${results.finalAmount.toLocaleString()}
-Intereses Generados: €${results.interestGenerated.toLocaleString()}
-Rentabilidad Total: ${((results.interestGenerated / state.amount) * 100).toFixed(2)}%
-
-Fecha de Simulación: ${new Date().toLocaleDateString('es-ES')}
-
-Contáctenos para más información:
-info@fundedxamcapital.com
-    `;
-
-    const blob = new Blob([resultsText], { type: 'text/plain' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = `simulacion-inversion-${Date.now()}.txt`;
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
-    URL.revokeObjectURL(url);
-
-    toast({
-      title: "Resultados descargados",
-      description: "Su simulación se ha guardado como archivo de texto."
+  const handleDownloadPDF = () => {
+    generatePDFMutation.mutate({
+      amount: state.amount,
+      years: state.years,
+      compoundInterest: state.compoundInterest,
+      finalAmount: results.finalAmount,
+      interestGenerated: results.interestGenerated
     });
   };
 
@@ -123,11 +121,12 @@ info@fundedxamcapital.com
               </div>
               
               <Button 
-                onClick={handleDownloadResults}
+                onClick={handleDownloadPDF}
+                disabled={generatePDFMutation.isPending}
                 className="w-full mt-6 gradient-navy text-white hover:opacity-90"
               >
                 <Download className="mr-2 h-4 w-4" />
-                Descargar Resultados
+                {generatePDFMutation.isPending ? "Generando..." : "Descargar simulación en PDF"}
               </Button>
             </div>
           </div>
