@@ -2,7 +2,7 @@
 
 ## Overview
 
-FundedXam Capital is a financial investment platform offering a 9% fixed annual return with capital protection through bank contracts. The application is built as a modern full-stack web application targeting conservative investors and financial advisors, emphasizing trust, legal structure, and capital protection.
+FundedXam Capital is a financial investment platform offering a 9% fixed annual return with capital protection through bank contracts. The application is built as a modern frontend-only web application targeting conservative investors and financial advisors, emphasizing trust, legal structure, and capital protection.
 
 ## System Architecture
 
@@ -17,24 +17,16 @@ FundedXam Capital is a financial investment platform offering a 9% fixed annual 
 - **Routing**: Wouter for lightweight client-side routing
 
 ### Backend Architecture
-- **Runtime**: Node.js with Express.js framework
-- **Language**: TypeScript with ES modules
-- **Database ORM**: Drizzle ORM with PostgreSQL dialect
-- **Database Provider**: Neon Database (serverless PostgreSQL)
-- **API Design**: RESTful endpoints with JSON communication
-- **Development**: Hot reload with Vite middleware integration
+- **Removed**: All backend functionality removed for frontend-only deployment
+- **Static Server**: Simple Express.js server for static file serving in development
+- **API Simulation**: Form submissions and calculations handled client-side with local downloads
 
 ### Key Components
 
-#### Database Schema
-- **Leads Table**: Stores potential customer information (name, email, phone, type, source)
-- **Calculator Results Table**: Stores investment simulation data with relationships to leads
-- **Data Validation**: Zod schemas for runtime type checking and validation
-
-#### API Endpoints
-- `POST /api/leads` - Lead capture and CRM integration
-- `POST /api/calculator-results` - Investment simulation storage
-- `POST /api/generate-pdf` - PDF generation for investment reports
+#### Client-Side Features
+- **Calculator**: Interactive investment simulation with downloadable results
+- **Lead Forms**: Contact information capture with local file generation
+- **Document Downloads**: Static file downloads for user information
 
 #### Frontend Sections
 - **Hero Section**: Video background with main value proposition
@@ -50,10 +42,9 @@ FundedXam Capital is a financial investment platform offering a 9% fixed annual 
 ## Data Flow
 
 1. **Lead Generation**: Users interact with forms across multiple sections
-2. **Data Validation**: Client and server-side validation using Zod schemas
-3. **Storage**: Lead and calculator data stored in PostgreSQL via Drizzle ORM
-4. **PDF Generation**: Investment simulations converted to downloadable reports
-5. **CRM Integration**: Lead data flows to external CRM systems
+2. **Client-Side Processing**: All form validation and calculations done in browser
+3. **Local Downloads**: Contact info and calculator results saved as text files
+4. **Manual Processing**: Lead data processed manually from downloaded files
 
 ## External Dependencies
 
@@ -96,6 +87,7 @@ Preferred communication style: Simple, everyday language.
 ## Changelog
 
 Changelog:
+- July 09, 2025. Converted to frontend-only application for static deployment
 - July 09, 2025. Reorganized content structure for better user experience navigation
 - July 09, 2025. Successfully migrated from Replit Agent to standard Replit environment
 - July 09, 2025. Updated header with translucent background and SVG logo per user request

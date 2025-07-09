@@ -3,9 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { FileText, File, Book, Download } from "lucide-react";
-import { useMutation } from "@tanstack/react-query";
-import { apiRequest } from "@/lib/queryClient";
+import { FileText, File, Book, Download, Mail } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 
 export default function Downloads() {
@@ -16,43 +14,6 @@ export default function Downloads() {
     phone: "",
     type: "",
     message: ""
-  });
-
-  const submitLeadMutation = useMutation({
-    mutationFn: async (data: any) => {
-      const response = await apiRequest("POST", "/api/leads", data);
-      return response.json();
-    },
-    onSuccess: async (data) => {
-      if (data.success) {
-        toast({
-          title: "Registro exitoso",
-          description: "La documentación se ha enviado a su email."
-        });
-        
-        // Send documents
-        await apiRequest("POST", "/api/send-documents", {
-          leadId: data.leadId,
-          email: formData.email
-        });
-        
-        // Reset form
-        setFormData({
-          name: "",
-          email: "",
-          phone: "",
-          type: "",
-          message: ""
-        });
-      }
-    },
-    onError: () => {
-      toast({
-        title: "Error",
-        description: "No se pudo procesar su solicitud. Inténtelo de nuevo.",
-        variant: "destructive"
-      });
-    }
   });
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -67,9 +28,52 @@ export default function Downloads() {
       return;
     }
 
-    submitLeadMutation.mutate({
-      ...formData,
-      source: "download"
+    // Generate contact information for download
+    const contactInfo = `
+FundedXam Capital - Solicitud de Información
+===========================================
+
+Datos del solicitante:
+- Nombre: ${formData.name}
+- Email: ${formData.email}
+- Teléfono: ${formData.phone}
+- Tipo de cliente: ${formData.type}
+- Mensaje: ${formData.message}
+
+Para recibir la documentación completa, contáctenos en:
+- Email: info@fundedxamcapital.com
+- Teléfono: +34 XXX XXX XXX
+
+Documentos disponibles:
+- Dossier Institucional
+- Contrato Real Pignorado (ejemplo)
+- Manual del Producto
+
+Fecha de solicitud: ${new Date().toLocaleDateString('es-ES')}
+    `;
+
+    const blob = new Blob([contactInfo], { type: 'text/plain' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `solicitud-informacion-${Date.now()}.txt`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+
+    toast({
+      title: "Solicitud registrada",
+      description: "Su información de contacto se ha guardado. Le contactaremos pronto con la documentación."
+    });
+    
+    // Reset form
+    setFormData({
+      name: "",
+      email: "",
+      phone: "",
+      type: "",
+      message: ""
     });
   };
 
@@ -169,11 +173,10 @@ export default function Downloads() {
             
             <Button 
               type="submit"
-              disabled={submitLeadMutation.isPending}
               className="w-full bg-gold text-black py-4 font-semibold hover:bg-gold/90 h-auto"
             >
               <Download className="mr-2 h-4 w-4" />
-              {submitLeadMutation.isPending ? "Procesando..." : "Descargar Documentación Completa"}
+              Descargar Documentación Completa
             </Button>
           </form>
         </div>
