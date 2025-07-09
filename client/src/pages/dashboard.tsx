@@ -256,6 +256,141 @@ export default function Dashboard() {
           </Card>
         </div>
 
+        {/* Advisor Value Proposition Section */}
+        <div className="mt-8">
+          <Card className="bg-[#040505] border-silver-500/20">
+            <CardHeader>
+              <CardTitle className="text-white text-2xl font-playfair">
+                Asesor Financiero: Un Producto Sólido, Fácil de Explicar, Imposible de Ignorar
+              </CardTitle>
+              <CardDescription className="text-silver-100">
+                Las ventajas competitivas que te posicionan como el asesor de referencia
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-6">
+              {/* Key Benefits Grid */}
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <div className="bg-black/30 p-4 rounded-lg">
+                  <div className="w-12 h-12 bg-[#344e41] rounded-full flex items-center justify-center mb-3">
+                    <TrendingUp className="h-6 w-6 text-white" />
+                  </div>
+                  <h3 className="text-white font-semibold mb-2">Rentabilidad Garantizada</h3>
+                  <p className="text-silver-100 text-sm">
+                    9% anual fijo, sin variaciones ni sorpresas. Tus clientes saben exactamente qué esperar.
+                  </p>
+                </div>
+
+                <div className="bg-black/30 p-4 rounded-lg">
+                  <div className="w-12 h-12 bg-[#344e41] rounded-full flex items-center justify-center mb-3">
+                    <span className="text-white font-bold">€</span>
+                  </div>
+                  <h3 className="text-white font-semibold mb-2">Capital Protegido</h3>
+                  <p className="text-silver-100 text-sm">
+                    100% del capital garantizado por contrato bancario. Cero riesgo de pérdida del principal.
+                  </p>
+                </div>
+
+                <div className="bg-black/30 p-4 rounded-lg">
+                  <div className="w-12 h-12 bg-[#344e41] rounded-full flex items-center justify-center mb-3">
+                    <Calendar className="h-6 w-6 text-white" />
+                  </div>
+                  <h3 className="text-white font-semibold mb-2">Flexibilidad Total</h3>
+                  <p className="text-silver-100 text-sm">
+                    Sin permanencia obligatoria. Tus clientes pueden disponer de su dinero cuando lo necesiten.
+                  </p>
+                </div>
+              </div>
+
+              {/* Selling Points */}
+              <div className="border-t border-silver-500/20 pt-6">
+                <h3 className="text-white font-semibold mb-4">¿Por qué es fácil de vender?</h3>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="flex items-start space-x-3">
+                    <div className="w-2 h-2 bg-gold rounded-full mt-2"></div>
+                    <div>
+                      <p className="text-white font-medium">Mensaje Simple</p>
+                      <p className="text-silver-100 text-sm">
+                        "9% garantizado, capital protegido". No necesitas explicaciones complejas.
+                      </p>
+                    </div>
+                  </div>
+                  
+                  <div className="flex items-start space-x-3">
+                    <div className="w-2 h-2 bg-gold rounded-full mt-2"></div>
+                    <div>
+                      <p className="text-white font-medium">Respaldo Legal</p>
+                      <p className="text-silver-100 text-sm">
+                        Contrato bancario que elimina todas las objeciones sobre seguridad.
+                      </p>
+                    </div>
+                  </div>
+
+                  <div className="flex items-start space-x-3">
+                    <div className="w-2 h-2 bg-gold rounded-full mt-2"></div>
+                    <div>
+                      <p className="text-white font-medium">Competitivo</p>
+                      <p className="text-silver-100 text-sm">
+                        Supera cualquier depósito bancario sin asumir riesgos adicionales.
+                      </p>
+                    </div>
+                  </div>
+
+                  <div className="flex items-start space-x-3">
+                    <div className="w-2 h-2 bg-gold rounded-full mt-2"></div>
+                    <div>
+                      <p className="text-white font-medium">Cliente Ideal</p>
+                      <p className="text-silver-100 text-sm">
+                        Perfecto para conservadores que buscan rentabilidad sin riesgo.
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Target Clients */}
+              <div className="border-t border-silver-500/20 pt-6">
+                <h3 className="text-white font-semibold mb-4">Perfil del Cliente Objetivo</h3>
+                <div className="bg-black/30 p-4 rounded-lg">
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-center">
+                    <div>
+                      <p className="text-gold font-bold text-lg">45-65 años</p>
+                      <p className="text-silver-100 text-sm">Edad promedio</p>
+                    </div>
+                    <div>
+                      <p className="text-gold font-bold text-lg">€50K-500K</p>
+                      <p className="text-silver-100 text-sm">Capacidad inversión</p>
+                    </div>
+                    <div>
+                      <p className="text-gold font-bold text-lg">Conservador</p>
+                      <p className="text-silver-100 text-sm">Perfil de riesgo</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Call to Action */}
+              <div className="border-t border-silver-500/20 pt-6">
+                <div className="bg-gradient-to-r from-[#344e41] to-[#2d4235] p-4 rounded-lg">
+                  <h3 className="text-white font-semibold mb-2">¿Listo para presentar el producto?</h3>
+                  <p className="text-white/90 text-sm mb-4">
+                    Utiliza la calculadora para mostrar proyecciones reales y impactar a tus clientes.
+                  </p>
+                  <div className="flex space-x-3">
+                    <Button className="bg-white text-[#344e41] hover:bg-gray-100">
+                      <Calculator className="h-4 w-4 mr-2" />
+                      Ver Calculadora
+                    </Button>
+                    <Button variant="outline" className="border-white text-white hover:bg-white/10">
+                      <Download className="h-4 w-4 mr-2" />
+                      Material de Ventas
+                    </Button>
+                  </div>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+
         {/* Quick Actions */}
         <div className="mt-8">
           <h2 className="text-xl font-bold text-white mb-4">Acciones Rápidas</h2>

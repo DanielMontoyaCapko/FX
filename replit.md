@@ -96,6 +96,9 @@ Preferred communication style: Simple, everyday language.
 ## Changelog
 
 Changelog:
+- July 09, 2025. Added comprehensive "Asesor Financiero" value proposition section to advisor dashboard
+- July 09, 2025. Updated advisor portal design with gradient backgrounds and #040505 colored boxes
+- July 09, 2025. Changed branding from "Nakama & Partners" to "FundedXam Capital"
 - July 09, 2025. Reorganized content structure for better user experience navigation
 - July 09, 2025. Successfully migrated from Replit Agent to standard Replit environment
 - July 09, 2025. Updated header with translucent background and SVG logo per user request
