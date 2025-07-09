@@ -46,7 +46,7 @@ export default function Login() {
   };
 
   return (
-    <div className="min-h-screen bg-black flex items-center justify-center px-4">
+    <div className="min-h-screen bg-gradient-to-br from-black via-gray-900 to-gray-600 flex items-center justify-center px-4">
       <div className="w-full max-w-md">
         {/* Header */}
         <div className="text-center mb-8">
@@ -61,7 +61,7 @@ export default function Login() {
         </div>
 
         {/* Login Form */}
-        <Card className="bg-[#545454] border-silver-500/20">
+        <Card className="bg-[#040505] border-silver-500/20">
           <CardHeader>
             <CardTitle className="text-white text-center">Iniciar Sesión</CardTitle>
             <CardDescription className="text-silver-100 text-center">

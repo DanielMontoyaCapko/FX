@@ -95,9 +95,9 @@ export default function Dashboard() {
   ];
 
   return (
-    <div className="min-h-screen bg-black text-white flex">
+    <div className="min-h-screen bg-gradient-to-br from-black via-gray-900 to-gray-600 text-white flex">
       {/* Sidebar */}
-      <div className="w-64 bg-[#545454] border-r border-silver-500/20 p-6">
+      <div className="w-64 bg-[#040505] border-r border-silver-500/20 p-6">
         <div className="flex items-center space-x-3 mb-8">
           <img src={logoSvg} alt="Logo" className="w-8 h-8" />
           <div>
@@ -173,7 +173,7 @@ export default function Dashboard() {
         {/* KPIs */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
           {kpis.map((kpi, index) => (
-            <Card key={index} className="bg-[#545454] border-silver-500/20">
+            <Card key={index} className="bg-[#040505] border-silver-500/20">
               <CardContent className="p-6">
                 <div className="flex items-center justify-between">
                   <div>
@@ -194,7 +194,7 @@ export default function Dashboard() {
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
           {/* Recent Leads */}
-          <Card className="bg-[#545454] border-silver-500/20">
+          <Card className="bg-[#040505] border-silver-500/20">
             <CardHeader>
               <CardTitle className="text-white">Leads Recientes</CardTitle>
               <CardDescription className="text-silver-100">Últimos contactos registrados</CardDescription>
@@ -231,7 +231,7 @@ export default function Dashboard() {
           </Card>
 
           {/* Recent Activity */}
-          <Card className="bg-[#545454] border-silver-500/20">
+          <Card className="bg-[#040505] border-silver-500/20">
             <CardHeader>
               <CardTitle className="text-white">Actividad Reciente</CardTitle>
               <CardDescription className="text-silver-100">Últimas acciones en el sistema</CardDescription>
