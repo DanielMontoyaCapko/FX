@@ -53,7 +53,7 @@ export default function Login() {
           <div className="flex items-center justify-center space-x-3 mb-4">
             <img src={logoSvg} alt="Logo" className="w-12 h-12" />
             <div>
-              <h1 className="font-playfair text-2xl font-bold text-white">Nakama & Partners</h1>
+              <h1 className="font-playfair text-2xl font-bold text-white">FundedXam Capital</h1>
               <p className="text-gold text-sm">Portal de Asesores</p>
             </div>
           </div>
@@ -61,7 +61,7 @@ export default function Login() {
         </div>
 
         {/* Login Form */}
-        <Card className="bg-black/80 border-silver-500/20">
+        <Card className="bg-[#545454] border-silver-500/20">
           <CardHeader>
             <CardTitle className="text-white text-center">Iniciar Sesión</CardTitle>
             <CardDescription className="text-silver-100 text-center">
@@ -80,7 +80,7 @@ export default function Login() {
                     placeholder="Ingresa tu usuario"
                     value={formData.username}
                     onChange={(e) => setFormData({ ...formData, username: e.target.value })}
-                    className="pl-10 bg-black/50 border-silver-500/20 text-white placeholder-silver-100"
+                    className="pl-10 bg-black/30 border-silver-500/20 text-white placeholder-silver-100"
                   />
                 </div>
               </div>
@@ -95,7 +95,7 @@ export default function Login() {
                     placeholder="Ingresa tu contraseña"
                     value={formData.password}
                     onChange={(e) => setFormData({ ...formData, password: e.target.value })}
-                    className="pl-10 pr-10 bg-black/50 border-silver-500/20 text-white placeholder-silver-100"
+                    className="pl-10 pr-10 bg-black/30 border-silver-500/20 text-white placeholder-silver-100"
                   />
                   <button
                     type="button"
