@@ -1,5 +1,4 @@
 import Header from "@/components/header";
-import Security from "@/components/security";
 import Strategy from "@/components/strategy";
 import Comparison from "@/components/comparison";
 import Process from "@/components/process";
@@ -17,15 +16,14 @@ export default function Inversiones() {
                 Nuestras <span className="text-gold">Inversiones</span>
               </h1>
               <p className="text-xl text-silver-100 max-w-3xl mx-auto">
-                Descubra cómo protegemos y hacemos crecer su patrimonio con estrategias sólidas y transparentes.
+                Descubra cómo conseguimos el 9% fijo anual y qué pasa al final del plazo.
               </p>
             </div>
           </div>
         </section>
-        <Security />
         <Strategy />
-        <Comparison />
         <Process />
+        <Comparison />
       </main>
       <Footer />
     </div>

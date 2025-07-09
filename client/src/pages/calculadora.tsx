@@ -11,10 +11,10 @@ export default function Calculadora() {
           <div className="container mx-auto px-6">
             <div className="text-center mb-16">
               <h1 className="font-playfair text-5xl md:text-6xl font-bold text-white mb-6">
-                <span className="text-gold">Calculadora</span> de Inversión
+                <span className="text-gold">Calculadora</span> de Rentabilidad
               </h1>
               <p className="text-xl text-silver-100 max-w-3xl mx-auto">
-                Simule el crecimiento de su inversión con nuestro producto de rentabilidad fija del 9% anual.
+                Descubre cuánto podrías ganar con nuestro 9% fijo anual. Calcula tu rentabilidad de manera interactiva.
               </p>
             </div>
           </div>
