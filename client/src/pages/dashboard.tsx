@@ -535,91 +535,7 @@ export default function Dashboard() {
               ))}
             </div>
 
-            {/* Asesor Financiero Section */}
-            <Card className="bg-[#040505] border-silver-500/20 mb-8">
-              <CardContent className="p-8">
-                <div className="text-center mb-6">
-                  <h2 className="text-2xl font-bold text-white mb-2">
-                    Asesor Financiero: Un Producto Sólido, Fácil de Explicar, Imposible de Ignorar
-                  </h2>
-                  <p className="text-silver-100 max-w-3xl mx-auto">
-                    Presentamos una oportunidad de inversión única que combina seguridad, rentabilidad y simplicidad. 
-                    Perfect para explicar a tus clientes y cerrar ventas efectivamente.
-                  </p>
-                </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-                  <div className="bg-black/30 p-6 rounded-lg text-center">
-                    <div className="w-12 h-12 bg-[#387b46] rounded-full flex items-center justify-center mx-auto mb-4">
-                      <TrendingUp className="h-6 w-6 text-white" />
-                    </div>
-                    <h3 className="text-white font-semibold mb-2">Rentabilidad Garantizada</h3>
-                    <p className="text-gold text-xl font-bold mb-2">9% Anual</p>
-                    <p className="text-silver-100 text-sm">Retorno fijo y predecible</p>
-                  </div>
-
-                  <div className="bg-black/30 p-6 rounded-lg text-center">
-                    <div className="w-12 h-12 bg-[#387b46] rounded-full flex items-center justify-center mx-auto mb-4">
-                      <TrendingUp className="h-6 w-6 text-white" />
-                    </div>
-                    <h3 className="text-white font-semibold mb-2">Capital Protegido</h3>
-                    <p className="text-gold text-xl font-bold mb-2">100%</p>
-                    <p className="text-silver-100 text-sm">Garantía bancaria completa</p>
-                  </div>
-
-                  <div className="bg-black/30 p-6 rounded-lg text-center">
-                    <div className="w-12 h-12 bg-[#387b46] rounded-full flex items-center justify-center mx-auto mb-4">
-                      <Calendar className="h-6 w-6 text-white" />
-                    </div>
-                    <h3 className="text-white font-semibold mb-2">Flexibilidad Total</h3>
-                    <p className="text-gold text-xl font-bold mb-2">1-5 años</p>
-                    <p className="text-silver-100 text-sm">Plazos adaptables</p>
-                  </div>
-                </div>
-
-                <div className="bg-gradient-to-r from-[#344e41] to-[#2d4235] p-6 rounded-lg">
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6 items-center">
-                    <div>
-                      <h3 className="text-white font-bold text-lg mb-3">Perfil del Cliente Ideal</h3>
-                      <ul className="text-white/90 space-y-2">
-                        <li>• Inversores conservadores buscando estabilidad</li>
-                        <li>• Personas próximas a la jubilación</li>
-                        <li>• Familias planificando el futuro</li>
-                        <li>• Empresarios diversificando patrimonio</li>
-                      </ul>
-                    </div>
-                    <div>
-                      <p className="text-gold font-bold text-lg">€50K-500K</p>
-                      <p className="text-silver-100 text-sm">Capacidad inversión</p>
-                    </div>
-                    <div>
-                      <p className="text-gold font-bold text-lg">Conservador</p>
-                      <p className="text-silver-100 text-sm">Perfil de riesgo</p>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Call to Action */}
-                <div className="border-t border-silver-500/20 pt-6">
-                  <div className="bg-gradient-to-r from-[#344e41] to-[#2d4235] p-4 rounded-lg">
-                    <h3 className="text-white font-semibold mb-2">¿Listo para presentar el producto?</h3>
-                    <p className="text-white/90 text-sm mb-4">
-                      Utiliza la calculadora para mostrar proyecciones reales y impactar a tus clientes.
-                    </p>
-                    <div className="flex space-x-3">
-                      <Button className="bg-white text-[#344e41] hover:bg-gray-100">
-                        <Calculator className="h-4 w-4 mr-2" />
-                        Ver Calculadora
-                      </Button>
-                      <Button variant="outline" className="border-white text-white hover:bg-white/10">
-                        <Download className="h-4 w-4 mr-2" />
-                        Material de Ventas
-                      </Button>
-                    </div>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
 
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
               {/* Recent Leads */}
@@ -680,6 +596,118 @@ export default function Dashboard() {
                         </div>
                       </div>
                     ))}
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
+
+            {/* Quick Actions */}
+            <div className="mt-8">
+              <h2 className="text-xl font-bold text-white mb-4">Acciones Rápidas</h2>
+              <div className="flex space-x-4">
+                <Button className="bg-[#344e41] hover:bg-[#2d4235] text-white">
+                  <Download className="h-4 w-4 mr-2" />
+                  Exportar Leads
+                </Button>
+                <Button className="gradient-navy text-white">
+                  <Calendar className="h-4 w-4 mr-2" />
+                  Programar Seguimiento
+                </Button>
+              </div>
+            </div>
+
+            {/* Asesor Financiero Section */}
+            <div className="mt-8">
+              <Card className="bg-[#040505] border-silver-500/20">
+                <CardContent className="p-8">
+                  <div className="text-center mb-6">
+                    <h2 className="text-2xl font-bold text-white mb-2">
+                      Asesor Financiero: Un Producto Sólido, Fácil de Explicar, Imposible de Ignorar
+                    </h2>
+                    <p className="text-silver-100 max-w-3xl mx-auto">
+                      Presentamos una oportunidad de inversión única que combina seguridad, rentabilidad y simplicidad. 
+                      Perfect para explicar a tus clientes y cerrar ventas efectivamente.
+                    </p>
+                  </div>
+
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+                    <div className="bg-black/30 p-6 rounded-lg text-center">
+                      <div className="w-12 h-12 bg-[#387b46] rounded-full flex items-center justify-center mx-auto mb-4">
+                        <TrendingUp className="h-6 w-6 text-white" />
+                      </div>
+                      <h3 className="text-white font-semibold mb-2">Rentabilidad Garantizada</h3>
+                      <p className="text-gold text-xl font-bold mb-2">9% Anual</p>
+                      <p className="text-silver-100 text-sm">Retorno fijo y predecible</p>
+                    </div>
+
+                    <div className="bg-black/30 p-6 rounded-lg text-center">
+                      <div className="w-12 h-12 bg-[#387b46] rounded-full flex items-center justify-center mx-auto mb-4">
+                        <TrendingUp className="h-6 w-6 text-white" />
+                      </div>
+                      <h3 className="text-white font-semibold mb-2">Capital Protegido</h3>
+                      <p className="text-gold text-xl font-bold mb-2">100%</p>
+                      <p className="text-silver-100 text-sm">Garantía bancaria completa</p>
+                    </div>
+
+                    <div className="bg-black/30 p-6 rounded-lg text-center">
+                      <div className="w-12 h-12 bg-[#387b46] rounded-full flex items-center justify-center mx-auto mb-4">
+                        <Calendar className="h-6 w-6 text-white" />
+                      </div>
+                      <h3 className="text-white font-semibold mb-2">Flexibilidad Total</h3>
+                      <p className="text-gold text-xl font-bold mb-2">1-5 años</p>
+                      <p className="text-silver-100 text-sm">Plazos adaptables</p>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
+
+            {/* Perfil del Cliente Ideal */}
+            <div className="mt-8">
+              <Card className="bg-[#040505] border-silver-500/20">
+                <CardContent className="p-6">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6 items-center">
+                    <div>
+                      <h3 className="text-white font-bold text-lg mb-3">Perfil del Cliente Ideal</h3>
+                      <ul className="text-white/90 space-y-2">
+                        <li>• Inversores conservadores buscando estabilidad</li>
+                        <li>• Personas próximas a la jubilación</li>
+                        <li>• Familias planificando el futuro</li>
+                        <li>• Empresarios diversificando patrimonio</li>
+                      </ul>
+                    </div>
+                    <div className="grid grid-cols-2 gap-4">
+                      <div>
+                        <p className="text-gold font-bold text-lg">€50K-500K</p>
+                        <p className="text-silver-100 text-sm">Capacidad inversión</p>
+                      </div>
+                      <div>
+                        <p className="text-gold font-bold text-lg">Conservador</p>
+                        <p className="text-silver-100 text-sm">Perfil de riesgo</p>
+                      </div>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
+
+            {/* Call to Action */}
+            <div className="mt-8">
+              <Card className="bg-[#040505] border-silver-500/20">
+                <CardContent className="p-6">
+                  <h3 className="text-white font-semibold mb-2">¿Listo para presentar el producto?</h3>
+                  <p className="text-white/90 text-sm mb-4">
+                    Utiliza la calculadora para mostrar proyecciones reales y impactar a tus clientes.
+                  </p>
+                  <div className="flex space-x-3">
+                    <Button className="bg-white text-[#344e41] hover:bg-gray-100">
+                      <Calculator className="h-4 w-4 mr-2" />
+                      Ver Calculadora
+                    </Button>
+                    <Button variant="outline" className="border-white text-white hover:bg-white/10">
+                      <Download className="h-4 w-4 mr-2" />
+                      Material de Ventas
+                    </Button>
                   </div>
                 </CardContent>
               </Card>
