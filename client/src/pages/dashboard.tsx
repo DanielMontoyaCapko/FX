@@ -101,7 +101,7 @@ export default function Dashboard() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-black via-gray-900 to-gray-600 text-white flex">
       {/* Sidebar */}
-      <div className="w-64 bg-[#040505] border-r border-silver-500/20 p-6 flex flex-col">
+      <div className="w-64 bg-[#040505] border-r border-silver-500/20 p-6 flex flex-col fixed h-full">
         <div className="flex items-center space-x-3 mb-8">
           <img src={logoSvg} alt="Logo" className="w-8 h-8" />
           <div>
@@ -156,7 +156,7 @@ export default function Dashboard() {
       </div>
 
       {/* Main Content */}
-      <div className="flex-1 p-8">
+      <div className="flex-1 p-8 ml-64">
         {activeTab === "perfil" ? (
           <div>
             <div className="flex justify-between items-center mb-8">
