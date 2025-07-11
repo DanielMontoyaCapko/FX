@@ -140,17 +140,18 @@ export default function Dashboard() {
             <User className="h-4 w-4" />
             <span>Perfil</span>
           </button>
-        </nav>
-
-        <div className="mt-auto pt-8">
+          
           <Button 
             onClick={handleLogout}
             variant="ghost" 
-            className="w-full justify-start text-silver-100 hover:text-white hover:bg-black/50"
+            className="w-full justify-start text-silver-100 hover:text-white hover:bg-black/50 mt-2"
           >
             <LogOut className="h-4 w-4 mr-3" />
             Cerrar sesión
           </Button>
+        </nav>
+
+        <div className="mt-auto pt-8">
         </div>
       </div>
 
