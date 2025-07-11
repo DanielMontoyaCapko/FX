@@ -578,8 +578,8 @@ export default function Dashboard() {
                         <h3 className="text-xl font-bold text-white mb-4">Simulador de Inversión</h3>
                         <p className="text-silver-100 mb-4 text-sm">Con una inversión de $10,000 podrías ganar:</p>
                         <div className="text-center">
-                          <p className="text-3xl font-bold text-green-500">$900.00</p>
-                          <p className="text-silver-100">en 365 días</p>
+                          <p className="text-5xl font-bold text-green-500">$900.00</p>
+                          <p className="text-silver-100 text-xl font-medium">en 365 días</p>
                         </div>
                       </CardContent>
                     </Card>
