@@ -23,6 +23,7 @@ import {
   Calculator
 } from "lucide-react";
 import logoSvg from "@/assets/logo.svg";
+import landscapeSvg from "@/assets/landscape.svg";
 
 export default function Dashboard() {
   const [, setLocation] = useLocation();
@@ -493,6 +494,58 @@ export default function Dashboard() {
                 </Tabs>
               </CardContent>
             </Card>
+          </div>
+        ) : activeTab === "productos" ? (
+          <div>
+            {/* Hero Section with Background Image */}
+            <div 
+              className="relative h-80 rounded-lg overflow-hidden mb-8"
+              style={{
+                backgroundImage: `url(${landscapeSvg})`,
+                backgroundSize: 'cover',
+                backgroundPosition: 'center'
+              }}
+            >
+              <div className="absolute inset-0 bg-black/40 flex items-center justify-center">
+                <div className="text-center text-white">
+                  <h1 className="text-4xl font-bold mb-2">Prueba</h1>
+                  <p className="text-xl">Anuncio de prueba</p>
+                </div>
+              </div>
+            </div>
+
+            {/* Product Card */}
+            <div className="max-w-2xl mx-auto">
+              <Card className="bg-[#040505] border-silver-500/20">
+                <CardContent className="p-8">
+                  <div className="flex items-start justify-between mb-6">
+                    <div>
+                      <h2 className="text-2xl font-bold text-white mb-2">Plazo fijo 9% 365 días</h2>
+                      <Badge className="bg-blue-500 text-white">365 días</Badge>
+                    </div>
+                  </div>
+                  
+                  <p className="text-silver-100 mb-6 leading-relaxed">
+                    Depósito bancario con un 9 % de rentabilidad anual, mediante préstamo participativo y 
+                    cesión de la pignoración al cliente depositante
+                  </p>
+                  
+                  <div className="flex items-center justify-between mb-6">
+                    <div className="flex items-center space-x-4">
+                      <div>
+                        <p className="text-3xl font-bold text-green-500">9.00%</p>
+                        <p className="text-silver-100 text-sm">Rentabilidad anual</p>
+                      </div>
+                      <Badge className="bg-orange-500 text-white">No renovable</Badge>
+                    </div>
+                  </div>
+                  
+                  <Button className="bg-green-600 hover:bg-green-700 text-white w-full py-3">
+                    VER DETALLES
+                  </Button>
+                </CardContent>
+              </Card>
+            </div>
           </div>
         ) : (
           <div>
