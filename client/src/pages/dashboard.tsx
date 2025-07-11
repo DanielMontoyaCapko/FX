@@ -16,13 +16,16 @@ import {
   Plus,
   Mail,
   Phone,
-  Globe
+  Globe,
+  Home,
+  Package,
+  User
 } from "lucide-react";
 import logoSvg from "@/assets/logo.svg";
 
 export default function Dashboard() {
   const [, setLocation] = useLocation();
-  const [activeTab, setActiveTab] = useState("dashboard");
+  const [activeTab, setActiveTab] = useState("inicio");
 
   const handleLogout = () => {
     setLocation("/login");
@@ -97,7 +100,7 @@ export default function Dashboard() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-black via-gray-900 to-gray-600 text-white flex">
       {/* Sidebar */}
-      <div className="w-64 bg-[#040505] border-r border-silver-500/20 p-6">
+      <div className="w-64 bg-[#040505] border-r border-silver-500/20 p-6 flex flex-col">
         <div className="flex items-center space-x-3 mb-8">
           <img src={logoSvg} alt="Logo" className="w-8 h-8" />
           <div>
@@ -106,35 +109,35 @@ export default function Dashboard() {
           </div>
         </div>
 
-        <nav className="space-y-2">
+        <nav className="space-y-2 flex-1">
           <button
-            onClick={() => setActiveTab("dashboard")}
+            onClick={() => setActiveTab("inicio")}
             className={`w-full flex items-center space-x-3 px-3 py-2 rounded-lg transition-colors ${
-              activeTab === "dashboard" ? "bg-[#344e41] text-white" : "text-silver-100 hover:bg-black/50"
+              activeTab === "inicio" ? "bg-[#344e41] text-white" : "text-silver-100 hover:bg-black/50"
             }`}
           >
-            <LayoutDashboard className="h-4 w-4" />
-            <span>Dashboard</span>
+            <Home className="h-4 w-4" />
+            <span>Inicio</span>
           </button>
           
           <button
-            onClick={() => setActiveTab("leads")}
+            onClick={() => setActiveTab("productos")}
             className={`w-full flex items-center space-x-3 px-3 py-2 rounded-lg transition-colors ${
-              activeTab === "leads" ? "bg-[#344e41] text-white" : "text-silver-100 hover:bg-black/50"
+              activeTab === "productos" ? "bg-[#344e41] text-white" : "text-silver-100 hover:bg-black/50"
             }`}
           >
-            <Users className="h-4 w-4" />
-            <span>Leads</span>
+            <Package className="h-4 w-4" />
+            <span>Productos</span>
           </button>
           
           <button
-            onClick={() => setActiveTab("simulations")}
+            onClick={() => setActiveTab("perfil")}
             className={`w-full flex items-center space-x-3 px-3 py-2 rounded-lg transition-colors ${
-              activeTab === "simulations" ? "bg-[#344e41] text-white" : "text-silver-100 hover:bg-black/50"
+              activeTab === "perfil" ? "bg-[#344e41] text-white" : "text-silver-100 hover:bg-black/50"
             }`}
           >
-            <Calculator className="h-4 w-4" />
-            <span>Simulaciones</span>
+            <User className="h-4 w-4" />
+            <span>Perfil</span>
           </button>
         </nav>
 
