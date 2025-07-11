@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
-import { User, Lock, Eye, EyeOff } from "lucide-react";
+import { User, Lock, Eye, EyeOff, ArrowLeft } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import logoSvg from "@/assets/logo.svg";
 
@@ -47,6 +47,18 @@ export default function Login() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-black via-gray-900 to-gray-600 flex items-center justify-center px-4">
+      {/* Back to Home Button */}
+      <div className="absolute top-6 left-6">
+        <Button 
+          onClick={() => setLocation("/")}
+          variant="ghost" 
+          className="text-white hover:bg-black/50 flex items-center gap-2"
+        >
+          <ArrowLeft className="h-4 w-4" />
+          Volver al Inicio
+        </Button>
+      </div>
+
       <div className="w-full max-w-md">
         {/* Header */}
         <div className="text-center mb-8">
