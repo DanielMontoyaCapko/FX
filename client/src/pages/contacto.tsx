@@ -6,7 +6,7 @@ import Footer from "@/components/footer";
 
 export default function Contacto() {
   return (
-    <div className="min-h-screen bg-black text-white">
+    <div className="min-h-screen bg-gradient-to-br from-black via-gray-900 to-gray-600 text-white">
       <Header />
       <main className="pt-20">
         <section className="py-20 gradient-dark">
