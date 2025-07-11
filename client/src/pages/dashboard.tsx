@@ -558,14 +558,15 @@ export default function Dashboard() {
                         </div>
                         
                         <div className="bg-green-50 border border-green-200 rounded-lg p-4 mb-6">
-                          <p className="text-green-800 font-medium">
-                            ¿Listo para invertir? Haz clic en el botón para contratar este producto
-                          </p>
+                          <div className="flex items-center justify-between gap-4">
+                            <p className="text-green-800 font-medium">
+                              ¿Listo para invertir? Haz clic en el botón para contratar este producto
+                            </p>
+                            <Button className="bg-green-600 hover:bg-green-700 text-white px-6 py-2 text-sm whitespace-nowrap">
+                              CONTRATAR AHORA
+                            </Button>
+                          </div>
                         </div>
-                        
-                        <Button className="bg-green-600 hover:bg-green-700 text-white px-8 py-3 text-lg w-full">
-                          CONTRATAR AHORA
-                        </Button>
                       </CardContent>
                     </Card>
                   </div>
