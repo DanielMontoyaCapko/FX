@@ -14,15 +14,15 @@
   --card-foreground: hsl(0, 0%, 98%);
   --border: hsl(0, 0%, 20%);
   --input: hsl(0, 0%, 15%);
-  --primary: hsl(210, 100%, 25%);
+  --primary: hsl(140, 36%, 38%);
   --primary-foreground: hsl(0, 0%, 100%);
   --secondary: hsl(0, 0%, 10%);
   --secondary-foreground: hsl(0, 0%, 98%);
-  --accent: hsl(142, 35%, 38%);
+  --accent: hsl(140, 36%, 38%);
   --accent-foreground: hsl(0, 0%, 100%);
   --destructive: hsl(0, 84%, 60%);
   --destructive-foreground: hsl(60, 9%, 98%);
-  --ring: hsl(142, 35%, 38%);
+  --ring: hsl(140, 36%, 38%);
   --radius: 0.5rem;
   
   /* Custom colors */

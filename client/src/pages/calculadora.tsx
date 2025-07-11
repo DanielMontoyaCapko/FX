@@ -46,9 +46,9 @@ export default function Calculadora() {
                   <p className="text-silver-100">Renueve su inversión con condiciones preferentes.</p>
                 </div>
                 
-                <div className="bg-black/50 p-6 rounded-xl border border-silver-500/20 text-center">
-                  <div className="w-16 h-16 bg-gold/20 rounded-lg mx-auto mb-4 flex items-center justify-center">
-                    <span className="text-gold font-bold text-xl">3</span>
+                <div className="bg-black/50 p-6 rounded-xl border border-silver-500/20 text-center" style={{backgroundColor: 'rgba(56, 123, 70, 0.2)', borderColor: 'rgba(56, 123, 70, 0.3)'}}>
+                  <div className="w-16 h-16 rounded-lg mx-auto mb-4 flex items-center justify-center" style={{backgroundColor: 'rgba(56, 123, 70, 0.3)'}}>
+                    <span className="font-bold text-xl" style={{color: '#387b46'}}>3</span>
                   </div>
                   <h3 className="font-playfair text-xl font-semibold text-white mb-3">Interés Compuesto</h3>
                   <p className="text-silver-100">Aplique interés compuesto para maximizar el crecimiento.</p>
