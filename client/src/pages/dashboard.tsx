@@ -178,7 +178,7 @@ export default function Dashboard() {
                     <TabsTrigger value="productos" className="data-[state=active]:bg-[#344e41]">
                       Productos
                     </TabsTrigger>
-                    <TabsTrigger value="transacciones" disabled className="opacity-50">
+                    <TabsTrigger value="transacciones" className="data-[state=active]:bg-[#344e41]">
                       Transacciones
                     </TabsTrigger>
                   </TabsList>
@@ -449,6 +449,45 @@ export default function Dashboard() {
                         </div>
                       </TabsContent>
                     </Tabs>
+                  </TabsContent>
+                  
+                  <TabsContent value="transacciones" className="mt-6">
+                    <div className="space-y-6">
+                      <div className="flex items-center justify-between">
+                        <h3 className="text-2xl font-bold text-white">Historial de Transacciones</h3>
+                        <Select defaultValue="todos">
+                          <SelectTrigger className="w-40 bg-black/50 border-silver-500/20 text-white">
+                            <SelectValue />
+                          </SelectTrigger>
+                          <SelectContent className="bg-black border-silver-500/20">
+                            <SelectItem value="todos">Todos</SelectItem>
+                            <SelectItem value="depositos">Depósitos</SelectItem>
+                            <SelectItem value="retiros">Retiros</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+                      
+                      <div className="bg-black/30 rounded-lg overflow-hidden">
+                        <table className="w-full">
+                          <thead className="bg-black/50">
+                            <tr>
+                              <th className="text-left p-4 text-white font-semibold">FECHA</th>
+                              <th className="text-left p-4 text-white font-semibold">TIPO</th>
+                              <th className="text-left p-4 text-white font-semibold">DESCRIPCIÓN</th>
+                              <th className="text-left p-4 text-white font-semibold">MONTO</th>
+                              <th className="text-left p-4 text-white font-semibold">ESTADO</th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                            {/* Empty table body */}
+                          </tbody>
+                        </table>
+                        
+                        <div className="p-8 text-center">
+                          <p className="text-silver-100 text-lg">No hay transacciones para mostrar</p>
+                        </div>
+                      </div>
+                    </div>
                   </TabsContent>
                 </Tabs>
               </CardContent>
