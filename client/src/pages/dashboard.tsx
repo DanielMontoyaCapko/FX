@@ -172,7 +172,7 @@ export default function Dashboard() {
                     <TabsTrigger value="personal" className="data-[state=active]:bg-[#344e41]">
                       Información Personal
                     </TabsTrigger>
-                    <TabsTrigger value="kyc" disabled className="opacity-50">
+                    <TabsTrigger value="kyc" className="data-[state=active]:bg-[#344e41]">
                       Estado KYC
                     </TabsTrigger>
                     <TabsTrigger value="productos" disabled className="opacity-50">
@@ -260,6 +260,27 @@ export default function Dashboard() {
                         </Button>
                       </div>
                     </form>
+                  </TabsContent>
+                  
+                  <TabsContent value="kyc" className="mt-6">
+                    <div className="bg-black/30 rounded-lg p-8 text-center">
+                      <div className="flex items-center justify-center mb-6">
+                        <div className="bg-green-500/20 rounded-full p-3 mr-4">
+                          <User className="h-8 w-8 text-green-500" />
+                        </div>
+                        <div className="text-left">
+                          <h3 className="text-2xl font-bold text-white mb-2">Verificación KYC</h3>
+                          <p className="text-silver-100">
+                            ¡Tu cuenta está verificada! Ya puedes realizar todas las operaciones en la plataforma.
+                          </p>
+                        </div>
+                        <div className="ml-auto">
+                          <Badge className="bg-green-500 text-white px-4 py-2 text-sm font-semibold">
+                            Approved
+                          </Badge>
+                        </div>
+                      </div>
+                    </div>
                   </TabsContent>
                 </Tabs>
               </CardContent>
