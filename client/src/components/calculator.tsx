@@ -51,7 +51,7 @@ export default function Calculator() {
   };
 
   return (
-    <section className="py-20 gradient-dark-subtle">
+    <section className="py-20 bg-transparent">
       <div className="container mx-auto px-6">
         <div className="text-center mb-12">
           <h2 className="font-playfair text-4xl md:text-5xl font-bold text-white mb-6">

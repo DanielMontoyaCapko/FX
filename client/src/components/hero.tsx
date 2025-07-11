@@ -9,7 +9,7 @@ export default function Hero() {
   };
 
   return (
-    <section id="inicio" className="min-h-screen gradient-dark flex items-center justify-center pt-20">
+    <section id="inicio" className="min-h-screen bg-transparent flex items-center justify-center pt-20">
       <div className="container mx-auto px-6 text-center">
         <h1 className="font-playfair text-5xl md:text-7xl font-bold text-white mb-6 text-shadow">
           <span className="text-gold">9% Fijo Anual.</span><br />

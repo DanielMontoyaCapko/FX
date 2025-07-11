@@ -9,7 +9,7 @@ export default function Inversiones() {
     <div className="min-h-screen bg-gradient-to-br from-black via-gray-900 to-gray-600 text-white">
       <Header />
       <main className="pt-20">
-        <section className="py-20 gradient-dark">
+        <section className="py-20 bg-transparent">
           <div className="container mx-auto px-6">
             <div className="text-center mb-16">
               <h1 className="font-playfair text-5xl md:text-6xl font-bold text-white mb-6">

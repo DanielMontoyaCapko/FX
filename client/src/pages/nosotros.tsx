@@ -7,7 +7,7 @@ export default function Nosotros() {
     <div className="min-h-screen bg-gradient-to-br from-black via-gray-900 to-gray-600 text-white">
       <Header />
       <main className="pt-20">
-        <section className="py-20 gradient-dark">
+        <section className="py-20 bg-transparent">
           <div className="container mx-auto px-6">
             <div className="text-center mb-16">
               <h1 className="font-playfair text-5xl md:text-6xl font-bold text-white mb-6">
@@ -20,7 +20,7 @@ export default function Nosotros() {
           </div>
         </section>
         
-        <section className="py-20 gradient-dark-subtle">
+        <section className="py-20 bg-transparent">
           <div className="container mx-auto px-6">
             <div className="max-w-4xl mx-auto">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-12 mb-16">
