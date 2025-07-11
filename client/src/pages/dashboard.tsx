@@ -514,33 +514,84 @@ export default function Dashboard() {
               </div>
             </div>
 
-            {/* Product Card */}
-            <div className="max-w-2xl mx-auto">
+            {/* Products Grid */}
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {/* Product Card 1 */}
               <Card className="bg-[#040505] border-silver-500/20">
-                <CardContent className="p-8">
-                  <div className="flex items-start justify-between mb-6">
-                    <div>
-                      <h2 className="text-2xl font-bold text-white mb-2">Plazo fijo 9% 365 días</h2>
-                      <Badge className="bg-blue-500 text-white">365 días</Badge>
-                    </div>
+                <CardContent className="p-6">
+                  <div className="flex items-center gap-3 mb-4">
+                    <h2 className="text-xl font-bold text-white">Plazo fijo 9% 365 días</h2>
+                    <Badge className="bg-blue-500 text-white">365 días</Badge>
                   </div>
                   
-                  <p className="text-silver-100 mb-6 leading-relaxed">
+                  <p className="text-silver-100 mb-6 leading-relaxed text-sm">
                     Depósito bancario con un 9 % de rentabilidad anual, mediante préstamo participativo y 
                     cesión de la pignoración al cliente depositante
                   </p>
                   
                   <div className="flex items-center justify-between mb-6">
-                    <div className="flex items-center space-x-4">
-                      <div>
-                        <p className="text-3xl font-bold text-green-500">9.00%</p>
-                        <p className="text-silver-100 text-sm">Rentabilidad anual</p>
-                      </div>
-                      <Badge className="bg-orange-500 text-white">No renovable</Badge>
+                    <div>
+                      <p className="text-2xl font-bold text-green-500">9.00%</p>
+                      <p className="text-silver-100 text-xs">Rentabilidad anual</p>
                     </div>
+                    <Badge className="bg-orange-500 text-white">No renovable</Badge>
                   </div>
                   
-                  <Button className="bg-green-600 hover:bg-green-700 text-white w-full py-3">
+                  <Button className="bg-green-600 hover:bg-green-700 text-white w-full py-2">
+                    VER DETALLES
+                  </Button>
+                </CardContent>
+              </Card>
+
+              {/* Product Card 2 - Placeholder */}
+              <Card className="bg-[#040505] border-silver-500/20">
+                <CardContent className="p-6">
+                  <div className="flex items-center gap-3 mb-4">
+                    <h2 className="text-xl font-bold text-white">Plazo fijo 7% 180 días</h2>
+                    <Badge className="bg-blue-500 text-white">180 días</Badge>
+                  </div>
+                  
+                  <p className="text-silver-100 mb-6 leading-relaxed text-sm">
+                    Depósito bancario con un 7 % de rentabilidad anual, mediante préstamo participativo y 
+                    cesión de la pignoración al cliente depositante
+                  </p>
+                  
+                  <div className="flex items-center justify-between mb-6">
+                    <div>
+                      <p className="text-2xl font-bold text-green-500">7.00%</p>
+                      <p className="text-silver-100 text-xs">Rentabilidad anual</p>
+                    </div>
+                    <Badge className="bg-orange-500 text-white">No renovable</Badge>
+                  </div>
+                  
+                  <Button className="bg-green-600 hover:bg-green-700 text-white w-full py-2">
+                    VER DETALLES
+                  </Button>
+                </CardContent>
+              </Card>
+
+              {/* Product Card 3 - Placeholder */}
+              <Card className="bg-[#040505] border-silver-500/20">
+                <CardContent className="p-6">
+                  <div className="flex items-center gap-3 mb-4">
+                    <h2 className="text-xl font-bold text-white">Plazo fijo 5% 90 días</h2>
+                    <Badge className="bg-blue-500 text-white">90 días</Badge>
+                  </div>
+                  
+                  <p className="text-silver-100 mb-6 leading-relaxed text-sm">
+                    Depósito bancario con un 5 % de rentabilidad anual, mediante préstamo participativo y 
+                    cesión de la pignoración al cliente depositante
+                  </p>
+                  
+                  <div className="flex items-center justify-between mb-6">
+                    <div>
+                      <p className="text-2xl font-bold text-green-500">5.00%</p>
+                      <p className="text-silver-100 text-xs">Rentabilidad anual</p>
+                    </div>
+                    <Badge className="bg-orange-500 text-white">No renovable</Badge>
+                  </div>
+                  
+                  <Button className="bg-green-600 hover:bg-green-700 text-white w-full py-2">
                     VER DETALLES
                   </Button>
                 </CardContent>
