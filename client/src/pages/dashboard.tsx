@@ -527,56 +527,63 @@ export default function Dashboard() {
 
                 <h1 className="text-3xl font-bold text-white mb-8">Vista Detallada del Producto</h1>
 
-                {/* Section 1: Product Information */}
-                <Card className="bg-[#040505] border-silver-500/20 mb-8">
-                  <CardContent className="p-8">
-                    <div className="flex items-center gap-4 mb-6">
-                      <h2 className="text-2xl font-bold text-white">Plazo fijo 9% 365 días</h2>
-                      <Badge className="bg-green-500 text-white text-lg px-4 py-2">9.00% interés</Badge>
-                    </div>
-                    
-                    <p className="text-silver-100 mb-6 leading-relaxed">
-                      Depósito bancario con un 9% de rentabilidad anual, mediante préstamo participativo y 
-                      cesión de la pignoración al cliente depositante
-                    </p>
-                    
-                    <div className="grid grid-cols-2 gap-6 mb-6">
-                      <div>
-                        <p className="text-silver-100 text-sm">Plazo</p>
-                        <p className="text-white font-semibold text-lg">365 días</p>
-                      </div>
-                      <div>
-                        <p className="text-silver-100 text-sm">Renovación</p>
-                        <div className="flex items-center gap-2">
-                          <p className="text-white font-semibold text-lg">Auto-renovable</p>
-                          <Badge className="bg-green-500 text-white">Automático</Badge>
+                {/* Main Product Information and Simulator Grid */}
+                <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-8">
+                  {/* Section 1: Product Information */}
+                  <div className="lg:col-span-2">
+                    <Card className="bg-[#040505] border-silver-500/20 h-full">
+                      <CardContent className="p-8">
+                        <div className="flex items-center gap-4 mb-6">
+                          <h2 className="text-2xl font-bold text-white">Plazo fijo 9% 365 días</h2>
+                          <Badge className="bg-green-500 text-white text-lg px-4 py-2">9.00% interés</Badge>
                         </div>
-                      </div>
-                    </div>
-                    
-                    <div className="bg-green-50 border border-green-200 rounded-lg p-4 mb-6">
-                      <p className="text-green-800 font-medium">
-                        ¿Listo para invertir? Haz clic en el botón para contratar este producto
-                      </p>
-                    </div>
-                    
-                    <Button className="bg-green-600 hover:bg-green-700 text-white px-8 py-3 text-lg">
-                      CONTRATAR AHORA
-                    </Button>
-                  </CardContent>
-                </Card>
+                        
+                        <p className="text-silver-100 mb-6 leading-relaxed">
+                          Depósito bancario con un 9% de rentabilidad anual, mediante préstamo participativo y 
+                          cesión de la pignoración al cliente depositante
+                        </p>
+                        
+                        <div className="grid grid-cols-2 gap-6 mb-6">
+                          <div>
+                            <p className="text-silver-100 text-sm">Plazo</p>
+                            <p className="text-white font-semibold text-lg">365 días</p>
+                          </div>
+                          <div>
+                            <p className="text-silver-100 text-sm">Renovación</p>
+                            <div className="flex items-center gap-2">
+                              <p className="text-white font-semibold text-lg">Auto-renovable</p>
+                              <Badge className="bg-green-500 text-white">Automático</Badge>
+                            </div>
+                          </div>
+                        </div>
+                        
+                        <div className="bg-green-50 border border-green-200 rounded-lg p-4 mb-6">
+                          <p className="text-green-800 font-medium">
+                            ¿Listo para invertir? Haz clic en el botón para contratar este producto
+                          </p>
+                        </div>
+                        
+                        <Button className="bg-green-600 hover:bg-green-700 text-white px-8 py-3 text-lg w-full">
+                          CONTRATAR AHORA
+                        </Button>
+                      </CardContent>
+                    </Card>
+                  </div>
 
-                {/* Section 2: Investment Simulator */}
-                <Card className="bg-[#040505] border-silver-500/20 mb-8">
-                  <CardContent className="p-8">
-                    <h3 className="text-2xl font-bold text-white mb-6">Simulador de Inversión</h3>
-                    <p className="text-silver-100 mb-6">Con una inversión de $10,000 podrías ganar:</p>
-                    <div className="text-center">
-                      <p className="text-4xl font-bold text-green-500">$900.00</p>
-                      <p className="text-silver-100 text-lg">en 365 días</p>
-                    </div>
-                  </CardContent>
-                </Card>
+                  {/* Section 2: Investment Simulator */}
+                  <div className="lg:col-span-1">
+                    <Card className="bg-[#040505] border-silver-500/20 h-full">
+                      <CardContent className="p-6">
+                        <h3 className="text-xl font-bold text-white mb-4">Simulador de Inversión</h3>
+                        <p className="text-silver-100 mb-4 text-sm">Con una inversión de $10,000 podrías ganar:</p>
+                        <div className="text-center">
+                          <p className="text-3xl font-bold text-green-500">$900.00</p>
+                          <p className="text-silver-100">en 365 días</p>
+                        </div>
+                      </CardContent>
+                    </Card>
+                  </div>
+                </div>
 
                 {/* Section 3: User Contracts */}
                 <Card className="bg-[#040505] border-silver-500/20">
