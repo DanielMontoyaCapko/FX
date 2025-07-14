@@ -61,48 +61,48 @@ export default function Calculator() {
       // Results section
       doc.setFont("helvetica", "bold");
       doc.setFontSize(14);
-      doc.text("RESULTADOS DE LA SIMULACIÓN", 20, 160);
+      doc.text("RESULTADOS DE LA SIMULACIÓN", 20, 150);
       
       // Results box
       doc.setFillColor(240, 248, 255); // Light blue background
-      doc.rect(20, 170, 170, 50, 'F');
+      doc.rect(20, 155, 170, 45, 'F');
       doc.setDrawColor(0, 31, 63);
-      doc.rect(20, 170, 170, 50, 'S');
+      doc.rect(20, 155, 170, 45, 'S');
       
       doc.setFont("helvetica", "normal");
       doc.setFontSize(11);
-      doc.text(`Capital inicial:`, 25, 185);
-      doc.text(`€${results.initialAmount.toLocaleString()}`, 140, 185);
+      doc.text(`Capital inicial:`, 25, 168);
+      doc.text(`€${results.initialAmount.toLocaleString()}`, 140, 168);
       
-      doc.text(`Intereses generados:`, 25, 200);
+      doc.text(`Intereses generados:`, 25, 182);
       doc.setTextColor(0, 128, 0); // Green for earnings
-      doc.text(`+€${results.interestGenerated.toLocaleString()}`, 140, 200);
+      doc.text(`+€${results.interestGenerated.toLocaleString()}`, 140, 182);
       
       doc.setTextColor(0, 0, 0);
       doc.setFont("helvetica", "bold");
-      doc.text(`Capital final:`, 25, 215);
+      doc.text(`Capital final:`, 25, 196);
       doc.setTextColor(0, 31, 63);
       doc.setFontSize(12);
-      doc.text(`€${results.finalAmount.toLocaleString()}`, 140, 215);
+      doc.text(`€${results.finalAmount.toLocaleString()}`, 140, 196);
       
       // Product information
       doc.setTextColor(0, 0, 0);
       doc.setFont("helvetica", "bold");
       doc.setFontSize(14);
-      doc.text("CARACTERÍSTICAS DEL PRODUCTO", 20, 240);
+      doc.text("CARACTERÍSTICAS DEL PRODUCTO", 20, 215);
       
       doc.setFont("helvetica", "normal");
       doc.setFontSize(10);
-      doc.text("• Depósito bancario con rentabilidad fija del 9% anual", 25, 255);
-      doc.text("• Capital protegido mediante contrato bancario", 25, 267);
-      doc.text("• Renovación automática al vencimiento", 25, 279);
-      doc.text("• Sin comisiones de apertura ni mantenimiento", 25, 291);
+      doc.text("• Depósito bancario con rentabilidad fija del 9% anual", 25, 230);
+      doc.text("• Capital protegido mediante contrato bancario", 25, 242);
+      doc.text("• Renovación automática al vencimiento", 25, 254);
+      doc.text("• Sin comisiones de apertura ni mantenimiento", 25, 266);
       
       // Footer
       doc.setFontSize(8);
       doc.setTextColor(128, 128, 128);
-      doc.text("Esta simulación es orientativa. Rentabilidades pasadas no garantizan rentabilidades futuras.", 20, 320);
-      doc.text("FundedXam Capital - Soluciones de inversión profesionales", 20, 330);
+      doc.text("Esta simulación es orientativa. Rentabilidades pasadas no garantizan rentabilidades futuras.", 20, 290);
+      doc.text("FundedXam Capital - Soluciones de inversión profesionales", 20, 300);
       
       // Generate filename with timestamp
       const filename = `simulacion-inversion-${Date.now()}.pdf`;
