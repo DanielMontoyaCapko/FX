@@ -5,6 +5,7 @@ export default function VideoBackground() {
     <div className="fixed inset-0 z-0 overflow-hidden">
       <video 
         autoPlay 
+        loop
         muted 
         playsInline
         preload="metadata"
