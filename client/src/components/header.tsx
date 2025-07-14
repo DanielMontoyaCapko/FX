@@ -3,7 +3,7 @@ import { Link, useLocation } from "wouter";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { Menu } from "lucide-react";
-import logoSvg from "@/assets/logo.svg";
+import logoImg from "@/assets/Logo_1752484666419.jpg";
 
 export default function Header() {
   const [isOpen, setIsOpen] = useState(false);
@@ -27,7 +27,7 @@ export default function Header() {
       <nav className="container mx-auto px-6 py-4 flex items-center justify-between">
         <Link href="/">
           <div className="flex items-center space-x-2 cursor-pointer">
-            <img src={logoSvg} alt="FundedXam Capital" className="w-10 h-10" />
+            <img src={logoImg} alt="FundedXam Capital" className="w-10 h-10 rounded" />
             <span className="font-playfair text-xl font-semibold text-white">FundedXam Capital</span>
           </div>
         </Link>

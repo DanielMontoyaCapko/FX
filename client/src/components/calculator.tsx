@@ -8,6 +8,7 @@ import { Download } from "lucide-react";
 import { useCalculator } from "@/hooks/use-calculator";
 import { useToast } from "@/hooks/use-toast";
 import jsPDF from "jspdf";
+import logoImg from "@/assets/Logo_1752484666419.jpg";
 
 export default function Calculator() {
   const { state, updateAmount, updateYears, updateCompoundInterest, calculateResults } = useCalculator();
