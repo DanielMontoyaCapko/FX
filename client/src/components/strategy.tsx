@@ -47,7 +47,7 @@ export default function Strategy() {
           {strategies.map((strategy, index) => (
             <div 
               key={index} 
-              className={`bg-black/30 p-8 rounded-xl border border-silver-500/20 ${strategy.colSpan ? 'md:col-span-2' : ''}`}
+              className={`bg-black/70 p-8 rounded-xl border border-silver-500/20 ${strategy.colSpan ? 'md:col-span-2' : ''}`}
             >
               <div className="flex items-start space-x-4">
                 <div className="w-12 h-12 bg-gold/20 rounded-lg flex items-center justify-center flex-shrink-0">

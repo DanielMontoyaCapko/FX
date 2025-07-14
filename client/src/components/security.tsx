@@ -49,7 +49,7 @@ export default function Security() {
         
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 max-w-6xl mx-auto">
           {features.map((feature, index) => (
-            <div key={index} className="bg-black/50 p-8 rounded-xl border border-silver-500/20">
+            <div key={index} className="bg-black/70 p-8 rounded-xl border border-silver-500/20">
               <div className="w-16 h-16 bg-gold/20 rounded-lg flex items-center justify-center mb-6">
                 <feature.icon className="text-2xl text-gold w-8 h-8" />
               </div>

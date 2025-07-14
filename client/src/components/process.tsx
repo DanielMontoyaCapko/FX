@@ -69,7 +69,7 @@ export default function Process() {
         
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 max-w-6xl mx-auto">
           {/* Direct Process */}
-          <div className="bg-black/50 p-8 rounded-xl border border-silver-500/20">
+          <div className="bg-black/70 p-8 rounded-xl border border-silver-500/20">
             <h3 className="font-playfair text-2xl font-bold text-white mb-8 text-center">Si llegas directamente</h3>
             
             <div className="space-y-6">
@@ -96,7 +96,7 @@ export default function Process() {
           </div>
           
           {/* Advisor Process */}
-          <div className="bg-black/50 p-8 rounded-xl border border-silver-500/20">
+          <div className="bg-black/70 p-8 rounded-xl border border-silver-500/20">
             <h3 className="font-playfair text-2xl font-bold text-white mb-8 text-center">Si vienes recomendado por un asesor</h3>
             
             <div className="space-y-6">

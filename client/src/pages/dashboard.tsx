@@ -227,7 +227,7 @@ export default function Dashboard() {
                           id="email"
                           defaultValue="test@test.com"
                           disabled
-                          className="bg-black/30 border-silver-500/20 text-silver-300 cursor-not-allowed"
+                          className="bg-black/70 border-silver-500/20 text-silver-300 cursor-not-allowed"
                         />
                       </div>
                       
@@ -279,7 +279,7 @@ export default function Dashboard() {
                   </TabsContent>
                   
                   <TabsContent value="kyc" className="mt-6">
-                    <div className="bg-black/30 rounded-lg p-8 text-center">
+                    <div className="bg-black/70 rounded-lg p-8 text-center">
                       <div className="flex items-center justify-center mb-6">
                         <div className="bg-green-500/20 rounded-full p-3 mr-4">
                           <User className="h-8 w-8 text-green-500" />
@@ -315,7 +315,7 @@ export default function Dashboard() {
                       
                       <TabsContent value="activos" className="mt-6">
                         <div className="space-y-4">
-                          <div className="bg-black/30 rounded-lg p-6">
+                          <div className="bg-black/70 rounded-lg p-6">
                             <div className="flex items-start justify-between mb-4">
                               <div>
                                 <h4 className="text-lg font-semibold text-white">Fondo de Inversión Verde Europa</h4>
@@ -337,7 +337,7 @@ export default function Dashboard() {
                             </div>
                           </div>
                           
-                          <div className="bg-black/30 rounded-lg p-6">
+                          <div className="bg-black/70 rounded-lg p-6">
                             <div className="flex items-start justify-between mb-4">
                               <div>
                                 <h4 className="text-lg font-semibold text-white">Plan Ahorro Flexible Plus</h4>
@@ -363,7 +363,7 @@ export default function Dashboard() {
                       
                       <TabsContent value="completados" className="mt-6">
                         <div className="space-y-4">
-                          <div className="bg-black/30 rounded-lg p-6">
+                          <div className="bg-black/70 rounded-lg p-6">
                             <div className="flex items-start justify-between mb-4">
                               <div>
                                 <h4 className="text-lg font-semibold text-white">Bono Corporativo Energía Solar</h4>
@@ -389,7 +389,7 @@ export default function Dashboard() {
                             </div>
                           </div>
                           
-                          <div className="bg-black/30 rounded-lg p-6">
+                          <div className="bg-black/70 rounded-lg p-6">
                             <div className="flex items-start justify-between mb-4">
                               <div>
                                 <h4 className="text-lg font-semibold text-white">Fondo Tecnología Asia</h4>
@@ -419,7 +419,7 @@ export default function Dashboard() {
                       
                       <TabsContent value="cancelados" className="mt-6">
                         <div className="space-y-4">
-                          <div className="bg-black/30 rounded-lg p-6">
+                          <div className="bg-black/70 rounded-lg p-6">
                             <div className="flex items-start justify-between mb-4">
                               <div>
                                 <h4 className="text-lg font-semibold text-white">Fondo Startups LatAm</h4>
@@ -441,7 +441,7 @@ export default function Dashboard() {
                             </div>
                           </div>
                           
-                          <div className="bg-black/30 rounded-lg p-6">
+                          <div className="bg-black/70 rounded-lg p-6">
                             <div className="flex items-start justify-between mb-4">
                               <div>
                                 <h4 className="text-lg font-semibold text-white">Plan de Ahorro Salud</h4>
@@ -483,7 +483,7 @@ export default function Dashboard() {
                         </Select>
                       </div>
                       
-                      <div className="bg-black/30 rounded-lg overflow-hidden">
+                      <div className="bg-black/70 rounded-lg overflow-hidden">
                         <table className="w-full">
                           <thead className="bg-black/50">
                             <tr>
@@ -592,7 +592,7 @@ export default function Dashboard() {
                   <CardContent className="p-8">
                     <h3 className="text-2xl font-bold text-white mb-6">Tus Contratos en este Producto</h3>
                     
-                    <div className="bg-black/30 rounded-lg overflow-hidden">
+                    <div className="bg-black/70 rounded-lg overflow-hidden">
                       <table className="w-full">
                         <thead className="bg-black/50">
                           <tr>
@@ -640,7 +640,7 @@ export default function Dashboard() {
                     backgroundPosition: 'center'
                   }}
                 >
-                  <div className="absolute inset-0 bg-black/40 flex items-center justify-center">
+                  <div className="absolute inset-0 bg-black/70 flex items-center justify-center">
                     <div className="text-center text-white">
                       <h1 className="text-4xl font-bold mb-2">Prueba</h1>
                       <p className="text-xl">Anuncio de prueba</p>
@@ -791,7 +791,7 @@ export default function Dashboard() {
                 <CardContent>
                   <div className="space-y-4">
                     {recentLeads.map((lead, index) => (
-                      <div key={index} className="flex items-center justify-between p-3 bg-black/30 rounded-lg">
+                      <div key={index} className="flex items-center justify-between p-3 bg-black/70 rounded-lg">
                         <div className="flex items-center space-x-3">
                           <div className="w-10 h-10 bg-[#344e41] rounded-full flex items-center justify-center">
                             <span className="text-white font-semibold text-sm">
@@ -828,7 +828,7 @@ export default function Dashboard() {
                 <CardContent>
                   <div className="space-y-4">
                     {recentActivity.map((activity, index) => (
-                      <div key={index} className="flex items-center space-x-3 p-3 bg-black/30 rounded-lg">
+                      <div key={index} className="flex items-center space-x-3 p-3 bg-black/70 rounded-lg">
                         <div className="w-8 h-8 bg-[#344e41] rounded-full flex items-center justify-center">
                           {activity.type === "lead" && <Plus className="h-4 w-4 text-white" />}
                           {activity.type === "simulation" && <Calculator className="h-4 w-4 text-white" />}
@@ -875,7 +875,7 @@ export default function Dashboard() {
                   </div>
 
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-                    <div className="bg-black/30 p-6 rounded-lg text-center">
+                    <div className="bg-black/70 p-6 rounded-lg text-center">
                       <div className="w-12 h-12 bg-[#387b46] rounded-full flex items-center justify-center mx-auto mb-4">
                         <TrendingUp className="h-6 w-6 text-white" />
                       </div>
@@ -884,7 +884,7 @@ export default function Dashboard() {
                       <p className="text-silver-100 text-sm">Retorno fijo y predecible</p>
                     </div>
 
-                    <div className="bg-black/30 p-6 rounded-lg text-center">
+                    <div className="bg-black/70 p-6 rounded-lg text-center">
                       <div className="w-12 h-12 bg-[#387b46] rounded-full flex items-center justify-center mx-auto mb-4">
                         <TrendingUp className="h-6 w-6 text-white" />
                       </div>
@@ -893,7 +893,7 @@ export default function Dashboard() {
                       <p className="text-silver-100 text-sm">Garantía bancaria completa</p>
                     </div>
 
-                    <div className="bg-black/30 p-6 rounded-lg text-center">
+                    <div className="bg-black/70 p-6 rounded-lg text-center">
                       <div className="w-12 h-12 bg-[#387b46] rounded-full flex items-center justify-center mx-auto mb-4">
                         <Calendar className="h-6 w-6 text-white" />
                       </div>

@@ -20,7 +20,7 @@ export default function Story() {
             </h2>
           </div>
           
-          <div className="bg-black/50 rounded-2xl border border-silver-500/20 p-8 mb-8">
+          <div className="bg-black/70 rounded-2xl border border-silver-500/20 p-8 mb-8">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
               <div>
                 <h3 className="font-playfair text-2xl font-bold text-white mb-4">

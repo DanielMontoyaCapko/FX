@@ -29,7 +29,7 @@ export default function Contacto() {
           <div className="container mx-auto px-6">
             <div className="max-w-4xl mx-auto">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
-                <div className="bg-black/50 p-8 rounded-xl border border-silver-500/20">
+                <div className="bg-black/70 p-8 rounded-xl border border-silver-500/20">
                   <h2 className="font-playfair text-3xl font-bold text-white mb-6">Información de Contacto</h2>
                   
                   <div className="space-y-4">
@@ -55,7 +55,7 @@ export default function Contacto() {
                   </div>
                 </div>
                 
-                <div className="bg-black/50 p-8 rounded-xl border border-silver-500/20">
+                <div className="bg-black/70 p-8 rounded-xl border border-silver-500/20">
                   <h2 className="font-playfair text-3xl font-bold text-white mb-6">Oficinas</h2>
                   
                   <div className="space-y-6">

@@ -141,7 +141,7 @@ export default function Calculator() {
           </h2>
         </div>
         
-        <div className="max-w-4xl mx-auto bg-black/50 rounded-2xl border border-silver-500/20 p-8">
+        <div className="max-w-4xl mx-auto bg-black/70 rounded-2xl border border-silver-500/20 p-8">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
             <div>
               <Label className="block text-white font-semibold mb-3">Cantidad a Invertir (€)</Label>

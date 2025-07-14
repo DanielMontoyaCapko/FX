@@ -43,7 +43,7 @@ export default function Comparison() {
         </div>
         
         <div className="max-w-4xl mx-auto overflow-x-auto">
-          <table className="w-full bg-black/50 rounded-xl border border-silver-500/20">
+          <table className="w-full bg-black/70 rounded-xl border border-silver-500/20">
             <thead>
               <tr className="border-b border-silver-500/30">
                 <th className="text-left p-6 text-white font-playfair text-xl">Producto</th>

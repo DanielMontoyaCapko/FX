@@ -56,7 +56,7 @@ export default function Advisors() {
           </div>
           
           {/* Testimonial */}
-          <div className="bg-black/50 rounded-2xl border border-silver-500/20 p-8 mb-8">
+          <div className="bg-black/70 rounded-2xl border border-silver-500/20 p-8 mb-8">
             <div className="flex flex-col md:flex-row items-center space-y-6 md:space-y-0 md:space-x-8">
               <div className="w-24 h-24 bg-gold/20 rounded-full flex items-center justify-center flex-shrink-0">
                 <Users className="text-3xl text-gold w-12 h-12" />

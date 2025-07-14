@@ -92,7 +92,7 @@ export default function Login() {
                     placeholder="Ingresa tu usuario"
                     value={formData.username}
                     onChange={(e) => setFormData({ ...formData, username: e.target.value })}
-                    className="pl-10 bg-black/30 border-silver-500/20 text-white placeholder-silver-100"
+                    className="pl-10 bg-black/70 border-silver-500/20 text-white placeholder-silver-100"
                   />
                 </div>
               </div>
@@ -107,7 +107,7 @@ export default function Login() {
                     placeholder="Ingresa tu contraseña"
                     value={formData.password}
                     onChange={(e) => setFormData({ ...formData, password: e.target.value })}
-                    className="pl-10 pr-10 bg-black/30 border-silver-500/20 text-white placeholder-silver-100"
+                    className="pl-10 pr-10 bg-black/70 border-silver-500/20 text-white placeholder-silver-100"
                   />
                   <button
                     type="button"
@@ -128,7 +128,7 @@ export default function Login() {
             </form>
 
             {/* Demo credentials */}
-            <div className="mt-6 p-4 bg-black/30 rounded-lg border border-silver-500/10">
+            <div className="mt-6 p-4 bg-black/70 rounded-lg border border-silver-500/10">
               <p className="text-xs text-silver-100 text-center">
                 <strong>Para demo:</strong><br />
                 Usuario: <code className="text-gold">asesor</code> | 
