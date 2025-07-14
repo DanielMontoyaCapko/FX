@@ -4,16 +4,20 @@ import Security from "@/components/security";
 import Downloads from "@/components/downloads";
 import FinalCTA from "@/components/final-cta";
 import Footer from "@/components/footer";
+import VideoBackground from "@/components/video-background";
 
 export default function Home() {
   return (
-    <div className="min-h-screen bg-gradient-to-br from-black via-gray-900 to-gray-600 text-white">
-      <Header />
-      <Hero />
-      <Security />
-      <Downloads />
-      <FinalCTA />
-      <Footer />
+    <div className="min-h-screen text-white relative">
+      <VideoBackground />
+      <div className="relative z-10">
+        <Header />
+        <Hero />
+        <Security />
+        <Downloads />
+        <FinalCTA />
+        <Footer />
+      </div>
     </div>
   );
 }

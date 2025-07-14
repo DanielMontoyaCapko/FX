@@ -1,12 +1,15 @@
 import Header from "@/components/header";
 import Calculator from "@/components/calculator";
 import Footer from "@/components/footer";
+import VideoBackground from "@/components/video-background";
 
 export default function Calculadora() {
   return (
-    <div className="min-h-screen bg-gradient-to-br from-black via-gray-900 to-gray-600 text-white">
-      <Header />
-      <main className="pt-20">
+    <div className="min-h-screen text-white relative">
+      <VideoBackground />
+      <div className="relative z-10">
+        <Header />
+        <main className="pt-20">
         <section className="py-10 bg-transparent">
           <div className="container mx-auto px-6">
             <div className="text-center mb-16">
@@ -59,6 +62,7 @@ export default function Calculadora() {
         </section>
       </main>
       <Footer />
+      </div>
     </div>
   );
 }

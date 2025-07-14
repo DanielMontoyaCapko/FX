@@ -96,6 +96,11 @@ Preferred communication style: Simple, everyday language.
 ## Changelog
 
 Changelog:
+- July 14, 2025. Implemented video background across all public pages (excludes advisor/login pages)
+- July 14, 2025. Updated logo to new "NP" PNG version with transparent background
+- July 14, 2025. Created VideoBackground component for consistent video display
+- July 14, 2025. Made video static (no loop) as requested by user
+- July 14, 2025. Optimized PDF generation with improved spacing and logo integration
 - July 09, 2025. Added comprehensive "Asesor Financiero" value proposition section to advisor dashboard
 - July 09, 2025. Updated advisor portal design with gradient backgrounds and #040505 colored boxes
 - July 09, 2025. Changed branding from "Nakama & Partners" to "FundedXam Capital"
