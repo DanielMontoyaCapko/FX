@@ -6,48 +6,129 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Slider } from "@/components/ui/slider";
 import { Download } from "lucide-react";
 import { useCalculator } from "@/hooks/use-calculator";
-import { useMutation } from "@tanstack/react-query";
-import { apiRequest } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
+import jsPDF from "jspdf";
 
 export default function Calculator() {
   const { state, updateAmount, updateYears, updateCompoundInterest, calculateResults } = useCalculator();
   const { toast } = useToast();
+  const [isGeneratingPDF, setIsGeneratingPDF] = useState(false);
   
   const results = calculateResults();
 
-  const generatePDFMutation = useMutation({
-    mutationFn: async (data: any) => {
-      const response = await apiRequest("POST", "/api/generate-pdf", data);
-      return response.json();
-    },
-    onSuccess: (data) => {
-      if (data.success) {
-        toast({
-          title: "PDF generado",
-          description: "Su simulación personalizada está lista para descargar."
-        });
-        // In a real implementation, you would trigger the download here
-        console.log("PDF generated:", data.pdf);
-      }
-    },
-    onError: () => {
+  const generatePDF = () => {
+    setIsGeneratingPDF(true);
+    
+    try {
+      const doc = new jsPDF();
+      
+      // Configure fonts and colors
+      doc.setFont("helvetica", "bold");
+      doc.setFontSize(20);
+      doc.setTextColor(0, 31, 63); // Navy blue
+      
+      // Header
+      doc.text("FUNDEDXAM CAPITAL", 20, 30);
+      doc.setFontSize(16);
+      doc.setTextColor(218, 165, 32); // Gold
+      doc.text("Simulación de Inversión", 20, 45);
+      
+      // Separator line
+      doc.setDrawColor(0, 31, 63);
+      doc.setLineWidth(0.5);
+      doc.line(20, 50, 190, 50);
+      
+      // Investment details
+      doc.setFont("helvetica", "normal");
+      doc.setFontSize(12);
+      doc.setTextColor(0, 0, 0);
+      
+      const currentDate = new Date().toLocaleDateString('es-ES');
+      doc.text(`Fecha de simulación: ${currentDate}`, 20, 65);
+      
+      // Investment parameters
+      doc.setFont("helvetica", "bold");
+      doc.setFontSize(14);
+      doc.text("PARÁMETROS DE INVERSIÓN", 20, 85);
+      
+      doc.setFont("helvetica", "normal");
+      doc.setFontSize(11);
+      doc.text(`• Capital inicial: €${state.amount.toLocaleString()}`, 25, 100);
+      doc.text(`• Plazo de inversión: ${state.years} ${state.years === 1 ? 'año' : 'años'}`, 25, 112);
+      doc.text(`• Tasa de interés: 9% anual fijo`, 25, 124);
+      doc.text(`• Tipo de interés: ${state.compoundInterest ? 'Compuesto' : 'Simple'}`, 25, 136);
+      
+      // Results section
+      doc.setFont("helvetica", "bold");
+      doc.setFontSize(14);
+      doc.text("RESULTADOS DE LA SIMULACIÓN", 20, 160);
+      
+      // Results box
+      doc.setFillColor(240, 248, 255); // Light blue background
+      doc.rect(20, 170, 170, 50, 'F');
+      doc.setDrawColor(0, 31, 63);
+      doc.rect(20, 170, 170, 50, 'S');
+      
+      doc.setFont("helvetica", "normal");
+      doc.setFontSize(11);
+      doc.text(`Capital inicial:`, 25, 185);
+      doc.text(`€${results.initialAmount.toLocaleString()}`, 140, 185);
+      
+      doc.text(`Intereses generados:`, 25, 200);
+      doc.setTextColor(0, 128, 0); // Green for earnings
+      doc.text(`+€${results.interestGenerated.toLocaleString()}`, 140, 200);
+      
+      doc.setTextColor(0, 0, 0);
+      doc.setFont("helvetica", "bold");
+      doc.text(`Capital final:`, 25, 215);
+      doc.setTextColor(0, 31, 63);
+      doc.setFontSize(12);
+      doc.text(`€${results.finalAmount.toLocaleString()}`, 140, 215);
+      
+      // Product information
+      doc.setTextColor(0, 0, 0);
+      doc.setFont("helvetica", "bold");
+      doc.setFontSize(14);
+      doc.text("CARACTERÍSTICAS DEL PRODUCTO", 20, 240);
+      
+      doc.setFont("helvetica", "normal");
+      doc.setFontSize(10);
+      doc.text("• Depósito bancario con rentabilidad fija del 9% anual", 25, 255);
+      doc.text("• Capital protegido mediante contrato bancario", 25, 267);
+      doc.text("• Renovación automática al vencimiento", 25, 279);
+      doc.text("• Sin comisiones de apertura ni mantenimiento", 25, 291);
+      
+      // Footer
+      doc.setFontSize(8);
+      doc.setTextColor(128, 128, 128);
+      doc.text("Esta simulación es orientativa. Rentabilidades pasadas no garantizan rentabilidades futuras.", 20, 320);
+      doc.text("FundedXam Capital - Soluciones de inversión profesionales", 20, 330);
+      
+      // Generate filename with timestamp
+      const filename = `simulacion-inversion-${Date.now()}.pdf`;
+      
+      // Save the PDF
+      doc.save(filename);
+      
+      toast({
+        title: "PDF descargado",
+        description: "Su simulación personalizada se ha descargado correctamente."
+      });
+      
+    } catch (error) {
+      console.error("Error generating PDF:", error);
       toast({
         title: "Error",
         description: "No se pudo generar el PDF. Inténtelo de nuevo.",
         variant: "destructive"
       });
+    } finally {
+      setIsGeneratingPDF(false);
     }
-  });
+  };
 
   const handleDownloadPDF = () => {
-    generatePDFMutation.mutate({
-      amount: state.amount,
-      years: state.years,
-      compoundInterest: state.compoundInterest,
-      finalAmount: results.finalAmount,
-      interestGenerated: results.interestGenerated
-    });
+    generatePDF();
   };
 
   return (
@@ -122,11 +203,11 @@ export default function Calculator() {
               
               <Button 
                 onClick={handleDownloadPDF}
-                disabled={generatePDFMutation.isPending}
+                disabled={isGeneratingPDF}
                 className="w-full mt-6 gradient-navy text-white hover:opacity-90"
               >
                 <Download className="mr-2 h-4 w-4" />
-                {generatePDFMutation.isPending ? "Generando..." : "Descargar simulación en PDF"}
+                {isGeneratingPDF ? "Generando..." : "Descargar simulación en PDF"}
               </Button>
             </div>
           </div>
