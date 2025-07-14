@@ -24,6 +24,7 @@ import {
   ArrowLeft
 } from "lucide-react";
 import logoSvg from "@/assets/logo.svg";
+import logoImg from "@/assets/Logo-removeBG_1752488347081.png";
 import landscapeSvg from "@/assets/landscape.svg";
 
 export default function Dashboard() {
@@ -117,9 +118,9 @@ export default function Dashboard() {
       {/* Sidebar */}
       <div className="w-64 bg-[#040505] border-r border-silver-500/20 p-6 flex flex-col fixed h-full">
         <div className="flex items-center space-x-3 mb-8">
-          <img src={logoSvg} alt="Logo" className="w-8 h-8" />
+          <img src={logoImg} alt="Nakama&Partners" className="w-8 h-8" />
           <div>
-            <h1 className="font-playfair text-lg font-bold text-white">FundedXam Capital</h1>
+            <h1 className="font-cormorant text-lg font-bold text-white">Nakama&Partners</h1>
             <p className="text-gold text-xs">Portal de Asesores</p>
           </div>
         </div>
