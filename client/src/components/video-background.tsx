@@ -8,16 +8,13 @@ export default function VideoBackground() {
         muted 
         playsInline
         preload="metadata"
-        className="absolute inset-0 w-4/5 h-4/5 object-cover mx-auto my-auto"
-        style={{ 
-          filter: 'brightness(0.6)',
-          transform: 'translate(10%, 10%)'
-        }}
+        className="absolute inset-0 w-full h-full object-cover"
+        style={{ filter: 'brightness(0.6)' }}
       >
         <source src={videoBackground} type="video/mp4" />
         Your browser does not support the video tag.
       </video>
-      <div className="absolute inset-0 bg-black/50"></div>
+      <div className="absolute inset-0 bg-black/40"></div>
     </div>
   );
 }
