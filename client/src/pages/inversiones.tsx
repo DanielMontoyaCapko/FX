@@ -11,7 +11,7 @@ export default function Inversiones() {
       <VideoBackground />
       <div className="relative z-10">
         <Header />
-        <main className="pt-20">
+        <main className="pt-32">
         <section className="py-6 bg-transparent">
           <div className="container mx-auto px-6">
             <div className="text-center mb-8">
