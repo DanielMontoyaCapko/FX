@@ -27,7 +27,7 @@ export default function Story() {
                   "Esto nació para proteger nuestro propio patrimonio familiar."
                 </h3>
                 <p className="text-silver-100 mb-6 leading-relaxed">
-                  Raúl (CEO) y su hijo Xavi crearon FundedXam Capital tras años de ver 
+                  Raúl (CEO) y su hijo Xavi crearon Nakama&Partners tras años de ver 
                   cómo el mercado vendía riesgo disfrazado de oportunidad. Ahora, ofrecen 
                   lo que desearon tener: una estructura blindada que pone la seguridad 
                   del capital por encima de todo.
@@ -44,7 +44,7 @@ export default function Story() {
                 <div className="w-48 h-48 bg-gold/20 rounded-lg mx-auto flex items-center justify-center">
                   <Users className="text-6xl text-gold w-24 h-24" />
                 </div>
-                <p className="text-sm text-silver-100 mt-4">Raúl y Xavi - Fundadores de FundedXam Capital</p>
+                <p className="text-sm text-silver-100 mt-4">Raúl y Xavi - Fundadores de Nakama&Partners</p>
               </div>
             </div>
           </div>

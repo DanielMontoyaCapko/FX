@@ -17,7 +17,7 @@ export default function Nosotros() {
                 Sobre <span className="text-gold">Nosotros</span>
               </h1>
               <p className="text-xl text-silver-100 max-w-3xl mx-auto">
-                Conozca la historia detrás de FundedXam Capital y nuestro compromiso con la protección patrimonial.
+                Conozca la historia detrás de Nakama&Partners y nuestro compromiso con la protección patrimonial.
               </p>
             </div>
           </div>

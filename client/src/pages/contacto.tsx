@@ -35,7 +35,7 @@ export default function Contacto() {
                   <div className="space-y-4">
                     <div>
                       <h3 className="font-semibold text-white mb-2">Email Principal</h3>
-                      <p className="text-silver-100">info@fundedxamcapital.com</p>
+                      <p className="text-silver-100">info@nakamapartners.com</p>
                     </div>
                     
                     <div>
@@ -45,7 +45,7 @@ export default function Contacto() {
                     
                     <div>
                       <h3 className="font-semibold text-white mb-2">Consultas Legales</h3>
-                      <p className="text-silver-100">legal@fundedxamcapital.com</p>
+                      <p className="text-silver-100">legal@nakamapartners.com</p>
                     </div>
                     
                     <div>

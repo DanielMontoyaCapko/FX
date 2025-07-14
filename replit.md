@@ -1,8 +1,8 @@
-# FundedXam Capital - Financial Investment Platform
+# Nakama&Partners - Financial Investment Platform
 
 ## Overview
 
-FundedXam Capital is a financial investment platform offering a 9% fixed annual return with capital protection through bank contracts. The application is built as a modern full-stack web application targeting conservative investors and financial advisors, emphasizing trust, legal structure, and capital protection.
+Nakama&Partners is a financial investment platform offering a 9% fixed annual return with capital protection through bank contracts. The application is built as a modern full-stack web application targeting conservative investors and financial advisors, emphasizing trust, legal structure, and capital protection.
 
 ## System Architecture
 
@@ -11,7 +11,7 @@ FundedXam Capital is a financial investment platform offering a 9% fixed annual 
 - **Build Tool**: Vite for fast development and optimized production builds
 - **UI Library**: Radix UI components with shadcn/ui styling system
 - **Styling**: Tailwind CSS with custom design system
-- **Typography**: Playfair Display for headings, Inter for body text
+- **Typography**: Playfair Display for headings, Cormorant Garamond for branding, Inter for body text
 - **Color Scheme**: Navy blue (#001F3F), warm white backgrounds, gold accents (#DAA520)
 - **State Management**: TanStack Query for server state, React hooks for local state
 - **Routing**: Wouter for lightweight client-side routing
@@ -103,7 +103,7 @@ Changelog:
 - July 14, 2025. Optimized PDF generation with improved spacing and logo integration
 - July 09, 2025. Added comprehensive "Asesor Financiero" value proposition section to advisor dashboard
 - July 09, 2025. Updated advisor portal design with gradient backgrounds and #040505 colored boxes
-- July 09, 2025. Changed branding from "Nakama & Partners" to "FundedXam Capital"
+- July 14, 2025. Changed branding from "FundedXam Capital" to "Nakama&Partners" with Cormorant Garamond typography
 - July 09, 2025. Reorganized content structure for better user experience navigation
 - July 09, 2025. Successfully migrated from Replit Agent to standard Replit environment
 - July 09, 2025. Updated header with translucent background and SVG logo per user request

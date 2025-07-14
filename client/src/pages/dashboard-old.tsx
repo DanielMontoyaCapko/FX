@@ -107,7 +107,7 @@ export default function Dashboard() {
         <div className="flex items-center space-x-3 mb-8">
           <img src={logoSvg} alt="Logo" className="w-8 h-8" />
           <div>
-            <h1 className="font-playfair text-lg font-bold text-white">FundedXam Capital</h1>
+            <h1 className="font-cormorant text-lg font-bold text-white">Nakama&Partners</h1>
             <p className="text-gold text-xs">Portal de Asesores</p>
           </div>
         </div>

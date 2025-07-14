@@ -65,7 +65,7 @@ export default function Login() {
           <div className="flex items-center justify-center space-x-3 mb-4">
             <img src={logoImg} alt="Logo" className="w-12 h-12" />
             <div>
-              <h1 className="font-playfair text-2xl font-bold text-white">FundedXam Capital</h1>
+              <h1 className="font-cormorant text-2xl font-bold text-white">Nakama&Partners</h1>
               <p className="text-gold text-sm">Portal de Asesores</p>
             </div>
           </div>

@@ -27,8 +27,8 @@ export default function Header() {
       <nav className="container mx-auto px-6 py-4 flex items-center justify-between">
         <Link href="/">
           <div className="flex items-center space-x-2 cursor-pointer">
-            <img src={logoImg} alt="FundedXam Capital" className="w-10 h-10" />
-            <span className="font-playfair text-xl font-semibold text-white">FundedXam Capital</span>
+            <img src={logoImg} alt="Nakama&Partners" className="w-10 h-10" />
+            <span className="font-cormorant text-xl font-semibold text-white">Nakama&Partners</span>
           </div>
         </Link>
         

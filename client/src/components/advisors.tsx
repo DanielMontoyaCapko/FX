@@ -64,7 +64,7 @@ export default function Advisors() {
               <div className="text-center md:text-left">
                 <blockquote className="text-lg text-silver-100 mb-4 italic">
                   "Por fin puedo ofrecer algo que protege de verdad el patrimonio de mis clientes. 
-                  La tranquilidad que transmite FundedXam Capital es invaluable para consolidar 
+                  La tranquilidad que transmite Nakama&Partners es invaluable para consolidar 
                   relaciones a largo plazo."
                 </blockquote>
                 <cite className="text-white font-semibold">— Luis M., Asesor Patrimonial y Coach Financiero</cite>

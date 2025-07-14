@@ -8,8 +8,8 @@ export default function Footer() {
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8 mb-8">
           <div>
             <div className="flex items-center space-x-2 mb-4">
-              <img src={logoImg} alt="FundedXam Capital" className="w-8 h-8" />
-              <span className="font-playfair text-lg font-semibold text-white">FundedXam Capital</span>
+              <img src={logoImg} alt="Nakama&Partners" className="w-8 h-8" />
+              <span className="font-cormorant text-lg font-semibold text-white">Nakama&Partners</span>
             </div>
             <p className="text-silver-100 text-sm">
               Protegiendo patrimonios con estructura, transparencia y rentabilidad fija.
@@ -36,7 +36,7 @@ export default function Footer() {
           
           <div>
             <h3 className="font-semibold text-white mb-4">Contacto</h3>
-            <p className="text-silver-100 text-sm mb-2">info@fundedxamcapital.com</p>
+            <p className="text-silver-100 text-sm mb-2">info@nakamapartners.com</p>
             <p className="text-silver-100 text-sm mb-4">+34 XXX XXX XXX</p>
             
             <div className="flex space-x-4">
@@ -54,7 +54,7 @@ export default function Footer() {
         </div>
         
         <div className="border-t border-silver-500/20 pt-8 text-center">
-          <p className="text-silver-100 text-sm">© 2025 FundedXam Capital. Todos los derechos reservados.</p>
+          <p className="text-silver-100 text-sm">© 2025 Nakama&Partners. Todos los derechos reservados.</p>
         </div>
       </div>
     </footer>
