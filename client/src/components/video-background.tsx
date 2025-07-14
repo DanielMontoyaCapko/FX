@@ -15,7 +15,7 @@ export default function VideoBackground() {
         <source src={videoBackground} type="video/mp4" />
         Your browser does not support the video tag.
       </video>
-      <div className="absolute inset-0 bg-black/40"></div>
+      <div className="absolute inset-0 bg-black/60"></div>
     </div>
   );
 }
