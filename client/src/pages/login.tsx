@@ -6,7 +6,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Label } from "@/components/ui/label";
 import { User, Lock, Eye, EyeOff, ArrowLeft } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
-import logoImg from "@/assets/Logo_1752484666419.jpg";
+import logoImg from "@/assets/Logo-removeBG_1752488347081.png";
 
 export default function Login() {
   const [, setLocation] = useLocation();
@@ -63,7 +63,7 @@ export default function Login() {
         {/* Header */}
         <div className="text-center mb-8">
           <div className="flex items-center justify-center space-x-3 mb-4">
-            <img src={logoImg} alt="Logo" className="w-12 h-12 rounded" />
+            <img src={logoImg} alt="Logo" className="w-12 h-12" />
             <div>
               <h1 className="font-playfair text-2xl font-bold text-white">FundedXam Capital</h1>
               <p className="text-gold text-sm">Portal de Asesores</p>

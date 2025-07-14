@@ -1,5 +1,5 @@
 import { Linkedin, Youtube, Instagram } from "lucide-react";
-import logoImg from "@/assets/Logo_1752484666419.jpg";
+import logoImg from "@/assets/Logo-removeBG_1752488347081.png";
 
 export default function Footer() {
   return (
@@ -8,7 +8,7 @@ export default function Footer() {
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8 mb-8">
           <div>
             <div className="flex items-center space-x-2 mb-4">
-              <img src={logoImg} alt="FundedXam Capital" className="w-8 h-8 rounded" />
+              <img src={logoImg} alt="FundedXam Capital" className="w-8 h-8" />
               <span className="font-playfair text-lg font-semibold text-white">FundedXam Capital</span>
             </div>
             <p className="text-silver-100 text-sm">
