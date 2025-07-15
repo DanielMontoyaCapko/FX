@@ -21,7 +21,7 @@ export default function Comparison() {
       guaranteeColor: "text-yellow-400"
     },
     {
-      product: "FundedXam Capital",
+      product: "Nakama&Partners",
       return: "9%",
       risk: "Nula",
       liquidity: "Alta",
