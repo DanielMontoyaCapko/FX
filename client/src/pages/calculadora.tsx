@@ -2,8 +2,10 @@ import Header from "@/components/header";
 import Calculator from "@/components/calculator";
 import Footer from "@/components/footer";
 import VideoBackground from "@/components/video-background";
+import { useScrollToTop } from "@/hooks/useScrollToTop";
 
 export default function Calculadora() {
+  useScrollToTop();
   return (
     <div className="min-h-screen text-white relative">
       <VideoBackground />

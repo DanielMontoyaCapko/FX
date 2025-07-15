@@ -2,8 +2,10 @@ import Header from "@/components/header";
 import Story from "@/components/story";
 import Footer from "@/components/footer";
 import VideoBackground from "@/components/video-background";
+import { useScrollToTop } from "@/hooks/useScrollToTop";
 
 export default function Nosotros() {
+  useScrollToTop();
   return (
     <div className="min-h-screen text-white relative">
       <VideoBackground />

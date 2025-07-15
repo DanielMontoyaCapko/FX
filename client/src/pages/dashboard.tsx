@@ -26,8 +26,10 @@ import {
 import logoSvg from "@/assets/logo.svg";
 import logoImg from "@/assets/Logo-removeBG_1752488347081.png";
 import landscapeSvg from "@/assets/landscape.svg";
+import { useScrollToTop } from "@/hooks/useScrollToTop";
 
 export default function Dashboard() {
+  useScrollToTop();
   const [, setLocation] = useLocation();
   const [activeTab, setActiveTab] = useState("inicio");
   const [showProductDetail, setShowProductDetail] = useState(false);

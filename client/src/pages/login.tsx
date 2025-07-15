@@ -7,8 +7,10 @@ import { Label } from "@/components/ui/label";
 import { User, Lock, Eye, EyeOff, ArrowLeft } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import logoImg from "@/assets/Logo-removeBG_1752488347081.png";
+import { useScrollToTop } from "@/hooks/useScrollToTop";
 
 export default function Login() {
+  useScrollToTop();
   const [, setLocation] = useLocation();
   const { toast } = useToast();
   const [formData, setFormData] = useState({
