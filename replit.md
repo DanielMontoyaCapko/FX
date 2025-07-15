@@ -96,6 +96,8 @@ Preferred communication style: Simple, everyday language.
 ## Changelog
 
 Changelog:
+- July 15, 2025. Updated PDF generator to use "Nakama&Partners" branding instead of "FUNDEDXAM CAPITAL"
+- July 15, 2025. Enhanced opacity across platform: upgraded bg-black/30 elements to bg-black/70 for improved visibility
 - July 14, 2025. Implemented video background across all public pages (excludes advisor/login pages)
 - July 14, 2025. Updated logo to new "NP" PNG version with transparent background
 - July 14, 2025. Created VideoBackground component for consistent video display

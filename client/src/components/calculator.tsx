@@ -29,7 +29,7 @@ export default function Calculator() {
       doc.setTextColor(0, 31, 63); // Navy blue
       
       // Header
-      doc.text("FUNDEDXAM CAPITAL", 20, 30);
+      doc.text("NAKAMA&PARTNERS", 20, 30);
       doc.setFontSize(16);
       doc.setTextColor(218, 165, 32); // Gold
       doc.text("Simulación de Inversión", 20, 45);
@@ -103,7 +103,7 @@ export default function Calculator() {
       doc.setFontSize(8);
       doc.setTextColor(128, 128, 128);
       doc.text("Esta simulación es orientativa. Rentabilidades pasadas no garantizan rentabilidades futuras.", 20, 290);
-      doc.text("FundedXam Capital - Soluciones de inversión profesionales", 20, 300);
+      doc.text("Nakama&Partners - Soluciones de inversión profesionales", 20, 300);
       
       // Generate filename with timestamp
       const filename = `simulacion-inversion-${Date.now()}.pdf`;
