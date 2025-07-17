@@ -96,6 +96,7 @@ Preferred communication style: Simple, everyday language.
 ## Changelog
 
 Changelog:
+- July 16, 2025. Changed navigation button text from "Asesores" to "Partners" for brand consistency
 - July 15, 2025. Implemented automatic scroll to top when navigating between sections via menu
 - July 15, 2025. Updated comparison table to show "Nakama&Partners" instead of "FundedXam Capital"
 - July 15, 2025. Updated PDF generator to use "Nakama&Partners" branding instead of "FUNDEDXAM CAPITAL"
