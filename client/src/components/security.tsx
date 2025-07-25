@@ -1,5 +1,5 @@
 import { Shield, Percent, File, University, FileSignature, Search } from "lucide-react";
-import { CardSpotlight } from "@/components/ui/card-spotlight";
+import { GlareCard } from "@/components/ui/glare-card";
 
 export default function Security() {
   const features = [
@@ -50,13 +50,15 @@ export default function Security() {
         
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 max-w-6xl mx-auto">
           {features.map((feature, index) => (
-            <CardSpotlight key={index} className="h-auto">
-              <div className="w-16 h-16 bg-gold/20 rounded-lg flex items-center justify-center mb-6">
-                <feature.icon className="text-2xl text-gold w-8 h-8" />
+            <GlareCard key={index} className="bg-black/70 border-silver-500/20 hover:border-[#344e41]/50 min-h-[280px]">
+              <div className="p-8 h-full flex flex-col">
+                <div className="w-16 h-16 bg-gold/20 rounded-lg flex items-center justify-center mb-6 transition-all duration-300">
+                  <feature.icon className="text-2xl text-gold w-8 h-8" />
+                </div>
+                <h3 className="font-playfair text-xl font-semibold text-white mb-4">{feature.title}</h3>
+                <p className="text-silver-100 flex-grow">{feature.description}</p>
               </div>
-              <h3 className="font-playfair text-xl font-semibold text-white mb-4">{feature.title}</h3>
-              <p className="text-silver-100">{feature.description}</p>
-            </CardSpotlight>
+            </GlareCard>
           ))}
         </div>
       </div>
