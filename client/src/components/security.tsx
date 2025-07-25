@@ -1,4 +1,5 @@
 import { Shield, Percent, File, University, FileSignature, Search } from "lucide-react";
+import { GlareCard } from "@/components/ui/glare-card";
 
 export default function Security() {
   const features = [
@@ -49,13 +50,15 @@ export default function Security() {
         
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 max-w-6xl mx-auto">
           {features.map((feature, index) => (
-            <div key={index} className="bg-black/70 p-8 rounded-xl border border-silver-500/20 hover:border-[#344e41] transition-all duration-300 transform hover:scale-105 hover:shadow-lg hover:shadow-[#344e41]/20 cursor-pointer">
-              <div className="w-16 h-16 bg-gold/20 rounded-lg flex items-center justify-center mb-6 transition-all duration-300 group-hover:bg-[#344e41]/30">
-                <feature.icon className="text-2xl text-gold w-8 h-8 transition-colors duration-300" />
+            <GlareCard key={index} className="bg-black/70 border-silver-500/20 hover:border-[#344e41]/50 min-h-[280px]">
+              <div className="p-8 h-full flex flex-col">
+                <div className="w-16 h-16 bg-gold/20 rounded-lg flex items-center justify-center mb-6 transition-all duration-300">
+                  <feature.icon className="text-2xl text-gold w-8 h-8" />
+                </div>
+                <h3 className="font-playfair text-xl font-semibold text-white mb-4">{feature.title}</h3>
+                <p className="text-silver-100 flex-grow">{feature.description}</p>
               </div>
-              <h3 className="font-playfair text-xl font-semibold text-white mb-4 transition-colors duration-300">{feature.title}</h3>
-              <p className="text-silver-100 transition-colors duration-300">{feature.description}</p>
-            </div>
+            </GlareCard>
           ))}
         </div>
       </div>
