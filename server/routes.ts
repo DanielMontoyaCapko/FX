@@ -1,10 +1,86 @@
 import type { Express } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
-import { insertLeadSchema, insertCalculatorResultSchema } from "@shared/schema";
+import { insertLeadSchema, insertCalculatorResultSchema, loginSchema, registerSchema } from "@shared/schema";
+import { generateToken, authMiddleware, requireRole, type AuthRequest } from "./auth";
 import { z } from "zod";
 
 export async function registerRoutes(app: Express): Promise<Server> {
+  // Authentication routes
+  app.post("/api/register", async (req, res) => {
+    try {
+      const userData = registerSchema.parse(req.body);
+      
+      // Check if user already exists
+      const existingUser = await storage.getUserByEmail(userData.email);
+      if (existingUser) {
+        return res.status(400).json({ error: "User already exists with this email" });
+      }
+
+      const user = await storage.createUser(userData);
+      const token = generateToken(user.id, user.email, user.name, user.role);
+
+      res.json({
+        success: true,
+        token,
+        user: {
+          id: user.id,
+          email: user.email,
+          name: user.name,
+          role: user.role,
+        },
+      });
+    } catch (error) {
+      console.error("Registration error:", error);
+      if (error instanceof z.ZodError) {
+        return res.status(400).json({ error: "Invalid registration data", details: error.errors });
+      }
+      res.status(500).json({ error: "Registration failed" });
+    }
+  });
+
+  app.post("/api/login", async (req, res) => {
+    try {
+      const { email, password } = loginSchema.parse(req.body);
+
+      const user = await storage.getUserByEmail(email);
+      if (!user) {
+        return res.status(401).json({ error: "Invalid email or password" });
+      }
+
+      const isValidPassword = await storage.validatePassword(password, user.password);
+      if (!isValidPassword) {
+        return res.status(401).json({ error: "Invalid email or password" });
+      }
+
+      const token = generateToken(user.id, user.email, user.name, user.role);
+
+      res.json({
+        success: true,
+        token,
+        user: {
+          id: user.id,
+          email: user.email,
+          name: user.name,
+          role: user.role,
+        },
+      });
+    } catch (error) {
+      console.error("Login error:", error);
+      if (error instanceof z.ZodError) {
+        return res.status(400).json({ error: "Invalid login data", details: error.errors });
+      }
+      res.status(500).json({ error: "Login failed" });
+    }
+  });
+
+  // Get current user info (protected route)
+  app.get("/api/me", authMiddleware, async (req: AuthRequest, res) => {
+    res.json({
+      success: true,
+      user: req.user,
+    });
+  });
   // Lead creation endpoint
   app.post("/api/leads", async (req, res) => {
     try {

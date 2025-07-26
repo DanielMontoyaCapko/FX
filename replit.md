@@ -93,6 +93,25 @@ Nakama&Partners is a financial investment platform offering a 9% fixed annual re
 
 Preferred communication style: Simple, everyday language.
 
+## Authentication System
+
+The platform now uses email/password authentication instead of the previous Replit Auth system:
+
+### Database Schema
+- **Users Table**: Stores user accounts with email, hashed password, name, and role (client/partner)
+- **Authentication**: JWT tokens with 7-day expiration stored in localStorage
+- **Password Security**: bcrypt hashing with salt rounds of 12
+
+### API Endpoints
+- `POST /api/register` - User registration with email, password, name, and role
+- `POST /api/login` - User authentication returning JWT token
+- `GET /api/me` - Protected route to get current user info
+
+### Frontend Authentication
+- `useAuth` hook provides login, register, logout functions and user state
+- `AuthProvider` context wrapper for authentication state management
+- Login page supports both login and registration with role selection (client/partner)
+
 ## Changelog
 
 Changelog:
