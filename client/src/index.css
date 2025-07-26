@@ -124,110 +124,110 @@
   }
 }
 
-/* Pulsating Green Wave Animations */
-@keyframes heartbeat {
-  0%, 100% { transform: scale(1); }
-  50% { transform: scale(1.02); }
+/* Custom animations */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
 }
 
-@keyframes greenWave1 {
+.animate-fadeIn {
+  animation: fadeIn 0.6s ease-out;
+}
+
+/* Card flip animations */
+.backface-hidden {
+  backface-visibility: hidden;
+}
+
+.transform-style-preserve-3d {
+  transform-style: preserve-3d;
+}
+
+.rotate-y-180 {
+  transform: rotateY(180deg);
+}
+
+/* Enhanced hover effects */
+.card-hover-effect {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.card-hover-effect:hover {
+  transform: translateY(-8px) scale(1.02);
+  box-shadow: 0 20px 40px rgba(218, 165, 32, 0.15);
+}
+
+/* Zoom animation */
+@keyframes zoomIn {
+  from { transform: scale(0.95); opacity: 0; }
+  to { transform: scale(1); opacity: 1; }
+}
+
+.animate-zoom-in {
+  animation: zoomIn 0.5s ease-out;
+}
+
+/* Pulse effect for important elements */
+@keyframes pulse-gold {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(218, 165, 32, 0.4); }
+  50% { box-shadow: 0 0 0 10px rgba(218, 165, 32, 0); }
+}
+
+.animate-pulse-gold {
+  animation: pulse-gold 2s infinite;
+}
+
+/* Green wave pulse effect for protection text */
+@keyframes pulse-green-waves {
   0% { 
-    transform: scale(1);
-    opacity: 0.8;
-    box-shadow: 0 0 0 0 rgba(52, 78, 65, 0.7);
+    box-shadow: 
+      0 0 0 0 rgba(52, 78, 65, 0.8),
+      0 0 0 0 rgba(52, 78, 65, 0.6),
+      0 0 0 0 rgba(52, 78, 65, 0.4);
   }
-  70% {
-    transform: scale(1.1);
-    opacity: 0;
-    box-shadow: 0 0 0 20px rgba(52, 78, 65, 0);
+  25% {
+    box-shadow: 
+      0 0 0 10px rgba(52, 78, 65, 0.6),
+      0 0 0 0 rgba(52, 78, 65, 0.6),
+      0 0 0 0 rgba(52, 78, 65, 0.4);
   }
-  100% {
-    transform: scale(1);
-    opacity: 0;
-    box-shadow: 0 0 0 0 rgba(52, 78, 65, 0);
+  50% {
+    box-shadow: 
+      0 0 0 20px rgba(52, 78, 65, 0.4),
+      0 0 0 15px rgba(52, 78, 65, 0.4),
+      0 0 0 0 rgba(52, 78, 65, 0.4);
   }
-}
-
-@keyframes greenWave2 {
-  0% { 
-    transform: scale(1);
-    opacity: 0.6;
-    box-shadow: 0 0 0 0 rgba(52, 78, 65, 0.5);
+  75% {
+    box-shadow: 
+      0 0 0 30px rgba(52, 78, 65, 0.2),
+      0 0 0 25px rgba(52, 78, 65, 0.3),
+      0 0 0 20px rgba(52, 78, 65, 0.2);
   }
-  70% {
-    transform: scale(1.2);
-    opacity: 0;
-    box-shadow: 0 0 0 30px rgba(52, 78, 65, 0);
-  }
-  100% {
-    transform: scale(1);
-    opacity: 0;
-    box-shadow: 0 0 0 0 rgba(52, 78, 65, 0);
+  100% { 
+    box-shadow: 
+      0 0 0 40px rgba(52, 78, 65, 0),
+      0 0 0 35px rgba(52, 78, 65, 0),
+      0 0 0 30px rgba(52, 78, 65, 0);
   }
 }
 
-@keyframes greenWave3 {
-  0% { 
-    transform: scale(1);
-    opacity: 0.4;
-    box-shadow: 0 0 0 0 rgba(52, 78, 65, 0.3);
-  }
-  70% {
-    transform: scale(1.3);
-    opacity: 0;
-    box-shadow: 0 0 0 40px rgba(52, 78, 65, 0);
-  }
-  100% {
-    transform: scale(1);
-    opacity: 0;
-    box-shadow: 0 0 0 0 rgba(52, 78, 65, 0);
-  }
-}
-
-.security-card-pulse {
+.animate-pulse-green-waves {
+  animation: pulse-green-waves 3s ease-out infinite;
   position: relative;
-  animation: heartbeat 2s ease-in-out infinite;
+  border-radius: 12px;
+  padding: 20px;
 }
 
-.security-card-pulse::before,
-.security-card-pulse::after {
-  content: '';
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  width: 100%;
-  height: 100%;
-  border-radius: 0.75rem;
-  transform: translate(-50%, -50%);
-  pointer-events: none;
+/* Heartbeat pulse for text */
+@keyframes heartbeat-pulse {
+  0% { transform: scale(1); }
+  7% { transform: scale(1.02); }
+  14% { transform: scale(1); }
+  21% { transform: scale(1.01); }
+  28% { transform: scale(1); }
+  100% { transform: scale(1); }
 }
 
-.security-card-pulse::before {
-  animation: greenWave1 3s ease-out infinite;
-  animation-delay: 0s;
-}
-
-.security-card-pulse::after {
-  animation: greenWave2 3s ease-out infinite;
-  animation-delay: 0.5s;
-}
-
-.security-card-pulse:nth-child(2n)::before {
-  animation: greenWave2 3s ease-out infinite;
-  animation-delay: 1s;
-}
-
-.security-card-pulse:nth-child(2n)::after {
-  animation: greenWave3 3s ease-out infinite;
-  animation-delay: 1.5s;
-}
-
-.security-card-pulse:nth-child(3n)::before {
-  animation: greenWave3 3s ease-out infinite;
-  animation-delay: 2s;
-}
-
-.security-card-pulse:nth-child(3n)::after {
-  animation: greenWave1 3s ease-out infinite;
-  animation-delay: 2.5s;
+.animate-heartbeat-pulse {
+  animation: heartbeat-pulse 2.5s ease-in-out infinite;
 }
