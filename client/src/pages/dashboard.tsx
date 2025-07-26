@@ -27,6 +27,7 @@ import logoSvg from "@/assets/logo.svg";
 import logoImg from "@/assets/Logo-removeBG_1752488347081.png";
 import landscapeSvg from "@/assets/landscape.svg";
 import { useScrollToTop } from "@/hooks/useScrollToTop";
+import GrowthChart from "@/components/growth-chart";
 
 export default function Dashboard() {
   useScrollToTop();
@@ -903,6 +904,17 @@ export default function Dashboard() {
                       <p className="text-gold text-xl font-bold mb-2">1-5 años</p>
                       <p className="text-silver-100 text-sm">Plazos adaptables</p>
                     </div>
+                  </div>
+
+                  {/* Growth Projection Chart */}
+                  <div className="mb-8">
+                    <GrowthChart 
+                      initialAmount={50000}
+                      years={8}
+                      rate={0.09}
+                      showTitle={true}
+                      className="max-w-4xl mx-auto"
+                    />
                   </div>
                 </CardContent>
               </Card>

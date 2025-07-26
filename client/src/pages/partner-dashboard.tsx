@@ -22,6 +22,7 @@ import {
 } from "lucide-react";
 import logoImg from "@/assets/Logo-removeBG_1752488347081.png";
 import { useScrollToTop } from "@/hooks/useScrollToTop";
+import GrowthChart from "@/components/growth-chart";
 
 export default function PartnerDashboard() {
   useScrollToTop();
@@ -193,6 +194,17 @@ export default function PartnerDashboard() {
           </TabsList>
 
           <TabsContent value="overview" className="space-y-6">
+            {/* Growth Chart - Full Width */}
+            <div className="mb-8">
+              <GrowthChart 
+                initialAmount={100000}
+                years={10}
+                rate={0.09}
+                showTitle={true}
+                className="max-w-6xl mx-auto"
+              />
+            </div>
+
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
               {/* Performance Chart */}
               <Card className="bg-[#040505] border-silver-500/20">

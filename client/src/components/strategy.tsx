@@ -1,4 +1,5 @@
 import { Building, TrendingUp, Coins, Link, Brain } from "lucide-react";
+import GrowthChart from "./growth-chart";
 
 export default function Strategy() {
   const strategies = [
@@ -63,10 +64,20 @@ export default function Strategy() {
         </div>
         
         <div className="text-center mt-12">
-          <p className="text-lg text-silver-100 max-w-3xl mx-auto">
+          <p className="text-lg text-silver-100 max-w-3xl mx-auto mb-12">
             Esta combinación permite garantizar el 9% sin comprometer el capital. 
             Todo bajo un modelo profesional, permanente y sin especulación.
           </p>
+        </div>
+
+        {/* Growth Chart */}
+        <div className="max-w-4xl mx-auto mt-16">
+          <GrowthChart 
+            initialAmount={100000}
+            years={10}
+            rate={0.09}
+            showTitle={true}
+          />
         </div>
       </div>
     </section>
