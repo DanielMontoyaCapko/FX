@@ -38,10 +38,12 @@ export default function Security() {
     <section id="seguridad" className="py-10 bg-transparent">
       <div className="container mx-auto px-6">
         <div className="text-center mb-16">
-          <h2 className="font-playfair text-4xl md:text-5xl font-bold text-white mb-6">
-            Un Producto Diseñado para <span className="text-gold">Proteger el Capital</span>,<br />
-            No Para Arriesgarlo.
-          </h2>
+          <div className="animate-pulse-green-waves inline-block">
+            <h2 className="font-playfair text-4xl md:text-5xl font-bold text-white mb-6 animate-heartbeat-pulse">
+              Un Producto Diseñado para <span className="text-gold">Proteger el Capital</span>,<br />
+              No Para Arriesgarlo.
+            </h2>
+          </div>
           <p className="text-xl text-silver-100 max-w-3xl mx-auto">
             Desde el primer contacto, mostramos que esto no es una promesa, es una estructura.
           </p>

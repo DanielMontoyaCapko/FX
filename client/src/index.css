@@ -176,3 +176,58 @@
 .animate-pulse-gold {
   animation: pulse-gold 2s infinite;
 }
+
+/* Green wave pulse effect for protection text */
+@keyframes pulse-green-waves {
+  0% { 
+    box-shadow: 
+      0 0 0 0 rgba(52, 78, 65, 0.8),
+      0 0 0 0 rgba(52, 78, 65, 0.6),
+      0 0 0 0 rgba(52, 78, 65, 0.4);
+  }
+  25% {
+    box-shadow: 
+      0 0 0 10px rgba(52, 78, 65, 0.6),
+      0 0 0 0 rgba(52, 78, 65, 0.6),
+      0 0 0 0 rgba(52, 78, 65, 0.4);
+  }
+  50% {
+    box-shadow: 
+      0 0 0 20px rgba(52, 78, 65, 0.4),
+      0 0 0 15px rgba(52, 78, 65, 0.4),
+      0 0 0 0 rgba(52, 78, 65, 0.4);
+  }
+  75% {
+    box-shadow: 
+      0 0 0 30px rgba(52, 78, 65, 0.2),
+      0 0 0 25px rgba(52, 78, 65, 0.3),
+      0 0 0 20px rgba(52, 78, 65, 0.2);
+  }
+  100% { 
+    box-shadow: 
+      0 0 0 40px rgba(52, 78, 65, 0),
+      0 0 0 35px rgba(52, 78, 65, 0),
+      0 0 0 30px rgba(52, 78, 65, 0);
+  }
+}
+
+.animate-pulse-green-waves {
+  animation: pulse-green-waves 3s ease-out infinite;
+  position: relative;
+  border-radius: 12px;
+  padding: 20px;
+}
+
+/* Heartbeat pulse for text */
+@keyframes heartbeat-pulse {
+  0% { transform: scale(1); }
+  7% { transform: scale(1.02); }
+  14% { transform: scale(1); }
+  21% { transform: scale(1.01); }
+  28% { transform: scale(1); }
+  100% { transform: scale(1); }
+}
+
+.animate-heartbeat-pulse {
+  animation: heartbeat-pulse 2.5s ease-in-out infinite;
+}
