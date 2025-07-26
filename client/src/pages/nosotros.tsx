@@ -48,7 +48,7 @@ export default function Nosotros() {
                 </div>
               </div>
               
-              <div className="mb-16">
+              <div className="mb-8">
                 <h2 className="font-playfair text-4xl md:text-5xl font-bold text-white mb-8 text-center">Nuestros Valores</h2>
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
                   
