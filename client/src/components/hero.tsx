@@ -30,15 +30,15 @@ export default function Hero() {
         </Button>
         
         <div className="mt-16 grid grid-cols-1 md:grid-cols-3 gap-8 max-w-4xl mx-auto">
-          <div className="text-center p-6 rounded-xl bg-black/30 border border-transparent transition-all duration-300 hover:border-green-500 hover:bg-black/50 hover:shadow-lg hover:shadow-green-500/20 hover:animate-pulse cursor-pointer">
+          <div className="text-center p-6 rounded-xl bg-black/30 border border-transparent transition-all duration-300 hover:border-green-500 hover:bg-black/50 hover:shadow-lg hover:shadow-green-500/20 cursor-pointer">
             <div className="text-3xl font-bold text-green mb-2">9%</div>
             <div className="text-silver-100">Rentabilidad Fija Anual</div>
           </div>
-          <div className="text-center p-6 rounded-xl bg-black/30 border border-transparent transition-all duration-300 hover:border-green-500 hover:bg-black/50 hover:shadow-lg hover:shadow-green-500/20 hover:animate-pulse cursor-pointer">
+          <div className="text-center p-6 rounded-xl bg-black/30 border border-transparent transition-all duration-300 hover:border-green-500 hover:bg-black/50 hover:shadow-lg hover:shadow-green-500/20 cursor-pointer">
             <div className="text-3xl font-bold text-green mb-2">100%</div>
             <div className="text-silver-100">Capital Protegido</div>
           </div>
-          <div className="text-center p-6 rounded-xl bg-black/30 border border-transparent transition-all duration-300 hover:border-green-500 hover:bg-black/50 hover:shadow-lg hover:shadow-green-500/20 hover:animate-pulse cursor-pointer">
+          <div className="text-center p-6 rounded-xl bg-black/30 border border-transparent transition-all duration-300 hover:border-green-500 hover:bg-black/50 hover:shadow-lg hover:shadow-green-500/20 cursor-pointer">
             <div className="text-3xl font-bold text-green mb-2">0%</div>
             <div className="text-silver-100">Exposición al Mercado</div>
           </div>
