@@ -49,31 +49,60 @@ export default function Nosotros() {
               </div>
               
               <div className="bg-black/70 p-8 rounded-xl border border-silver-500/20 mb-16">
-                <h2 className="font-playfair text-3xl font-bold text-white mb-6 text-center">Nuestros Valores</h2>
+                <h2 className="font-playfair text-3xl font-bold text-white mb-8 text-center">Nuestros Valores</h2>
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-                  <div className="text-center">
-                    <div className="w-16 h-16 bg-green/20 rounded-lg mx-auto mb-4 flex items-center justify-center">
-                      <span className="text-green font-bold text-xl">T</span>
-                    </div>
-                    <h3 className="font-semibold text-white mb-2">Transparencia</h3>
-                    <p className="text-silver-100 text-sm">Información clara y accesible en cada paso del proceso.</p>
-                  </div>
                   
-                  <div className="text-center">
-                    <div className="w-16 h-16 bg-green/20 rounded-lg mx-auto mb-4 flex items-center justify-center">
-                      <span className="text-green font-bold text-xl">S</span>
+                  {/* Transparencia */}
+                  <div className="flip-card">
+                    <div className="flip-card-inner">
+                      <div className="flip-card-front">
+                        <div className="flip-card-letter">T</div>
+                      </div>
+                      <div className="flip-card-back">
+                        <div className="flip-card-title">Transparencia</div>
+                        <div className="flip-card-description">
+                          Información clara y accesible en cada paso del proceso. 
+                          Nuestros clientes conocen exactamente cómo funciona su inversión, 
+                          sin letra pequeña ni sorpresas.
+                        </div>
+                      </div>
                     </div>
-                    <h3 className="font-semibold text-white mb-2">Seguridad</h3>
-                    <p className="text-silver-100 text-sm">Protección del capital como prioridad absoluta.</p>
                   </div>
-                  
-                  <div className="text-center">
-                    <div className="w-16 h-16 bg-green/20 rounded-lg mx-auto mb-4 flex items-center justify-center">
-                      <span className="text-green font-bold text-xl">E</span>
+
+                  {/* Seguridad */}
+                  <div className="flip-card">
+                    <div className="flip-card-inner">
+                      <div className="flip-card-front">
+                        <div className="flip-card-letter">S</div>
+                      </div>
+                      <div className="flip-card-back">
+                        <div className="flip-card-title">Seguridad</div>
+                        <div className="flip-card-description">
+                          Protección del capital como prioridad absoluta. 
+                          Estructuras bancarias sólidas y contratos pignorados 
+                          garantizan la seguridad de cada inversión.
+                        </div>
+                      </div>
                     </div>
-                    <h3 className="font-semibold text-white mb-2">Excelencia</h3>
-                    <p className="text-silver-100 text-sm">Compromiso con la calidad en cada detalle.</p>
                   </div>
+
+                  {/* Excelencia */}
+                  <div className="flip-card">
+                    <div className="flip-card-inner">
+                      <div className="flip-card-front">
+                        <div className="flip-card-letter">E</div>
+                      </div>
+                      <div className="flip-card-back">
+                        <div className="flip-card-title">Excelencia</div>
+                        <div className="flip-card-description">
+                          Compromiso con la calidad en cada detalle. 
+                          Desde el primer contacto hasta el seguimiento continuo, 
+                          buscamos la perfección en cada interacción.
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
                 </div>
               </div>
             </div>
