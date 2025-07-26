@@ -1,85 +1,33 @@
 import { Building, TrendingUp, Coins, Link, Brain } from "lucide-react";
 import GrowthChart from "./growth-chart";
-import { StrategyCard } from "./animated-card";
 
 export default function Strategy() {
   const strategies = [
     {
       icon: Building,
       title: "Real Estate Institucional en Dubái",
-      description: "Alineado con el Plan Urbanístico 2040 (+30% crecimiento proyectado). Precio medio por m² aún 60-70% por debajo de Londres o Nueva York.",
-      backContent: {
-        details: [
-          "Proyecto Vision 2040: 30% crecimiento proyectado",
-          "Torre Khalifa, Dubai Mall, expo centers",
-          "Precios 60-70% menores vs Londres/NY",
-          "Mercado regulado y estable",
-          "Liquidez internacional garantizada"
-        ],
-        callToAction: "Exposición: 25% del portfolio"
-      }
+      description: "Alineado con el Plan Urbanístico 2040 (+30% crecimiento proyectado). Precio medio por m² aún 60-70% por debajo de Londres o Nueva York."
     },
     {
       icon: TrendingUp,
       title: "ETFs y Acciones de Asia Emergente",
-      description: "Mercados sólidos con crecimiento estructural y baja correlación con Occidente.",
-      backContent: {
-        details: [
-          "India: crecimiento PIB 6-7% anual",
-          "Vietnam: hub manufacturero asiático",
-          "Indonesia: mercado consumo interno",
-          "Baja correlación con mercados occidentales",
-          "ETFs diversificados y líquidos"
-        ],
-        callToAction: "Exposición: 20% del portfolio"
-      }
+      description: "Mercados sólidos con crecimiento estructural y baja correlación con Occidente."
     },
     {
       icon: Coins,
       title: "Materias Primas: Oro, Plata y Petróleo",
-      description: "Valor refugio, cobertura frente a inflación y activos geopolíticos.",
-      backContent: {
-        details: [
-          "Oro: cobertura inflación y devaluación",
-          "Plata: demanda industrial y tecnológica",
-          "Petróleo: commodity estratégico global",
-          "Diversificación geopolítica",
-          "Instrumentos ETF y físicos"
-        ],
-        callToAction: "Exposición: 15% del portfolio"
-      }
+      description: "Valor refugio, cobertura frente a inflación y activos geopolíticos."
     },
     {
       icon: Link,
       title: "Activos Digitales Regulados",
-      description: "RWA, Tokenización, DeFi. Participamos solo en infraestructuras legales y auditadas del sector blockchain.",
-      backContent: {
-        details: [
-          "RWA: Real World Assets tokenizados",
-          "DeFi protocolos auditados",
-          "Stablecoins reguladas (USDC, USDT)",
-          "Exchanges institucionales (Coinbase)",
-          "Custody profesional y seguros"
-        ],
-        callToAction: "Exposición: 10% del portfolio"
-      }
+      description: "RWA, Tokenización, DeFi. Participamos solo en infraestructuras legales y auditadas del sector blockchain."
     },
     {
       icon: Brain,
       title: "Trading Algorítmico Propio, Auditado",
       description: "Optimización de carteras con inteligencia artificial, basada en parámetros matemáticos y control de drawdown.",
-      colSpan: true,
-      backContent: {
-        details: [
-          "Algoritmos propietarios con 5+ años backtesting",
-          "Control estricto drawdown máximo 3%",
-          "Auditoría externa trimestral independiente",
-          "Machine Learning para optimización de entrada/salida",
-          "Diversificación multi-asset y multi-temporal",
-          "Rebalanceo automático según volatilidad"
-        ],
-        callToAction: "Exposición: 30% del portfolio - Motor principal de rentabilidad"
-      }
+      colSpan: true
     }
   ];
 
@@ -98,14 +46,20 @@ export default function Strategy() {
         
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-6xl mx-auto">
           {strategies.map((strategy, index) => (
-            <StrategyCard
-              key={index}
-              icon={strategy.icon}
-              title={strategy.title}
-              description={strategy.description}
-              backContent={strategy.backContent}
-              colSpan={strategy.colSpan}
-            />
+            <div 
+              key={index} 
+              className={`bg-black/70 p-8 rounded-xl border border-silver-500/20 ${strategy.colSpan ? 'md:col-span-2' : ''}`}
+            >
+              <div className="flex items-start space-x-4">
+                <div className="w-12 h-12 bg-gold/20 rounded-lg flex items-center justify-center flex-shrink-0">
+                  <strategy.icon className="text-gold w-6 h-6" />
+                </div>
+                <div>
+                  <h3 className="font-playfair text-xl font-semibold text-white mb-3">{strategy.title}</h3>
+                  <p className="text-silver-100">{strategy.description}</p>
+                </div>
+              </div>
+            </div>
           ))}
         </div>
         
