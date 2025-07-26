@@ -111,24 +111,6 @@ The platform now uses email/password authentication instead of the previous Repl
 - `useAuth` hook provides login, register, logout functions and user state
 - `AuthProvider` context wrapper for authentication state management
 - Login page supports both login and registration with role selection (client/partner)
-- Role-based dashboard routing automatically displays appropriate interface based on user type
-
-### Dashboard System
-**Partner Dashboard (Premium Design):**
-- Dark gradient theme (slate-900 to black) with gold accents for premium feel
-- Crown icon and "Partner Premium" branding for exclusivity
-- Advanced KPIs: Active clients, monthly revenue, total commissions, conversion rates
-- Tabbed interface: Overview, Client Management, Analytics, Tools
-- Recent client activity tracking with investment amounts and status
-- Performance metrics with progress bars and national ranking
-- Professional cards with hover effects and gold borders
-
-**Client Dashboard (Standard Design):**
-- Sidebar navigation with investment-focused sections
-- Personal investment overview with guaranteed 9% annual return display
-- Portfolio management section for detailed investment tracking
-- Profile management with personal account information
-- Clean interface emphasizing security and capital protection
 
 ### Demo Accounts for Testing
 **Client Account:**
@@ -152,12 +134,6 @@ To test the authentication system:
 ## Changelog
 
 Changelog:
-- July 26, 2025. Implemented role-based dashboard system with distinct interfaces for clients and partners
-- July 26, 2025. Created premium partner dashboard with gold accents, Crown icons, and advanced KPIs (active clients, monthly revenue, commissions, conversion rates)
-- July 26, 2025. Developed client dashboard with investment overview, portfolio tracking, and personal account management
-- July 26, 2025. Added authentication-based routing that automatically renders appropriate dashboard based on user role
-- July 26, 2025. Enhanced partner dashboard with professional dark theme (slate-900 to black gradient) and golden highlights for premium feel
-- July 26, 2025. Completed migration from mock authentication to full Supabase database integration with email/password system
 - July 16, 2025. Changed navigation button text from "Asesores" to "Partners" for brand consistency
 - July 15, 2025. Implemented automatic scroll to top when navigating between sections via menu
 - July 15, 2025. Updated comparison table to show "Nakama&Partners" instead of "FundedXam Capital"
