@@ -147,15 +147,8 @@ export default function Calculator() {
   return (
     <section className="py-16 bg-transparent relative">
       <div className="container mx-auto px-6">
-        {/* Header Section with Logo */}
+        {/* Header Section */}
         <div className="text-center mb-16 relative">
-          <div className="flex justify-center mb-8">
-            <img 
-              src={logoImg} 
-              alt="Nakama&Partners Logo" 
-              className="h-16 w-auto filter drop-shadow-lg"
-            />
-          </div>
           <h2 className="font-playfair text-4xl md:text-5xl font-bold text-white mb-6">
             Calculadora Premium de <span className="text-green">Inversiones</span>
           </h2>
@@ -179,6 +172,16 @@ export default function Calculator() {
                     <p className="text-green text-sm">Rentabilidad garantizada del 9% anual</p>
                   </div>
                 </div>
+                
+                {/* Logo in Center */}
+                <div className="flex justify-center">
+                  <img 
+                    src={logoImg} 
+                    alt="Nakama&Partners Logo" 
+                    className="h-12 w-auto filter drop-shadow-lg"
+                  />
+                </div>
+                
                 <div className="flex items-center space-x-4 text-sm text-silver-100">
                   <div className="flex items-center space-x-2">
                     <Shield className="h-4 w-4 text-green" />
