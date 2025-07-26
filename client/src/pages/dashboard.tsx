@@ -28,6 +28,7 @@ import logoImg from "@/assets/Logo-removeBG_1752488347081.png";
 import landscapeSvg from "@/assets/landscape.svg";
 import { useScrollToTop } from "@/hooks/useScrollToTop";
 import GrowthChart from "@/components/growth-chart";
+import AnimatedCard from "@/components/animated-card";
 
 export default function Dashboard() {
   useScrollToTop();
@@ -763,22 +764,24 @@ export default function Dashboard() {
             {/* KPIs */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
               {kpis.map((kpi, index) => (
-                <Card key={index} className="bg-[#040505] border-silver-500/20">
-                  <CardContent className="p-6">
-                    <div className="flex items-center justify-between">
-                      <div>
-                        <p className="text-silver-100 text-sm">{kpi.title}</p>
-                        <p className="text-2xl font-bold text-white">{kpi.value}</p>
+                <AnimatedCard key={index} animationType="zoom" className="h-full">
+                  <Card className="bg-[#040505] border-silver-500/20 h-full">
+                    <CardContent className="p-6">
+                      <div className="flex items-center justify-between">
+                        <div>
+                          <p className="text-silver-100 text-sm">{kpi.title}</p>
+                          <p className="text-2xl font-bold text-white">{kpi.value}</p>
+                        </div>
+                        <div className={`flex items-center space-x-1 ${
+                          kpi.trending === "up" ? "text-green-500" : "text-red-500"
+                        }`}>
+                          {kpi.trending === "up" ? <TrendingUp className="h-4 w-4" /> : <TrendingDown className="h-4 w-4" />}
+                          <span className="text-sm">{kpi.change}</span>
+                        </div>
                       </div>
-                      <div className={`flex items-center space-x-1 ${
-                        kpi.trending === "up" ? "text-green-500" : "text-red-500"
-                      }`}>
-                        {kpi.trending === "up" ? <TrendingUp className="h-4 w-4" /> : <TrendingDown className="h-4 w-4" />}
-                        <span className="text-sm">{kpi.change}</span>
-                      </div>
-                    </div>
-                  </CardContent>
-                </Card>
+                    </CardContent>
+                  </Card>
+                </AnimatedCard>
               ))}
             </div>
 
@@ -878,32 +881,68 @@ export default function Dashboard() {
                   </div>
 
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-                    <div className="bg-black/70 p-6 rounded-lg text-center">
-                      <div className="w-12 h-12 bg-[#387b46] rounded-full flex items-center justify-center mx-auto mb-4">
-                        <TrendingUp className="h-6 w-6 text-white" />
+                    <AnimatedCard animationType="flip" className="h-full" flipContent={
+                      <div className="bg-gradient-to-br from-[#387b46] to-[#2d4235] p-6 rounded-lg text-center h-full flex flex-col justify-center">
+                        <h3 className="text-white font-semibold mb-4">Detalles Técnicos</h3>
+                        <ul className="text-silver-100 text-sm space-y-2">
+                          <li>• Contratos bancarios auditados</li>
+                          <li>• Pignoración legal garantizada</li>
+                          <li>• Rendimiento mensual compuesto</li>
+                          <li>• Sin comisiones ocultas</li>
+                        </ul>
                       </div>
-                      <h3 className="text-white font-semibold mb-2">Rentabilidad Garantizada</h3>
-                      <p className="text-gold text-xl font-bold mb-2">9% Anual</p>
-                      <p className="text-silver-100 text-sm">Retorno fijo y predecible</p>
-                    </div>
+                    }>
+                      <div className="bg-black/70 p-6 rounded-lg text-center h-full">
+                        <div className="w-12 h-12 bg-[#387b46] rounded-full flex items-center justify-center mx-auto mb-4">
+                          <TrendingUp className="h-6 w-6 text-white" />
+                        </div>
+                        <h3 className="text-white font-semibold mb-2">Rentabilidad Garantizada</h3>
+                        <p className="text-gold text-xl font-bold mb-2">9% Anual</p>
+                        <p className="text-silver-100 text-sm">Retorno fijo y predecible</p>
+                      </div>
+                    </AnimatedCard>
 
-                    <div className="bg-black/70 p-6 rounded-lg text-center">
-                      <div className="w-12 h-12 bg-[#387b46] rounded-full flex items-center justify-center mx-auto mb-4">
-                        <TrendingUp className="h-6 w-6 text-white" />
+                    <AnimatedCard animationType="flip" className="h-full" flipContent={
+                      <div className="bg-gradient-to-br from-[#387b46] to-[#2d4235] p-6 rounded-lg text-center h-full flex flex-col justify-center">
+                        <h3 className="text-white font-semibold mb-4">Protección Legal</h3>
+                        <ul className="text-silver-100 text-sm space-y-2">
+                          <li>• Cobertura bancaria total</li>
+                          <li>• Seguro de depósitos</li>
+                          <li>• Marco regulatorio europeo</li>
+                          <li>• Auditorías trimestrales</li>
+                        </ul>
                       </div>
-                      <h3 className="text-white font-semibold mb-2">Capital Protegido</h3>
-                      <p className="text-gold text-xl font-bold mb-2">100%</p>
-                      <p className="text-silver-100 text-sm">Garantía bancaria completa</p>
-                    </div>
+                    }>
+                      <div className="bg-black/70 p-6 rounded-lg text-center h-full">
+                        <div className="w-12 h-12 bg-[#387b46] rounded-full flex items-center justify-center mx-auto mb-4">
+                          <TrendingUp className="h-6 w-6 text-white" />
+                        </div>
+                        <h3 className="text-white font-semibold mb-2">Capital Protegido</h3>
+                        <p className="text-gold text-xl font-bold mb-2">100%</p>
+                        <p className="text-silver-100 text-sm">Garantía bancaria completa</p>
+                      </div>
+                    </AnimatedCard>
 
-                    <div className="bg-black/70 p-6 rounded-lg text-center">
-                      <div className="w-12 h-12 bg-[#387b46] rounded-full flex items-center justify-center mx-auto mb-4">
-                        <Calendar className="h-6 w-6 text-white" />
+                    <AnimatedCard animationType="flip" className="h-full" flipContent={
+                      <div className="bg-gradient-to-br from-[#387b46] to-[#2d4235] p-6 rounded-lg text-center h-full flex flex-col justify-center">
+                        <h3 className="text-white font-semibold mb-4">Opciones Flexibles</h3>
+                        <ul className="text-silver-100 text-sm space-y-2">
+                          <li>• Retirada parcial permitida</li>
+                          <li>• Renovación automática</li>
+                          <li>• Liquidez en 24-48h</li>
+                          <li>• Sin penalizaciones</li>
+                        </ul>
                       </div>
-                      <h3 className="text-white font-semibold mb-2">Flexibilidad Total</h3>
-                      <p className="text-gold text-xl font-bold mb-2">1-5 años</p>
-                      <p className="text-silver-100 text-sm">Plazos adaptables</p>
-                    </div>
+                    }>
+                      <div className="bg-black/70 p-6 rounded-lg text-center h-full">
+                        <div className="w-12 h-12 bg-[#387b46] rounded-full flex items-center justify-center mx-auto mb-4">
+                          <Calendar className="h-6 w-6 text-white" />
+                        </div>
+                        <h3 className="text-white font-semibold mb-2">Flexibilidad Total</h3>
+                        <p className="text-gold text-xl font-bold mb-2">1-5 años</p>
+                        <p className="text-silver-100 text-sm">Plazos adaptables</p>
+                      </div>
+                    </AnimatedCard>
                   </div>
 
                   {/* Growth Projection Chart */}
