@@ -3,9 +3,12 @@ import { useLocation } from "wouter";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Label } from "@/components/ui/label";
 import { User, Lock, Eye, EyeOff, ArrowLeft } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { useAuth } from "@/hooks/useAuth";
 import logoImg from "@/assets/Logo-removeBG_1752488347081.png";
 import { useScrollToTop } from "@/hooks/useScrollToTop";
 
@@ -13,16 +16,26 @@ export default function Login() {
   useScrollToTop();
   const [, setLocation] = useLocation();
   const { toast } = useToast();
-  const [formData, setFormData] = useState({
-    username: "",
+  const { login, register, isLoading } = useAuth();
+  
+  const [loginForm, setLoginForm] = useState({
+    email: "",
     password: ""
   });
+
+  const [registerForm, setRegisterForm] = useState({
+    email: "",
+    password: "",
+    name: "",
+    role: "client" as "client" | "partner"
+  });
+
   const [showPassword, setShowPassword] = useState(false);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    if (!formData.username || !formData.password) {
+    if (!loginForm.email || !loginForm.password) {
       toast({
         title: "Campos requeridos",
         description: "Por favor complete todos los campos.",
@@ -31,18 +44,48 @@ export default function Login() {
       return;
     }
 
-    // Demo login validation
-    if (formData.username === "asesor" && formData.password === "test2025") {
+    const result = await login(loginForm.email, loginForm.password);
+    
+    if (result.success) {
       toast({
-        title: "Acceso exitoso",
-        description: "Bienvenido al portal de asesores."
+        title: "¡Bienvenido!",
+        description: "Has iniciado sesión correctamente",
       });
       setLocation("/dashboard");
     } else {
       toast({
         title: "Credenciales incorrectas",
-        description: "Usuario o contraseña incorrectos.",
+        description: result.error || "Email o contraseña incorrectos",
+        variant: "destructive",
+      });
+    }
+  };
+
+  const handleRegister = async (e: React.FormEvent) => {
+    e.preventDefault();
+    
+    if (!registerForm.email || !registerForm.password || !registerForm.name) {
+      toast({
+        title: "Campos requeridos",
+        description: "Por favor complete todos los campos.",
         variant: "destructive"
+      });
+      return;
+    }
+
+    const result = await register(registerForm.email, registerForm.password, registerForm.name, registerForm.role);
+    
+    if (result.success) {
+      toast({
+        title: "¡Cuenta creada!",
+        description: "Tu cuenta ha sido creada correctamente",
+      });
+      setLocation("/dashboard");
+    } else {
+      toast({
+        title: "Error al crear cuenta",
+        description: result.error || "Error al crear la cuenta",
+        variant: "destructive",
       });
     }
   };
@@ -74,67 +117,145 @@ export default function Login() {
           <p className="text-silver-100">Accede a tu dashboard profesional</p>
         </div>
 
-        {/* Login Form */}
+        {/* Login/Register Forms */}
         <Card className="bg-[#040505] border-silver-500/20">
-          <CardHeader>
-            <CardTitle className="text-white text-center">Iniciar Sesión</CardTitle>
-            <CardDescription className="text-silver-100 text-center">
-              Ingresa tus credenciales para acceder
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <form onSubmit={handleSubmit} className="space-y-4">
-              <div className="space-y-2">
-                <Label htmlFor="username" className="text-white">Usuario</Label>
-                <div className="relative">
-                  <User className="absolute left-3 top-3 h-4 w-4 text-silver-100" />
-                  <Input
-                    id="username"
-                    type="text"
-                    placeholder="Ingresa tu usuario"
-                    value={formData.username}
-                    onChange={(e) => setFormData({ ...formData, username: e.target.value })}
-                    className="pl-10 bg-black/70 border-silver-500/20 text-white placeholder-silver-100"
-                  />
-                </div>
-              </div>
+          <CardContent className="p-6">
+            <Tabs defaultValue="login" className="w-full">
+              <TabsList className="grid w-full grid-cols-2 bg-black/50">
+                <TabsTrigger value="login" className="text-white data-[state=active]:bg-gold data-[state=active]:text-navy">
+                  Iniciar Sesión
+                </TabsTrigger>
+                <TabsTrigger value="register" className="text-white data-[state=active]:bg-gold data-[state=active]:text-navy">
+                  Registrarse
+                </TabsTrigger>
+              </TabsList>
+              
+              <TabsContent value="login" className="mt-6">
+                <form onSubmit={handleLogin} className="space-y-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="email" className="text-white">Email</Label>
+                    <div className="relative">
+                      <User className="absolute left-3 top-3 h-4 w-4 text-silver-100" />
+                      <Input
+                        id="email"
+                        type="email"
+                        placeholder="tu@email.com"
+                        value={loginForm.email}
+                        onChange={(e) => setLoginForm({...loginForm, email: e.target.value})}
+                        className="pl-10 bg-black/70 border-silver-500/20 text-white placeholder-silver-100"
+                        required
+                      />
+                    </div>
+                  </div>
 
-              <div className="space-y-2">
-                <Label htmlFor="password" className="text-white">Contraseña</Label>
-                <div className="relative">
-                  <Lock className="absolute left-3 top-3 h-4 w-4 text-silver-100" />
-                  <Input
-                    id="password"
-                    type={showPassword ? "text" : "password"}
-                    placeholder="Ingresa tu contraseña"
-                    value={formData.password}
-                    onChange={(e) => setFormData({ ...formData, password: e.target.value })}
-                    className="pl-10 pr-10 bg-black/70 border-silver-500/20 text-white placeholder-silver-100"
-                  />
-                  <button
-                    type="button"
-                    onClick={() => setShowPassword(!showPassword)}
-                    className="absolute right-3 top-3 text-silver-100 hover:text-white"
+                  <div className="space-y-2">
+                    <Label htmlFor="password" className="text-white">Contraseña</Label>
+                    <div className="relative">
+                      <Lock className="absolute left-3 top-3 h-4 w-4 text-silver-100" />
+                      <Input
+                        id="password"
+                        type={showPassword ? "text" : "password"}
+                        placeholder="Tu contraseña"
+                        value={loginForm.password}
+                        onChange={(e) => setLoginForm({...loginForm, password: e.target.value})}
+                        className="pl-10 pr-10 bg-black/70 border-silver-500/20 text-white placeholder-silver-100"
+                        required
+                      />
+                      <button
+                        type="button"
+                        onClick={() => setShowPassword(!showPassword)}
+                        className="absolute right-3 top-3 text-silver-100 hover:text-white"
+                      >
+                        {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                      </button>
+                    </div>
+                  </div>
+
+                  <Button 
+                    type="submit" 
+                    className="w-full bg-[#344e41] hover:bg-[#2d4235] text-white"
+                    disabled={isLoading}
                   >
-                    {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
-                  </button>
-                </div>
-              </div>
+                    {isLoading ? "Ingresando..." : "Iniciar Sesión"}
+                  </Button>
+                </form>
+              </TabsContent>
+              
+              <TabsContent value="register" className="mt-6">
+                <form onSubmit={handleRegister} className="space-y-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="register-name" className="text-white">Nombre completo</Label>
+                    <Input
+                      id="register-name"
+                      type="text"
+                      placeholder="Tu nombre completo"
+                      value={registerForm.name}
+                      onChange={(e) => setRegisterForm({...registerForm, name: e.target.value})}
+                      className="bg-black/70 border-silver-500/20 text-white placeholder-silver-100"
+                      required
+                    />
+                  </div>
+                  
+                  <div className="space-y-2">
+                    <Label htmlFor="register-email" className="text-white">Email</Label>
+                    <Input
+                      id="register-email"
+                      type="email"
+                      placeholder="tu@email.com"
+                      value={registerForm.email}
+                      onChange={(e) => setRegisterForm({...registerForm, email: e.target.value})}
+                      className="bg-black/70 border-silver-500/20 text-white placeholder-silver-100"
+                      required
+                    />
+                  </div>
+                  
+                  <div className="space-y-2">
+                    <Label htmlFor="register-password" className="text-white">Contraseña</Label>
+                    <Input
+                      id="register-password"
+                      type="password"
+                      placeholder="Mínimo 6 caracteres"
+                      value={registerForm.password}
+                      onChange={(e) => setRegisterForm({...registerForm, password: e.target.value})}
+                      className="bg-black/70 border-silver-500/20 text-white placeholder-silver-100"
+                      required
+                      minLength={6}
+                    />
+                  </div>
+                  
+                  <div className="space-y-2">
+                    <Label htmlFor="register-role" className="text-white">Tipo de cuenta</Label>
+                    <Select 
+                      value={registerForm.role} 
+                      onValueChange={(value: "client" | "partner") => setRegisterForm({...registerForm, role: value})}
+                    >
+                      <SelectTrigger className="bg-black/70 border-silver-500/20 text-white">
+                        <SelectValue placeholder="Selecciona el tipo de cuenta" />
+                      </SelectTrigger>
+                      <SelectContent className="bg-black border-silver-500/20">
+                        <SelectItem value="client" className="text-white">Cliente</SelectItem>
+                        <SelectItem value="partner" className="text-white">Partner</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
 
-              <Button 
-                type="submit" 
-                className="w-full bg-[#344e41] hover:bg-[#2d4235] text-white"
-              >
-                Iniciar Sesión
-              </Button>
-            </form>
+                  <Button 
+                    type="submit" 
+                    className="w-full bg-[#344e41] hover:bg-[#2d4235] text-white"
+                    disabled={isLoading}
+                  >
+                    {isLoading ? "Creando cuenta..." : "Crear cuenta"}
+                  </Button>
+                </form>
+              </TabsContent>
+            </Tabs>
 
             {/* Demo credentials */}
             <div className="mt-6 p-4 bg-black/70 rounded-lg border border-silver-500/10">
               <p className="text-xs text-silver-100 text-center">
-                <strong>Para demo:</strong><br />
-                Usuario: <code className="text-gold">asesor</code> | 
-                Contraseña: <code className="text-gold">test2025</code>
+                <strong>Cuentas demo:</strong><br />
+                <code className="text-gold">cliente@nakama.com</code> | <code className="text-gold">partner@nakama.com</code><br />
+                Contraseña: <code className="text-gold">demo2025</code>
               </p>
             </div>
           </CardContent>
