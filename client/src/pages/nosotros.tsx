@@ -49,7 +49,7 @@ export default function Nosotros() {
               </div>
               
               <div className="mb-16">
-                <h2 className="font-playfair text-3xl font-bold text-white mb-8 text-center">Nuestros Valores</h2>
+                <h2 className="font-playfair text-4xl md:text-5xl font-bold text-white mb-8 text-center">Nuestros Valores</h2>
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
                   
                   {/* Transparencia */}
