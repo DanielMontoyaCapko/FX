@@ -23,6 +23,7 @@ import {
 import logoImg from "@/assets/Logo-removeBG_1752488347081.png";
 import { useScrollToTop } from "@/hooks/useScrollToTop";
 import GrowthChart from "@/components/growth-chart";
+import AnimatedCard from "@/components/animated-card";
 
 export default function PartnerDashboard() {
   useScrollToTop();
@@ -119,57 +120,65 @@ export default function PartnerDashboard() {
 
         {/* Key Metrics Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-          <Card className="bg-gradient-to-br from-blue-600/20 to-blue-800/20 border-blue-500/30">
-            <CardContent className="p-6">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-blue-200 text-sm font-medium">Clientes Activos</p>
-                  <p className="text-white text-3xl font-bold">{partnerStats.totalClients}</p>
-                  <p className="text-blue-200 text-xs">+5 este mes</p>
+          <AnimatedCard animationType="both" className="h-full">
+            <Card className="bg-gradient-to-br from-blue-600/20 to-blue-800/20 border-blue-500/30 h-full card-hover-effect">
+              <CardContent className="p-6">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-blue-200 text-sm font-medium">Clientes Activos</p>
+                    <p className="text-white text-3xl font-bold">{partnerStats.totalClients}</p>
+                    <p className="text-blue-200 text-xs">+5 este mes</p>
+                  </div>
+                  <Users className="w-8 h-8 text-blue-400" />
                 </div>
-                <Users className="w-8 h-8 text-blue-400" />
-              </div>
-            </CardContent>
-          </Card>
+              </CardContent>
+            </Card>
+          </AnimatedCard>
 
-          <Card className="bg-gradient-to-br from-emerald-600/20 to-emerald-800/20 border-emerald-500/30">
-            <CardContent className="p-6">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-emerald-200 text-sm font-medium">Volumen Total</p>
-                  <p className="text-white text-3xl font-bold">${(partnerStats.activeInvestments / 1000000).toFixed(1)}M</p>
-                  <p className="text-emerald-200 text-xs">+12% vs mes anterior</p>
+          <AnimatedCard animationType="both" className="h-full">
+            <Card className="bg-gradient-to-br from-emerald-600/20 to-emerald-800/20 border-emerald-500/30 h-full card-hover-effect">
+              <CardContent className="p-6">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-emerald-200 text-sm font-medium">Volumen Total</p>
+                    <p className="text-white text-3xl font-bold">${(partnerStats.activeInvestments / 1000000).toFixed(1)}M</p>
+                    <p className="text-emerald-200 text-xs">+12% vs mes anterior</p>
+                  </div>
+                  <TrendingUp className="w-8 h-8 text-emerald-400" />
                 </div>
-                <TrendingUp className="w-8 h-8 text-emerald-400" />
-              </div>
-            </CardContent>
-          </Card>
+              </CardContent>
+            </Card>
+          </AnimatedCard>
 
-          <Card className="bg-gradient-to-br from-gold/20 to-yellow-600/20 border-gold/30">
-            <CardContent className="p-6">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-gold text-sm font-medium">Comisiones YTD</p>
-                  <p className="text-white text-3xl font-bold">${(partnerStats.ytdCommission / 1000).toFixed(0)}K</p>
-                  <p className="text-gold text-xs">Objetivo: $250K</p>
+          <AnimatedCard animationType="both" className="h-full">
+            <Card className="bg-gradient-to-br from-gold/20 to-yellow-600/20 border-gold/30 h-full card-hover-effect">
+              <CardContent className="p-6">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-gold text-sm font-medium">Comisiones YTD</p>
+                    <p className="text-white text-3xl font-bold">${(partnerStats.ytdCommission / 1000).toFixed(0)}K</p>
+                    <p className="text-gold text-xs">Objetivo: $250K</p>
+                  </div>
+                  <DollarSign className="w-8 h-8 text-gold animate-pulse-gold" />
                 </div>
-                <DollarSign className="w-8 h-8 text-gold" />
-              </div>
-            </CardContent>
-          </Card>
+              </CardContent>
+            </Card>
+          </AnimatedCard>
 
-          <Card className="bg-gradient-to-br from-purple-600/20 to-purple-800/20 border-purple-500/30">
-            <CardContent className="p-6">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-purple-200 text-sm font-medium">Tasa Conversión</p>
-                  <p className="text-white text-3xl font-bold">{partnerStats.conversionRate}%</p>
-                  <p className="text-purple-200 text-xs">Top 10% de partners</p>
+          <AnimatedCard animationType="both" className="h-full">
+            <Card className="bg-gradient-to-br from-purple-600/20 to-purple-800/20 border-purple-500/30 h-full card-hover-effect">
+              <CardContent className="p-6">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-purple-200 text-sm font-medium">Tasa Conversión</p>
+                    <p className="text-white text-3xl font-bold">{partnerStats.conversionRate}%</p>
+                    <p className="text-purple-200 text-xs">Top 10% de partners</p>
+                  </div>
+                  <Target className="w-8 h-8 text-purple-400" />
                 </div>
-                <Target className="w-8 h-8 text-purple-400" />
-              </div>
-            </CardContent>
-          </Card>
+              </CardContent>
+            </Card>
+          </AnimatedCard>
         </div>
 
         {/* Main Content Tabs */}
