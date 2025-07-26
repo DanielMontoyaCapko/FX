@@ -54,7 +54,7 @@ export default function Security() {
                 <feature.icon className="text-2xl text-gold w-8 h-8 transition-colors duration-300" />
               </div>
               <h3 className="font-playfair text-xl font-semibold text-white mb-4 transition-colors duration-300">{feature.title}</h3>
-              <p className="text-silver-100 transition-colors duration-300">{feature.description}</p>
+              <p className={`${index < 3 ? 'text-white' : 'text-silver-100'} transition-colors duration-300`}>{feature.description}</p>
             </div>
           ))}
         </div>
