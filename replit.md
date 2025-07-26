@@ -112,6 +112,25 @@ The platform now uses email/password authentication instead of the previous Repl
 - `AuthProvider` context wrapper for authentication state management
 - Login page supports both login and registration with role selection (client/partner)
 
+### Demo Accounts for Testing
+**Client Account:**
+- Email: `cliente@nakama.com`
+- Password: `demo2025`
+- Role: Client
+- Name: Juan Cliente
+
+**Partner Account:**
+- Email: `partner@nakama.com`
+- Password: `demo2025`
+- Role: Partner
+- Name: Maria Partner
+
+To test the authentication system:
+1. Visit `/login` in your browser
+2. Use the credentials above to log in
+3. Test both login and registration functionality
+4. After login, users are redirected to `/dashboard`
+
 ## Changelog
 
 Changelog:
