@@ -4,7 +4,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Slider } from "@/components/ui/slider";
-import { Download } from "lucide-react";
+import { Download, TrendingUp, Shield, Award } from "lucide-react";
 import { useCalculator } from "@/hooks/use-calculator";
 import { useToast } from "@/hooks/use-toast";
 import jsPDF from "jspdf";
@@ -23,21 +23,33 @@ export default function Calculator() {
     try {
       const doc = new jsPDF();
       
+      // Add logo to PDF
+      const logoWidth = 40;
+      const logoHeight = 20;
+      doc.addImage(logoImg, 'PNG', 150, 10, logoWidth, logoHeight);
+      
       // Configure fonts and colors
       doc.setFont("helvetica", "bold");
       doc.setFontSize(20);
-      doc.setTextColor(0, 31, 63); // Navy blue
+      doc.setTextColor(52, 78, 65); // Green color
       
       // Header
-      doc.text("NAKAMA&PARTNERS", 20, 30);
+      doc.text("NAKAMA&PARTNERS", 20, 25);
       doc.setFontSize(16);
-      doc.setTextColor(218, 165, 32); // Gold
-      doc.text("Simulación de Inversión", 20, 45);
+      doc.setTextColor(52, 78, 65); // Green color
+      doc.text("Simulación de Inversión Personalizada", 20, 40);
       
       // Separator line
-      doc.setDrawColor(0, 31, 63);
-      doc.setLineWidth(0.5);
+      doc.setDrawColor(52, 78, 65);
+      doc.setLineWidth(1);
       doc.line(20, 50, 190, 50);
+      
+      // Premium badge
+      doc.setFillColor(52, 78, 65);
+      doc.roundedRect(150, 35, 40, 10, 2, 2, 'F');
+      doc.setTextColor(255, 255, 255);
+      doc.setFontSize(8);
+      doc.text('PREMIUM REPORT', 152, 42);
       
       // Investment details
       doc.setFont("helvetica", "normal");
@@ -133,83 +145,173 @@ export default function Calculator() {
   };
 
   return (
-    <section className="py-10 bg-transparent">
+    <section className="py-16 bg-transparent relative">
       <div className="container mx-auto px-6">
-        <div className="text-center mb-12">
+        {/* Header Section with Logo */}
+        <div className="text-center mb-16 relative">
+          <div className="flex justify-center mb-8">
+            <img 
+              src={logoImg} 
+              alt="Nakama&Partners Logo" 
+              className="h-16 w-auto filter drop-shadow-lg"
+            />
+          </div>
           <h2 className="font-playfair text-4xl md:text-5xl font-bold text-white mb-6">
-            Simula Tu Crecimiento: <span className="text-green">¿Qué Ocurre Si Inviertes 50.000€?</span>
+            Calculadora Premium de <span className="text-green">Inversiones</span>
           </h2>
+          <p className="text-xl text-silver-100 max-w-3xl mx-auto">
+            Simula el crecimiento de tu patrimonio con nuestra herramienta exclusiva de proyección financiera.
+          </p>
         </div>
         
-        <div className="max-w-4xl mx-auto bg-black/70 rounded-2xl border border-silver-500/20 p-8">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-            <div>
-              <Label className="block text-white font-semibold mb-3">Cantidad a Invertir (€)</Label>
-              <Input
-                type="number"
-                min="50000"
-                step="1000"
-                value={state.amount}
-                onChange={(e) => updateAmount(Number(e.target.value))}
-                className="w-full bg-charcoal text-white border-silver-500/30 focus:border-gold"
-              />
-              
-              <Label className="block text-white font-semibold mb-3 mt-6">Plazo ({state.years} {state.years === 1 ? 'año' : 'años'})</Label>
-              <Slider
-                value={[state.years]}
-                onValueChange={(value) => updateYears(value[0])}
-                min={1}
-                max={5}
-                step={1}
-                className="w-full"
-              />
-              <div className="flex justify-between text-sm text-silver-100 mt-2">
-                <span>1 año</span>
-                <span>5 años</span>
-              </div>
-              
-              <div className="mt-6">
-                <div className="flex items-center space-x-3">
-                  <Checkbox
-                    id="compound-interest"
-                    checked={state.compoundInterest}
-                    onCheckedChange={updateCompoundInterest}
-                  />
-                  <Label htmlFor="compound-interest" className="text-white cursor-pointer">
-                    Con Interés Compuesto
-                  </Label>
+        {/* Premium Calculator Container */}
+        <div className="max-w-6xl mx-auto">
+          <div className="bg-gradient-to-br from-black/80 to-gray-900/90 rounded-3xl border border-green/30 shadow-2xl overflow-hidden">
+            {/* Premium Header Bar */}
+            <div className="bg-gradient-to-r from-green/20 to-green/10 p-6 border-b border-green/20">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center space-x-4">
+                  <div className="p-3 bg-green/20 rounded-full">
+                    <TrendingUp className="h-6 w-6 text-green" />
+                  </div>
+                  <div>
+                    <h3 className="font-playfair text-2xl font-bold text-white">Simulador Avanzado</h3>
+                    <p className="text-green text-sm">Rentabilidad garantizada del 9% anual</p>
+                  </div>
                 </div>
-              </div>
-            </div>
-            
-            <div className="bg-charcoal rounded-xl p-6">
-              <h3 className="font-playfair text-2xl font-bold text-white mb-6">Resultados de la Simulación</h3>
-              
-              <div className="space-y-4">
-                <div className="flex justify-between items-center">
-                  <span className="text-silver-100">Inversión Inicial:</span>
-                  <span className="text-white font-semibold">€{results.initialAmount.toLocaleString()}</span>
-                </div>
-                <div className="flex justify-between items-center">
-                  <span className="text-silver-100">Intereses Generados:</span>
-                  <span className="text-green font-semibold">€{results.interestGenerated.toLocaleString()}</span>
-                </div>
-                <div className="border-t border-silver-500/30 pt-4">
-                  <div className="flex justify-between items-center">
-                    <span className="text-white font-semibold">Capital Final:</span>
-                    <span className="text-green font-bold text-xl">€{results.finalAmount.toLocaleString()}</span>
+                <div className="flex items-center space-x-4 text-sm text-silver-100">
+                  <div className="flex items-center space-x-2">
+                    <Shield className="h-4 w-4 text-green" />
+                    <span>Capital Protegido</span>
+                  </div>
+                  <div className="flex items-center space-x-2">
+                    <Award className="h-4 w-4 text-green" />
+                    <span>Sin Comisiones</span>
                   </div>
                 </div>
               </div>
-              
-              <Button 
-                onClick={handleDownloadPDF}
-                disabled={isGeneratingPDF}
-                className="w-full mt-6 gradient-navy text-white hover:opacity-90"
-              >
-                <Download className="mr-2 h-4 w-4" />
-                {isGeneratingPDF ? "Generando..." : "Descargar simulación en PDF"}
-              </Button>
+            </div>
+
+            {/* Calculator Content */}
+            <div className="p-8">
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
+                
+                {/* Left Column - Input Controls */}
+                <div className="space-y-8">
+                  <div>
+                    <Label className="block text-white font-semibold mb-4 text-lg">
+                      💰 Cantidad a Invertir (€)
+                    </Label>
+                    <div className="relative">
+                      <Input
+                        type="number"
+                        min="50000"
+                        step="1000"
+                        value={state.amount}
+                        onChange={(e) => updateAmount(Number(e.target.value))}
+                        className="w-full bg-black/50 text-white border-green/30 focus:border-green text-xl p-4 rounded-xl"
+                      />
+                      <div className="absolute right-4 top-1/2 transform -translate-y-1/2 text-green font-semibold">
+                        EUR
+                      </div>
+                    </div>
+                    <p className="text-sm text-silver-100 mt-2">Inversión mínima: €50,000</p>
+                  </div>
+                  
+                  <div>
+                    <Label className="block text-white font-semibold mb-4 text-lg">
+                      ⏱️ Plazo de Inversión ({state.years} {state.years === 1 ? 'año' : 'años'})
+                    </Label>
+                    <div className="px-4">
+                      <Slider
+                        value={[state.years]}
+                        onValueChange={(value) => updateYears(value[0])}
+                        min={1}
+                        max={5}
+                        step={1}
+                        className="w-full"
+                      />
+                      <div className="flex justify-between text-sm text-silver-100 mt-3">
+                        <span>1 año</span>
+                        <span>2 años</span>
+                        <span>3 años</span>
+                        <span>4 años</span>
+                        <span>5 años</span>
+                      </div>
+                    </div>
+                  </div>
+                  
+                  <div className="bg-black/30 rounded-xl p-6 border border-green/20">
+                    <div className="flex items-center space-x-3">
+                      <Checkbox
+                        id="compound-interest"
+                        checked={state.compoundInterest}
+                        onCheckedChange={updateCompoundInterest}
+                        className="border-green data-[state=checked]:bg-green"
+                      />
+                      <Label htmlFor="compound-interest" className="text-white cursor-pointer font-semibold">
+                        🚀 Activar Interés Compuesto
+                      </Label>
+                    </div>
+                    <p className="text-sm text-silver-100 mt-2 ml-6">
+                      Maximiza tu rentabilidad reinvirtiendo automáticamente los beneficios
+                    </p>
+                  </div>
+                </div>
+                
+                {/* Right Column - Results */}
+                <div className="bg-gradient-to-br from-green/10 to-green/5 rounded-2xl p-8 border border-green/20">
+                  <div className="flex items-center space-x-3 mb-6">
+                    <div className="p-2 bg-green/20 rounded-lg">
+                      <TrendingUp className="h-5 w-5 text-green" />
+                    </div>
+                    <h3 className="font-playfair text-2xl font-bold text-white">Proyección Financiera</h3>
+                  </div>
+                  
+                  <div className="space-y-6">
+                    <div className="bg-black/30 rounded-xl p-6">
+                      <div className="flex justify-between items-center">
+                        <span className="text-silver-100 font-medium">Inversión Inicial:</span>
+                        <span className="text-white font-bold text-lg">€{results.initialAmount.toLocaleString()}</span>
+                      </div>
+                    </div>
+                    
+                    <div className="bg-green/10 rounded-xl p-6 border border-green/20">
+                      <div className="flex justify-between items-center">
+                        <span className="text-silver-100 font-medium">Beneficios Generados:</span>
+                        <span className="text-green font-bold text-lg">+€{results.interestGenerated.toLocaleString()}</span>
+                      </div>
+                    </div>
+                    
+                    <div className="bg-gradient-to-r from-green/20 to-green/10 rounded-xl p-6 border border-green/30">
+                      <div className="flex justify-between items-center">
+                        <span className="text-white font-bold text-lg">Capital Final:</span>
+                        <span className="text-green font-bold text-2xl">€{results.finalAmount.toLocaleString()}</span>
+                      </div>
+                      <div className="mt-2 text-center">
+                        <span className="text-sm text-green font-semibold">
+                          +{((results.interestGenerated / results.initialAmount) * 100).toFixed(1)}% de rentabilidad total
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                  
+                  <Button 
+                    onClick={handleDownloadPDF}
+                    disabled={isGeneratingPDF}
+                    className="w-full mt-8 bg-gradient-to-r from-green to-green/80 text-white hover:from-green/90 hover:to-green/70 transition-all duration-300 py-4 text-lg font-semibold rounded-xl shadow-lg"
+                  >
+                    <Download className="mr-3 h-5 w-5" />
+                    {isGeneratingPDF ? "Generando PDF Premium..." : "Descargar Informe Premium"}
+                  </Button>
+                  
+                  <div className="mt-4 text-center">
+                    <p className="text-xs text-silver-100">
+                      Documento personalizado con tu proyección financiera exclusiva
+                    </p>
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
         </div>
