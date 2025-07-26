@@ -39,7 +39,7 @@ export default function Dashboard() {
     setLocation("/login");
   };
 
-  const handleProductDetails = (product) => {
+  const handleProductDetails = (product: any) => {
     setSelectedProduct(product);
     setShowProductDetail(true);
   };
