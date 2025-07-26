@@ -48,7 +48,7 @@ const apiCall = async (url: string, options: RequestInit = {}) => {
   return response.json();
 };
 
-export function AuthProvider({ children }: { children: ReactNode }) {
+export function AuthProvider({ children }: { children: ReactNode }): JSX.Element {
   const [user, setUser] = useState<User | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
