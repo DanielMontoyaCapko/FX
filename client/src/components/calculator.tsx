@@ -8,7 +8,7 @@ import { Download, TrendingUp, Shield, Award } from "lucide-react";
 import { useCalculator } from "@/hooks/use-calculator";
 import { useToast } from "@/hooks/use-toast";
 import jsPDF from "jspdf";
-import logoImg from "@/assets/Logo-removeBG_1752488347081.png";
+import logoImg from "@/assets/Logo-removeBG_1753542032142.png";
 
 export default function Calculator() {
   const { state, updateAmount, updateYears, updateCompoundInterest, calculateResults } = useCalculator();
@@ -24,9 +24,9 @@ export default function Calculator() {
       const doc = new jsPDF();
       
       // Add logo to PDF
-      const logoWidth = 40;
-      const logoHeight = 20;
-      doc.addImage(logoImg, 'PNG', 150, 10, logoWidth, logoHeight);
+      const logoWidth = 45;
+      const logoHeight = 25;
+      doc.addImage(logoImg, 'PNG', 145, 8, logoWidth, logoHeight);
       
       // Configure fonts and colors
       doc.setFont("helvetica", "bold");
@@ -178,7 +178,7 @@ export default function Calculator() {
                   <img 
                     src={logoImg} 
                     alt="Nakama&Partners Logo" 
-                    className="h-12 w-auto filter drop-shadow-lg"
+                    className="h-16 w-auto filter drop-shadow-xl brightness-110 contrast-125"
                   />
                 </div>
                 
