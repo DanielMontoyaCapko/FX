@@ -36,7 +36,7 @@ export default function Strategy() {
       <div className="container mx-auto px-6">
         <div className="text-center mb-16">
           <h2 className="font-playfair text-4xl md:text-5xl font-bold text-white mb-6">
-            Cómo Conseguimos el <span className="text-gold">9% Fijo Anual</span>
+            Cómo Conseguimos el <span className="text-green">9% Fijo Anual</span>
           </h2>
           <p className="text-xl text-silver-100 max-w-3xl mx-auto">
             Una cartera permanente, sin improvisaciones. Nuestra rentabilidad no depende de predicciones, 
@@ -51,8 +51,8 @@ export default function Strategy() {
               className={`bg-black/70 p-8 rounded-xl border border-silver-500/20 ${strategy.colSpan ? 'md:col-span-2' : ''}`}
             >
               <div className="flex items-start space-x-4">
-                <div className="w-12 h-12 bg-gold/20 rounded-lg flex items-center justify-center flex-shrink-0">
-                  <strategy.icon className="text-gold w-6 h-6" />
+                <div className="w-12 h-12 bg-green/20 rounded-lg flex items-center justify-center flex-shrink-0">
+                  <strategy.icon className="text-green w-6 h-6" />
                 </div>
                 <div>
                   <h3 className="font-playfair text-xl font-semibold text-white mb-3">{strategy.title}</h3>

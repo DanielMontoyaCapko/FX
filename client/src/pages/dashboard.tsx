@@ -124,7 +124,7 @@ export default function Dashboard() {
           <img src={logoImg} alt="Nakama&Partners" className="w-8 h-8" />
           <div>
             <h1 className="font-cormorant text-lg font-bold text-white">Nakama&Partners</h1>
-            <p className="text-gold text-xs">Portal de Asesores</p>
+            <p className="text-green text-xs">Portal de Asesores</p>
           </div>
         </div>
 
@@ -325,7 +325,7 @@ export default function Dashboard() {
                                 <Badge className="bg-green-500 text-white mt-2">En curso</Badge>
                               </div>
                               <div className="text-right">
-                                <p className="text-2xl font-bold text-gold">5.000 €</p>
+                                <p className="text-2xl font-bold text-green">5.000 €</p>
                               </div>
                             </div>
                             <div className="grid grid-cols-2 gap-4 text-sm">
@@ -347,7 +347,7 @@ export default function Dashboard() {
                                 <Badge className="bg-green-500 text-white mt-2">Activo</Badge>
                               </div>
                               <div className="text-right">
-                                <p className="text-2xl font-bold text-gold">2.500 €</p>
+                                <p className="text-2xl font-bold text-green">2.500 €</p>
                               </div>
                             </div>
                             <div className="grid grid-cols-2 gap-4 text-sm">
@@ -373,7 +373,7 @@ export default function Dashboard() {
                                 <Badge className="bg-blue-500 text-white mt-2">Éxito</Badge>
                               </div>
                               <div className="text-right">
-                                <p className="text-2xl font-bold text-gold">10.000 €</p>
+                                <p className="text-2xl font-bold text-green">10.000 €</p>
                               </div>
                             </div>
                             <div className="grid grid-cols-3 gap-4 text-sm">
@@ -399,7 +399,7 @@ export default function Dashboard() {
                                 <Badge className="bg-blue-500 text-white mt-2">Éxito</Badge>
                               </div>
                               <div className="text-right">
-                                <p className="text-2xl font-bold text-gold">7.000 €</p>
+                                <p className="text-2xl font-bold text-green">7.000 €</p>
                               </div>
                             </div>
                             <div className="grid grid-cols-3 gap-4 text-sm">
@@ -807,7 +807,7 @@ export default function Dashboard() {
                           </div>
                         </div>
                         <div className="text-right">
-                          <p className="text-gold font-semibold">{lead.investment}</p>
+                          <p className="text-green font-semibold">{lead.investment}</p>
                           <div className="flex items-center space-x-2">
                             <Badge variant="secondary" className="bg-black/50">
                               <Globe className="h-3 w-3 mr-1" />
@@ -883,7 +883,7 @@ export default function Dashboard() {
                         <TrendingUp className="h-6 w-6 text-white" />
                       </div>
                       <h3 className="text-white font-semibold mb-2">Rentabilidad Garantizada</h3>
-                      <p className="text-gold text-xl font-bold mb-2">9% Anual</p>
+                      <p className="text-green text-xl font-bold mb-2">9% Anual</p>
                       <p className="text-silver-100 text-sm">Retorno fijo y predecible</p>
                     </div>
 
@@ -892,7 +892,7 @@ export default function Dashboard() {
                         <TrendingUp className="h-6 w-6 text-white" />
                       </div>
                       <h3 className="text-white font-semibold mb-2">Capital Protegido</h3>
-                      <p className="text-gold text-xl font-bold mb-2">100%</p>
+                      <p className="text-green text-xl font-bold mb-2">100%</p>
                       <p className="text-silver-100 text-sm">Garantía bancaria completa</p>
                     </div>
 
@@ -901,7 +901,7 @@ export default function Dashboard() {
                         <Calendar className="h-6 w-6 text-white" />
                       </div>
                       <h3 className="text-white font-semibold mb-2">Flexibilidad Total</h3>
-                      <p className="text-gold text-xl font-bold mb-2">1-5 años</p>
+                      <p className="text-green text-xl font-bold mb-2">1-5 años</p>
                       <p className="text-silver-100 text-sm">Plazos adaptables</p>
                     </div>
                   </div>
@@ -936,11 +936,11 @@ export default function Dashboard() {
                     </div>
                     <div className="grid grid-cols-2 gap-4">
                       <div>
-                        <p className="text-gold font-bold text-lg">€50K-500K</p>
+                        <p className="text-green font-bold text-lg">€50K-500K</p>
                         <p className="text-silver-100 text-sm">Capacidad inversión</p>
                       </div>
                       <div>
-                        <p className="text-gold font-bold text-lg">Conservador</p>
+                        <p className="text-green font-bold text-lg">Conservador</p>
                         <p className="text-silver-100 text-sm">Perfil de riesgo</p>
                       </div>
                     </div>

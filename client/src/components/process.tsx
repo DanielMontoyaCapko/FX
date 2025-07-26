@@ -63,7 +63,7 @@ export default function Process() {
       <div className="container mx-auto px-6">
         <div className="text-center mb-16">
           <h2 className="font-playfair text-4xl md:text-5xl font-bold text-white mb-6">
-            Proceso <span className="text-gold">Transparente</span>, Paso a Paso
+            Proceso <span className="text-green">Transparente</span>, Paso a Paso
           </h2>
         </div>
         
@@ -75,7 +75,7 @@ export default function Process() {
             <div className="space-y-6">
               {directProcess.map((step) => (
                 <div key={step.number} className="flex items-start space-x-4">
-                  <div className="w-8 h-8 bg-gold rounded-full flex items-center justify-center text-black font-bold text-sm flex-shrink-0">
+                  <div className="w-8 h-8 bg-green rounded-full flex items-center justify-center text-black font-bold text-sm flex-shrink-0">
                     {step.number}
                   </div>
                   <div>
@@ -102,7 +102,7 @@ export default function Process() {
             <div className="space-y-6">
               {advisorProcess.map((step) => (
                 <div key={step.number} className="flex items-start space-x-4">
-                  <div className="w-8 h-8 bg-gold rounded-full flex items-center justify-center text-black font-bold text-sm flex-shrink-0">
+                  <div className="w-8 h-8 bg-green rounded-full flex items-center justify-center text-black font-bold text-sm flex-shrink-0">
                     {step.number}
                   </div>
                   <div>
@@ -115,7 +115,7 @@ export default function Process() {
             
             <Button 
               onClick={downloadContract}
-              className="w-full mt-8 bg-gold text-black hover:bg-gold/90"
+              className="w-full mt-8 bg-green text-black hover:bg-green/90"
             >
               <FileText className="mr-2 h-4 w-4" />
               Ver ejemplo de contrato

@@ -16,7 +16,7 @@ export default function Calculadora() {
           <div className="container mx-auto px-6">
             <div className="text-center mb-8">
               <h1 className="font-playfair text-5xl md:text-6xl font-bold text-white mb-6">
-                <span className="text-gold">Calculadora</span> de Rentabilidad
+                <span className="text-green">Calculadora</span> de Rentabilidad
               </h1>
               <p className="text-xl text-silver-100 max-w-3xl mx-auto">
                 Descubre cuánto podrías ganar con nuestro 9% fijo anual. Calcula tu rentabilidad de manera interactiva.
@@ -36,24 +36,24 @@ export default function Calculadora() {
               
               <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
                 <div className="bg-black/50 p-6 rounded-xl border border-silver-500/20 text-center">
-                  <div className="w-16 h-16 bg-gold/20 rounded-lg mx-auto mb-4 flex items-center justify-center">
-                    <span className="text-gold font-bold text-xl">1</span>
+                  <div className="w-16 h-16 bg-green/20 rounded-lg mx-auto mb-4 flex items-center justify-center">
+                    <span className="text-green font-bold text-xl">1</span>
                   </div>
                   <h3 className="font-playfair text-xl font-semibold text-white mb-3">Retirar Capital</h3>
                   <p className="text-silver-100">Retire su capital inicial más los intereses generados.</p>
                 </div>
                 
                 <div className="bg-black/50 p-6 rounded-xl border border-silver-500/20 text-center">
-                  <div className="w-16 h-16 bg-gold/20 rounded-lg mx-auto mb-4 flex items-center justify-center">
-                    <span className="text-gold font-bold text-xl">2</span>
+                  <div className="w-16 h-16 bg-green/20 rounded-lg mx-auto mb-4 flex items-center justify-center">
+                    <span className="text-green font-bold text-xl">2</span>
                   </div>
                   <h3 className="font-playfair text-xl font-semibold text-white mb-3">Renovar</h3>
                   <p className="text-silver-100">Renueve su inversión con condiciones preferentes.</p>
                 </div>
                 
                 <div className="bg-black/50 p-6 rounded-xl border border-silver-500/20 text-center">
-                  <div className="w-16 h-16 bg-gold/20 rounded-lg mx-auto mb-4 flex items-center justify-center">
-                    <span className="text-gold font-bold text-xl">3</span>
+                  <div className="w-16 h-16 bg-green/20 rounded-lg mx-auto mb-4 flex items-center justify-center">
+                    <span className="text-green font-bold text-xl">3</span>
                   </div>
                   <h3 className="font-playfair text-xl font-semibold text-white mb-3">Interés Compuesto</h3>
                   <p className="text-silver-100">Aplique interés compuesto para maximizar el crecimiento.</p>

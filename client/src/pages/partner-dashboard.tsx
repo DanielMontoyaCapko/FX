@@ -50,8 +50,8 @@ export default function PartnerDashboard() {
               <div>
                 <h1 className="font-cormorant text-2xl font-bold text-white">Nakama&Partners</h1>
                 <div className="flex items-center space-x-2">
-                  <Crown className="w-4 h-4 text-gold" />
-                  <span className="text-gold text-sm font-medium">Portal Ejecutivo</span>
+                  <Crown className="w-4 h-4 text-green" />
+                  <span className="text-green text-sm font-medium">Portal Ejecutivo</span>
                 </div>
               </div>
             </div>
@@ -59,7 +59,7 @@ export default function PartnerDashboard() {
             <div className="flex items-center space-x-4">
               <div className="text-right">
                 <p className="text-white font-medium">{user?.name}</p>
-                <Badge className="bg-gold text-navy font-medium">
+                <Badge className="bg-green text-navy font-medium">
                   <Star className="w-3 h-3 mr-1" />
                   {partnerStats.tier}
                 </Badge>
@@ -90,7 +90,7 @@ export default function PartnerDashboard() {
               </p>
             </div>
             <div className="text-right">
-              <div className="text-2xl font-bold text-gold mb-1">
+              <div className="text-2xl font-bold text-green mb-1">
                 ${partnerStats.monthlyCommission.toLocaleString()}
               </div>
               <div className="text-silver-100 text-sm">Comisiones este mes</div>
@@ -102,14 +102,14 @@ export default function PartnerDashboard() {
             <CardContent className="p-6">
               <div className="flex items-center justify-between mb-4">
                 <div className="flex items-center space-x-3">
-                  <Trophy className="w-6 h-6 text-gold" />
+                  <Trophy className="w-6 h-6 text-green" />
                   <div>
                     <h3 className="text-white font-semibold">Progreso hacia Diamond Partner</h3>
                     <p className="text-silver-100 text-sm">Faltan $820K en volumen para el siguiente nivel</p>
                   </div>
                 </div>
                 <div className="text-right">
-                  <div className="text-gold font-bold text-lg">{partnerStats.nextTierProgress}%</div>
+                  <div className="text-green font-bold text-lg">{partnerStats.nextTierProgress}%</div>
                 </div>
               </div>
               <Progress value={partnerStats.nextTierProgress} className="h-2" />
@@ -149,11 +149,11 @@ export default function PartnerDashboard() {
             <CardContent className="p-6">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-gold text-sm font-medium">Comisiones YTD</p>
+                  <p className="text-green text-sm font-medium">Comisiones YTD</p>
                   <p className="text-white text-3xl font-bold">${(partnerStats.ytdCommission / 1000).toFixed(0)}K</p>
-                  <p className="text-gold text-xs">Objetivo: $250K</p>
+                  <p className="text-green text-xs">Objetivo: $250K</p>
                 </div>
-                <DollarSign className="w-8 h-8 text-gold" />
+                <DollarSign className="w-8 h-8 text-green" />
               </div>
             </CardContent>
           </Card>
@@ -175,19 +175,19 @@ export default function PartnerDashboard() {
         {/* Main Content Tabs */}
         <Tabs defaultValue="overview" className="space-y-6">
           <TabsList className="bg-black/50 p-1 space-x-1">
-            <TabsTrigger value="overview" className="text-white data-[state=active]:bg-gold data-[state=active]:text-navy px-6">
+            <TabsTrigger value="overview" className="text-white data-[state=active]:bg-green data-[state=active]:text-navy px-6">
               <BarChart3 className="w-4 h-4 mr-2" />
               Resumen
             </TabsTrigger>
-            <TabsTrigger value="clients" className="text-white data-[state=active]:bg-gold data-[state=active]:text-navy px-6">
+            <TabsTrigger value="clients" className="text-white data-[state=active]:bg-green data-[state=active]:text-navy px-6">
               <Users className="w-4 h-4 mr-2" />
               Clientes
             </TabsTrigger>
-            <TabsTrigger value="leads" className="text-white data-[state=active]:bg-gold data-[state=active]:text-navy px-6">
+            <TabsTrigger value="leads" className="text-white data-[state=active]:bg-green data-[state=active]:text-navy px-6">
               <UserPlus className="w-4 h-4 mr-2" />
               Prospección
             </TabsTrigger>
-            <TabsTrigger value="tools" className="text-white data-[state=active]:bg-gold data-[state=active]:text-navy px-6">
+            <TabsTrigger value="tools" className="text-white data-[state=active]:bg-green data-[state=active]:text-navy px-6">
               <Briefcase className="w-4 h-4 mr-2" />
               Herramientas
             </TabsTrigger>
@@ -210,7 +210,7 @@ export default function PartnerDashboard() {
               <Card className="bg-[#040505] border-silver-500/20">
                 <CardHeader>
                   <CardTitle className="text-white flex items-center">
-                    <TrendingUp className="w-5 h-5 mr-2 text-gold" />
+                    <TrendingUp className="w-5 h-5 mr-2 text-green" />
                     Performance Mensual
                   </CardTitle>
                 </CardHeader>
@@ -227,7 +227,7 @@ export default function PartnerDashboard() {
                           <p className="text-silver-100 text-sm">{data.clients} nuevos clientes</p>
                         </div>
                         <div className="text-right">
-                          <p className="text-gold font-bold">${data.commission.toLocaleString()}</p>
+                          <p className="text-green font-bold">${data.commission.toLocaleString()}</p>
                         </div>
                       </div>
                     ))}
@@ -239,7 +239,7 @@ export default function PartnerDashboard() {
               <Card className="bg-[#040505] border-silver-500/20">
                 <CardHeader>
                   <CardTitle className="text-white flex items-center">
-                    <Zap className="w-5 h-5 mr-2 text-gold" />
+                    <Zap className="w-5 h-5 mr-2 text-green" />
                     Actividad Reciente
                   </CardTitle>
                 </CardHeader>
@@ -251,7 +251,7 @@ export default function PartnerDashboard() {
                       { action: "Renovación automática", client: "Ana López", amount: "$75,000", time: "Hace 1 día" },
                     ].map((activity, index) => (
                       <div key={index} className="flex items-start space-x-3 p-3 bg-black/30 rounded-lg">
-                        <div className="w-2 h-2 bg-gold rounded-full mt-2"></div>
+                        <div className="w-2 h-2 bg-green rounded-full mt-2"></div>
                         <div className="flex-1">
                           <p className="text-white text-sm font-medium">{activity.action}</p>
                           <p className="text-silver-100 text-xs">{activity.client} - {activity.amount}</p>
@@ -284,7 +284,7 @@ export default function PartnerDashboard() {
                     <div key={index} className="flex items-center justify-between p-4 bg-black/30 rounded-lg border border-silver-500/10">
                       <div className="flex items-center space-x-4">
                         <div className="w-10 h-10 bg-gradient-to-br from-gold/20 to-gold/10 rounded-full flex items-center justify-center">
-                          <span className="text-gold font-semibold text-sm">{client.name.split(' ').map(n => n[0]).join('')}</span>
+                          <span className="text-green font-semibold text-sm">{client.name.split(' ').map(n => n[0]).join('')}</span>
                         </div>
                         <div>
                           <p className="text-white font-medium">{client.name}</p>
@@ -298,7 +298,7 @@ export default function PartnerDashboard() {
                       </div>
                       <div className="text-right">
                         <p className="text-white font-semibold">${client.investment.toLocaleString()}</p>
-                        <p className="text-gold text-sm">+${client.returns.toLocaleString()}</p>
+                        <p className="text-green text-sm">+${client.returns.toLocaleString()}</p>
                       </div>
                     </div>
                   ))}
@@ -334,7 +334,7 @@ export default function PartnerDashboard() {
                       </div>
                     ))}
                   </div>
-                  <Button className="w-full mt-4 bg-gold hover:bg-gold/80 text-navy font-semibold">
+                  <Button className="w-full mt-4 bg-green hover:bg-green/80 text-navy font-semibold">
                     Ver Todos los Prospectos
                   </Button>
                 </CardContent>
@@ -362,7 +362,7 @@ export default function PartnerDashboard() {
                         </div>
                         <div className="flex justify-between items-center">
                           <Progress value={(stage.count / 23) * 100} className="flex-1 mr-3 h-2" />
-                          <span className="text-gold text-sm font-semibold">${(stage.value / 1000).toFixed(0)}K</span>
+                          <span className="text-green text-sm font-semibold">${(stage.value / 1000).toFixed(0)}K</span>
                         </div>
                       </div>
                     ))}
@@ -415,13 +415,13 @@ export default function PartnerDashboard() {
                 <Card key={index} className={`${tool.premium ? 'bg-gradient-to-br from-gold/10 to-gold/5 border-gold/30' : 'bg-[#040505] border-silver-500/20'} hover:shadow-lg transition-all duration-300`}>
                   <CardContent className="p-6">
                     <div className="flex items-start justify-between mb-4">
-                      <div className={`p-3 rounded-lg ${tool.premium ? 'bg-gold/20' : 'bg-white/10'}`}>
-                        <div className={tool.premium ? 'text-gold' : 'text-white'}>
+                      <div className={`p-3 rounded-lg ${tool.premium ? 'bg-green/20' : 'bg-white/10'}`}>
+                        <div className={tool.premium ? 'text-green' : 'text-white'}>
                           {tool.icon}
                         </div>
                       </div>
                       {tool.premium && (
-                        <Badge className="bg-gold text-navy text-xs">
+                        <Badge className="bg-green text-navy text-xs">
                           <Crown className="w-3 h-3 mr-1" />
                           Premium
                         </Badge>
@@ -430,7 +430,7 @@ export default function PartnerDashboard() {
                     <h3 className="text-white font-semibold mb-2">{tool.title}</h3>
                     <p className="text-silver-100 text-sm mb-4">{tool.description}</p>
                     <Button 
-                      className={`w-full ${tool.premium ? 'bg-gold hover:bg-gold/80 text-navy' : 'bg-white/10 hover:bg-white/20 text-white'}`}
+                      className={`w-full ${tool.premium ? 'bg-green hover:bg-green/80 text-navy' : 'bg-white/10 hover:bg-white/20 text-white'}`}
                     >
                       Acceder
                     </Button>

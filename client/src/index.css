@@ -27,7 +27,7 @@
   
   /* Custom colors */
   --navy: hsl(210, 100%, 12%);
-  --gold: hsl(142, 35%, 38%);
+  --green: hsl(142, 35%, 38%);
   --silver-100: hsl(0, 0%, 90%);
   --silver-300: hsl(0, 0%, 75%);
   --silver-500: hsl(0, 0%, 50%);
@@ -87,8 +87,8 @@
     color: var(--navy);
   }
   
-  .text-gold {
-    color: var(--gold);
+  .text-green {
+    color: var(--green);
   }
   
   .text-silver-100 {
@@ -111,8 +111,8 @@
     background-color: var(--navy);
   }
   
-  .bg-gold {
-    background-color: var(--gold);
+  .bg-green {
+    background-color: var(--green);
   }
   
   .bg-charcoal {

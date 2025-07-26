@@ -16,7 +16,7 @@ export default function Nosotros() {
           <div className="container mx-auto px-6">
             <div className="text-center mb-8">
               <h1 className="font-playfair text-5xl md:text-6xl font-bold text-white mb-6">
-                Sobre <span className="text-gold">Nosotros</span>
+                Sobre <span className="text-green">Nosotros</span>
               </h1>
               <p className="text-xl text-silver-100 max-w-3xl mx-auto">
                 Conozca la historia detrás de Nakama&Partners y nuestro compromiso con la protección patrimonial.
@@ -52,24 +52,24 @@ export default function Nosotros() {
                 <h2 className="font-playfair text-3xl font-bold text-white mb-6 text-center">Nuestros Valores</h2>
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
                   <div className="text-center">
-                    <div className="w-16 h-16 bg-gold/20 rounded-lg mx-auto mb-4 flex items-center justify-center">
-                      <span className="text-gold font-bold text-xl">T</span>
+                    <div className="w-16 h-16 bg-green/20 rounded-lg mx-auto mb-4 flex items-center justify-center">
+                      <span className="text-green font-bold text-xl">T</span>
                     </div>
                     <h3 className="font-semibold text-white mb-2">Transparencia</h3>
                     <p className="text-silver-100 text-sm">Información clara y accesible en cada paso del proceso.</p>
                   </div>
                   
                   <div className="text-center">
-                    <div className="w-16 h-16 bg-gold/20 rounded-lg mx-auto mb-4 flex items-center justify-center">
-                      <span className="text-gold font-bold text-xl">S</span>
+                    <div className="w-16 h-16 bg-green/20 rounded-lg mx-auto mb-4 flex items-center justify-center">
+                      <span className="text-green font-bold text-xl">S</span>
                     </div>
                     <h3 className="font-semibold text-white mb-2">Seguridad</h3>
                     <p className="text-silver-100 text-sm">Protección del capital como prioridad absoluta.</p>
                   </div>
                   
                   <div className="text-center">
-                    <div className="w-16 h-16 bg-gold/20 rounded-lg mx-auto mb-4 flex items-center justify-center">
-                      <span className="text-gold font-bold text-xl">E</span>
+                    <div className="w-16 h-16 bg-green/20 rounded-lg mx-auto mb-4 flex items-center justify-center">
+                      <span className="text-green font-bold text-xl">E</span>
                     </div>
                     <h3 className="font-semibold text-white mb-2">Excelencia</h3>
                     <p className="text-silver-100 text-sm">Compromiso con la calidad en cada detalle.</p>

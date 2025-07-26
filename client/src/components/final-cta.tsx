@@ -19,7 +19,7 @@ export default function FinalCTA() {
       <div className="container mx-auto px-6">
         <div className="text-center mb-12">
           <h2 className="font-playfair text-4xl md:text-5xl font-bold text-white mb-6">
-            ¿Quieres Formar Parte de una <span className="text-gold">Solución</span><br />
+            ¿Quieres Formar Parte de una <span className="text-green">Solución</span><br />
             que Realmente Protege?
           </h2>
         </div>
@@ -27,7 +27,7 @@ export default function FinalCTA() {
         <div className="max-w-2xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-6">
           <Button 
             onClick={scheduleCalendly}
-            className="bg-gold text-black py-6 px-8 font-semibold text-lg hover:bg-gold/90 h-auto flex flex-col items-center space-y-2"
+            className="bg-green text-black py-6 px-8 font-semibold text-lg hover:bg-green/90 h-auto flex flex-col items-center space-y-2"
           >
             <Calendar className="text-xl w-6 h-6" />
             <span>Agendar reunión privada</span>

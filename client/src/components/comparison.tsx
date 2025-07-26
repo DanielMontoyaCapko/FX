@@ -38,7 +38,7 @@ export default function Comparison() {
       <div className="container mx-auto px-6">
         <div className="text-center mb-12">
           <h2 className="font-playfair text-4xl md:text-5xl font-bold text-white mb-6">
-            <span className="text-gold">Comparativa</span> con Otras Opciones de Inversión
+            <span className="text-green">Comparativa</span> con Otras Opciones de Inversión
           </h2>
         </div>
         
@@ -57,12 +57,12 @@ export default function Comparison() {
               {data.map((row, index) => (
                 <tr 
                   key={index} 
-                  className={`border-b border-silver-500/20 ${row.highlighted ? 'bg-gold/10 border border-gold' : ''}`}
+                  className={`border-b border-silver-500/20 ${row.highlighted ? 'bg-green/10 border border-gold' : ''}`}
                 >
                   <td className={`p-6 ${row.highlighted ? 'text-white font-semibold' : 'text-silver-100'}`}>
                     {row.product}
                   </td>
-                  <td className={`p-6 text-center ${row.highlighted ? 'text-gold font-bold text-xl' : 'text-silver-100'}`}>
+                  <td className={`p-6 text-center ${row.highlighted ? 'text-green font-bold text-xl' : 'text-silver-100'}`}>
                     {row.return}
                   </td>
                   <td className={`p-6 text-center ${row.riskColor} ${row.highlighted ? 'font-semibold' : ''}`}>

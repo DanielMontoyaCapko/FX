@@ -35,7 +35,7 @@ export default function GrowthChart({
       return (
         <div className="bg-black/90 p-4 rounded-lg border border-gold/30 backdrop-blur-sm">
           <p className="text-white font-semibold mb-2">Año {label}</p>
-          <p className="text-gold text-lg font-bold mb-1">
+          <p className="text-green text-lg font-bold mb-1">
             ${value.toLocaleString()}
           </p>
           <p className="text-green-400 text-sm">
@@ -93,7 +93,7 @@ export default function GrowthChart({
 
       <div className="mt-6 grid grid-cols-3 gap-4 text-center">
         <div className="bg-black/50 p-3 rounded-lg">
-          <div className="text-gold font-bold text-lg">
+          <div className="text-green font-bold text-lg">
             ${data[years].amount.toLocaleString()}
           </div>
           <div className="text-silver-100 text-xs">Valor final</div>

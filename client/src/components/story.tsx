@@ -15,7 +15,7 @@ export default function Story() {
         <div className="max-w-4xl mx-auto">
           <div className="text-center mb-12">
             <h2 className="font-playfair text-4xl md:text-5xl font-bold text-white mb-6">
-              Nuestra Historia, Nuestro <span className="text-gold">Compromiso</span>:<br />
+              Nuestra Historia, Nuestro <span className="text-green">Compromiso</span>:<br />
               Proteger Tu Patrimonio
             </h2>
           </div>
@@ -41,8 +41,8 @@ export default function Story() {
               </div>
               
               <div className="text-center">
-                <div className="w-48 h-48 bg-gold/20 rounded-lg mx-auto flex items-center justify-center">
-                  <Users className="text-6xl text-gold w-24 h-24" />
+                <div className="w-48 h-48 bg-green/20 rounded-lg mx-auto flex items-center justify-center">
+                  <Users className="text-6xl text-green w-24 h-24" />
                 </div>
                 <p className="text-sm text-silver-100 mt-4">Raúl y Xavi - Fundadores de Nakama&Partners</p>
               </div>

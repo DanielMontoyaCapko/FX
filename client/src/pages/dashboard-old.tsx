@@ -108,7 +108,7 @@ export default function Dashboard() {
           <img src={logoSvg} alt="Logo" className="w-8 h-8" />
           <div>
             <h1 className="font-cormorant text-lg font-bold text-white">Nakama&Partners</h1>
-            <p className="text-gold text-xs">Portal de Asesores</p>
+            <p className="text-green text-xs">Portal de Asesores</p>
           </div>
         </div>
 
@@ -332,7 +332,7 @@ export default function Dashboard() {
                       </div>
                     </div>
                     <div className="text-right">
-                      <p className="text-gold font-semibold">{lead.investment}</p>
+                      <p className="text-green font-semibold">{lead.investment}</p>
                       <div className="flex items-center space-x-2">
                         <Badge variant="secondary" className="bg-black/50">
                           <Globe className="h-3 w-3 mr-1" />
@@ -423,7 +423,7 @@ export default function Dashboard() {
                 <h3 className="text-white font-semibold mb-4">¿Por qué es fácil de vender?</h3>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div className="flex items-start space-x-3">
-                    <div className="w-2 h-2 bg-gold rounded-full mt-2"></div>
+                    <div className="w-2 h-2 bg-green rounded-full mt-2"></div>
                     <div>
                       <p className="text-white font-medium">Mensaje Simple</p>
                       <p className="text-silver-100 text-sm">
@@ -433,7 +433,7 @@ export default function Dashboard() {
                   </div>
                   
                   <div className="flex items-start space-x-3">
-                    <div className="w-2 h-2 bg-gold rounded-full mt-2"></div>
+                    <div className="w-2 h-2 bg-green rounded-full mt-2"></div>
                     <div>
                       <p className="text-white font-medium">Respaldo Legal</p>
                       <p className="text-silver-100 text-sm">
@@ -443,7 +443,7 @@ export default function Dashboard() {
                   </div>
 
                   <div className="flex items-start space-x-3">
-                    <div className="w-2 h-2 bg-gold rounded-full mt-2"></div>
+                    <div className="w-2 h-2 bg-green rounded-full mt-2"></div>
                     <div>
                       <p className="text-white font-medium">Competitivo</p>
                       <p className="text-silver-100 text-sm">
@@ -453,7 +453,7 @@ export default function Dashboard() {
                   </div>
 
                   <div className="flex items-start space-x-3">
-                    <div className="w-2 h-2 bg-gold rounded-full mt-2"></div>
+                    <div className="w-2 h-2 bg-green rounded-full mt-2"></div>
                     <div>
                       <p className="text-white font-medium">Cliente Ideal</p>
                       <p className="text-silver-100 text-sm">
@@ -470,15 +470,15 @@ export default function Dashboard() {
                 <div className="bg-black/30 p-4 rounded-lg">
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-center">
                     <div>
-                      <p className="text-gold font-bold text-lg">45-65 años</p>
+                      <p className="text-green font-bold text-lg">45-65 años</p>
                       <p className="text-silver-100 text-sm">Edad promedio</p>
                     </div>
                     <div>
-                      <p className="text-gold font-bold text-lg">€50K-500K</p>
+                      <p className="text-green font-bold text-lg">€50K-500K</p>
                       <p className="text-silver-100 text-sm">Capacidad inversión</p>
                     </div>
                     <div>
-                      <p className="text-gold font-bold text-lg">Conservador</p>
+                      <p className="text-green font-bold text-lg">Conservador</p>
                       <p className="text-silver-100 text-sm">Perfil de riesgo</p>
                     </div>
                   </div>

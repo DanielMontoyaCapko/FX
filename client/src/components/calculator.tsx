@@ -137,7 +137,7 @@ export default function Calculator() {
       <div className="container mx-auto px-6">
         <div className="text-center mb-12">
           <h2 className="font-playfair text-4xl md:text-5xl font-bold text-white mb-6">
-            Simula Tu Crecimiento: <span className="text-gold">¿Qué Ocurre Si Inviertes 50.000€?</span>
+            Simula Tu Crecimiento: <span className="text-green">¿Qué Ocurre Si Inviertes 50.000€?</span>
           </h2>
         </div>
         
@@ -192,12 +192,12 @@ export default function Calculator() {
                 </div>
                 <div className="flex justify-between items-center">
                   <span className="text-silver-100">Intereses Generados:</span>
-                  <span className="text-gold font-semibold">€{results.interestGenerated.toLocaleString()}</span>
+                  <span className="text-green font-semibold">€{results.interestGenerated.toLocaleString()}</span>
                 </div>
                 <div className="border-t border-silver-500/30 pt-4">
                   <div className="flex justify-between items-center">
                     <span className="text-white font-semibold">Capital Final:</span>
-                    <span className="text-gold font-bold text-xl">€{results.finalAmount.toLocaleString()}</span>
+                    <span className="text-green font-bold text-xl">€{results.finalAmount.toLocaleString()}</span>
                   </div>
                 </div>
               </div>

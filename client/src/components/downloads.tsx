@@ -96,7 +96,7 @@ export default function Downloads() {
       <div className="container mx-auto px-6">
         <div className="text-center mb-12">
           <h2 className="font-playfair text-4xl md:text-5xl font-bold text-white mb-6">
-            Información Completa <span className="text-gold">a Tu Alcance</span>
+            Información Completa <span className="text-green">a Tu Alcance</span>
           </h2>
           <p className="text-xl text-silver-100 max-w-3xl mx-auto">
             Accede a la documentación clave para entender la solidez y transparencia de FundedXam Capital.
@@ -107,8 +107,8 @@ export default function Downloads() {
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-8">
             {documents.map((doc, index) => (
               <div key={index} className="text-center">
-                <div className="w-20 h-24 bg-gold/20 rounded-lg mx-auto mb-4 flex items-center justify-center">
-                  <doc.icon className="text-3xl text-gold w-8 h-8" />
+                <div className="w-20 h-24 bg-green/20 rounded-lg mx-auto mb-4 flex items-center justify-center">
+                  <doc.icon className="text-3xl text-green w-8 h-8" />
                 </div>
                 <h3 className="font-semibold text-white mb-2">{doc.title}</h3>
                 <p className="text-sm text-silver-100">{doc.description}</p>
@@ -170,7 +170,7 @@ export default function Downloads() {
             <Button 
               type="submit"
               disabled={submitLeadMutation.isPending}
-              className="w-full bg-gold text-black py-4 font-semibold hover:bg-gold/90 h-auto"
+              className="w-full bg-green text-black py-4 font-semibold hover:bg-green/90 h-auto"
             >
               <Download className="mr-2 h-4 w-4" />
               {submitLeadMutation.isPending ? "Procesando..." : "Descargar Documentación Completa"}

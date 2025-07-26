@@ -111,7 +111,7 @@ export default function Login() {
             <img src={logoImg} alt="Logo" className="w-12 h-12" />
             <div>
               <h1 className="font-cormorant text-2xl font-bold text-white">Nakama&Partners</h1>
-              <p className="text-gold text-sm">Portal de Asesores</p>
+              <p className="text-green text-sm">Portal de Asesores</p>
             </div>
           </div>
           <p className="text-silver-100">Accede a tu dashboard profesional</p>
@@ -122,10 +122,10 @@ export default function Login() {
           <CardContent className="p-6">
             <Tabs defaultValue="login" className="w-full">
               <TabsList className="grid w-full grid-cols-2 bg-black/50">
-                <TabsTrigger value="login" className="text-white data-[state=active]:bg-gold data-[state=active]:text-navy">
+                <TabsTrigger value="login" className="text-white data-[state=active]:bg-green data-[state=active]:text-navy">
                   Iniciar Sesión
                 </TabsTrigger>
-                <TabsTrigger value="register" className="text-white data-[state=active]:bg-gold data-[state=active]:text-navy">
+                <TabsTrigger value="register" className="text-white data-[state=active]:bg-green data-[state=active]:text-navy">
                   Registrarse
                 </TabsTrigger>
               </TabsList>
@@ -254,8 +254,8 @@ export default function Login() {
             <div className="mt-6 p-4 bg-black/70 rounded-lg border border-silver-500/10">
               <p className="text-xs text-silver-100 text-center">
                 <strong>Cuentas demo:</strong><br />
-                <code className="text-gold">cliente@nakama.com</code> | <code className="text-gold">partner@nakama.com</code><br />
-                Contraseña: <code className="text-gold">demo2025</code>
+                <code className="text-green">cliente@nakama.com</code> | <code className="text-green">partner@nakama.com</code><br />
+                Contraseña: <code className="text-green">demo2025</code>
               </p>
             </div>
           </CardContent>

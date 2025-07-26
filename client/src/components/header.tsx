@@ -35,31 +35,31 @@ export default function Header() {
         <div className="hidden md:flex items-center space-x-8">
           <Link 
             href="/" 
-            className={`transition-colors ${isActive("/") ? "text-gold" : "text-silver-100 hover:text-gold"}`}
+            className={`transition-colors ${isActive("/") ? "text-green" : "text-silver-100 hover:text-green"}`}
           >
             Inicio
           </Link>
           <Link 
             href="/inversiones" 
-            className={`transition-colors ${isActive("/inversiones") ? "text-gold" : "text-silver-100 hover:text-gold"}`}
+            className={`transition-colors ${isActive("/inversiones") ? "text-green" : "text-silver-100 hover:text-green"}`}
           >
             Inversiones
           </Link>
           <Link 
             href="/nosotros" 
-            className={`transition-colors ${isActive("/nosotros") ? "text-gold" : "text-silver-100 hover:text-gold"}`}
+            className={`transition-colors ${isActive("/nosotros") ? "text-green" : "text-silver-100 hover:text-green"}`}
           >
             Nosotros
           </Link>
           <Link 
             href="/calculadora" 
-            className={`transition-colors ${isActive("/calculadora") ? "text-gold" : "text-silver-100 hover:text-gold"}`}
+            className={`transition-colors ${isActive("/calculadora") ? "text-green" : "text-silver-100 hover:text-green"}`}
           >
             Calculadora
           </Link>
           <Link 
             href="/contacto" 
-            className={`transition-colors ${isActive("/contacto") ? "text-gold" : "text-silver-100 hover:text-gold"}`}
+            className={`transition-colors ${isActive("/contacto") ? "text-green" : "text-silver-100 hover:text-green"}`}
           >
             Contacto
           </Link>
@@ -88,35 +88,35 @@ export default function Header() {
             <div className="flex flex-col space-y-6 mt-8">
               <Link 
                 href="/" 
-                className={`text-left transition-colors ${isActive("/") ? "text-gold" : "text-silver-100 hover:text-gold"}`}
+                className={`text-left transition-colors ${isActive("/") ? "text-green" : "text-silver-100 hover:text-green"}`}
                 onClick={() => setIsOpen(false)}
               >
                 Inicio
               </Link>
               <Link 
                 href="/inversiones" 
-                className={`text-left transition-colors ${isActive("/inversiones") ? "text-gold" : "text-silver-100 hover:text-gold"}`}
+                className={`text-left transition-colors ${isActive("/inversiones") ? "text-green" : "text-silver-100 hover:text-green"}`}
                 onClick={() => setIsOpen(false)}
               >
                 Inversiones
               </Link>
               <Link 
                 href="/nosotros" 
-                className={`text-left transition-colors ${isActive("/nosotros") ? "text-gold" : "text-silver-100 hover:text-gold"}`}
+                className={`text-left transition-colors ${isActive("/nosotros") ? "text-green" : "text-silver-100 hover:text-green"}`}
                 onClick={() => setIsOpen(false)}
               >
                 Nosotros
               </Link>
               <Link 
                 href="/calculadora" 
-                className={`text-left transition-colors ${isActive("/calculadora") ? "text-gold" : "text-silver-100 hover:text-gold"}`}
+                className={`text-left transition-colors ${isActive("/calculadora") ? "text-green" : "text-silver-100 hover:text-green"}`}
                 onClick={() => setIsOpen(false)}
               >
                 Calculadora
               </Link>
               <Link 
                 href="/contacto" 
-                className={`text-left transition-colors ${isActive("/contacto") ? "text-gold" : "text-silver-100 hover:text-gold"}`}
+                className={`text-left transition-colors ${isActive("/contacto") ? "text-green" : "text-silver-100 hover:text-green"}`}
                 onClick={() => setIsOpen(false)}
               >
                 Contacto
