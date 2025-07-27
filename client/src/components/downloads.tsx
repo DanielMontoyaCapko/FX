@@ -103,7 +103,7 @@ export default function Downloads() {
           </p>
         </div>
         
-        <div className="max-w-4xl mx-auto bg-black/70 rounded-2xl border border-silver-500/20 p-8">
+        <div className="download-form-card max-w-4xl mx-auto bg-black/70 rounded-2xl border border-silver-500/20 p-8 transition-all duration-500 hover:border-green/40">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-8">
             {documents.map((doc, index) => (
               <div key={index} className="text-center">
