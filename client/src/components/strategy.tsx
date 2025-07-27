@@ -1,7 +1,17 @@
 import { Building, TrendingUp, Coins, Link, Brain } from "lucide-react";
 import GrowthChart from "./growth-chart";
+import { useEffect, useState } from "react";
 
 export default function Strategy() {
+  const [isVisible, setIsVisible] = useState(false);
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setIsVisible(true);
+    }, 200);
+    return () => clearTimeout(timer);
+  }, []);
+
   const strategies = [
     {
       icon: Building,
@@ -48,10 +58,10 @@ export default function Strategy() {
           {strategies.map((strategy, index) => (
             <div 
               key={index} 
-              className={`bg-black/70 p-8 rounded-xl border border-silver-500/20 ${strategy.colSpan ? 'md:col-span-2' : ''}`}
+              className={`strategy-card ${isVisible ? 'strategy-card-animate' : ''} bg-black/70 p-8 rounded-xl border border-silver-500/20 cursor-pointer ${strategy.colSpan ? 'md:col-span-2' : ''}`}
             >
               <div className="flex items-start space-x-4">
-                <div className="w-12 h-12 bg-green/20 rounded-lg flex items-center justify-center flex-shrink-0">
+                <div className="strategy-card-icon w-12 h-12 bg-green/20 rounded-lg flex items-center justify-center flex-shrink-0">
                   <strategy.icon className="text-green w-6 h-6" />
                 </div>
                 <div>
