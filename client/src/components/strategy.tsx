@@ -65,8 +65,8 @@ export default function Strategy() {
                   <strategy.icon className="text-green w-6 h-6" />
                 </div>
                 <div>
-                  <h3 className="font-playfair text-xl font-semibold text-white mb-3">{strategy.title}</h3>
-                  <p className="text-silver-100">{strategy.description}</p>
+                  <h3 className="strategy-card-title font-playfair text-xl font-semibold text-white mb-3">{strategy.title}</h3>
+                  <p className="strategy-card-description text-silver-100">{strategy.description}</p>
                 </div>
               </div>
             </div>
