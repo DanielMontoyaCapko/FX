@@ -48,15 +48,16 @@ export default function Strategy() {
           {strategies.map((strategy, index) => (
             <div 
               key={index} 
-              className={`bg-black/70 p-8 rounded-xl border border-silver-500/20 ${strategy.colSpan ? 'md:col-span-2' : ''}`}
+              className={`strategy-card bg-black/70 p-8 rounded-xl border border-silver-500/20 hover:border-green/50 transition-all duration-500 cursor-pointer ${strategy.colSpan ? 'md:col-span-2' : ''}`}
+              style={{ animationDelay: `${index * 0.2}s` }}
             >
               <div className="flex items-start space-x-4">
-                <div className="w-12 h-12 bg-green/20 rounded-lg flex items-center justify-center flex-shrink-0">
-                  <strategy.icon className="text-green w-6 h-6" />
+                <div className="w-12 h-12 bg-green/20 rounded-lg flex items-center justify-center flex-shrink-0 transition-all duration-300">
+                  <strategy.icon className="text-green w-6 h-6 transition-all duration-300" />
                 </div>
                 <div>
-                  <h3 className="font-playfair text-xl font-semibold text-white mb-3">{strategy.title}</h3>
-                  <p className="text-silver-100">{strategy.description}</p>
+                  <h3 className="font-playfair text-xl font-semibold text-green mb-3 transition-all duration-300">{strategy.title}</h3>
+                  <p className="text-silver-100 transition-all duration-300">{strategy.description}</p>
                 </div>
               </div>
             </div>
