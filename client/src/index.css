@@ -365,26 +365,6 @@
 
 .strategy-card:hover::before {
   opacity: 1;
-  animation: borderGlow 2s ease-in-out infinite alternate;
-}
-
-@keyframes borderGlow {
-  0% {
-    background: linear-gradient(45deg, 
-      rgba(52, 78, 65, 0.3) 0%, 
-      rgba(52, 78, 65, 0.7) 25%, 
-      rgba(52, 78, 65, 0.3) 50%, 
-      rgba(52, 78, 65, 0.7) 75%, 
-      rgba(52, 78, 65, 0.3) 100%);
-  }
-  100% {
-    background: linear-gradient(45deg, 
-      rgba(52, 78, 65, 0.7) 0%, 
-      rgba(52, 78, 65, 1) 25%, 
-      rgba(52, 78, 65, 0.7) 50%, 
-      rgba(52, 78, 65, 1) 75%, 
-      rgba(52, 78, 65, 0.7) 100%);
-  }
 }
 
 .strategy-card:hover .w-12 {
