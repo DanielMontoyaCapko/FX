@@ -67,11 +67,11 @@ export default function PoliticaUso() {
                       El usuario se compromete, con carácter enunciativo, pero no limitativo, a no utilizar la web:
                     </p>
                     <ul className="text-silver-100 mb-6 ml-6 space-y-2">
-                      <li>• incurrir en actividades ilícitas, ilegales o contrarias a la buena fe y al orden público;</li>
-                      <li>• difundir contenidos o propaganda de carácter racista, xenófobo, pornográfico-ilegal, de apología del terrorismo o atentatorio contra los derechos humanos;</li>
-                      <li>• provocar daños en los sistemas físicos y lógicos del sitio web y de sus proveedores o de terceras personas, introducir o difundir en la red virus informáticos o cualesquiera otros sistemas físicos o lógicos que sean susceptibles de provocar los daños anteriormente mencionados;</li>
-                      <li>• intentar acceder y, en su caso, utilizar las cuentas de correo electrónico de otros usuarios y modificar o manipular sus mensajes;</li>
-                      <li>• utilizar la marca, nombres comerciales, así como cualquier otro signo identificativo u otros derechos que se encuentre sujeto a derechos de propiedad intelectual o industrial, sin la previa autorización expresa y por escrito de su propietario.</li>
+                      <li>Incurrir en actividades ilícitas, ilegales o contrarias a la buena fe y al orden público;</li>
+                      <li>Difundir contenidos o propaganda de carácter racista, xenófobo, pornográfico-ilegal, de apología del terrorismo o atentatorio contra los derechos humanos;</li>
+                      <li>Provocar daños en los sistemas físicos y lógicos del sitio web y de sus proveedores o de terceras personas, introducir o difundir en la red virus informáticos o cualesquiera otros sistemas físicos o lógicos que sean susceptibles de provocar los daños anteriormente mencionados;</li>
+                      <li>Intentar acceder y, en su caso, utilizar las cuentas de correo electrónico de otros usuarios y modificar o manipular sus mensajes;</li>
+                      <li>Utilizar la marca, nombres comerciales, así como cualquier otro signo identificativo u otros derechos que se encuentre sujeto a derechos de propiedad intelectual o industrial, sin la previa autorización expresa y por escrito de su propietario.</li>
                     </ul>
                     <p className="text-silver-100 mb-6">
                       A poner en conocimiento de aquella información que considere de interés para el buen funcionamiento del sitio como, por ejemplo, la existencia de enlaces erróneos, información inexacta, etc.
