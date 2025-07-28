@@ -33,7 +33,7 @@ export default function AvisoLegal() {
                     Volver
                   </Button>
                   
-                  <h1 className="font-playfair text-5xl md:text-6xl font-bold text-white mb-6">
+                  <h1 className="font-playfair text-5xl md:text-6xl font-bold text-white mb-6 text-center">
                     <span className="text-green">Aviso Legal</span>
                   </h1>
                 </div>
