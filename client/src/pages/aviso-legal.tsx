@@ -1,20 +1,22 @@
+import { useEffect } from "react";
 import Header from "@/components/header";
 import Footer from "@/components/footer";
 import VideoBackground from "@/components/video-background";
-import { useScrollToTop } from "@/hooks/useScrollToTop";
 
 export default function AvisoLegal() {
-  useScrollToTop();
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
 
   return (
     <div className="min-h-screen text-white relative">
       <VideoBackground />
-      <div className="relative z-10">
+      <div className="relative z-10" style={{ minHeight: '100vh' }}>
         <Header />
         <main className="pt-32 pb-16">
           <section className="py-6 bg-transparent">
             <div className="container mx-auto px-6">
-              <div className="max-w-4xl mx-auto">
+              <div className="max-w-4xl mx-auto" style={{ willChange: 'transform' }}>
                 <div className="mb-8">
                   <h1 className="font-playfair text-5xl md:text-6xl font-bold text-white mb-6 text-center">
                     <span className="text-green">Aviso Legal</span>
