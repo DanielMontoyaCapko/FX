@@ -60,7 +60,7 @@ export default function ProteccionDatos() {
 
                       <div>
                         <h3 className="text-xl font-bold text-green mb-2">Derechos:</h3>
-                        <p className="text-silver-100">Tiene derecho de acceso a sus datos personales, de rectificación o supresión de sus datos personales, de limitación de su tratamiento, a oponerse al tratamiento, a la portabilidad de los datos, de exclusión de decisiones automáticas, así como cualesquiera otros que recoge la legislación vigente. Asimismo, podrá presentar una reclamación ante la Agencia Española de Protección de Datos.</p>
+                        <p className="text-silver-100">Tiene derecho de acceso a sus datos personales, de rectificación o supresión de sus datos personales, de limitación de su tratamiento, a oponerse al tratamiento, a la portabilidad de los datos, de exclusión de decisiones automáticas, así como cualesquiera otros que recoge la legislación vigente. Asimismo, podrá presentar una reclamación ante la <a href="https://www.aepd.es/" target="_blank" rel="noopener noreferrer" className="text-green hover:text-green/80 underline transition-colors">Agencia Española de Protección de Datos</a>.</p>
                       </div>
 
                       <div className="border-t border-silver-500/30 pt-6"></div>
