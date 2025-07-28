@@ -31,14 +31,14 @@ export default function PoliticaSeguridad() {
                     </p>
 
                     <ul className="text-silver-100 mb-8 ml-6 space-y-4">
-                      <li>• <strong className="text-white">Respeto y cumplimiento exacto de la legislación vigente.</strong></li>
-                      <li>• <strong className="text-white">Gestión de los riesgos.</strong> Que implica el análisis previo, la implantación de medidas a fin de eliminar o, en su caso, minimizarlos, así como la permanente revisión con objeto de mantener actualizada de forma activa dicha gestión.</li>
-                      <li>• <strong className="text-white">Garantía de confidencialidad en la información,</strong> de forma que solo las personas que deban hacer uso de los datos personales estarán autorizados y posibilitados para hacer usos de estos.</li>
-                      <li>• <strong className="text-white">Garantía de integridad,</strong> de forma que los datos sean exactos, precisos y los mínimos necesarios.</li>
-                      <li>• <strong className="text-white">Garantía de disponibilidad,</strong> mediante la puesta en marcha del correspondiente plan de contingencia.</li>
-                      <li>• <strong className="text-white">Proporcionalidad de las medidas</strong> a fin de equilibrar de forma adecuada la seguridad, el riesgo y el normal funcionamiento de la organización.</li>
-                      <li>• <strong className="text-white">Actualización y mejora.</strong> Mediante la planificación temporal de las revisiones periódicas del funcionamiento del sistema para su adaptación a las tecnologías y prevención de nuevos riesgos. Así como la implementación de las mejoras definidas a partir de cualquier incidente que se haya podido producir.</li>
-                      <li>• <strong className="text-white">La responsabilidad</strong> de todas las personas que tienen acceso a la información y la necesaria formación a fin de cumplir de forma eficiente y eficaz todas las políticas existentes en la empresa.</li>
+                      <li><strong className="text-white">Respeto y cumplimiento exacto de la legislación vigente.</strong></li>
+                      <li><strong className="text-white">Gestión de los riesgos.</strong> Que implica el análisis previo, la implantación de medidas a fin de eliminar o, en su caso, minimizarlos, así como la permanente revisión con objeto de mantener actualizada de forma activa dicha gestión.</li>
+                      <li><strong className="text-white">Garantía de confidencialidad en la información,</strong> de forma que solo las personas que deban hacer uso de los datos personales estarán autorizados y posibilitados para hacer usos de estos.</li>
+                      <li><strong className="text-white">Garantía de integridad,</strong> de forma que los datos sean exactos, precisos y los mínimos necesarios.</li>
+                      <li><strong className="text-white">Garantía de disponibilidad,</strong> mediante la puesta en marcha del correspondiente plan de contingencia.</li>
+                      <li><strong className="text-white">Proporcionalidad de las medidas</strong> a fin de equilibrar de forma adecuada la seguridad, el riesgo y el normal funcionamiento de la organización.</li>
+                      <li><strong className="text-white">Actualización y mejora.</strong> Mediante la planificación temporal de las revisiones periódicas del funcionamiento del sistema para su adaptación a las tecnologías y prevención de nuevos riesgos. Así como la implementación de las mejoras definidas a partir de cualquier incidente que se haya podido producir.</li>
+                      <li><strong className="text-white">La responsabilidad</strong> de todas las personas que tienen acceso a la información y la necesaria formación a fin de cumplir de forma eficiente y eficaz todas las políticas existentes en la empresa.</li>
                     </ul>
 
                     <div className="border-t border-silver-500/30 pt-6 mt-6"></div>
