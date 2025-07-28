@@ -134,9 +134,6 @@ export default function ProteccionDatosDetallada() {
 
                       <div>
                         <h3 className="text-2xl font-bold text-green mb-4">Existencia de Decisiones automatizadas (incluida la elaboración de perfiles)</h3>
-                        <p className="text-silver-100 text-center italic">
-                          [Información no especificada en el documento]
-                        </p>
                       </div>
 
                       <div className="border-t border-silver-500/30 pt-6"></div>
