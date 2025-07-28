@@ -21,7 +21,7 @@ export default function AvisoLegal() {
                   </h1>
                 </div>
 
-                <div className="legal-content-card bg-black/70 rounded-2xl border border-silver-500/20 p-8 transition-all duration-500 cursor-pointer">
+                <div className="bg-black/70 rounded-2xl border border-transparent p-8 transition-all duration-300 hover:border-green-500 hover:bg-black/50 hover:shadow-lg hover:shadow-green-500/20 cursor-pointer">
                   <div className="prose prose-invert max-w-none">
                     <p className="text-xl text-silver-100 mb-8">
                       Este sitio es propiedad de <strong className="text-white">Nakama&Partners</strong>
