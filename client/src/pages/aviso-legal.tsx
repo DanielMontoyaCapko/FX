@@ -1,6 +1,3 @@
-import { Button } from "@/components/ui/button";
-import { ArrowLeft } from "lucide-react";
-import { useLocation } from "wouter";
 import Header from "@/components/header";
 import Footer from "@/components/footer";
 import VideoBackground from "@/components/video-background";
@@ -8,11 +5,6 @@ import { useScrollToTop } from "@/hooks/useScrollToTop";
 
 export default function AvisoLegal() {
   useScrollToTop();
-  const [, setLocation] = useLocation();
-
-  const goBack = () => {
-    setLocation("/");
-  };
 
   return (
     <div className="min-h-screen text-white relative">
@@ -24,21 +16,12 @@ export default function AvisoLegal() {
             <div className="container mx-auto px-6">
               <div className="max-w-4xl mx-auto">
                 <div className="mb-8">
-                  <Button 
-                    onClick={goBack}
-                    variant="outline"
-                    className="mb-6 border-green text-green hover:bg-green hover:text-black"
-                  >
-                    <ArrowLeft className="mr-2 h-4 w-4" />
-                    Volver
-                  </Button>
-                  
                   <h1 className="font-playfair text-5xl md:text-6xl font-bold text-white mb-6 text-center">
                     <span className="text-green">Aviso Legal</span>
                   </h1>
                 </div>
 
-                <div className="legal-content-card bg-black/70 rounded-2xl border border-silver-500/20 p-8 transition-all duration-500">
+                <div className="legal-content-card bg-black/70 rounded-2xl border border-silver-500/20 p-8 transition-all duration-500 cursor-pointer">
                   <div className="prose prose-invert max-w-none">
                     <p className="text-xl text-silver-100 mb-8">
                       Este sitio es propiedad de <strong className="text-white">Nakama&Partners</strong>
