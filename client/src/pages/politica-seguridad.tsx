@@ -52,13 +52,13 @@ export default function PoliticaSeguridad() {
                       El usuario puede y debe tomar ciertas medidas de autoprotección que ayudarán a hacer de este sitio un lugar más seguro. Entre otras:
                     </p>
                     <ul className="text-silver-100 mb-6 ml-6 space-y-2">
-                      <li>• Utilizar contraseñas fuertes y seguras.</li>
-                      <li>• Evitar dar a conocer su usuario y contraseña a terceros.</li>
-                      <li>• Mantener su equipo (ordenadores, móviles, tabletas, etc.…) actualizados con la última versión del software.</li>
-                      <li>• Revisa las opciones de configuración del software a fin de evitar que el mismo pueda facilitar tus datos de navegación, usuario, contraseña, etc.</li>
-                      <li>• Acceder a esta web tecleando directamente la dirección, o bien desde hipervínculos conocidos y de garantías.</li>
-                      <li>• No facilitar, bajo ningún concepto, cualquier petición de facilitar tus datos personales o de acceso (usuario o contraseña) por correo electrónico o por teléfono.</li>
-                      <li>• Poner en conocimiento de las autoridades cualquier incidencia anormal de la que puedas haber sido objeto, así como consultar de forma periódica la información que se facilita a través de INCIBE.</li>
+                      <li>Utilizar contraseñas fuertes y seguras.</li>
+                      <li>Evitar dar a conocer su usuario y contraseña a terceros.</li>
+                      <li>Mantener su equipo (ordenadores, móviles, tabletas, etc.…) actualizados con la última versión del software.</li>
+                      <li>Revisa las opciones de configuración del software a fin de evitar que el mismo pueda facilitar tus datos de navegación, usuario, contraseña, etc.</li>
+                      <li>Acceder a esta web tecleando directamente la dirección, o bien desde hipervínculos conocidos y de garantías.</li>
+                      <li>No facilitar, bajo ningún concepto, cualquier petición de facilitar tus datos personales o de acceso (usuario o contraseña) por correo electrónico o por teléfono.</li>
+                      <li>Poner en conocimiento de las autoridades cualquier incidencia anormal de la que puedas haber sido objeto, así como consultar de forma periódica la información que se facilita a través de INCIBE.</li>
                     </ul>
 
                     <div className="border-t border-silver-500/30 pt-6 mt-8">
