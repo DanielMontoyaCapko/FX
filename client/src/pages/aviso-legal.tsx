@@ -2,6 +2,8 @@ import Header from "@/components/header";
 import Footer from "@/components/footer";
 import VideoBackground from "@/components/video-background";
 import { useScrollToTop } from "@/hooks/useScrollToTop";
+import { Button } from "@/components/ui/button";
+import { ArrowLeft } from "lucide-react";
 
 export default function AvisoLegal() {
   useScrollToTop();
@@ -14,10 +16,20 @@ export default function AvisoLegal() {
         <main className="pt-32 pb-16">
           <div className="container mx-auto px-6">
             <div className="max-w-4xl mx-auto">
-              <div className="text-center mb-12">
-                <h1 className="font-playfair text-5xl md:text-6xl font-bold text-white mb-6">
-                  <span className="text-green">Aviso Legal</span>
-                </h1>
+              <div className="mb-8">
+                <Button 
+                  onClick={() => window.history.back()}
+                  className="bg-green text-black hover:bg-green/90 mb-6"
+                >
+                  <ArrowLeft className="mr-2 h-4 w-4" />
+                  Volver atrás
+                </Button>
+                
+                <div className="text-center">
+                  <h1 className="font-playfair text-5xl md:text-6xl font-bold text-white mb-6">
+                    <span className="text-green">Aviso Legal</span>
+                  </h1>
+                </div>
               </div>
               
               <div className="bg-black/70 rounded-2xl border border-silver-500/20 p-8 md:p-12">
