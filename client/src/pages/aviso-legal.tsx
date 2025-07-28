@@ -59,7 +59,7 @@ export default function AvisoLegal() {
                           <li><a href="/politica-uso" className="text-green hover:text-green/80 transition-colors">Política de Uso</a></li>
                           <li><a href="/politica-seguridad" className="text-green hover:text-green/80 transition-colors">Política de Seguridad</a></li>
                           <li><a href="/proteccion-datos" className="text-green hover:text-green/80 transition-colors">Política de Protección de datos (información básica)</a></li>
-                          <li><a href="#" className="text-green hover:text-green/80 transition-colors">Política de Protección de datos (más información)</a></li>
+                          <li><a href="/proteccion-datos-detallada" className="text-green hover:text-green/80 transition-colors">Política de Protección de datos (más información)</a></li>
                           <li><a href="/politica-cookies" className="text-green hover:text-green/80 transition-colors">Política de Cookies</a></li>
                         </ul>
                       </div>
