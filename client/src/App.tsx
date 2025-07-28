@@ -12,6 +12,7 @@ import Contacto from "@/pages/contacto";
 import Login from "@/pages/login";
 import DashboardRouter from "@/pages/dashboard-router";
 import AvisoLegal from "@/pages/aviso-legal";
+import PoliticaUso from "@/pages/politica-uso";
 import NotFound from "@/pages/not-found";
 
 function Router() {
@@ -25,6 +26,7 @@ function Router() {
       <Route path="/login" component={Login} />
       <Route path="/dashboard" component={DashboardRouter} />
       <Route path="/aviso-legal" component={AvisoLegal} />
+      <Route path="/politica-uso" component={PoliticaUso} />
       <Route component={NotFound} />
     </Switch>
   );
