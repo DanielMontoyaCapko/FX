@@ -80,24 +80,14 @@ export default function PoliticaUso() {
                     <div className="border-t border-silver-500/30 pt-6 mt-6"></div>
                     
                     <h3 className="text-2xl font-bold text-green mb-4">Derechos y obligaciones de NAKAMA&PARTNERS</h3>
-                    <p className="text-silver-100 mb-4">
-                      Actualizar y modificar cualquiera de las políticas recogidas en la web tanto en su contenido como por razones técnicas y de adaptación a las nuevas necesidades legales o técnicas, sin que esta actualización o modificación genere ningún tipo de contraprestación económico o indemnización a los usuarios.
-                    </p>
-                    <p className="text-silver-100 mb-4">
-                      Definir y establecer los usos y contenidos gratuitos, así como, fijar los precios y requisitos para los servicios y contenidos exclusivos.
-                    </p>
-                    <p className="text-silver-100 mb-4">
-                      Impedir el acceso de aquellos usuarios que realicen un uso contrario a lo establecido por las políticas definidas en el sitio, así como eliminar cualquier comentario u opinión vertidos en la misma que sea contrario a dichas políticas.
-                    </p>
-                    <p className="text-silver-100 mb-4">
-                      Cancelar, suprimir o finalizar los servicios y contenidos que considere oportuno, sin previo aviso y sin generar derechos de indemnización, salvo que así se establezca expresamente en los servicios contratados.
-                    </p>
-                    <p className="text-silver-100 mb-4">
-                      Acudir a los tribunales en defensa de sus legítimos derechos, exigiendo las indemnizaciones y contraprestaciones correspondientes.
-                    </p>
-                    <p className="text-silver-100 mb-6">
-                      <strong className="text-white">NAKAMA&PARTNERS</strong> no se hace responsable de las opiniones y comentarios realizados por los usuarios de la web.
-                    </p>
+                    <ul className="text-silver-100 mb-6 ml-6 space-y-3">
+                      <li>Actualizar y modificar cualquiera de las políticas recogidas en la web tanto en su contenido como por razones técnicas y de adaptación a las nuevas necesidades legales o técnicas, sin que esta actualización o modificación genere ningún tipo de contraprestación económico o indemnización a los usuarios.</li>
+                      <li>Definir y establecer los usos y contenidos gratuitos, así como, fijar los precios y requisitos para los servicios y contenidos exclusivos.</li>
+                      <li>Impedir el acceso de aquellos usuarios que realicen un uso contrario a lo establecido por las políticas definidas en el sitio, así como eliminar cualquier comentario u opinión vertidos en la misma que sea contrario a dichas políticas.</li>
+                      <li>Cancelar, suprimir o finalizar los servicios y contenidos que considere oportuno, sin previo aviso y sin generar derechos de indemnización, salvo que así se establezca expresamente en los servicios contratados.</li>
+                      <li>Acudir a los tribunales en defensa de sus legítimos derechos, exigiendo las indemnizaciones y contraprestaciones correspondientes.</li>
+                      <li><strong className="text-white">NAKAMA&PARTNERS</strong> no se hace responsable de las opiniones y comentarios realizados por los usuarios de la web.</li>
+                    </ul>
 
                     <div className="border-t border-silver-500/30 pt-6 mt-6"></div>
                     
