@@ -23,7 +23,7 @@ export default function Footer() {
               <li><a href="/politica-uso" className="text-silver-100 hover:text-green transition-colors">Política de uso</a></li>
               <li><a href="#" className="text-silver-100 hover:text-green transition-colors">Política de seguridad</a></li>
               <li><a href="#" className="text-silver-100 hover:text-green transition-colors">Protección Datos Básico</a></li>
-              <li><a href="#" className="text-silver-100 hover:text-green transition-colors">Política de cookies</a></li>
+              <li><a href="/politica-cookies" className="text-silver-100 hover:text-green transition-colors">Política de cookies</a></li>
             </ul>
           </div>
           

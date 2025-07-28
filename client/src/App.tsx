@@ -13,6 +13,7 @@ import Login from "@/pages/login";
 import DashboardRouter from "@/pages/dashboard-router";
 import AvisoLegal from "@/pages/aviso-legal";
 import PoliticaUso from "@/pages/politica-uso";
+import PoliticaCookies from "@/pages/politica-cookies";
 import NotFound from "@/pages/not-found";
 
 function Router() {
@@ -27,6 +28,7 @@ function Router() {
       <Route path="/dashboard" component={DashboardRouter} />
       <Route path="/aviso-legal" component={AvisoLegal} />
       <Route path="/politica-uso" component={PoliticaUso} />
+      <Route path="/politica-cookies" component={PoliticaCookies} />
       <Route component={NotFound} />
     </Switch>
   );
