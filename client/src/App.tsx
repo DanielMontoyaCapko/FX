@@ -9,6 +9,7 @@ import Inversiones from "@/pages/inversiones";
 import Nosotros from "@/pages/nosotros";
 import Calculadora from "@/pages/calculadora";
 import Contacto from "@/pages/contacto";
+import AvisoLegal from "@/pages/aviso-legal";
 import Login from "@/pages/login";
 import DashboardRouter from "@/pages/dashboard-router";
 import NotFound from "@/pages/not-found";
@@ -21,6 +22,7 @@ function Router() {
       <Route path="/nosotros" component={Nosotros} />
       <Route path="/calculadora" component={Calculadora} />
       <Route path="/contacto" component={Contacto} />
+      <Route path="/aviso-legal" component={AvisoLegal} />
       <Route path="/login" component={Login} />
       <Route path="/dashboard" component={DashboardRouter} />
       <Route component={NotFound} />
