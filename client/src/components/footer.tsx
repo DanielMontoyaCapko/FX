@@ -19,9 +19,11 @@ export default function Footer() {
           <div>
             <h3 className="font-semibold text-white mb-4">Enlaces Legales</h3>
             <ul className="space-y-2 text-sm">
-              <li><a href="#" className="text-silver-100 hover:text-green transition-colors">Política de Privacidad</a></li>
-              <li><a href="#" className="text-silver-100 hover:text-green transition-colors">Términos Legales</a></li>
-              <li><a href="#" className="text-silver-100 hover:text-green transition-colors">Política de Cookies</a></li>
+              <li><a href="#" className="text-silver-100 hover:text-green transition-colors">Aviso Legal</a></li>
+              <li><a href="#" className="text-silver-100 hover:text-green transition-colors">Política de uso</a></li>
+              <li><a href="#" className="text-silver-100 hover:text-green transition-colors">Política de seguridad</a></li>
+              <li><a href="#" className="text-silver-100 hover:text-green transition-colors">Protección Datos Básico</a></li>
+              <li><a href="#" className="text-silver-100 hover:text-green transition-colors">Política de cookies</a></li>
             </ul>
           </div>
           
