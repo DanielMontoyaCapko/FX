@@ -14,6 +14,7 @@ import DashboardRouter from "@/pages/dashboard-router";
 import AvisoLegal from "@/pages/aviso-legal";
 import PoliticaUso from "@/pages/politica-uso";
 import PoliticaCookies from "@/pages/politica-cookies";
+import PoliticaSeguridad from "@/pages/politica-seguridad";
 import NotFound from "@/pages/not-found";
 
 function Router() {
@@ -29,6 +30,7 @@ function Router() {
       <Route path="/aviso-legal" component={AvisoLegal} />
       <Route path="/politica-uso" component={PoliticaUso} />
       <Route path="/politica-cookies" component={PoliticaCookies} />
+      <Route path="/politica-seguridad" component={PoliticaSeguridad} />
       <Route component={NotFound} />
     </Switch>
   );
