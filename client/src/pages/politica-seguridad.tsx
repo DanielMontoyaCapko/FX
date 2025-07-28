@@ -58,7 +58,7 @@ export default function PoliticaSeguridad() {
                       <li>Revisa las opciones de configuración del software a fin de evitar que el mismo pueda facilitar tus datos de navegación, usuario, contraseña, etc.</li>
                       <li>Acceder a esta web tecleando directamente la dirección, o bien desde hipervínculos conocidos y de garantías.</li>
                       <li>No facilitar, bajo ningún concepto, cualquier petición de facilitar tus datos personales o de acceso (usuario o contraseña) por correo electrónico o por teléfono.</li>
-                      <li>Poner en conocimiento de las autoridades cualquier incidencia anormal de la que puedas haber sido objeto, así como consultar de forma periódica la información que se facilita a través de INCIBE.</li>
+                      <li>Poner en conocimiento de las autoridades cualquier incidencia anormal de la que puedas haber sido objeto, así como consultar de forma periódica la información que se facilita a través de <a href="https://www.incibe.es/" target="_blank" rel="noopener noreferrer" className="text-green hover:text-green/80 underline transition-colors">INCIBE</a>.</li>
                     </ul>
 
                     <div className="border-t border-silver-500/30 pt-6 mt-8">
