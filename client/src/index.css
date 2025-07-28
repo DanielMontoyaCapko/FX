@@ -545,3 +545,27 @@
   background: rgba(52, 78, 65, 0.3);
   box-shadow: 0 0 15px rgba(52, 78, 65, 0.3);
 }
+
+/* Legal Content Card Animation */
+.legal-content-card {
+  animation: legalCardFadeIn 0.8s ease-out forwards;
+  opacity: 0;
+  transform: translateY(30px);
+}
+
+@keyframes legalCardFadeIn {
+  0% {
+    opacity: 0;
+    transform: translateY(30px) scale(0.98);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.legal-content-card:hover {
+  border-color: rgba(52, 78, 65, 0.4);
+  box-shadow: 0 10px 25px rgba(52, 78, 65, 0.1);
+  background: rgba(0, 0, 0, 0.75);
+}

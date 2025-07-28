@@ -11,6 +11,7 @@ import Calculadora from "@/pages/calculadora";
 import Contacto from "@/pages/contacto";
 import Login from "@/pages/login";
 import DashboardRouter from "@/pages/dashboard-router";
+import AvisoLegal from "@/pages/aviso-legal";
 import NotFound from "@/pages/not-found";
 
 function Router() {
@@ -23,6 +24,7 @@ function Router() {
       <Route path="/contacto" component={Contacto} />
       <Route path="/login" component={Login} />
       <Route path="/dashboard" component={DashboardRouter} />
+      <Route path="/aviso-legal" component={AvisoLegal} />
       <Route component={NotFound} />
     </Switch>
   );
