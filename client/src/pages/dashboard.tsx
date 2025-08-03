@@ -901,7 +901,7 @@ export default function Dashboard() {
                       initialAmount={50000}
                       years={10}
                       rate={0.09}
-                      className="max-w-4xl mx-auto"
+                      className="max-w-7xl mx-auto w-full"
                     />
                   </div>
                 </CardContent>

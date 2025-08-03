@@ -74,7 +74,7 @@ export default function CompoundInterestChart({
         </p>
       </div>
       
-      <div className="h-[700px]">
+      <div className="h-[450px]">
         <ResponsiveContainer width="100%" height="100%">
           <LineChart data={data} margin={{ top: 20, right: 40, left: 30, bottom: 20 }}>
             <CartesianGrid strokeDasharray="3 3" stroke="#334155" opacity={0.3} />
