@@ -462,6 +462,7 @@ export default function Dashboard() {
                   </TabsList>
                   
                   <TabsContent value="disponibles" className="mt-6">
+                    {console.log("TabsContent Disponibles - showProductDetail:", showProductDetail)}
                     {showProductDetail ? (
                       /* Product Detail View */
                       <div>
