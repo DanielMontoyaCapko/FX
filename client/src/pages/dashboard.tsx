@@ -124,7 +124,7 @@ export default function Dashboard() {
           <img src={logoImg} alt="Nakama&Partners" className="w-8 h-8" />
           <div>
             <h1 className="font-cormorant text-lg font-bold text-white">Nakama&Partners</h1>
-            <p className="text-green text-xs">Portal de Asesores</p>
+            <p className="text-green text-xs">Portal de Cliente</p>
           </div>
         </div>
 
