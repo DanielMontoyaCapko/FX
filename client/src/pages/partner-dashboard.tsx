@@ -267,44 +267,178 @@ export default function PartnerDashboard() {
         {activeTab === "clientes" && (
           <div>
             <h1 className="text-3xl font-bold text-white mb-2">Gestión de Clientes</h1>
-            <p className="text-silver-100 mb-6">Administra tu cartera de inversores</p>
+            <p className="text-silver-100 mb-6">Administra tu cartera de inversores y gestiona renovaciones</p>
+            
+            {/* Client Statistics */}
+            <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
+              <Card className="bg-[#040505] border-silver-500/20">
+                <CardContent className="p-4 text-center">
+                  <div className="text-2xl font-bold text-white">4</div>
+                  <p className="text-silver-100 text-sm">Total Clientes</p>
+                </CardContent>
+              </Card>
+              <Card className="bg-[#040505] border-green/20">
+                <CardContent className="p-4 text-center">
+                  <div className="text-2xl font-bold text-green">2</div>
+                  <p className="text-silver-100 text-sm">Con Interés Compuesto</p>
+                </CardContent>
+              </Card>
+              <Card className="bg-[#040505] border-yellow-500/20">
+                <CardContent className="p-4 text-center">
+                  <div className="text-2xl font-bold text-yellow-400">1</div>
+                  <p className="text-silver-100 text-sm">Próximo Vencimiento</p>
+                </CardContent>
+              </Card>
+              <Card className="bg-[#040505] border-red-500/20">
+                <CardContent className="p-4 text-center">
+                  <div className="text-2xl font-bold text-red-400">1</div>
+                  <p className="text-silver-100 text-sm">Vencidos</p>
+                </CardContent>
+              </Card>
+            </div>
             
             <Card className="bg-[#040505] border-silver-500/20">
               <CardHeader>
                 <CardTitle className="text-white">Cartera de Clientes</CardTitle>
                 <CardDescription className="text-silver-100">
-                  Gestiona y monitorea tu cartera de inversores
+                  Información detallada para seguimiento y renovaciones
                 </CardDescription>
               </CardHeader>
               <CardContent>
-                <div className="space-y-4">
+                <div className="space-y-6">
                   {[
-                    { name: "María González", investment: 150000, returns: 13500, tier: "Premium", status: "Activo" },
-                    { name: "Carlos Ruiz", investment: 75000, returns: 6750, tier: "Standard", status: "Activo" },
-                    { name: "Ana López", investment: 200000, returns: 18000, tier: "Premium", status: "Activo" },
-                    { name: "José Martín", investment: 50000, returns: 4500, tier: "Basic", status: "Pendiente" },
-                  ].map((client, index) => (
-                    <div key={index} className="flex items-center justify-between p-4 bg-black/30 rounded-lg border border-silver-500/10">
-                      <div className="flex items-center space-x-4">
-                        <div className="w-10 h-10 bg-gradient-to-br from-green/20 to-green/10 rounded-full flex items-center justify-center">
-                          <span className="text-green font-semibold text-sm">{client.name.split(' ').map(n => n[0]).join('')}</span>
-                        </div>
-                        <div>
-                          <p className="text-white font-medium">{client.name}</p>
-                          <div className="flex items-center space-x-2">
-                            <Badge variant={client.tier === 'Premium' ? 'default' : 'secondary'} className="text-xs">
-                              {client.tier}
-                            </Badge>
-                            <span className="text-silver-100 text-xs">{client.status}</span>
+                    { 
+                      name: "María González", 
+                      investment: 150000, 
+                      returns: 13500, 
+                      tier: "Premium", 
+                      status: "Activo",
+                      depositDate: "2024-01-15",
+                      maturityDate: "2025-01-15",
+                      compoundInterest: true,
+                      email: "maria.gonzalez@email.com",
+                      phone: "+34 666 123 456"
+                    },
+                    { 
+                      name: "Carlos Ruiz", 
+                      investment: 75000, 
+                      returns: 6750, 
+                      tier: "Standard", 
+                      status: "Activo",
+                      depositDate: "2024-03-10",
+                      maturityDate: "2025-03-10",
+                      compoundInterest: false,
+                      email: "carlos.ruiz@email.com",
+                      phone: "+34 666 789 012"
+                    },
+                    { 
+                      name: "Ana López", 
+                      investment: 200000, 
+                      returns: 18000, 
+                      tier: "Premium", 
+                      status: "Activo",
+                      depositDate: "2023-11-20",
+                      maturityDate: "2024-11-20",
+                      compoundInterest: true,
+                      email: "ana.lopez@email.com",
+                      phone: "+34 666 345 678"
+                    },
+                    { 
+                      name: "José Martín", 
+                      investment: 50000, 
+                      returns: 4500, 
+                      tier: "Basic", 
+                      status: "Próximo Vencimiento",
+                      depositDate: "2024-02-01",
+                      maturityDate: "2025-02-01",
+                      compoundInterest: false,
+                      email: "jose.martin@email.com",
+                      phone: "+34 666 567 890"
+                    },
+                  ].map((client, index) => {
+                    const daysToMaturity = Math.ceil((new Date(client.maturityDate).getTime() - new Date().getTime()) / (1000 * 3600 * 24));
+                    const isNearMaturity = daysToMaturity <= 30 && daysToMaturity > 0;
+                    const isExpired = daysToMaturity <= 0;
+                    
+                    return (
+                      <Card key={index} className={`bg-black/30 border ${isNearMaturity ? 'border-yellow-500/50' : isExpired ? 'border-red-500/50' : 'border-silver-500/20'} hover:bg-black/40 transition-all`}>
+                        <CardContent className="p-6">
+                          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                            {/* Client Info */}
+                            <div className="space-y-4">
+                              <div className="flex items-center space-x-4">
+                                <div className="w-12 h-12 bg-gradient-to-br from-green/20 to-green/10 rounded-full flex items-center justify-center">
+                                  <span className="text-green font-semibold">{client.name.split(' ').map(n => n[0]).join('')}</span>
+                                </div>
+                                <div>
+                                  <h3 className="text-white font-semibold text-lg">{client.name}</h3>
+                                  <div className="flex items-center space-x-2">
+                                    <Badge variant={client.tier === 'Premium' ? 'default' : 'secondary'} className="text-xs">
+                                      {client.tier}
+                                    </Badge>
+                                    <Badge variant={client.status === 'Activo' ? 'default' : isNearMaturity ? 'destructive' : 'secondary'} className="text-xs">
+                                      {client.status}
+                                    </Badge>
+                                  </div>
+                                </div>
+                              </div>
+                              
+                              <div className="space-y-2 text-sm">
+                                <p className="text-silver-100">{client.email}</p>
+                                <p className="text-silver-100">{client.phone}</p>
+                              </div>
+                            </div>
+
+                            {/* Investment Details */}
+                            <div className="space-y-4">
+                              <div>
+                                <p className="text-silver-100 text-sm">Inversión Inicial</p>
+                                <p className="text-white font-bold text-2xl">${client.investment.toLocaleString()}</p>
+                                <p className="text-green text-sm">Rendimientos: +${client.returns.toLocaleString()}</p>
+                              </div>
+                              
+                              <div className="grid grid-cols-2 gap-4 text-sm">
+                                <div>
+                                  <p className="text-silver-100">Fecha Depósito</p>
+                                  <p className="text-white font-medium">{new Date(client.depositDate).toLocaleDateString('es-ES')}</p>
+                                </div>
+                                <div>
+                                  <p className="text-silver-100">Interés Compuesto</p>
+                                  <p className={`font-medium ${client.compoundInterest ? 'text-green' : 'text-yellow-400'}`}>
+                                    {client.compoundInterest ? 'Sí' : 'No'}
+                                  </p>
+                                </div>
+                              </div>
+                            </div>
+
+                            {/* Maturity & Actions */}
+                            <div className="space-y-4">
+                              <div>
+                                <p className="text-silver-100 text-sm">Fecha Vencimiento</p>
+                                <p className="text-white font-medium">{new Date(client.maturityDate).toLocaleDateString('es-ES')}</p>
+                                <p className={`text-sm font-medium ${isExpired ? 'text-red-400' : isNearMaturity ? 'text-yellow-400' : 'text-green'}`}>
+                                  {isExpired ? 'Vencido' : 
+                                   isNearMaturity ? `Vence en ${daysToMaturity} días` : 
+                                   `${daysToMaturity} días restantes`}
+                                </p>
+                              </div>
+
+                              <div className="space-y-2">
+                                {(isNearMaturity || isExpired) && (
+                                  <Button className="w-full bg-green hover:bg-green/80 text-navy text-sm">
+                                    Gestionar Renovación
+                                  </Button>
+                                )}
+                                <Button variant="outline" className="w-full text-white border-silver-500/20 hover:bg-white/10 text-sm">
+                                  Ver Detalle Completo
+                                </Button>
+                              </div>
+                            </div>
                           </div>
-                        </div>
-                      </div>
-                      <div className="text-right">
-                        <p className="text-white font-semibold">${client.investment.toLocaleString()}</p>
-                        <p className="text-green text-sm">+${client.returns.toLocaleString()}</p>
-                      </div>
-                    </div>
-                  ))}
+                        </CardContent>
+                      </Card>
+                    );
+                  })}
                 </div>
               </CardContent>
             </Card>
