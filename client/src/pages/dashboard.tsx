@@ -563,7 +563,7 @@ export default function Dashboard() {
                 <Button 
                   variant="outline" 
                   className="border-blue-500/50 text-white hover:bg-blue-500/10 hover:border-blue-500 py-4"
-                  onClick={() => {/* Handle Historial */}}
+                  onClick={() => setActiveProductsView("historial")}
                 >
                   <Calendar className="h-5 w-5 mr-2" />
                   Historial
@@ -571,7 +571,7 @@ export default function Dashboard() {
                 <Button 
                   variant="outline" 
                   className="border-yellow-500/50 text-white hover:bg-yellow-500/10 hover:border-yellow-500 py-4"
-                  onClick={() => {/* Handle Transacciones */}}
+                  onClick={() => setActiveProductsView("transacciones")}
                 >
                   <TrendingUp className="h-5 w-5 mr-2" />
                   Transacciones
@@ -700,6 +700,77 @@ export default function Dashboard() {
                     </div>
                   </TabsContent>
                 </Tabs>
+              </div>
+            ) : activeProductsView === "historial" ? (
+              <div className="mb-8">
+                {/* Header con botón de volver */}
+                <div className="flex items-center justify-between mb-6">
+                  <div className="flex items-center gap-4">
+                    <Button 
+                      variant="outline" 
+                      onClick={() => setActiveProductsView("default")}
+                      className="border-silver-500/50 text-white hover:bg-white/10"
+                    >
+                      <ArrowLeft className="h-4 w-4 mr-2" />
+                      Volver
+                    </Button>
+                    <h2 className="text-2xl font-bold text-white">Historial de Actividades</h2>
+                  </div>
+                </div>
+
+                {/* Contenido del historial */}
+                <Card className="bg-black/70 border-silver-500/20">
+                  <CardContent className="p-6">
+                    <div className="text-center text-silver-100">
+                      <Calendar className="h-12 w-12 mx-auto mb-4 text-blue-500" />
+                      <p className="text-lg mb-2">No hay actividades recientes</p>
+                      <p className="text-sm">El historial de actividades aparecerá aquí cuando realices operaciones</p>
+                    </div>
+                  </CardContent>
+                </Card>
+              </div>
+            ) : activeProductsView === "transacciones" ? (
+              <div className="mb-8">
+                {/* Header con botón de volver */}
+                <div className="flex items-center justify-between mb-6">
+                  <div className="flex items-center gap-4">
+                    <Button 
+                      variant="outline" 
+                      onClick={() => setActiveProductsView("default")}
+                      className="border-silver-500/50 text-white hover:bg-white/10"
+                    >
+                      <ArrowLeft className="h-4 w-4 mr-2" />
+                      Volver
+                    </Button>
+                    <h2 className="text-2xl font-bold text-white">Historial de Transacciones</h2>
+                  </div>
+                </div>
+
+                {/* Tabla de transacciones */}
+                <Card className="bg-black/70 border-silver-500/20">
+                  <CardContent className="p-0">
+                    <div className="overflow-hidden rounded-lg">
+                      <table className="w-full">
+                        <thead className="bg-black/50">
+                          <tr>
+                            <th className="text-left p-4 text-white font-semibold border-r border-silver-500/20">FECHA</th>
+                            <th className="text-left p-4 text-white font-semibold border-r border-silver-500/20">TIPO</th>
+                            <th className="text-left p-4 text-white font-semibold border-r border-silver-500/20">DESCRIPCIÓN</th>
+                            <th className="text-left p-4 text-white font-semibold border-r border-silver-500/20">MONTO</th>
+                            <th className="text-left p-4 text-white font-semibold">ESTADO</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          <tr>
+                            <td colSpan={5} className="p-8 text-center text-silver-100">
+                              No hay transacciones para mostrar
+                            </td>
+                          </tr>
+                        </tbody>
+                      </table>
+                    </div>
+                  </CardContent>
+                </Card>
               </div>
             ) : null}
           </div>
