@@ -93,15 +93,7 @@ export default function PartnerDashboard() {
             <span>Clientes</span>
           </button>
           
-          <button
-            onClick={() => setActiveTab("prospección")}
-            className={`w-full flex items-center space-x-3 px-3 py-2 rounded-lg transition-colors ${
-              activeTab === "prospección" ? "bg-[#344e41] text-white" : "text-silver-100 hover:bg-black/50"
-            }`}
-          >
-            <UserPlus className="h-4 w-4" />
-            <span>Prospección</span>
-          </button>
+
           
           <button
             onClick={() => setActiveTab("herramientas")}
@@ -430,73 +422,6 @@ export default function PartnerDashboard() {
                 </div>
               </CardContent>
             </Card>
-          </div>
-        )}
-
-        {activeTab === "prospección" && (
-          <div>
-            <h1 className="text-3xl font-bold text-white mb-2">Prospección de Leads</h1>
-            <p className="text-silver-100 mb-6">Nuevas oportunidades de negocio</p>
-            
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-              <Card className="bg-[#040505] border-silver-500/20">
-                <CardHeader>
-                  <CardTitle className="text-white">Nuevos Prospectos</CardTitle>
-                  <CardDescription className="text-silver-100">
-                    {partnerStats.newLeadsThisMonth} nuevos leads este mes
-                  </CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <div className="space-y-4">
-                    {[
-                      { name: "Roberto Silva", source: "Referido", interest: "$80,000", priority: "Alta" },
-                      { name: "Carmen Vega", source: "Web", interest: "$120,000", priority: "Media" },
-                      { name: "Luis Torres", source: "LinkedIn", interest: "$60,000", priority: "Alta" },
-                    ].map((lead, index) => (
-                      <div key={index} className="flex items-center justify-between p-3 bg-black/30 rounded-lg">
-                        <div>
-                          <p className="text-white font-medium">{lead.name}</p>
-                          <p className="text-silver-100 text-sm">{lead.source} • {lead.interest}</p>
-                        </div>
-                        <Badge variant={lead.priority === 'Alta' ? 'destructive' : 'secondary'}>
-                          {lead.priority}
-                        </Badge>
-                      </div>
-                    ))}
-                  </div>
-                </CardContent>
-              </Card>
-
-              <Card className="bg-[#040505] border-silver-500/20">
-                <CardHeader>
-                  <CardTitle className="text-white">Pipeline de Ventas</CardTitle>
-                  <CardDescription className="text-silver-100">
-                    Embudo de conversión actual
-                  </CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <div className="space-y-4">
-                    {[
-                      { stage: "Contacto Inicial", count: 23, value: 920000, color: "blue" },
-                      { stage: "Calificación", count: 15, value: 675000, color: "yellow" },
-                      { stage: "Propuesta", count: 8, value: 480000, color: "orange" },
-                      { stage: "Cierre", count: 3, value: 225000, color: "green" },
-                    ].map((stage, index) => (
-                      <div key={index} className="space-y-2">
-                        <div className="flex justify-between items-center">
-                          <span className="text-white text-sm font-medium">{stage.stage}</span>
-                          <span className="text-silver-100 text-sm">{stage.count} leads</span>
-                        </div>
-                        <div className="flex justify-between items-center">
-                          <Progress value={(stage.count / 23) * 100} className="flex-1 mr-3 h-2" />
-                          <span className="text-green text-sm font-semibold">${(stage.value / 1000).toFixed(0)}K</span>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                </CardContent>
-              </Card>
-            </div>
           </div>
         )}
 
