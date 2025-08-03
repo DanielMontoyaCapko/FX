@@ -3,8 +3,7 @@ import { useLocation } from "wouter";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+
 import { Label } from "@/components/ui/label";
 import { User, Lock, Eye, EyeOff, ArrowLeft } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
@@ -16,18 +15,11 @@ export default function Login() {
   useScrollToTop();
   const [, setLocation] = useLocation();
   const { toast } = useToast();
-  const { login, register, isLoading } = useAuth();
+  const { login, isLoading } = useAuth();
   
   const [loginForm, setLoginForm] = useState({
     email: "",
     password: ""
-  });
-
-  const [registerForm, setRegisterForm] = useState({
-    email: "",
-    password: "",
-    name: "",
-    role: "client" as "client" | "partner"
   });
 
   const [showPassword, setShowPassword] = useState(false);
@@ -61,35 +53,6 @@ export default function Login() {
     }
   };
 
-  const handleRegister = async (e: React.FormEvent) => {
-    e.preventDefault();
-    
-    if (!registerForm.email || !registerForm.password || !registerForm.name) {
-      toast({
-        title: "Campos requeridos",
-        description: "Por favor complete todos los campos.",
-        variant: "destructive"
-      });
-      return;
-    }
-
-    const result = await register(registerForm.email, registerForm.password, registerForm.name, registerForm.role);
-    
-    if (result.success) {
-      toast({
-        title: "¡Cuenta creada!",
-        description: "Tu cuenta ha sido creada correctamente",
-      });
-      setLocation("/dashboard");
-    } else {
-      toast({
-        title: "Error al crear cuenta",
-        description: result.error || "Error al crear la cuenta",
-        variant: "destructive",
-      });
-    }
-  };
-
   return (
     <div className="min-h-screen bg-gradient-to-br from-black via-gray-900 to-gray-600 flex items-center justify-center px-4">
       {/* Back to Home Button */}
@@ -117,138 +80,61 @@ export default function Login() {
           <p className="text-silver-100">Accede a tu dashboard profesional</p>
         </div>
 
-        {/* Login/Register Forms */}
+        {/* Login Form */}
         <Card className="bg-[#040505] border-silver-500/20">
+          <CardHeader className="text-center">
+            <CardTitle className="text-white">Iniciar Sesión</CardTitle>
+            <CardDescription className="text-silver-100">Ingresa tus credenciales para acceder</CardDescription>
+          </CardHeader>
           <CardContent className="p-6">
-            <Tabs defaultValue="login" className="w-full">
-              <TabsList className="grid w-full grid-cols-2 bg-black/50">
-                <TabsTrigger value="login" className="text-white data-[state=active]:bg-green data-[state=active]:text-navy">
-                  Iniciar Sesión
-                </TabsTrigger>
-                <TabsTrigger value="register" className="text-white data-[state=active]:bg-green data-[state=active]:text-navy">
-                  Registrarse
-                </TabsTrigger>
-              </TabsList>
-              
-              <TabsContent value="login" className="mt-6">
-                <form onSubmit={handleLogin} className="space-y-4">
-                  <div className="space-y-2">
-                    <Label htmlFor="email" className="text-white">Email</Label>
-                    <div className="relative">
-                      <User className="absolute left-3 top-3 h-4 w-4 text-silver-100" />
-                      <Input
-                        id="email"
-                        type="email"
-                        placeholder="tu@email.com"
-                        value={loginForm.email}
-                        onChange={(e) => setLoginForm({...loginForm, email: e.target.value})}
-                        className="pl-10 bg-black/70 border-silver-500/20 text-white placeholder-silver-100"
-                        required
-                      />
-                    </div>
-                  </div>
+            <form onSubmit={handleLogin} className="space-y-4">
+              <div className="space-y-2">
+                <Label htmlFor="email" className="text-white">Email</Label>
+                <div className="relative">
+                  <User className="absolute left-3 top-3 h-4 w-4 text-silver-100" />
+                  <Input
+                    id="email"
+                    type="email"
+                    placeholder="tu@email.com"
+                    value={loginForm.email}
+                    onChange={(e) => setLoginForm({...loginForm, email: e.target.value})}
+                    className="pl-10 bg-black/70 border-silver-500/20 text-white placeholder-silver-100"
+                    required
+                  />
+                </div>
+              </div>
 
-                  <div className="space-y-2">
-                    <Label htmlFor="password" className="text-white">Contraseña</Label>
-                    <div className="relative">
-                      <Lock className="absolute left-3 top-3 h-4 w-4 text-silver-100" />
-                      <Input
-                        id="password"
-                        type={showPassword ? "text" : "password"}
-                        placeholder="Tu contraseña"
-                        value={loginForm.password}
-                        onChange={(e) => setLoginForm({...loginForm, password: e.target.value})}
-                        className="pl-10 pr-10 bg-black/70 border-silver-500/20 text-white placeholder-silver-100"
-                        required
-                      />
-                      <button
-                        type="button"
-                        onClick={() => setShowPassword(!showPassword)}
-                        className="absolute right-3 top-3 text-silver-100 hover:text-white"
-                      >
-                        {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
-                      </button>
-                    </div>
-                  </div>
-
-                  <Button 
-                    type="submit" 
-                    className="w-full bg-[#344e41] hover:bg-[#2d4235] text-white"
-                    disabled={isLoading}
+              <div className="space-y-2">
+                <Label htmlFor="password" className="text-white">Contraseña</Label>
+                <div className="relative">
+                  <Lock className="absolute left-3 top-3 h-4 w-4 text-silver-100" />
+                  <Input
+                    id="password"
+                    type={showPassword ? "text" : "password"}
+                    placeholder="Tu contraseña"
+                    value={loginForm.password}
+                    onChange={(e) => setLoginForm({...loginForm, password: e.target.value})}
+                    className="pl-10 pr-10 bg-black/70 border-silver-500/20 text-white placeholder-silver-100"
+                    required
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowPassword(!showPassword)}
+                    className="absolute right-3 top-3 text-silver-100 hover:text-white"
                   >
-                    {isLoading ? "Ingresando..." : "Iniciar Sesión"}
-                  </Button>
-                </form>
-              </TabsContent>
-              
-              <TabsContent value="register" className="mt-6">
-                <form onSubmit={handleRegister} className="space-y-4">
-                  <div className="space-y-2">
-                    <Label htmlFor="register-name" className="text-white">Nombre completo</Label>
-                    <Input
-                      id="register-name"
-                      type="text"
-                      placeholder="Tu nombre completo"
-                      value={registerForm.name}
-                      onChange={(e) => setRegisterForm({...registerForm, name: e.target.value})}
-                      className="bg-black/70 border-silver-500/20 text-white placeholder-silver-100"
-                      required
-                    />
-                  </div>
-                  
-                  <div className="space-y-2">
-                    <Label htmlFor="register-email" className="text-white">Email</Label>
-                    <Input
-                      id="register-email"
-                      type="email"
-                      placeholder="tu@email.com"
-                      value={registerForm.email}
-                      onChange={(e) => setRegisterForm({...registerForm, email: e.target.value})}
-                      className="bg-black/70 border-silver-500/20 text-white placeholder-silver-100"
-                      required
-                    />
-                  </div>
-                  
-                  <div className="space-y-2">
-                    <Label htmlFor="register-password" className="text-white">Contraseña</Label>
-                    <Input
-                      id="register-password"
-                      type="password"
-                      placeholder="Mínimo 6 caracteres"
-                      value={registerForm.password}
-                      onChange={(e) => setRegisterForm({...registerForm, password: e.target.value})}
-                      className="bg-black/70 border-silver-500/20 text-white placeholder-silver-100"
-                      required
-                      minLength={6}
-                    />
-                  </div>
-                  
-                  <div className="space-y-2">
-                    <Label htmlFor="register-role" className="text-white">Tipo de cuenta</Label>
-                    <Select 
-                      value={registerForm.role} 
-                      onValueChange={(value: "client" | "partner") => setRegisterForm({...registerForm, role: value})}
-                    >
-                      <SelectTrigger className="bg-black/70 border-silver-500/20 text-white">
-                        <SelectValue placeholder="Selecciona el tipo de cuenta" />
-                      </SelectTrigger>
-                      <SelectContent className="bg-black border-silver-500/20">
-                        <SelectItem value="client" className="text-white">Cliente</SelectItem>
-                        <SelectItem value="partner" className="text-white">Partner</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
+                    {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                  </button>
+                </div>
+              </div>
 
-                  <Button 
-                    type="submit" 
-                    className="w-full bg-[#344e41] hover:bg-[#2d4235] text-white"
-                    disabled={isLoading}
-                  >
-                    {isLoading ? "Creando cuenta..." : "Crear cuenta"}
-                  </Button>
-                </form>
-              </TabsContent>
-            </Tabs>
+              <Button 
+                type="submit" 
+                className="w-full bg-[#344e41] hover:bg-[#2d4235] text-white"
+                disabled={isLoading}
+              >
+                {isLoading ? "Ingresando..." : "Iniciar Sesión"}
+              </Button>
+            </form>
 
             {/* Demo credentials */}
             <div className="mt-6 p-4 bg-black/70 rounded-lg border border-silver-500/10">
