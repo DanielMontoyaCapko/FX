@@ -64,8 +64,8 @@ export default function CompoundInterestChart({
   };
 
   return (
-    <div className={`bg-black/70 rounded-xl p-6 border border-silver-500/20 ${className}`}>
-      <div className="mb-6 text-center">
+    <div className={`bg-black/70 rounded-xl p-8 border border-silver-500/20 ${className}`}>
+      <div className="mb-8 text-center">
         <h3 className="font-playfair text-2xl font-bold text-white mb-2">
           Proyección de Crecimiento
         </h3>
@@ -74,7 +74,7 @@ export default function CompoundInterestChart({
         </p>
       </div>
       
-      <div className="h-[600px]">
+      <div className="h-[700px]">
         <ResponsiveContainer width="100%" height="100%">
           <LineChart data={data} margin={{ top: 20, right: 40, left: 30, bottom: 20 }}>
             <CartesianGrid strokeDasharray="3 3" stroke="#334155" opacity={0.3} />
@@ -120,7 +120,7 @@ export default function CompoundInterestChart({
         </ResponsiveContainer>
       </div>
       
-      <div className="mt-6 grid grid-cols-1 md:grid-cols-3 gap-4 text-center">
+      <div className="mt-8 grid grid-cols-1 md:grid-cols-3 gap-4 text-center">
         <div className="bg-black/50 p-4 rounded-lg">
           <p className="text-green-400 text-lg font-bold">
             €{data[years].conInteres.toLocaleString()}
