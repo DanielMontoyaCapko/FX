@@ -53,8 +53,8 @@ export default function Dashboard() {
   const kpis = [
     {
       title: "Capital Invertido / Total",
-      value: "€180.000 / €500.000",
-      change: "36% completado",
+      value: "€50.000 / €50.000",
+      change: "100% completado",
       trending: "up"
     },
     {
@@ -65,7 +65,7 @@ export default function Dashboard() {
     },
     {
       title: "Beneficio Total Estimado",
-      value: "€45.000",
+      value: "€4.500",
       change: "A fin de año",
       trending: "up"
     },
