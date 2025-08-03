@@ -22,7 +22,7 @@ export default function GrowthChart({
     data.push({
       year: year,
       amount: Math.round(amount),
-      formatted: `$${Math.round(amount).toLocaleString()}`
+      formatted: `€${Math.round(amount).toLocaleString()}`
     });
   }
 
@@ -36,10 +36,10 @@ export default function GrowthChart({
         <div className="bg-black/90 p-4 rounded-lg border border-gold/30 backdrop-blur-sm">
           <p className="text-white font-semibold mb-2">Año {label}</p>
           <p className="text-green text-lg font-bold mb-1">
-            ${value.toLocaleString()}
+            €{value.toLocaleString()}
           </p>
           <p className="text-green-400 text-sm">
-            +${gain.toLocaleString()} ({gainPercentage}%)
+            +€{gain.toLocaleString()} ({gainPercentage}%)
           </p>
           <p className="text-silver-100 text-xs mt-1">
             Rendimiento acumulado
@@ -58,12 +58,12 @@ export default function GrowthChart({
             Proyección de Crecimiento - 9% Anual
           </h3>
           <p className="text-silver-100 text-sm">
-            Inversión inicial: ${initialAmount.toLocaleString()} • Tasa fija: {(rate * 100)}% anual
+            Inversión inicial: €{initialAmount.toLocaleString()} • Tasa fija: {(rate * 100)}% anual
           </p>
         </div>
       )}
       
-      <div className="h-80">
+      <div className="h-96">
         <ResponsiveContainer width="100%" height="100%">
           <LineChart data={data} margin={{ top: 5, right: 30, left: 20, bottom: 5 }}>
             <CartesianGrid strokeDasharray="3 3" stroke="#334155" opacity={0.3} />
@@ -76,7 +76,7 @@ export default function GrowthChart({
             <YAxis 
               stroke="#94a3b8"
               fontSize={12}
-              tickFormatter={(value) => `$${(value / 1000).toFixed(0)}K`}
+              tickFormatter={(value) => `€${(value / 1000).toFixed(0)}K`}
             />
             <Tooltip content={<CustomTooltip />} />
             <Line 

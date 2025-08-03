@@ -782,7 +782,16 @@ export default function Dashboard() {
               ))}
             </div>
 
-
+            {/* Capital Growth Chart - Large Landscape */}
+            <div className="mb-8">
+              <GrowthChart 
+                initialAmount={50000}
+                years={10}
+                rate={0.09}
+                showTitle={true}
+                className="w-full"
+              />
+            </div>
 
             <div className="grid grid-cols-1 gap-8">
               {/* Recent Activity */}
