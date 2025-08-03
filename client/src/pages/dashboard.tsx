@@ -141,16 +141,6 @@ export default function Dashboard() {
           </button>
           
           <button
-            onClick={() => setActiveTab("productos")}
-            className={`w-full flex items-center space-x-3 px-3 py-2 rounded-lg transition-colors ${
-              activeTab === "productos" ? "bg-[#344e41] text-white" : "text-silver-100 hover:bg-black/50"
-            }`}
-          >
-            <Package className="h-4 w-4" />
-            <span>Productos</span>
-          </button>
-          
-          <button
             onClick={() => setActiveTab("perfil")}
             className={`w-full flex items-center space-x-3 px-3 py-2 rounded-lg transition-colors ${
               activeTab === "perfil" ? "bg-[#344e41] text-white" : "text-silver-100 hover:bg-black/50"
@@ -158,6 +148,16 @@ export default function Dashboard() {
           >
             <User className="h-4 w-4" />
             <span>Perfil</span>
+          </button>
+          
+          <button
+            onClick={() => setActiveTab("productos")}
+            className={`w-full flex items-center space-x-3 px-3 py-2 rounded-lg transition-colors ${
+              activeTab === "productos" ? "bg-[#344e41] text-white" : "text-silver-100 hover:bg-black/50"
+            }`}
+          >
+            <Package className="h-4 w-4" />
+            <span>Productos</span>
           </button>
           
           <Button 
