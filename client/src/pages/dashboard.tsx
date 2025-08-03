@@ -867,7 +867,7 @@ export default function Dashboard() {
                   </div>
 
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-                    <div className="bg-black/70 p-6 rounded-lg text-center">
+                    <div className="bg-black/70 p-6 rounded-lg text-center border border-transparent transition-all duration-300 hover:border-green-500 hover:bg-black/80 hover:shadow-lg hover:shadow-green-500/20 cursor-pointer">
                       <div className="w-12 h-12 bg-[#387b46] rounded-full flex items-center justify-center mx-auto mb-4">
                         <TrendingUp className="h-6 w-6 text-white" />
                       </div>
@@ -876,7 +876,7 @@ export default function Dashboard() {
                       <p className="text-silver-100 text-sm">Retorno fijo y predecible</p>
                     </div>
 
-                    <div className="bg-black/70 p-6 rounded-lg text-center">
+                    <div className="bg-black/70 p-6 rounded-lg text-center border border-transparent transition-all duration-300 hover:border-green-500 hover:bg-black/80 hover:shadow-lg hover:shadow-green-500/20 cursor-pointer">
                       <div className="w-12 h-12 bg-[#387b46] rounded-full flex items-center justify-center mx-auto mb-4">
                         <TrendingUp className="h-6 w-6 text-white" />
                       </div>
@@ -885,7 +885,7 @@ export default function Dashboard() {
                       <p className="text-silver-100 text-sm">Garantía bancaria completa</p>
                     </div>
 
-                    <div className="bg-black/70 p-6 rounded-lg text-center">
+                    <div className="bg-black/70 p-6 rounded-lg text-center border border-transparent transition-all duration-300 hover:border-green-500 hover:bg-black/80 hover:shadow-lg hover:shadow-green-500/20 cursor-pointer">
                       <div className="w-12 h-12 bg-[#387b46] rounded-full flex items-center justify-center mx-auto mb-4">
                         <Calendar className="h-6 w-6 text-white" />
                       </div>
