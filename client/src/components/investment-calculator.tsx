@@ -1,0 +1,204 @@
+import { useState } from "react";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { X, Calculator, TrendingUp } from "lucide-react";
+import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
+
+interface InvestmentCalculatorProps {
+  onClose: () => void;
+}
+
+export default function InvestmentCalculator({ onClose }: InvestmentCalculatorProps) {
+  const [amount, setAmount] = useState("10000");
+  const [term, setTerm] = useState("12");
+  const [rate] = useState(9); // Fixed 9% rate
+
+  const calculateProjection = () => {
+    const principal = parseFloat(amount);
+    const months = parseInt(term);
+    const monthlyRate = rate / 100 / 12;
+    
+    const data = [];
+    for (let month = 0; month <= months; month++) {
+      const compoundAmount = principal * Math.pow(1 + monthlyRate, month);
+      const simpleAmount = principal + (principal * (rate / 100) * (month / 12));
+      
+      data.push({
+        month,
+        compound: Math.round(compoundAmount),
+        simple: Math.round(simpleAmount),
+        difference: Math.round(compoundAmount - simpleAmount)
+      });
+    }
+    return data;
+  };
+
+  const projectionData = calculateProjection();
+  const finalAmount = projectionData[projectionData.length - 1]?.compound || 0;
+  const totalGain = finalAmount - parseFloat(amount);
+  const gainPercentage = ((totalGain / parseFloat(amount)) * 100).toFixed(2);
+
+  const CustomTooltip = ({ active, payload, label }: any) => {
+    if (active && payload && payload.length) {
+      const compound = payload[0].value;
+      const gain = compound - parseFloat(amount);
+      
+      return (
+        <div className="bg-black/95 p-4 rounded-lg border border-green-500/30 backdrop-blur-sm">
+          <p className="text-white font-semibold mb-2">Mes {label}</p>
+          <p className="text-green-400 font-bold">€{compound.toLocaleString()}</p>
+          <p className="text-green-300 text-sm">+€{gain.toLocaleString()} ganancia</p>
+        </div>
+      );
+    }
+    return null;
+  };
+
+  return (
+    <div className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4 z-50">
+      <Card className="bg-[#040505] border-silver-500/20 w-full max-w-4xl max-h-[90vh] overflow-y-auto">
+        <CardHeader className="flex flex-row items-center justify-between">
+          <div className="flex items-center space-x-3">
+            <div className="w-10 h-10 bg-green-500/20 rounded-full flex items-center justify-center">
+              <Calculator className="h-5 w-5 text-green-500" />
+            </div>
+            <div>
+              <CardTitle className="text-white text-xl">Calculadora de Nueva Inversión</CardTitle>
+              <p className="text-silver-100 text-sm">Simula tu próxima inversión con rentabilidad del 9% anual</p>
+            </div>
+          </div>
+          <Button 
+            variant="ghost" 
+            size="sm" 
+            onClick={onClose}
+            className="text-silver-100 hover:text-white hover:bg-black/50"
+          >
+            <X className="h-4 w-4" />
+          </Button>
+        </CardHeader>
+        
+        <CardContent className="p-6">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+            {/* Input Controls */}
+            <div className="space-y-6">
+              <div className="space-y-2">
+                <Label htmlFor="amount" className="text-white">Monto a Invertir</Label>
+                <div className="relative">
+                  <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-silver-100">€</span>
+                  <Input
+                    id="amount"
+                    type="number"
+                    value={amount}
+                    onChange={(e) => setAmount(e.target.value)}
+                    className="pl-8 bg-black/50 border-silver-500/20 text-white"
+                    min="1000"
+                    step="1000"
+                  />
+                </div>
+                <p className="text-silver-100 text-xs">Mínimo: €1.000</p>
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="term" className="text-white">Plazo de Inversión</Label>
+                <Select value={term} onValueChange={setTerm}>
+                  <SelectTrigger className="bg-black/50 border-silver-500/20 text-white">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent className="bg-black border-silver-500/20">
+                    <SelectItem value="6">6 meses</SelectItem>
+                    <SelectItem value="12">12 meses</SelectItem>
+                    <SelectItem value="18">18 meses</SelectItem>
+                    <SelectItem value="24">24 meses</SelectItem>
+                    <SelectItem value="36">36 meses</SelectItem>
+                    <SelectItem value="60">60 meses</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+
+              <div className="space-y-2">
+                <Label className="text-white">Rentabilidad Anual</Label>
+                <div className="flex items-center space-x-2 p-3 bg-green-500/10 rounded-lg border border-green-500/20">
+                  <TrendingUp className="h-5 w-5 text-green-500" />
+                  <span className="text-green-500 font-bold text-lg">9.0%</span>
+                  <span className="text-silver-100 text-sm">Garantizada</span>
+                </div>
+              </div>
+
+              {/* Results Summary */}
+              <Card className="bg-black/70 border-silver-500/20">
+                <CardContent className="p-4">
+                  <h3 className="text-white font-semibold mb-4">Resumen de Proyección</h3>
+                  <div className="space-y-3">
+                    <div className="flex justify-between">
+                      <span className="text-silver-100">Inversión inicial:</span>
+                      <span className="text-white font-semibold">€{parseFloat(amount).toLocaleString()}</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-silver-100">Plazo:</span>
+                      <span className="text-white font-semibold">{term} meses</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-silver-100">Ganancia total:</span>
+                      <span className="text-green-500 font-bold">+€{totalGain.toLocaleString()}</span>
+                    </div>
+                    <div className="flex justify-between border-t border-silver-500/20 pt-3">
+                      <span className="text-white font-semibold">Valor final:</span>
+                      <span className="text-green-500 font-bold text-lg">€{finalAmount.toLocaleString()}</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-silver-100 text-sm">Rentabilidad total:</span>
+                      <span className="text-green-400 text-sm">+{gainPercentage}%</span>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
+
+            {/* Chart */}
+            <div className="space-y-4">
+              <h3 className="text-white font-semibold">Evolución de la Inversión</h3>
+              <div className="h-80 bg-black/70 rounded-lg p-4">
+                <ResponsiveContainer width="100%" height="100%">
+                  <LineChart data={projectionData} margin={{ top: 5, right: 30, left: 20, bottom: 5 }}>
+                    <CartesianGrid strokeDasharray="3 3" stroke="#334155" opacity={0.3} />
+                    <XAxis 
+                      dataKey="month" 
+                      stroke="#94a3b8"
+                      fontSize={12}
+                      tickFormatter={(value) => `${value}m`}
+                    />
+                    <YAxis 
+                      stroke="#94a3b8"
+                      fontSize={12}
+                      tickFormatter={(value) => `€${(value / 1000).toFixed(0)}K`}
+                    />
+                    <Tooltip content={<CustomTooltip />} />
+                    <Line 
+                      type="monotone" 
+                      dataKey="compound" 
+                      stroke="#22c55e" 
+                      strokeWidth={3}
+                      dot={{ fill: '#22c55e', strokeWidth: 2, r: 3 }}
+                    />
+                  </LineChart>
+                </ResponsiveContainer>
+              </div>
+              
+              <div className="grid grid-cols-2 gap-4">
+                <Button className="bg-green-600 hover:bg-green-700 text-white">
+                  Solicitar Información
+                </Button>
+                <Button variant="outline" className="border-green-500 text-green-500 hover:bg-green-500/10">
+                  Contactar Asesor
+                </Button>
+              </div>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+    </div>
+  );
+}

@@ -29,6 +29,7 @@ import landscapeSvg from "@/assets/landscape.svg";
 import { useScrollToTop } from "@/hooks/useScrollToTop";
 import GrowthChart from "@/components/growth-chart";
 import CompoundInterestChart from "@/components/compound-interest-chart";
+import InvestmentCalculator from "@/components/investment-calculator";
 
 export default function Dashboard() {
   useScrollToTop();
@@ -36,6 +37,7 @@ export default function Dashboard() {
   const [activeTab, setActiveTab] = useState("inicio");
   const [showProductDetail, setShowProductDetail] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState(null);
+  const [showCalculator, setShowCalculator] = useState(false);
 
   const handleLogout = () => {
     setLocation("/login");
@@ -49,6 +51,72 @@ export default function Dashboard() {
   const handleBackToProducts = () => {
     setShowProductDetail(false);
     setSelectedProduct(null);
+  };
+
+  const handleDownloadStatement = async () => {
+    try {
+      // Generate PDF with account statement
+      const { jsPDF } = await import('jspdf');
+      const doc = new jsPDF();
+
+      // Header
+      doc.setFontSize(20);
+      doc.setTextColor(52, 78, 65);
+      doc.text('NAKAMA&PARTNERS', 20, 30);
+      doc.setFontSize(16);
+      doc.text('Estado de Cuenta', 20, 45);
+
+      // Client info
+      doc.setFontSize(12);
+      doc.setTextColor(0, 0, 0);
+      doc.text('Cliente: Juan Cliente', 20, 70);
+      doc.text('Fecha: ' + new Date().toLocaleDateString('es-ES'), 20, 80);
+      doc.text('Período: Enero 2025', 20, 90);
+
+      // Investment summary
+      doc.setFontSize(14);
+      doc.setTextColor(52, 78, 65);
+      doc.text('RESUMEN DE INVERSIÓN', 20, 110);
+      
+      doc.setFontSize(12);
+      doc.setTextColor(0, 0, 0);
+      doc.text('Capital Invertido: €50.000', 20, 130);
+      doc.text('Rentabilidad Anual: 9.0%', 20, 140);
+      doc.text('Tiempo Transcurrido: 3 meses', 20, 150);
+      doc.text('Beneficio Acumulado: €1.125', 20, 160);
+      doc.text('Valor Total Actual: €51.125', 20, 170);
+
+      // Performance details
+      doc.setFontSize(14);
+      doc.setTextColor(52, 78, 65);
+      doc.text('DETALLE DE RENDIMIENTO', 20, 190);
+      
+      doc.setFontSize(12);
+      doc.setTextColor(0, 0, 0);
+      doc.text('Enero 2025: +€375', 20, 210);
+      doc.text('Febrero 2025: +€375', 20, 220);
+      doc.text('Marzo 2025: +€375', 20, 230);
+
+      // Projections
+      doc.setFontSize(14);
+      doc.setTextColor(52, 78, 65);
+      doc.text('PROYECCIÓN A FIN DE AÑO', 20, 250);
+      
+      doc.setFontSize(12);
+      doc.setTextColor(0, 0, 0);
+      doc.text('Beneficio Total Estimado: €4.500', 20, 270);
+      doc.text('Valor Final Estimado: €54.500', 20, 280);
+
+      // Save the PDF
+      doc.save('estado-cuenta-nakama-' + new Date().toISOString().split('T')[0] + '.pdf');
+    } catch (error) {
+      console.error('Error generating PDF:', error);
+      alert('Error al generar el PDF. Inténtalo de nuevo.');
+    }
+  };
+
+  const handleCalculateInvestment = () => {
+    setShowCalculator(true);
   };
 
   const kpis = [
@@ -825,11 +893,17 @@ export default function Dashboard() {
             <div className="mt-8">
               <h2 className="text-xl font-bold text-white mb-4">Acciones Rápidas</h2>
               <div className="flex space-x-4">
-                <Button className="bg-[#344e41] hover:bg-[#2d4235] text-white">
+                <Button 
+                  onClick={handleDownloadStatement}
+                  className="bg-[#344e41] hover:bg-[#2d4235] text-white"
+                >
                   <Download className="h-4 w-4 mr-2" />
                   Descargar Estado de Cuenta
                 </Button>
-                <Button className="gradient-navy text-white">
+                <Button 
+                  onClick={handleCalculateInvestment}
+                  className="gradient-navy text-white"
+                >
                   <Calculator className="h-4 w-4 mr-2" />
                   Calcular Nueva Inversión
                 </Button>
@@ -945,6 +1019,11 @@ export default function Dashboard() {
           </div>
         )}
       </div>
+
+      {/* Investment Calculator Modal */}
+      {showCalculator && (
+        <InvestmentCalculator onClose={() => setShowCalculator(false)} />
+      )}
     </div>
   );
 }
