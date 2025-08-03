@@ -464,7 +464,7 @@ export default function Dashboard() {
                   <TabsContent value="disponibles" className="mt-6">
                     {showProductDetail ? (
                       /* Product Detail View */
-              <div>
+                      <div>
                 {/* Back Button */}
                 <div className="mb-6">
                   <Button 
