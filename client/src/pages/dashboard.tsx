@@ -852,14 +852,60 @@ export default function Dashboard() {
             </div>
 
             {/* Capital Growth Chart - Large Landscape */}
+            {/* Asesor Financiero Section */}
             <div className="mb-8">
-              <GrowthChart 
-                initialAmount={50000}
-                years={10}
-                rate={0.09}
-                showTitle={true}
-                className="w-full"
-              />
+              <Card className="bg-[#040505] border-silver-500/20">
+                <CardContent className="p-8">
+                  <div className="text-center mb-6">
+                    <h2 className="text-2xl font-bold text-white mb-2">
+                      Asesor Financiero: Un Producto Sólido, Fácil de Explicar, Imposible de Ignorar
+                    </h2>
+                    <p className="text-silver-100 max-w-3xl mx-auto">
+                      Presentamos una oportunidad de inversión única que combina seguridad, rentabilidad y simplicidad. 
+                      Perfect para explicar a tus clientes y cerrar ventas efectivamente.
+                    </p>
+                  </div>
+
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+                    <div className="bg-black/70 p-6 rounded-lg text-center">
+                      <div className="w-12 h-12 bg-[#387b46] rounded-full flex items-center justify-center mx-auto mb-4">
+                        <TrendingUp className="h-6 w-6 text-white" />
+                      </div>
+                      <h3 className="text-white font-semibold mb-2">Rentabilidad Garantizada</h3>
+                      <p className="text-green text-xl font-bold mb-2">9% Anual</p>
+                      <p className="text-silver-100 text-sm">Retorno fijo y predecible</p>
+                    </div>
+
+                    <div className="bg-black/70 p-6 rounded-lg text-center">
+                      <div className="w-12 h-12 bg-[#387b46] rounded-full flex items-center justify-center mx-auto mb-4">
+                        <TrendingUp className="h-6 w-6 text-white" />
+                      </div>
+                      <h3 className="text-white font-semibold mb-2">Capital Protegido</h3>
+                      <p className="text-green text-xl font-bold mb-2">100%</p>
+                      <p className="text-silver-100 text-sm">Garantía bancaria completa</p>
+                    </div>
+
+                    <div className="bg-black/70 p-6 rounded-lg text-center">
+                      <div className="w-12 h-12 bg-[#387b46] rounded-full flex items-center justify-center mx-auto mb-4">
+                        <Calendar className="h-6 w-6 text-white" />
+                      </div>
+                      <h3 className="text-white font-semibold mb-2">Flexibilidad Total</h3>
+                      <p className="text-green text-xl font-bold mb-2">1-5 años</p>
+                      <p className="text-silver-100 text-sm">Plazos adaptables</p>
+                    </div>
+                  </div>
+
+                  {/* Compound Interest Comparison Chart */}
+                  <div className="mb-8">
+                    <CompoundInterestChart 
+                      initialAmount={50000}
+                      years={10}
+                      rate={0.09}
+                      className="max-w-4xl mx-auto"
+                    />
+                  </div>
+                </CardContent>
+              </Card>
             </div>
 
             <div className="grid grid-cols-1 gap-8">
