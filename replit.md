@@ -134,6 +134,7 @@ To test the authentication system:
 ## Changelog
 
 Changelog:
+- August 03, 2025. Aligned dashboard color palette with corporate brand identity: replaced all non-corporate colors (blue, yellow, purple, orange, red) with official brand colors (green: hsl(142, 35%, 38%), navy: hsl(210, 100%, 12%), charcoal: hsl(210, 12%, 25%), silver variants) across both client and partner dashboards for complete visual consistency
 - July 16, 2025. Changed navigation button text from "Asesores" to "Partners" for brand consistency
 - July 15, 2025. Implemented automatic scroll to top when navigating between sections via menu
 - July 15, 2025. Updated comparison table to show "Nakama&Partners" instead of "FundedXam Capital"
