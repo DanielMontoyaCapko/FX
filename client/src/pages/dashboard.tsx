@@ -271,18 +271,12 @@ export default function Dashboard() {
             <Card className="bg-[#040505] border-silver-500/20">
               <CardContent className="p-6">
                 <Tabs defaultValue="personal" className="w-full">
-                  <TabsList className="grid w-full grid-cols-4 bg-black/50">
+                  <TabsList className="grid w-full grid-cols-2 bg-black/50">
                     <TabsTrigger value="personal" className="data-[state=active]:bg-[#344e41]">
                       Información Personal
                     </TabsTrigger>
                     <TabsTrigger value="kyc" className="data-[state=active]:bg-[#344e41]">
                       Estado KYC
-                    </TabsTrigger>
-                    <TabsTrigger value="productos" className="data-[state=active]:bg-[#344e41]">
-                      Productos
-                    </TabsTrigger>
-                    <TabsTrigger value="transacciones" className="data-[state=active]:bg-[#344e41]">
-                      Transacciones
                     </TabsTrigger>
                   </TabsList>
                   
@@ -434,9 +428,12 @@ export default function Dashboard() {
                       </div>
                     </div>
                   </TabsContent>
-                  
-                  <TabsContent value="productos" className="mt-6">
-                    <Tabs defaultValue="activos" className="w-full">
+                </Tabs>
+              </CardContent>
+            </Card>
+          </div>
+        ) : activeTab === "productos" ? (
+          <div>
                       <TabsList className="grid w-full grid-cols-3 bg-black/50">
                         <TabsTrigger value="activos" className="data-[state=active]:bg-[#387b46]">
                           ACTIVOS
