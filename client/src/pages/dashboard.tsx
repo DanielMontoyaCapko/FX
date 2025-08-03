@@ -52,28 +52,28 @@ export default function Dashboard() {
 
   const kpis = [
     {
-      title: "Total Leads",
-      value: "46",
-      change: "+12.5%",
+      title: "Capital Invertido / Total",
+      value: "€180.000 / €500.000",
+      change: "36% completado",
       trending: "up"
     },
     {
-      title: "Simulaciones",
-      value: "41",
-      change: "+8.2%",
+      title: "Progreso en Meses",
+      value: "Mes 3 de 12",
+      change: "25% del período",
       trending: "up"
     },
     {
-      title: "Inversión Potencial",
-      value: "€3.210.500",
-      change: "+15.3%",
+      title: "Beneficio Total Estimado",
+      value: "€45.000",
+      change: "A fin de año",
       trending: "up"
     },
     {
-      title: "Conversión",
-      value: "24.8%",
-      change: "−2.1%",
-      trending: "down"
+      title: "Rentabilidad Anual",
+      value: "9.0%",
+      change: "Garantizada",
+      trending: "up"
     }
   ];
 
