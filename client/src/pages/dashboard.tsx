@@ -551,7 +551,7 @@ export default function Dashboard() {
               </div>
 
               {/* Action Buttons */}
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
                 <Button 
                   variant="outline" 
                   className="border-green-500/50 text-white hover:bg-green-500/10 hover:border-green-500 py-4"
@@ -575,6 +575,14 @@ export default function Dashboard() {
                 >
                   <TrendingUp className="h-5 w-5 mr-2" />
                   Transacciones
+                </Button>
+                <Button 
+                  variant="outline" 
+                  className="border-purple-500/50 text-white hover:bg-purple-500/10 hover:border-purple-500 py-4"
+                  onClick={() => setActiveProductsView("contratos")}
+                >
+                  <Download className="h-5 w-5 mr-2" />
+                  Contratos
                 </Button>
               </div>
             </div>
@@ -728,6 +736,86 @@ export default function Dashboard() {
                     </div>
                   </CardContent>
                 </Card>
+              </div>
+            ) : activeProductsView === "contratos" ? (
+              <div className="mb-8">
+                {/* Header con botón de volver */}
+                <div className="flex items-center justify-between mb-6">
+                  <div className="flex items-center gap-4">
+                    <Button 
+                      variant="outline" 
+                      onClick={() => setActiveProductsView("default")}
+                      className="border-silver-500/50 text-white hover:bg-white/10"
+                    >
+                      <ArrowLeft className="h-4 w-4 mr-2" />
+                      Volver
+                    </Button>
+                    <h2 className="text-2xl font-bold text-white">Contratos Disponibles</h2>
+                  </div>
+                </div>
+
+                {/* Lista de contratos */}
+                <div className="space-y-4">
+                  {/* Contrato de ejemplo */}
+                  <Card className="bg-black/70 border-silver-500/20 hover:border-purple-500/50 transition-all">
+                    <CardContent className="p-6">
+                      <div className="flex items-center justify-between">
+                        <div className="flex-1">
+                          <div className="flex items-center gap-3 mb-2">
+                            <div className="w-10 h-10 bg-purple-500 rounded-lg flex items-center justify-center">
+                              <Download className="h-5 w-5 text-white" />
+                            </div>
+                            <div>
+                              <h4 className="text-lg font-semibold text-white">Contrato Plazo Fijo 9% - 365 días</h4>
+                              <p className="text-silver-100 text-sm">Contrato de depósito bancario con garantía</p>
+                            </div>
+                          </div>
+                          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm mt-4">
+                            <div>
+                              <p className="text-silver-100">Tipo</p>
+                              <p className="text-white font-medium">PDF</p>
+                            </div>
+                            <div>
+                              <p className="text-silver-100">Tamaño</p>
+                              <p className="text-white font-medium">2.3 MB</p>
+                            </div>
+                            <div>
+                              <p className="text-silver-100">Fecha</p>
+                              <p className="text-white font-medium">01/01/2025</p>
+                            </div>
+                            <div>
+                              <p className="text-silver-100">Estado</p>
+                              <Badge className="bg-green-500 text-white">Disponible</Badge>
+                            </div>
+                          </div>
+                        </div>
+                        <div className="ml-6">
+                          <Button 
+                            className="bg-purple-600 hover:bg-purple-700 text-white px-6"
+                            onClick={() => {
+                              // Aquí iría la lógica de descarga
+                              alert("Funcionalidad de descarga pendiente de implementar");
+                            }}
+                          >
+                            <Download className="h-4 w-4 mr-2" />
+                            Descargar
+                          </Button>
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
+
+                  {/* Mensaje cuando no hay más contratos */}
+                  <Card className="bg-black/50 border-silver-500/20 border-dashed">
+                    <CardContent className="p-8">
+                      <div className="text-center text-silver-100">
+                        <Download className="h-12 w-12 mx-auto mb-4 text-purple-500" />
+                        <p className="text-lg mb-2">Más contratos próximamente</p>
+                        <p className="text-sm">Los nuevos contratos aparecerán aquí cuando estén disponibles</p>
+                      </div>
+                    </CardContent>
+                  </Card>
+                </div>
               </div>
             ) : activeProductsView === "transacciones" ? (
               <div className="mb-8">
