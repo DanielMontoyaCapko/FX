@@ -966,56 +966,7 @@ export default function Dashboard() {
               </Card>
             </div>
 
-            {/* Perfil del Cliente Ideal */}
-            <div className="mt-8">
-              <Card className="bg-[#040505] border-silver-500/20">
-                <CardContent className="p-6">
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6 items-center">
-                    <div>
-                      <h3 className="text-white font-bold text-lg mb-3">Perfil del Cliente Ideal</h3>
-                      <ul className="text-white/90 space-y-2">
-                        <li>• Inversores conservadores buscando estabilidad</li>
-                        <li>• Personas próximas a la jubilación</li>
-                        <li>• Familias planificando el futuro</li>
-                        <li>• Empresarios diversificando patrimonio</li>
-                      </ul>
-                    </div>
-                    <div className="grid grid-cols-2 gap-4">
-                      <div>
-                        <p className="text-green font-bold text-lg">€50K-500K</p>
-                        <p className="text-silver-100 text-sm">Capacidad inversión</p>
-                      </div>
-                      <div>
-                        <p className="text-green font-bold text-lg">Conservador</p>
-                        <p className="text-silver-100 text-sm">Perfil de riesgo</p>
-                      </div>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-            </div>
 
-            {/* Call to Action */}
-            <div className="mt-8">
-              <Card className="bg-[#040505] border-silver-500/20">
-                <CardContent className="p-6">
-                  <h3 className="text-white font-semibold mb-2">¿Listo para presentar el producto?</h3>
-                  <p className="text-white/90 text-sm mb-4">
-                    Utiliza la calculadora para mostrar proyecciones reales y impactar a tus clientes.
-                  </p>
-                  <div className="flex space-x-3">
-                    <Button className="bg-white text-[#344e41] hover:bg-gray-100">
-                      <Calculator className="h-4 w-4 mr-2" />
-                      Ver Calculadora
-                    </Button>
-                    <Button variant="outline" className="border-white text-white hover:bg-white/10">
-                      <Download className="h-4 w-4 mr-2" />
-                      Material de Ventas
-                    </Button>
-                  </div>
-                </CardContent>
-              </Card>
-            </div>
           </div>
         )}
       </div>
