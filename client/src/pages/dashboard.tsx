@@ -28,6 +28,7 @@ import logoImg from "@/assets/Logo-removeBG_1752488347081.png";
 import landscapeSvg from "@/assets/landscape.svg";
 import { useScrollToTop } from "@/hooks/useScrollToTop";
 import GrowthChart from "@/components/growth-chart";
+import CompoundInterestChart from "@/components/compound-interest-chart";
 
 export default function Dashboard() {
   useScrollToTop();
@@ -885,6 +886,16 @@ export default function Dashboard() {
                       years={8}
                       rate={0.09}
                       showTitle={true}
+                      className="max-w-4xl mx-auto"
+                    />
+                  </div>
+
+                  {/* Compound Interest Comparison Chart */}
+                  <div className="mb-8">
+                    <CompoundInterestChart 
+                      initialAmount={50000}
+                      years={10}
+                      rate={0.09}
                       className="max-w-4xl mx-auto"
                     />
                   </div>
