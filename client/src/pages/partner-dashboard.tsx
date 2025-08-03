@@ -29,6 +29,26 @@ export default function PartnerDashboard() {
   const { user, logout } = useAuth();
   const [activeTab, setActiveTab] = useState("resumen");
 
+  // Calculate days until next commission payout (every 15th of the month)
+  const calculateDaysToCommission = () => {
+    const now = new Date();
+    const currentDay = now.getDate();
+    const currentMonth = now.getMonth();
+    const currentYear = now.getFullYear();
+    
+    // Next payout is on the 15th of current month or next month
+    let nextPayoutDate;
+    if (currentDay <= 15) {
+      nextPayoutDate = new Date(currentYear, currentMonth, 15);
+    } else {
+      nextPayoutDate = new Date(currentYear, currentMonth + 1, 15);
+    }
+    
+    const timeDiff = nextPayoutDate.getTime() - now.getTime();
+    const daysDiff = Math.ceil(timeDiff / (1000 * 3600 * 24));
+    return daysDiff;
+  };
+
   const partnerStats = {
     totalClients: 47,
     monthlyCommission: 15650,
@@ -36,7 +56,8 @@ export default function PartnerDashboard() {
     activeInvestments: 2340000,
     newLeadsThisMonth: 23,
     tier: "Elite Partner",
-    nextTierProgress: 78
+    nextTierProgress: 78,
+    daysToCommission: calculateDaysToCommission()
   };
 
   return (
@@ -127,7 +148,7 @@ export default function PartnerDashboard() {
               </p>
               
               {/* Commission Showcase - Large and Motivational */}
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
                 <Card className="bg-gradient-to-br from-green/30 to-emerald-800/30 border-green/50">
                   <CardContent className="p-8 text-center">
                     <DollarSign className="w-12 h-12 text-green mx-auto mb-4" />
@@ -147,6 +168,23 @@ export default function PartnerDashboard() {
                     </div>
                     <p className="text-gold text-lg font-medium">Total Año 2025</p>
                     <p className="text-silver-100 text-sm mt-2">Objetivo: $250K (75% completado)</p>
+                  </CardContent>
+                </Card>
+
+                <Card className="bg-gradient-to-br from-blue-600/30 to-indigo-800/30 border-blue-500/50">
+                  <CardContent className="p-8 text-center">
+                    <Calendar className="w-12 h-12 text-blue-400 mx-auto mb-4" />
+                    <div className="text-5xl font-bold text-white mb-2">
+                      {partnerStats.daysToCommission}
+                    </div>
+                    <p className="text-blue-400 text-lg font-medium">
+                      {partnerStats.daysToCommission === 1 ? 'Día para Cobro' : 'Días para Cobro'}
+                    </p>
+                    <p className="text-silver-100 text-sm mt-2">
+                      {partnerStats.daysToCommission === 0 ? '¡Hoy es día de pago!' : 
+                       partnerStats.daysToCommission === 1 ? 'Mañana es día de pago' : 
+                       'Próximo pago de comisiones'}
+                    </p>
                   </CardContent>
                 </Card>
               </div>
