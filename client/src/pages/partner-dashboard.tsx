@@ -420,7 +420,7 @@ export default function PartnerDashboard() {
 
                 <Card className="bg-[#040505] border-silver-500/20">
                   <CardContent className="p-6">
-                    <div className="flex items-center justify-between">
+                    <div className="flex items-center justify-between mb-4">
                       <div>
                         <p className="text-silver-100 text-sm font-medium">Progreso hacia Diamond Partner</p>
                         <p className="text-white text-3xl font-bold">{partnerStats.nextTierProgress}%</p>
@@ -428,6 +428,7 @@ export default function PartnerDashboard() {
                       </div>
                       <Crown className="w-8 h-8 text-green" />
                     </div>
+                    <Progress value={partnerStats.nextTierProgress} className="h-3" />
                   </CardContent>
                 </Card>
               </div>
