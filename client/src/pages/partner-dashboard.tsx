@@ -8,7 +8,6 @@ import {
   Users, 
   TrendingUp, 
   DollarSign, 
-  Target, 
   Crown, 
   Award, 
   Briefcase,
@@ -33,7 +32,6 @@ export default function PartnerDashboard() {
     monthlyCommission: 15650,
     ytdCommission: 186200,
     activeInvestments: 2340000,
-    conversionRate: 34,
     newLeadsThisMonth: 23,
     tier: "Elite Partner",
     nextTierProgress: 78
@@ -105,7 +103,7 @@ export default function PartnerDashboard() {
                   <Trophy className="w-6 h-6 text-green" />
                   <div>
                     <h3 className="text-white font-semibold">Progreso hacia Diamond Partner</h3>
-                    <p className="text-silver-100 text-sm">Faltan $820K en volumen para el siguiente nivel</p>
+                    <p className="text-silver-100 text-sm">Faltan $820K en volumen para la siguiente fase</p>
                   </div>
                 </div>
                 <div className="text-right">
@@ -154,19 +152,6 @@ export default function PartnerDashboard() {
                   <p className="text-green text-xs">Objetivo: $250K</p>
                 </div>
                 <DollarSign className="w-8 h-8 text-green" />
-              </div>
-            </CardContent>
-          </Card>
-
-          <Card className="bg-gradient-to-br from-purple-600/20 to-purple-800/20 border-purple-500/30">
-            <CardContent className="p-6">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-purple-200 text-sm font-medium">Tasa Conversión</p>
-                  <p className="text-white text-3xl font-bold">{partnerStats.conversionRate}%</p>
-                  <p className="text-purple-200 text-xs">Top 10% de partners</p>
-                </div>
-                <Target className="w-8 h-8 text-purple-400" />
               </div>
             </CardContent>
           </Card>
