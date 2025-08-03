@@ -42,6 +42,8 @@ export default function Dashboard() {
   const [showCalculator, setShowCalculator] = useState(false);
   const [profilePhoto, setProfilePhoto] = useState<string | null>(null);
   const [phoneNumber, setPhoneNumber] = useState("646 123 456");
+  const [activeProductsView, setActiveProductsView] = useState("default");
+  const [activeProductsSubTab, setActiveProductsSubTab] = useState("activos");
 
   const handleLogout = () => {
     setLocation("/login");
@@ -198,6 +200,59 @@ export default function Dashboard() {
     { type: "download", message: "Simulación descargada con gráfico incluido", time: "hace 3 horas" },
     { type: "simulation", message: "Calculadora utilizada: €50.000 a 36 meses", time: "hace 5 horas" },
     { type: "download", message: "Estado de cuenta enero 2025 generado", time: "hace 1 día" }
+  ];
+
+  const productosActivos = [
+    {
+      nombre: "Fondo de Inversión Verde Europa",
+      estado: "En curso",
+      monto: "€5.000",
+      fechaInicio: "12/05/2025",
+      rentabilidad: "6.2% anual"
+    },
+    {
+      nombre: "Plan Ahorro Flexible Plus",
+      estado: "Activo",
+      monto: "€2.500",
+      fechaInicio: "01/07/2025",
+      rentabilidad: "3.8% anual"
+    }
+  ];
+
+  const productosCompletados = [
+    {
+      nombre: "Bono Corporativo Energía Solar",
+      estado: "Éxito",
+      monto: "€10.000",
+      fechaInicio: "10/03/2024",
+      fechaFin: "10/03/2025",
+      rentabilidadFinal: "5.5%"
+    },
+    {
+      nombre: "Fondo Tecnología Asia",
+      estado: "Éxito",
+      monto: "€7.000",
+      fechaInicio: "15/01/2023",
+      fechaFin: "15/01/2024",
+      rentabilidadFinal: "4.9%"
+    }
+  ];
+
+  const productosCancelados = [
+    {
+      nombre: "Fondo Startups LatAm",
+      estado: "Cancelado",
+      monto: "€3.000",
+      fechaCancelacion: "02/04/2025",
+      motivo: "No se alcanzó el capital mínimo requerido"
+    },
+    {
+      nombre: "Plan de Ahorro Salud",
+      estado: "Cancelado",
+      monto: "€1.500",
+      fechaCancelacion: "20/06/2025",
+      motivo: "Cancelado por el usuario antes del inicio"
+    }
   ];
 
   return (
@@ -443,7 +498,8 @@ export default function Dashboard() {
               </div>
             </div>
             
-            {/* Default Products Display */}
+            {/* Conditional Content Based on View */}
+            {activeProductsView === "default" ? (
             <div className="mb-8">
               {/* Hero Section with Background Image */}
               <div 
@@ -499,7 +555,7 @@ export default function Dashboard() {
                 <Button 
                   variant="outline" 
                   className="border-green-500/50 text-white hover:bg-green-500/10 hover:border-green-500 py-4"
-                  onClick={() => {/* Handle Mis Productos */}}
+                  onClick={() => setActiveProductsView("mis-productos")}
                 >
                   <Package className="h-5 w-5 mr-2" />
                   Mis Productos
@@ -522,6 +578,130 @@ export default function Dashboard() {
                 </Button>
               </div>
             </div>
+            ) : activeProductsView === "mis-productos" ? (
+              <div className="mb-8">
+                {/* Header con botón de volver */}
+                <div className="flex items-center justify-between mb-6">
+                  <div className="flex items-center gap-4">
+                    <Button 
+                      variant="outline" 
+                      onClick={() => setActiveProductsView("default")}
+                      className="border-silver-500/50 text-white hover:bg-white/10"
+                    >
+                      <ArrowLeft className="h-4 w-4 mr-2" />
+                      Volver
+                    </Button>
+                    <h2 className="text-2xl font-bold text-white">Mis Productos</h2>
+                  </div>
+                </div>
+
+                {/* Tabs para Activos, Completados, Cancelados */}
+                <Tabs value={activeProductsSubTab} onValueChange={setActiveProductsSubTab} className="mb-6">
+                  <TabsList className="grid w-full grid-cols-3 bg-black/50 border border-silver-500/20">
+                    <TabsTrigger value="activos" className="data-[state=active]:bg-green-600">Activos</TabsTrigger>
+                    <TabsTrigger value="completados" className="data-[state=active]:bg-blue-600">Completados</TabsTrigger>
+                    <TabsTrigger value="cancelados" className="data-[state=active]:bg-red-600">Cancelados</TabsTrigger>
+                  </TabsList>
+
+                  {/* Productos Activos */}
+                  <TabsContent value="activos" className="mt-6">
+                    <div className="space-y-4">
+                      {productosActivos.map((producto, index) => (
+                        <Card key={index} className="bg-black/70 border-silver-500/20 hover:border-green-500/50 transition-all">
+                          <CardContent className="p-6">
+                            <div className="flex items-start justify-between mb-4">
+                              <div>
+                                <h4 className="text-lg font-semibold text-white mb-2">{producto.nombre}</h4>
+                                <Badge className="bg-green-500 text-white">{producto.estado}</Badge>
+                              </div>
+                              <div className="text-right">
+                                <p className="text-2xl font-bold text-green-500">{producto.monto}</p>
+                              </div>
+                            </div>
+                            <div className="grid grid-cols-2 gap-4 text-sm">
+                              <div>
+                                <p className="text-silver-100">Fecha de inicio</p>
+                                <p className="text-white font-medium">{producto.fechaInicio}</p>
+                              </div>
+                              <div>
+                                <p className="text-silver-100">Rentabilidad Estimada</p>
+                                <p className="text-white font-medium">{producto.rentabilidad}</p>
+                              </div>
+                            </div>
+                          </CardContent>
+                        </Card>
+                      ))}
+                    </div>
+                  </TabsContent>
+
+                  {/* Productos Completados */}
+                  <TabsContent value="completados" className="mt-6">
+                    <div className="space-y-4">
+                      {productosCompletados.map((producto, index) => (
+                        <Card key={index} className="bg-black/70 border-silver-500/20 hover:border-blue-500/50 transition-all">
+                          <CardContent className="p-6">
+                            <div className="flex items-start justify-between mb-4">
+                              <div>
+                                <h4 className="text-lg font-semibold text-white mb-2">{producto.nombre}</h4>
+                                <Badge className="bg-blue-500 text-white">{producto.estado}</Badge>
+                              </div>
+                              <div className="text-right">
+                                <p className="text-2xl font-bold text-green-500">{producto.monto}</p>
+                              </div>
+                            </div>
+                            <div className="grid grid-cols-3 gap-4 text-sm">
+                              <div>
+                                <p className="text-silver-100">Inicio</p>
+                                <p className="text-white font-medium">{producto.fechaInicio}</p>
+                              </div>
+                              <div>
+                                <p className="text-silver-100">Finalizado</p>
+                                <p className="text-white font-medium">{producto.fechaFin}</p>
+                              </div>
+                              <div>
+                                <p className="text-silver-100">Rentabilidad Final</p>
+                                <p className="text-white font-medium">{producto.rentabilidadFinal}</p>
+                              </div>
+                            </div>
+                          </CardContent>
+                        </Card>
+                      ))}
+                    </div>
+                  </TabsContent>
+
+                  {/* Productos Cancelados */}
+                  <TabsContent value="cancelados" className="mt-6">
+                    <div className="space-y-4">
+                      {productosCancelados.map((producto, index) => (
+                        <Card key={index} className="bg-black/70 border-silver-500/20 hover:border-red-500/50 transition-all">
+                          <CardContent className="p-6">
+                            <div className="flex items-start justify-between mb-4">
+                              <div>
+                                <h4 className="text-lg font-semibold text-white mb-2">{producto.nombre}</h4>
+                                <Badge className="bg-red-500 text-white">{producto.estado}</Badge>
+                              </div>
+                              <div className="text-right">
+                                <p className="text-2xl font-bold text-red-400">{producto.monto}</p>
+                              </div>
+                            </div>
+                            <div className="grid grid-cols-1 gap-4 text-sm">
+                              <div>
+                                <p className="text-silver-100">Fecha de cancelación</p>
+                                <p className="text-white font-medium">{producto.fechaCancelacion}</p>
+                              </div>
+                              <div>
+                                <p className="text-silver-100">Motivo</p>
+                                <p className="text-white font-medium italic">{producto.motivo}</p>
+                              </div>
+                            </div>
+                          </CardContent>
+                        </Card>
+                      ))}
+                    </div>
+                  </TabsContent>
+                </Tabs>
+              </div>
+            ) : null}
           </div>
         ) : (
           <div>
