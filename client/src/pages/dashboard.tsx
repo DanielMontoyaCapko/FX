@@ -21,7 +21,9 @@ import {
   Package,
   User,
   Calculator,
-  ArrowLeft
+  ArrowLeft,
+  Camera,
+  Upload
 } from "lucide-react";
 import logoSvg from "@/assets/logo.svg";
 import logoImg from "@/assets/Logo-removeBG_1752488347081.png";
@@ -38,9 +40,22 @@ export default function Dashboard() {
   const [showProductDetail, setShowProductDetail] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState(null);
   const [showCalculator, setShowCalculator] = useState(false);
+  const [profilePhoto, setProfilePhoto] = useState<string | null>(null);
+  const [phoneNumber, setPhoneNumber] = useState("646 123 456");
 
   const handleLogout = () => {
     setLocation("/login");
+  };
+
+  const handlePhotoUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        setProfilePhoto(e.target?.result as string);
+      };
+      reader.readAsDataURL(file);
+    }
   };
 
   const handleProductDetails = (product: any) => {
@@ -273,6 +288,39 @@ export default function Dashboard() {
                   
                   <TabsContent value="personal" className="mt-6">
                     <form className="space-y-6">
+                      {/* Profile Photo Section */}
+                      <div className="flex flex-col items-center mb-8">
+                        <div className="relative mb-4">
+                          <div className="w-32 h-32 rounded-full overflow-hidden bg-black/50 border-2 border-silver-500/20 flex items-center justify-center">
+                            {profilePhoto ? (
+                              <img 
+                                src={profilePhoto} 
+                                alt="Foto de perfil" 
+                                className="w-full h-full object-cover"
+                              />
+                            ) : (
+                              <User className="w-16 h-16 text-silver-300" />
+                            )}
+                          </div>
+                          <label 
+                            htmlFor="photo-upload" 
+                            className="absolute bottom-0 right-0 bg-green-600 hover:bg-green-700 rounded-full p-2 cursor-pointer transition-colors"
+                          >
+                            <Camera className="w-4 h-4 text-white" />
+                          </label>
+                          <input
+                            id="photo-upload"
+                            type="file"
+                            accept="image/*"
+                            onChange={handlePhotoUpload}
+                            className="hidden"
+                          />
+                        </div>
+                        <p className="text-silver-300 text-sm text-center">
+                          Haz clic en el icono de cámara para subir tu foto de perfil
+                        </p>
+                      </div>
+
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <div>
                           <Label htmlFor="nombre" className="text-white">Nombre</Label>
@@ -293,14 +341,30 @@ export default function Dashboard() {
                         </div>
                       </div>
                       
-                      <div>
-                        <Label htmlFor="email" className="text-white">Correo Electrónico</Label>
-                        <Input
-                          id="email"
-                          defaultValue="test@test.com"
-                          disabled
-                          className="bg-black/70 border-silver-500/20 text-silver-300 cursor-not-allowed"
-                        />
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div>
+                          <Label htmlFor="email" className="text-white">Correo Electrónico</Label>
+                          <Input
+                            id="email"
+                            defaultValue="test@test.com"
+                            disabled
+                            className="bg-black/70 border-silver-500/20 text-silver-300 cursor-not-allowed"
+                          />
+                        </div>
+                        
+                        <div>
+                          <Label htmlFor="telefono" className="text-white">Número de Teléfono</Label>
+                          <div className="relative">
+                            <Phone className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-silver-400" />
+                            <Input
+                              id="telefono"
+                              value={phoneNumber}
+                              onChange={(e) => setPhoneNumber(e.target.value)}
+                              placeholder="Ej: +34 646 123 456"
+                              className="bg-black/50 border-silver-500/20 text-white pl-10"
+                            />
+                          </div>
+                        </div>
                       </div>
                       
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
