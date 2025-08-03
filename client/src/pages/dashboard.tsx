@@ -879,17 +879,6 @@ export default function Dashboard() {
                     </div>
                   </div>
 
-                  {/* Growth Projection Chart */}
-                  <div className="mb-8">
-                    <GrowthChart 
-                      initialAmount={50000}
-                      years={8}
-                      rate={0.09}
-                      showTitle={true}
-                      className="max-w-4xl mx-auto"
-                    />
-                  </div>
-
                   {/* Compound Interest Comparison Chart */}
                   <div className="mb-8">
                     <CompoundInterestChart 
