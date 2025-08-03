@@ -283,9 +283,9 @@ export default function PartnerDashboard() {
                   <p className="text-silver-100 text-sm">Con Interés Compuesto</p>
                 </CardContent>
               </Card>
-              <Card className="bg-[#040505] border-green/20">
+              <Card className="bg-[#040505] border-yellow-500/20">
                 <CardContent className="p-4 text-center">
-                  <div className="text-2xl font-bold text-green">3</div>
+                  <div className="text-2xl font-bold text-yellow-400">1</div>
                   <p className="text-silver-100 text-sm">Activos</p>
                 </CardContent>
               </Card>
