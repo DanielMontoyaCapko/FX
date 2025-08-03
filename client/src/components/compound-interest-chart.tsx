@@ -67,14 +67,14 @@ export default function CompoundInterestChart({
     <div className={`bg-black/70 rounded-xl p-6 border border-silver-500/20 ${className}`}>
       <div className="mb-6 text-center">
         <h3 className="font-playfair text-2xl font-bold text-white mb-2">
-          El Poder del Interés Compuesto
+          Proyección de Crecimiento
         </h3>
         <p className="text-silver-100 text-sm">
           Comparación: €{initialAmount.toLocaleString()} al {(rate * 100)}% anual • Con vs Sin interés compuesto
         </p>
       </div>
       
-      <div className="h-[500px]">
+      <div className="h-[600px]">
         <ResponsiveContainer width="100%" height="100%">
           <LineChart data={data} margin={{ top: 20, right: 40, left: 30, bottom: 20 }}>
             <CartesianGrid strokeDasharray="3 3" stroke="#334155" opacity={0.3} />
