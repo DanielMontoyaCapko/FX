@@ -28,6 +28,7 @@ import logoImg from "@/assets/Logo-removeBG_1752488347081.png";
 import landscapeSvg from "@/assets/landscape.svg";
 import { useScrollToTop } from "@/hooks/useScrollToTop";
 import GrowthChart from "@/components/growth-chart";
+import CompoundInterestChart from "@/components/compound-interest-chart";
 
 export default function Dashboard() {
   useScrollToTop();
@@ -50,30 +51,38 @@ export default function Dashboard() {
     setSelectedProduct(null);
   };
 
+  // Client investment data
+  const clientData = {
+    capitalInvertido: 150000,
+    capitalTotal: 200000,
+    mesActual: 3,
+    totalMeses: 12,
+    beneficioEstimado: 18000,
+    fechaInicio: "2025-01-15",
+    tasaAnual: 0.09
+  };
+
   const kpis = [
     {
-      title: "Total Leads",
-      value: "46",
-      change: "+12.5%",
-      trending: "up"
-    },
-    {
-      title: "Simulaciones",
-      value: "41",
-      change: "+8.2%",
-      trending: "up"
-    },
-    {
-      title: "Inversión Potencial",
-      value: "€3.210.500",
+      title: "Capital Invertido",
+      value: `€${clientData.capitalInvertido.toLocaleString()}`,
+      subtitle: `de €${clientData.capitalTotal.toLocaleString()} total`,
       change: "+15.3%",
       trending: "up"
     },
     {
-      title: "Conversión",
-      value: "24.8%",
-      change: "−2.1%",
-      trending: "down"
+      title: "Progreso",
+      value: `Mes ${clientData.mesActual}`,
+      subtitle: `de ${clientData.totalMeses} meses`,
+      change: `${Math.round((clientData.mesActual / clientData.totalMeses) * 100)}% completado`,
+      trending: "up"
+    },
+    {
+      title: "Beneficio Estimado",
+      value: `€${clientData.beneficioEstimado.toLocaleString()}`,
+      subtitle: "a fin de año",
+      change: "+9.0%",
+      trending: "up"
     }
   ];
 
@@ -744,24 +753,13 @@ export default function Dashboard() {
           <div>
             <div className="flex justify-between items-center mb-8">
               <div>
-                <h1 className="text-3xl font-bold text-white">Dashboard</h1>
-                <p className="text-silver-100">Vista general de tu actividad</p>
+                <h1 className="text-3xl font-bold text-white">Mi Inversión</h1>
+                <p className="text-silver-100">Vista general de tu cartera</p>
               </div>
-              
-              <Select defaultValue="last-30-days">
-                <SelectTrigger className="w-40 bg-black/50 border-silver-500/20 text-white">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent className="bg-black border-silver-500/20">
-                  <SelectItem value="last-7-days">Últimos 7 días</SelectItem>
-                  <SelectItem value="last-30-days">Últimos 30 días</SelectItem>
-                  <SelectItem value="last-90-days">Últimos 90 días</SelectItem>
-                </SelectContent>
-              </Select>
             </div>
 
             {/* KPIs */}
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
               {kpis.map((kpi, index) => (
                 <Card key={index} className="bg-[#040505] border-silver-500/20">
                   <CardContent className="p-6">
@@ -769,6 +767,9 @@ export default function Dashboard() {
                       <div>
                         <p className="text-silver-100 text-sm">{kpi.title}</p>
                         <p className="text-2xl font-bold text-white">{kpi.value}</p>
+                        {kpi.subtitle && (
+                          <p className="text-silver-300 text-xs mt-1">{kpi.subtitle}</p>
+                        )}
                       </div>
                       <div className={`flex items-center space-x-1 ${
                         kpi.trending === "up" ? "text-green-500" : "text-red-500"
@@ -782,193 +783,25 @@ export default function Dashboard() {
               ))}
             </div>
 
-
-
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-              {/* Recent Leads */}
-              <Card className="bg-[#040505] border-silver-500/20">
-                <CardHeader>
-                  <CardTitle className="text-white">Leads Recientes</CardTitle>
-                  <CardDescription className="text-silver-100">Últimos contactos registrados</CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <div className="space-y-4">
-                    {recentLeads.map((lead, index) => (
-                      <div key={index} className="flex items-center justify-between p-3 bg-black/70 rounded-lg">
-                        <div className="flex items-center space-x-3">
-                          <div className="w-10 h-10 bg-[#344e41] rounded-full flex items-center justify-center">
-                            <span className="text-white font-semibold text-sm">
-                              {lead.name.split(' ').map(n => n[0]).join('')}
-                            </span>
-                          </div>
-                          <div>
-                            <p className="text-white font-medium">{lead.name}</p>
-                            <p className="text-silver-100 text-sm">{lead.email}</p>
-                          </div>
-                        </div>
-                        <div className="text-right">
-                          <p className="text-green font-semibold">{lead.investment}</p>
-                          <div className="flex items-center space-x-2">
-                            <Badge variant="secondary" className="bg-black/50">
-                              <Globe className="h-3 w-3 mr-1" />
-                              {lead.channel}
-                            </Badge>
-                            <span className="text-silver-100 text-xs">{lead.date}</span>
-                          </div>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                </CardContent>
-              </Card>
-
-              {/* Recent Activity */}
-              <Card className="bg-[#040505] border-silver-500/20">
-                <CardHeader>
-                  <CardTitle className="text-white">Actividad Reciente</CardTitle>
-                  <CardDescription className="text-silver-100">Últimas acciones en el sistema</CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <div className="space-y-4">
-                    {recentActivity.map((activity, index) => (
-                      <div key={index} className="flex items-center space-x-3 p-3 bg-black/70 rounded-lg">
-                        <div className="w-8 h-8 bg-[#344e41] rounded-full flex items-center justify-center">
-                          {activity.type === "lead" && <Plus className="h-4 w-4 text-white" />}
-                          {activity.type === "simulation" && <Calculator className="h-4 w-4 text-white" />}
-                          {activity.type === "download" && <Download className="h-4 w-4 text-white" />}
-                        </div>
-                        <div className="flex-1">
-                          <p className="text-white text-sm">{activity.message}</p>
-                          <p className="text-silver-100 text-xs">{activity.time}</p>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                </CardContent>
-              </Card>
+            {/* Main Growth Chart - Landscape */}
+            <div className="mb-8">
+              <GrowthChart 
+                initialAmount={clientData.capitalInvertido}
+                years={Math.ceil(clientData.totalMeses / 12)}
+                rate={clientData.tasaAnual}
+                showTitle={true}
+                className="w-full"
+              />
             </div>
 
-            {/* Quick Actions */}
-            <div className="mt-8">
-              <h2 className="text-xl font-bold text-white mb-4">Acciones Rápidas</h2>
-              <div className="flex space-x-4">
-                <Button className="bg-[#344e41] hover:bg-[#2d4235] text-white">
-                  <Download className="h-4 w-4 mr-2" />
-                  Exportar Leads
-                </Button>
-                <Button className="gradient-navy text-white">
-                  <Calendar className="h-4 w-4 mr-2" />
-                  Programar Seguimiento
-                </Button>
-              </div>
-            </div>
-
-            {/* Asesor Financiero Section */}
-            <div className="mt-8">
-              <Card className="bg-[#040505] border-silver-500/20">
-                <CardContent className="p-8">
-                  <div className="text-center mb-6">
-                    <h2 className="text-2xl font-bold text-white mb-2">
-                      Asesor Financiero: Un Producto Sólido, Fácil de Explicar, Imposible de Ignorar
-                    </h2>
-                    <p className="text-silver-100 max-w-3xl mx-auto">
-                      Presentamos una oportunidad de inversión única que combina seguridad, rentabilidad y simplicidad. 
-                      Perfect para explicar a tus clientes y cerrar ventas efectivamente.
-                    </p>
-                  </div>
-
-                  <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-                    <div className="bg-black/70 p-6 rounded-lg text-center">
-                      <div className="w-12 h-12 bg-[#387b46] rounded-full flex items-center justify-center mx-auto mb-4">
-                        <TrendingUp className="h-6 w-6 text-white" />
-                      </div>
-                      <h3 className="text-white font-semibold mb-2">Rentabilidad Garantizada</h3>
-                      <p className="text-green text-xl font-bold mb-2">9% Anual</p>
-                      <p className="text-silver-100 text-sm">Retorno fijo y predecible</p>
-                    </div>
-
-                    <div className="bg-black/70 p-6 rounded-lg text-center">
-                      <div className="w-12 h-12 bg-[#387b46] rounded-full flex items-center justify-center mx-auto mb-4">
-                        <TrendingUp className="h-6 w-6 text-white" />
-                      </div>
-                      <h3 className="text-white font-semibold mb-2">Capital Protegido</h3>
-                      <p className="text-green text-xl font-bold mb-2">100%</p>
-                      <p className="text-silver-100 text-sm">Garantía bancaria completa</p>
-                    </div>
-
-                    <div className="bg-black/70 p-6 rounded-lg text-center">
-                      <div className="w-12 h-12 bg-[#387b46] rounded-full flex items-center justify-center mx-auto mb-4">
-                        <Calendar className="h-6 w-6 text-white" />
-                      </div>
-                      <h3 className="text-white font-semibold mb-2">Flexibilidad Total</h3>
-                      <p className="text-green text-xl font-bold mb-2">1-5 años</p>
-                      <p className="text-silver-100 text-sm">Plazos adaptables</p>
-                    </div>
-                  </div>
-
-                  {/* Growth Projection Chart */}
-                  <div className="mb-8">
-                    <GrowthChart 
-                      initialAmount={50000}
-                      years={8}
-                      rate={0.09}
-                      showTitle={true}
-                      className="max-w-4xl mx-auto"
-                    />
-                  </div>
-                </CardContent>
-              </Card>
-            </div>
-
-            {/* Perfil del Cliente Ideal */}
-            <div className="mt-8">
-              <Card className="bg-[#040505] border-silver-500/20">
-                <CardContent className="p-6">
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6 items-center">
-                    <div>
-                      <h3 className="text-white font-bold text-lg mb-3">Perfil del Cliente Ideal</h3>
-                      <ul className="text-white/90 space-y-2">
-                        <li>• Inversores conservadores buscando estabilidad</li>
-                        <li>• Personas próximas a la jubilación</li>
-                        <li>• Familias planificando el futuro</li>
-                        <li>• Empresarios diversificando patrimonio</li>
-                      </ul>
-                    </div>
-                    <div className="grid grid-cols-2 gap-4">
-                      <div>
-                        <p className="text-green font-bold text-lg">€50K-500K</p>
-                        <p className="text-silver-100 text-sm">Capacidad inversión</p>
-                      </div>
-                      <div>
-                        <p className="text-green font-bold text-lg">Conservador</p>
-                        <p className="text-silver-100 text-sm">Perfil de riesgo</p>
-                      </div>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-            </div>
-
-            {/* Call to Action */}
-            <div className="mt-8">
-              <Card className="bg-[#040505] border-silver-500/20">
-                <CardContent className="p-6">
-                  <h3 className="text-white font-semibold mb-2">¿Listo para presentar el producto?</h3>
-                  <p className="text-white/90 text-sm mb-4">
-                    Utiliza la calculadora para mostrar proyecciones reales y impactar a tus clientes.
-                  </p>
-                  <div className="flex space-x-3">
-                    <Button className="bg-white text-[#344e41] hover:bg-gray-100">
-                      <Calculator className="h-4 w-4 mr-2" />
-                      Ver Calculadora
-                    </Button>
-                    <Button variant="outline" className="border-white text-white hover:bg-white/10">
-                      <Download className="h-4 w-4 mr-2" />
-                      Material de Ventas
-                    </Button>
-                  </div>
-                </CardContent>
-              </Card>
+            {/* Compound Interest Chart */}
+            <div className="mb-8">
+              <CompoundInterestChart 
+                initialAmount={clientData.capitalInvertido}
+                years={Math.ceil(clientData.totalMeses / 12)}
+                rate={clientData.tasaAnual}
+                className="w-full"
+              />
             </div>
           </div>
         )}
