@@ -121,8 +121,8 @@ export default function Dashboard() {
 
   const kpis = [
     {
-      title: "Capital Invertido / Total",
-      value: "€50.000 / €50.000",
+      title: "Capital Invertido",
+      value: "€50.000",
       change: "100% completado",
       trending: "up"
     },
