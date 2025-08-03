@@ -832,7 +832,7 @@ export default function Dashboard() {
             {/* KPIs */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
               {kpis.map((kpi, index) => (
-                <Card key={index} className="bg-[#040505] border-silver-500/20">
+                <Card key={index} className="bg-[#040505] border-silver-500/20 border-transparent transition-all duration-300 hover:border-green-500 hover:bg-[#040505]/80 hover:shadow-lg hover:shadow-green-500/20 cursor-pointer">
                   <CardContent className="p-6">
                     <div className="flex items-center justify-between">
                       <div>
@@ -854,7 +854,7 @@ export default function Dashboard() {
             {/* Capital Growth Chart - Large Landscape */}
             {/* Asesor Financiero Section */}
             <div className="mb-8">
-              <Card className="bg-[#040505] border-silver-500/20">
+              <Card className="bg-[#040505] border-silver-500/20 border-transparent transition-all duration-300 hover:border-green-500 hover:bg-[#040505]/80 hover:shadow-lg hover:shadow-green-500/20 cursor-pointer">
                 <CardContent className="p-8">
                   <div className="text-center mb-6">
                     <h2 className="text-2xl font-bold text-white mb-2">
@@ -910,7 +910,7 @@ export default function Dashboard() {
 
             <div className="grid grid-cols-1 gap-8">
               {/* Recent Activity */}
-              <Card className="bg-[#040505] border-silver-500/20">
+              <Card className="bg-[#040505] border-silver-500/20 border-transparent transition-all duration-300 hover:border-green-500 hover:bg-[#040505]/80 hover:shadow-lg hover:shadow-green-500/20 cursor-pointer">
                 <CardHeader>
                   <CardTitle className="text-white">Actividad Reciente</CardTitle>
                   <CardDescription className="text-silver-100">Últimas acciones en el sistema</CardDescription>

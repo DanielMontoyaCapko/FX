@@ -64,7 +64,7 @@ export default function CompoundInterestChart({
   };
 
   return (
-    <div className={`bg-black/70 rounded-xl p-8 border border-silver-500/20 ${className}`}>
+    <div className={`bg-black/70 rounded-xl p-8 border border-silver-500/20 border-transparent transition-all duration-300 hover:border-green-500 hover:bg-black/80 hover:shadow-lg hover:shadow-green-500/20 cursor-pointer ${className}`}>
       <div className="mb-8 text-center">
         <h3 className="font-playfair text-2xl font-bold text-white mb-2">
           Proyección de Crecimiento
