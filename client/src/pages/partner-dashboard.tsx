@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { useAuth } from "@/hooks/useAuth";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -26,6 +27,7 @@ import GrowthChart from "@/components/growth-chart";
 export default function PartnerDashboard() {
   useScrollToTop();
   const { user, logout } = useAuth();
+  const [activeTab, setActiveTab] = useState("resumen");
 
   const partnerStats = {
     totalClients: 47,
@@ -38,147 +40,179 @@ export default function PartnerDashboard() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-black via-gray-900 to-gray-800">
-      {/* Premium Header */}
-      <header className="bg-black/50 backdrop-blur-sm border-b border-gold/20">
-        <div className="container mx-auto px-6 py-4">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center space-x-4">
-              <img src={logoImg} alt="Logo" className="w-10 h-10" />
-              <div>
-                <h1 className="font-cormorant text-2xl font-bold text-white">Nakama&Partners</h1>
-                <div className="flex items-center space-x-2">
-                  <Crown className="w-4 h-4 text-green" />
-                  <span className="text-green text-sm font-medium">Portal Ejecutivo</span>
-                </div>
-              </div>
-            </div>
-            
-            <div className="flex items-center space-x-4">
-              <div className="text-right">
-                <p className="text-white font-medium">{user?.name}</p>
-                <Badge className="bg-green text-navy font-medium">
-                  <Star className="w-3 h-3 mr-1" />
-                  {partnerStats.tier}
-                </Badge>
-              </div>
-              <Button 
-                onClick={logout}
-                variant="ghost" 
-                className="text-white hover:bg-white/10"
-              >
-                <LogOut className="w-4 h-4 mr-2" />
-                Salir
-              </Button>
+    <div className="min-h-screen bg-gradient-to-br from-black via-gray-900 to-gray-600 text-white flex">
+      {/* Sidebar */}
+      <div className="w-64 bg-[#040505] border-r border-silver-500/20 p-6 flex flex-col fixed h-full">
+        <div className="flex items-center space-x-3 mb-8">
+          <img src={logoImg} alt="Nakama&Partners" className="w-8 h-8" />
+          <div>
+            <h1 className="font-cormorant text-lg font-bold text-white">Nakama&Partners</h1>
+            <p className="text-green text-xs">Portal de Partner</p>
+          </div>
+        </div>
+
+        <nav className="space-y-2 flex-1">
+          <button
+            onClick={() => setActiveTab("resumen")}
+            className={`w-full flex items-center space-x-3 px-3 py-2 rounded-lg transition-colors ${
+              activeTab === "resumen" ? "bg-[#344e41] text-white" : "text-silver-100 hover:bg-black/50"
+            }`}
+          >
+            <BarChart3 className="h-4 w-4" />
+            <span>Resumen</span>
+          </button>
+          
+          <button
+            onClick={() => setActiveTab("clientes")}
+            className={`w-full flex items-center space-x-3 px-3 py-2 rounded-lg transition-colors ${
+              activeTab === "clientes" ? "bg-[#344e41] text-white" : "text-silver-100 hover:bg-black/50"
+            }`}
+          >
+            <Users className="h-4 w-4" />
+            <span>Clientes</span>
+          </button>
+          
+          <button
+            onClick={() => setActiveTab("prospección")}
+            className={`w-full flex items-center space-x-3 px-3 py-2 rounded-lg transition-colors ${
+              activeTab === "prospección" ? "bg-[#344e41] text-white" : "text-silver-100 hover:bg-black/50"
+            }`}
+          >
+            <UserPlus className="h-4 w-4" />
+            <span>Prospección</span>
+          </button>
+          
+          <button
+            onClick={() => setActiveTab("herramientas")}
+            className={`w-full flex items-center space-x-3 px-3 py-2 rounded-lg transition-colors ${
+              activeTab === "herramientas" ? "bg-[#344e41] text-white" : "text-silver-100 hover:bg-black/50"
+            }`}
+          >
+            <Briefcase className="h-4 w-4" />
+            <span>Herramientas</span>
+          </button>
+          
+          <Button 
+            onClick={logout}
+            variant="ghost" 
+            className="w-full justify-start text-silver-100 hover:text-white hover:bg-black/50 mt-2"
+          >
+            <LogOut className="h-4 w-4 mr-3" />
+            Cerrar sesión
+          </Button>
+        </nav>
+
+        {/* Partner Status Badge */}
+        <div className="mt-auto pt-8">
+          <div className="bg-gradient-to-r from-gold/20 to-gold/10 border border-gold/30 rounded-lg p-3">
+            <div className="flex items-center space-x-2">
+              <Star className="w-4 h-4 text-green" />
+              <span className="text-white text-sm font-medium">{partnerStats.tier}</span>
             </div>
           </div>
         </div>
-      </header>
+      </div>
 
-      <div className="container mx-auto px-6 py-8">
-        {/* Welcome Section */}
-        <div className="mb-8">
-          <div className="flex items-center justify-between mb-6">
-            <div>
-              <h2 className="text-3xl font-bold text-white mb-2">
-                Bienvenido, {user?.name?.split(' ')[0]}
-              </h2>
-              <p className="text-silver-100 text-lg">
-                Panel de control ejecutivo para socios estratégicos
+      {/* Main Content */}
+      <div className="flex-1 p-8 ml-64">
+        {activeTab === "resumen" && (
+          <div>
+            {/* Header with Commission Focus */}
+            <div className="mb-8">
+              <h1 className="text-4xl font-bold text-white mb-2">
+                Hola, {user?.name?.split(' ')[0]}
+              </h1>
+              <p className="text-silver-100 text-lg mb-6">
+                Bienvenido a tu panel de control ejecutivo
               </p>
-            </div>
-            <div className="text-right">
-              <div className="text-2xl font-bold text-green mb-1">
-                ${partnerStats.monthlyCommission.toLocaleString()}
-              </div>
-              <div className="text-silver-100 text-sm">Comisiones este mes</div>
-            </div>
-          </div>
+              
+              {/* Commission Showcase - Large and Motivational */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+                <Card className="bg-gradient-to-br from-green/30 to-emerald-800/30 border-green/50">
+                  <CardContent className="p-8 text-center">
+                    <DollarSign className="w-12 h-12 text-green mx-auto mb-4" />
+                    <div className="text-5xl font-bold text-white mb-2">
+                      ${partnerStats.monthlyCommission.toLocaleString()}
+                    </div>
+                    <p className="text-green text-lg font-medium">Comisiones Este Mes</p>
+                    <p className="text-silver-100 text-sm mt-2">¡Excelente rendimiento!</p>
+                  </CardContent>
+                </Card>
 
-          {/* Tier Progress */}
-          <Card className="bg-gradient-to-r from-gold/20 to-gold/10 border-gold/30">
-            <CardContent className="p-6">
-              <div className="flex items-center justify-between mb-4">
-                <div className="flex items-center space-x-3">
-                  <Trophy className="w-6 h-6 text-green" />
-                  <div>
-                    <h3 className="text-white font-semibold">Progreso hacia Diamond Partner</h3>
-                    <p className="text-silver-100 text-sm">Faltan $820K en volumen para la siguiente fase</p>
+                <Card className="bg-gradient-to-br from-gold/30 to-yellow-600/30 border-gold/50">
+                  <CardContent className="p-8 text-center">
+                    <Trophy className="w-12 h-12 text-gold mx-auto mb-4" />
+                    <div className="text-5xl font-bold text-white mb-2">
+                      ${(partnerStats.ytdCommission / 1000).toFixed(0)}K
+                    </div>
+                    <p className="text-gold text-lg font-medium">Total Año 2025</p>
+                    <p className="text-silver-100 text-sm mt-2">Objetivo: $250K (75% completado)</p>
+                  </CardContent>
+                </Card>
+              </div>
+
+              {/* Progress Section */}
+              <Card className="bg-gradient-to-r from-gold/20 to-gold/10 border-gold/30 mb-8">
+                <CardContent className="p-6">
+                  <div className="flex items-center justify-between mb-4">
+                    <div className="flex items-center space-x-3">
+                      <Crown className="w-6 h-6 text-green" />
+                      <div>
+                        <h3 className="text-white font-semibold">Progreso hacia Diamond Partner</h3>
+                        <p className="text-silver-100 text-sm">Faltan $820K en volumen para la siguiente fase</p>
+                      </div>
+                    </div>
+                    <div className="text-right">
+                      <div className="text-green font-bold text-lg">{partnerStats.nextTierProgress}%</div>
+                    </div>
                   </div>
-                </div>
-                <div className="text-right">
-                  <div className="text-green font-bold text-lg">{partnerStats.nextTierProgress}%</div>
-                </div>
-              </div>
-              <Progress value={partnerStats.nextTierProgress} className="h-2" />
-            </CardContent>
-          </Card>
-        </div>
+                  <Progress value={partnerStats.nextTierProgress} className="h-3" />
+                </CardContent>
+              </Card>
+            </div>
 
-        {/* Key Metrics Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-          <Card className="bg-gradient-to-br from-blue-600/20 to-blue-800/20 border-blue-500/30">
-            <CardContent className="p-6">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-blue-200 text-sm font-medium">Clientes Activos</p>
-                  <p className="text-white text-3xl font-bold">{partnerStats.totalClients}</p>
-                  <p className="text-blue-200 text-xs">+5 este mes</p>
-                </div>
-                <Users className="w-8 h-8 text-blue-400" />
-              </div>
-            </CardContent>
-          </Card>
+            {/* Metrics Grid */}
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+              <Card className="bg-[#040505] border-silver-500/20">
+                <CardContent className="p-6">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <p className="text-silver-100 text-sm font-medium">Clientes Activos</p>
+                      <p className="text-white text-3xl font-bold">{partnerStats.totalClients}</p>
+                      <p className="text-green text-xs">+5 este mes</p>
+                    </div>
+                    <Users className="w-8 h-8 text-green" />
+                  </div>
+                </CardContent>
+              </Card>
 
-          <Card className="bg-gradient-to-br from-emerald-600/20 to-emerald-800/20 border-emerald-500/30">
-            <CardContent className="p-6">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-emerald-200 text-sm font-medium">Volumen Total</p>
-                  <p className="text-white text-3xl font-bold">${(partnerStats.activeInvestments / 1000000).toFixed(1)}M</p>
-                  <p className="text-emerald-200 text-xs">+12% vs mes anterior</p>
-                </div>
-                <TrendingUp className="w-8 h-8 text-emerald-400" />
-              </div>
-            </CardContent>
-          </Card>
+              <Card className="bg-[#040505] border-silver-500/20">
+                <CardContent className="p-6">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <p className="text-silver-100 text-sm font-medium">Volumen Total</p>
+                      <p className="text-white text-3xl font-bold">${(partnerStats.activeInvestments / 1000000).toFixed(1)}M</p>
+                      <p className="text-green text-xs">+12% vs mes anterior</p>
+                    </div>
+                    <TrendingUp className="w-8 h-8 text-green" />
+                  </div>
+                </CardContent>
+              </Card>
 
-          <Card className="bg-gradient-to-br from-gold/20 to-yellow-600/20 border-gold/30">
-            <CardContent className="p-6">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-green text-sm font-medium">Comisiones YTD</p>
-                  <p className="text-white text-3xl font-bold">${(partnerStats.ytdCommission / 1000).toFixed(0)}K</p>
-                  <p className="text-green text-xs">Objetivo: $250K</p>
-                </div>
-                <DollarSign className="w-8 h-8 text-green" />
-              </div>
-            </CardContent>
-          </Card>
-        </div>
+              <Card className="bg-[#040505] border-silver-500/20">
+                <CardContent className="p-6">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <p className="text-silver-100 text-sm font-medium">Nuevos Leads</p>
+                      <p className="text-white text-3xl font-bold">{partnerStats.newLeadsThisMonth}</p>
+                      <p className="text-green text-xs">Este mes</p>
+                    </div>
+                    <UserPlus className="w-8 h-8 text-green" />
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
 
-        {/* Main Content Tabs */}
-        <Tabs defaultValue="overview" className="space-y-6">
-          <TabsList className="bg-black/50 p-1 space-x-1">
-            <TabsTrigger value="overview" className="text-white data-[state=active]:bg-green data-[state=active]:text-navy px-6">
-              <BarChart3 className="w-4 h-4 mr-2" />
-              Resumen
-            </TabsTrigger>
-            <TabsTrigger value="clients" className="text-white data-[state=active]:bg-green data-[state=active]:text-navy px-6">
-              <Users className="w-4 h-4 mr-2" />
-              Clientes
-            </TabsTrigger>
-            <TabsTrigger value="leads" className="text-white data-[state=active]:bg-green data-[state=active]:text-navy px-6">
-              <UserPlus className="w-4 h-4 mr-2" />
-              Prospección
-            </TabsTrigger>
-            <TabsTrigger value="tools" className="text-white data-[state=active]:bg-green data-[state=active]:text-navy px-6">
-              <Briefcase className="w-4 h-4 mr-2" />
-              Herramientas
-            </TabsTrigger>
-          </TabsList>
-
-          <TabsContent value="overview" className="space-y-6">
             {/* Growth Chart - Full Width */}
             <div className="mb-8">
               <GrowthChart 
@@ -189,68 +223,14 @@ export default function PartnerDashboard() {
                 className="max-w-6xl mx-auto"
               />
             </div>
+          </div>
+        )}
 
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-              {/* Performance Chart */}
-              <Card className="bg-[#040505] border-silver-500/20">
-                <CardHeader>
-                  <CardTitle className="text-white flex items-center">
-                    <TrendingUp className="w-5 h-5 mr-2 text-green" />
-                    Performance Mensual
-                  </CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="space-y-4">
-                    {[
-                      { month: "Enero", commission: 14200, clients: 3 },
-                      { month: "Febrero", commission: 16800, clients: 4 },
-                      { month: "Marzo", commission: 15650, clients: 5 },
-                    ].map((data, index) => (
-                      <div key={index} className="flex items-center justify-between p-3 bg-black/30 rounded-lg">
-                        <div>
-                          <p className="text-white font-medium">{data.month}</p>
-                          <p className="text-silver-100 text-sm">{data.clients} nuevos clientes</p>
-                        </div>
-                        <div className="text-right">
-                          <p className="text-green font-bold">${data.commission.toLocaleString()}</p>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                </CardContent>
-              </Card>
-
-              {/* Recent Activity */}
-              <Card className="bg-[#040505] border-silver-500/20">
-                <CardHeader>
-                  <CardTitle className="text-white flex items-center">
-                    <Zap className="w-5 h-5 mr-2 text-green" />
-                    Actividad Reciente
-                  </CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="space-y-4">
-                    {[
-                      { action: "Nuevo cliente registrado", client: "María González", amount: "$50,000", time: "Hace 2 horas" },
-                      { action: "Inversión incrementada", client: "Carlos Ruiz", amount: "$25,000", time: "Hace 5 horas" },
-                      { action: "Renovación automática", client: "Ana López", amount: "$75,000", time: "Hace 1 día" },
-                    ].map((activity, index) => (
-                      <div key={index} className="flex items-start space-x-3 p-3 bg-black/30 rounded-lg">
-                        <div className="w-2 h-2 bg-green rounded-full mt-2"></div>
-                        <div className="flex-1">
-                          <p className="text-white text-sm font-medium">{activity.action}</p>
-                          <p className="text-silver-100 text-xs">{activity.client} - {activity.amount}</p>
-                          <p className="text-silver-100 text-xs">{activity.time}</p>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                </CardContent>
-              </Card>
-            </div>
-          </TabsContent>
-
-          <TabsContent value="clients" className="space-y-6">
+        {activeTab === "clientes" && (
+          <div>
+            <h1 className="text-3xl font-bold text-white mb-2">Gestión de Clientes</h1>
+            <p className="text-silver-100 mb-6">Administra tu cartera de inversores</p>
+            
             <Card className="bg-[#040505] border-silver-500/20">
               <CardHeader>
                 <CardTitle className="text-white">Cartera de Clientes</CardTitle>
@@ -268,7 +248,7 @@ export default function PartnerDashboard() {
                   ].map((client, index) => (
                     <div key={index} className="flex items-center justify-between p-4 bg-black/30 rounded-lg border border-silver-500/10">
                       <div className="flex items-center space-x-4">
-                        <div className="w-10 h-10 bg-gradient-to-br from-gold/20 to-gold/10 rounded-full flex items-center justify-center">
+                        <div className="w-10 h-10 bg-gradient-to-br from-green/20 to-green/10 rounded-full flex items-center justify-center">
                           <span className="text-green font-semibold text-sm">{client.name.split(' ').map(n => n[0]).join('')}</span>
                         </div>
                         <div>
@@ -290,9 +270,14 @@ export default function PartnerDashboard() {
                 </div>
               </CardContent>
             </Card>
-          </TabsContent>
+          </div>
+        )}
 
-          <TabsContent value="leads" className="space-y-6">
+        {activeTab === "prospección" && (
+          <div>
+            <h1 className="text-3xl font-bold text-white mb-2">Prospección de Leads</h1>
+            <p className="text-silver-100 mb-6">Nuevas oportunidades de negocio</p>
+            
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
               <Card className="bg-[#040505] border-silver-500/20">
                 <CardHeader>
@@ -319,9 +304,6 @@ export default function PartnerDashboard() {
                       </div>
                     ))}
                   </div>
-                  <Button className="w-full mt-4 bg-green hover:bg-green/80 text-navy font-semibold">
-                    Ver Todos los Prospectos
-                  </Button>
                 </CardContent>
               </Card>
 
@@ -355,9 +337,14 @@ export default function PartnerDashboard() {
                 </CardContent>
               </Card>
             </div>
-          </TabsContent>
+          </div>
+        )}
 
-          <TabsContent value="tools" className="space-y-6">
+        {activeTab === "herramientas" && (
+          <div>
+            <h1 className="text-3xl font-bold text-white mb-2">Herramientas de Trabajo</h1>
+            <p className="text-silver-100 mb-6">Recursos y utilidades para partners</p>
+            
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {[
                 {
@@ -423,8 +410,8 @@ export default function PartnerDashboard() {
                 </Card>
               ))}
             </div>
-          </TabsContent>
-        </Tabs>
+          </div>
+        )}
       </div>
     </div>
   );
