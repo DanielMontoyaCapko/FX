@@ -154,103 +154,81 @@ export default function PartnerDashboard() {
             <h1 className="text-3xl font-bold text-white mb-2">Perfil de Partner</h1>
             <p className="text-silver-100 mb-6">Gestiona tu información personal y configuración de cuenta</p>
             
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-              {/* Profile Information */}
-              <div className="lg:col-span-2">
-                <Card className="bg-[#040505] border-silver-500/20">
-                  <CardHeader>
-                    <CardTitle className="text-white">Información Personal</CardTitle>
-                    <CardDescription className="text-silver-100">
-                      Datos básicos de tu cuenta de partner
-                    </CardDescription>
-                  </CardHeader>
-                  <CardContent className="space-y-6">
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                      <div className="space-y-2">
-                        <label className="text-white text-sm font-medium">Nombre Completo</label>
-                        <div className="bg-black/30 p-3 rounded-lg border border-silver-500/20">
-                          <p className="text-white">{user?.name || 'Partner Usuario'}</p>
-                        </div>
-                      </div>
-                      
-                      <div className="space-y-2">
-                        <label className="text-white text-sm font-medium">Email</label>
-                        <div className="bg-black/30 p-3 rounded-lg border border-silver-500/20">
-                          <p className="text-white">{user?.email}</p>
-                        </div>
-                      </div>
-                      
-                      <div className="space-y-2">
-                        <label className="text-white text-sm font-medium">Teléfono</label>
-                        <div className="bg-black/30 p-3 rounded-lg border border-silver-500/20">
-                          <p className="text-white">+34 666 555 444</p>
-                        </div>
-                      </div>
-                      
-                      <div className="space-y-2">
-                        <label className="text-white text-sm font-medium">Código Partner</label>
-                        <div className="bg-black/30 p-3 rounded-lg border border-silver-500/20">
-                          <p className="text-green font-mono">NP-{user?.id?.toString().padStart(4, '0')}</p>
-                        </div>
-                      </div>
+            <Card className="bg-[#040505] border-silver-500/20 max-w-4xl mx-auto">
+              <CardHeader>
+                <CardTitle className="text-white">Información Personal</CardTitle>
+                <CardDescription className="text-silver-100">
+                  Datos básicos de tu cuenta de partner
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-8">
+                {/* Profile Picture Section */}
+                <div className="flex items-center space-x-6">
+                  <div className="relative">
+                    <div className="w-24 h-24 bg-gradient-to-br from-green/30 to-green/10 rounded-full flex items-center justify-center border-2 border-green/30">
+                      <User className="w-12 h-12 text-green" />
                     </div>
-                    
-                    <Button className="bg-green hover:bg-green/80 text-navy">
-                      Editar Información
+                    <button className="absolute bottom-0 right-0 bg-green hover:bg-green/80 text-navy rounded-full p-2 transition-colors">
+                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" />
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 13a3 3 0 11-6 0 3 3 0 016 0z" />
+                      </svg>
+                    </button>
+                  </div>
+                  <div>
+                    <h3 className="text-white text-lg font-semibold">{user?.name || 'Partner Usuario'}</h3>
+                    <p className="text-silver-100">Foto de perfil</p>
+                    <Button variant="outline" className="mt-2 border-silver-500/20 text-white hover:bg-white/10">
+                      Cambiar foto
                     </Button>
-                  </CardContent>
-                </Card>
-              </div>
-              
-              {/* Status & Achievements */}
-              <div className="space-y-6">
-                <Card className="bg-gradient-to-br from-gold/20 to-gold/10 border-gold/30">
-                  <CardContent className="p-6 text-center">
-                    <Crown className="w-12 h-12 text-green mx-auto mb-4" />
-                    <h3 className="text-white font-bold text-lg mb-2">Elite Partner</h3>
-                    <p className="text-silver-100 text-sm">Nivel Premium</p>
-                    <div className="mt-4 space-y-2">
-                      <div className="flex justify-between text-sm">
-                        <span className="text-silver-100">Progreso a Diamond</span>
-                        <span className="text-green">78%</span>
-                      </div>
-                      <Progress value={78} className="h-2" />
+                  </div>
+                </div>
+
+                {/* Personal Information Fields */}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div className="space-y-2">
+                    <label className="text-white text-sm font-medium">Nombre Completo</label>
+                    <div className="bg-black/30 p-3 rounded-lg border border-silver-500/20">
+                      <p className="text-white">{user?.name || 'Partner Usuario'}</p>
                     </div>
-                  </CardContent>
-                </Card>
+                  </div>
+                  
+                  <div className="space-y-2">
+                    <label className="text-white text-sm font-medium">Email</label>
+                    <div className="bg-black/30 p-3 rounded-lg border border-silver-500/20">
+                      <p className="text-white">{user?.email}</p>
+                    </div>
+                  </div>
+                  
+                  <div className="space-y-2">
+                    <label className="text-white text-sm font-medium">Número de Teléfono</label>
+                    <div className="bg-black/30 p-3 rounded-lg border border-silver-500/20">
+                      <p className="text-white">+34 666 555 444</p>
+                    </div>
+                  </div>
+                  
+                  <div className="space-y-2">
+                    <label className="text-white text-sm font-medium">Fecha de Nacimiento</label>
+                    <div className="bg-black/30 p-3 rounded-lg border border-silver-500/20">
+                      <p className="text-white">15/03/1985</p>
+                    </div>
+                  </div>
+                  
+                  <div className="space-y-2 md:col-span-2">
+                    <label className="text-white text-sm font-medium">Dirección</label>
+                    <div className="bg-black/30 p-3 rounded-lg border border-silver-500/20">
+                      <p className="text-white">Calle Mayor 123, 4º B, 28001 Madrid, España</p>
+                    </div>
+                  </div>
+                </div>
                 
-                <Card className="bg-[#040505] border-silver-500/20">
-                  <CardHeader>
-                    <CardTitle className="text-white text-lg">Logros</CardTitle>
-                  </CardHeader>
-                  <CardContent className="space-y-3">
-                    <div className="flex items-center space-x-3">
-                      <Trophy className="w-6 h-6 text-gold" />
-                      <div>
-                        <p className="text-white text-sm font-medium">Top Performer</p>
-                        <p className="text-silver-100 text-xs">Mes de Enero 2025</p>
-                      </div>
-                    </div>
-                    
-                    <div className="flex items-center space-x-3">
-                      <Star className="w-6 h-6 text-green" />
-                      <div>
-                        <p className="text-white text-sm font-medium">50+ Clientes</p>
-                        <p className="text-silver-100 text-xs">Hito alcanzado</p>
-                      </div>
-                    </div>
-                    
-                    <div className="flex items-center space-x-3">
-                      <Zap className="w-6 h-6 text-blue-400" />
-                      <div>
-                        <p className="text-white text-sm font-medium">Partner del Año</p>
-                        <p className="text-silver-100 text-xs">2024</p>
-                      </div>
-                    </div>
-                  </CardContent>
-                </Card>
-              </div>
-            </div>
+                <div className="flex justify-end">
+                  <Button className="bg-green hover:bg-green/80 text-navy px-8">
+                    Editar Información
+                  </Button>
+                </div>
+              </CardContent>
+            </Card>
           </div>
         )}
 
