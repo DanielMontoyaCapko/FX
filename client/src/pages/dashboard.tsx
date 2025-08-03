@@ -827,11 +827,11 @@ export default function Dashboard() {
               <div className="flex space-x-4">
                 <Button className="bg-[#344e41] hover:bg-[#2d4235] text-white">
                   <Download className="h-4 w-4 mr-2" />
-                  Exportar Leads
+                  Descargar Estado de Cuenta
                 </Button>
                 <Button className="gradient-navy text-white">
-                  <Calendar className="h-4 w-4 mr-2" />
-                  Programar Seguimiento
+                  <Calculator className="h-4 w-4 mr-2" />
+                  Calcular Nueva Inversión
                 </Button>
               </div>
             </div>
