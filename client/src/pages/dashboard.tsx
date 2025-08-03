@@ -178,11 +178,11 @@ export default function Dashboard() {
   ];
 
   const recentActivity = [
-    { type: "lead", message: "Nuevo lead registrado: María González", time: "hace 2 horas" },
-    { type: "simulation", message: "Simulación completada: €75.000", time: "hace 3 horas" },
-    { type: "download", message: "PDF descargado: Dossier Institucional", time: "hace 4 horas" },
-    { type: "lead", message: "Nuevo lead registrado: Carlos Ruiz", time: "hace 5 horas" },
-    { type: "simulation", message: "Simulación completada: €120.000", time: "hace 6 horas" }
+    { type: "download", message: "Estado de cuenta descargado exitosamente", time: "hace 1 hora" },
+    { type: "simulation", message: "Nueva simulación de inversión: €25.000 a 24 meses", time: "hace 2 horas" },
+    { type: "download", message: "Simulación descargada con gráfico incluido", time: "hace 3 horas" },
+    { type: "simulation", message: "Calculadora utilizada: €50.000 a 36 meses", time: "hace 5 horas" },
+    { type: "download", message: "Estado de cuenta enero 2025 generado", time: "hace 1 día" }
   ];
 
   return (
