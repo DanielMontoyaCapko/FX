@@ -18,11 +18,14 @@ import {
   LogOut,
   Star,
   Trophy,
-  Zap
+  Zap,
+  User,
+  FileText,
+  Download
 } from "lucide-react";
 import logoImg from "@/assets/Logo-removeBG_1752488347081.png";
 import { useScrollToTop } from "@/hooks/useScrollToTop";
-import GrowthChart from "@/components/growth-chart";
+import CompoundInterestChart from "@/components/compound-interest-chart";
 
 export default function PartnerDashboard() {
   useScrollToTop();
@@ -54,7 +57,7 @@ export default function PartnerDashboard() {
     monthlyCommission: 15650,
     ytdCommission: 186200,
     activeInvestments: 2340000,
-    newLeadsThisMonth: 23,
+    newLeadsThisMonth: 5,
     tier: "Elite Partner",
     nextTierProgress: 78,
     daysToCommission: calculateDaysToCommission()
@@ -73,6 +76,16 @@ export default function PartnerDashboard() {
         </div>
 
         <nav className="space-y-2 flex-1">
+          <button
+            onClick={() => setActiveTab("perfil")}
+            className={`w-full flex items-center space-x-3 px-3 py-2 rounded-lg transition-colors ${
+              activeTab === "perfil" ? "bg-[#344e41] text-white" : "text-silver-100 hover:bg-black/50"
+            }`}
+          >
+            <User className="h-4 w-4" />
+            <span>Perfil</span>
+          </button>
+          
           <button
             onClick={() => setActiveTab("resumen")}
             className={`w-full flex items-center space-x-3 px-3 py-2 rounded-lg transition-colors ${
@@ -93,7 +106,15 @@ export default function PartnerDashboard() {
             <span>Clientes</span>
           </button>
           
-
+          <button
+            onClick={() => setActiveTab("contratos")}
+            className={`w-full flex items-center space-x-3 px-3 py-2 rounded-lg transition-colors ${
+              activeTab === "contratos" ? "bg-[#344e41] text-white" : "text-silver-100 hover:bg-black/50"
+            }`}
+          >
+            <FileText className="h-4 w-4" />
+            <span>Contratos</span>
+          </button>
           
           <button
             onClick={() => setActiveTab("herramientas")}
@@ -128,6 +149,111 @@ export default function PartnerDashboard() {
 
       {/* Main Content */}
       <div className="flex-1 p-8 ml-64">
+        {activeTab === "perfil" && (
+          <div>
+            <h1 className="text-3xl font-bold text-white mb-2">Perfil de Partner</h1>
+            <p className="text-silver-100 mb-6">Gestiona tu información personal y configuración de cuenta</p>
+            
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+              {/* Profile Information */}
+              <div className="lg:col-span-2">
+                <Card className="bg-[#040505] border-silver-500/20">
+                  <CardHeader>
+                    <CardTitle className="text-white">Información Personal</CardTitle>
+                    <CardDescription className="text-silver-100">
+                      Datos básicos de tu cuenta de partner
+                    </CardDescription>
+                  </CardHeader>
+                  <CardContent className="space-y-6">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                      <div className="space-y-2">
+                        <label className="text-white text-sm font-medium">Nombre Completo</label>
+                        <div className="bg-black/30 p-3 rounded-lg border border-silver-500/20">
+                          <p className="text-white">{user?.name || 'Partner Usuario'}</p>
+                        </div>
+                      </div>
+                      
+                      <div className="space-y-2">
+                        <label className="text-white text-sm font-medium">Email</label>
+                        <div className="bg-black/30 p-3 rounded-lg border border-silver-500/20">
+                          <p className="text-white">{user?.email}</p>
+                        </div>
+                      </div>
+                      
+                      <div className="space-y-2">
+                        <label className="text-white text-sm font-medium">Teléfono</label>
+                        <div className="bg-black/30 p-3 rounded-lg border border-silver-500/20">
+                          <p className="text-white">+34 666 555 444</p>
+                        </div>
+                      </div>
+                      
+                      <div className="space-y-2">
+                        <label className="text-white text-sm font-medium">Código Partner</label>
+                        <div className="bg-black/30 p-3 rounded-lg border border-silver-500/20">
+                          <p className="text-green font-mono">NP-{user?.id?.toString().padStart(4, '0')}</p>
+                        </div>
+                      </div>
+                    </div>
+                    
+                    <Button className="bg-green hover:bg-green/80 text-navy">
+                      Editar Información
+                    </Button>
+                  </CardContent>
+                </Card>
+              </div>
+              
+              {/* Status & Achievements */}
+              <div className="space-y-6">
+                <Card className="bg-gradient-to-br from-gold/20 to-gold/10 border-gold/30">
+                  <CardContent className="p-6 text-center">
+                    <Crown className="w-12 h-12 text-green mx-auto mb-4" />
+                    <h3 className="text-white font-bold text-lg mb-2">Elite Partner</h3>
+                    <p className="text-silver-100 text-sm">Nivel Premium</p>
+                    <div className="mt-4 space-y-2">
+                      <div className="flex justify-between text-sm">
+                        <span className="text-silver-100">Progreso a Diamond</span>
+                        <span className="text-green">78%</span>
+                      </div>
+                      <Progress value={78} className="h-2" />
+                    </div>
+                  </CardContent>
+                </Card>
+                
+                <Card className="bg-[#040505] border-silver-500/20">
+                  <CardHeader>
+                    <CardTitle className="text-white text-lg">Logros</CardTitle>
+                  </CardHeader>
+                  <CardContent className="space-y-3">
+                    <div className="flex items-center space-x-3">
+                      <Trophy className="w-6 h-6 text-gold" />
+                      <div>
+                        <p className="text-white text-sm font-medium">Top Performer</p>
+                        <p className="text-silver-100 text-xs">Mes de Enero 2025</p>
+                      </div>
+                    </div>
+                    
+                    <div className="flex items-center space-x-3">
+                      <Star className="w-6 h-6 text-green" />
+                      <div>
+                        <p className="text-white text-sm font-medium">50+ Clientes</p>
+                        <p className="text-silver-100 text-xs">Hito alcanzado</p>
+                      </div>
+                    </div>
+                    
+                    <div className="flex items-center space-x-3">
+                      <Zap className="w-6 h-6 text-blue-400" />
+                      <div>
+                        <p className="text-white text-sm font-medium">Partner del Año</p>
+                        <p className="text-silver-100 text-xs">2024</p>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              </div>
+            </div>
+          </div>
+        )}
+
         {activeTab === "resumen" && (
           <div>
             {/* Header with Commission Focus */}
@@ -243,16 +369,22 @@ export default function PartnerDashboard() {
               </Card>
             </div>
 
-            {/* Growth Chart - Full Width */}
-            <div className="mb-8">
-              <GrowthChart 
-                initialAmount={100000}
-                years={10}
-                rate={0.09}
-                showTitle={true}
-                className="max-w-6xl mx-auto"
-              />
-            </div>
+            {/* Comparison Chart - With vs Without Compound Interest */}
+            <Card className="bg-[#040505] border-silver-500/20 mb-8">
+              <CardHeader>
+                <CardTitle className="text-white">Comparación: Con vs Sin Interés Compuesto</CardTitle>
+                <CardDescription className="text-silver-100">
+                  Visualización del crecimiento de €50,000 con 9% anual
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <CompoundInterestChart 
+                  initialAmount={50000}
+                  rate={0.09}
+                  years={10}
+                />
+              </CardContent>
+            </Card>
           </div>
         )}
 
@@ -425,76 +557,188 @@ export default function PartnerDashboard() {
           </div>
         )}
 
-        {activeTab === "herramientas" && (
+        {activeTab === "contratos" && (
           <div>
-            <h1 className="text-3xl font-bold text-white mb-2">Herramientas de Trabajo</h1>
-            <p className="text-silver-100 mb-6">Recursos y utilidades para partners</p>
+            <h1 className="text-3xl font-bold text-white mb-2">Contratos Firmados</h1>
+            <p className="text-silver-100 mb-6">Accede y descarga todos tus contratos y documentos legales</p>
             
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
               {[
                 {
-                  title: "Calculadora Avanzada",
-                  description: "Simula escenarios de inversión personalizados",
-                  icon: <BarChart3 className="w-6 h-6" />,
-                  premium: true
+                  id: "CONT-2025-001",
+                  title: "Acuerdo de Partnership Elite",
+                  client: "Nakama&Partners",
+                  signedDate: "2025-01-15",
+                  type: "Partnership",
+                  status: "Activo",
+                  fileSize: "2.3 MB"
                 },
                 {
-                  title: "Generador de Propuestas",
-                  description: "Crea presentaciones profesionales automáticamente",
-                  icon: <Briefcase className="w-6 h-6" />,
-                  premium: true
+                  id: "CONT-2024-087",
+                  title: "Contrato de Inversión - María González",
+                  client: "María González",
+                  signedDate: "2024-01-15",
+                  type: "Inversión",
+                  status: "Vigente",
+                  fileSize: "1.8 MB"
                 },
                 {
-                  title: "CRM Integrado",
-                  description: "Gestiona contactos y seguimiento de clientes",
-                  icon: <Users className="w-6 h-6" />,
-                  premium: false
+                  id: "CONT-2024-103",
+                  title: "Contrato de Inversión - Carlos Ruiz",
+                  client: "Carlos Ruiz",
+                  signedDate: "2024-03-10",
+                  type: "Inversión",
+                  status: "Vigente",
+                  fileSize: "1.9 MB"
                 },
                 {
-                  title: "Calendario de Citas",
-                  description: "Programa reuniones con clientes potenciales",
-                  icon: <Calendar className="w-6 h-6" />,
-                  premium: false
+                  id: "CONT-2024-156",
+                  title: "Contrato de Inversión - Ana López",
+                  client: "Ana López",
+                  signedDate: "2024-08-20",
+                  type: "Inversión",
+                  status: "Vigente",
+                  fileSize: "2.1 MB"
                 },
                 {
-                  title: "Reportes Ejecutivos",
-                  description: "Análisis detallado de performance y métricas",
-                  icon: <TrendingUp className="w-6 h-6" />,
-                  premium: true
+                  id: "CONT-2024-098",
+                  title: "Addendum Comisiones Q4 2024",
+                  client: "Nakama&Partners",
+                  signedDate: "2024-10-01",
+                  type: "Addendum",
+                  status: "Procesado",
+                  fileSize: "890 KB"
                 },
                 {
-                  title: "Centro de Materiales",
-                  description: "Acceso a presentaciones y documentos premium",
-                  icon: <Award className="w-6 h-6" />,
-                  premium: true
+                  id: "CONT-2025-003",
+                  title: "Renovación Partnership 2025",
+                  client: "Nakama&Partners",
+                  signedDate: "2025-01-01",
+                  type: "Renovación",
+                  status: "Activo",
+                  fileSize: "2.7 MB"
                 }
-              ].map((tool, index) => (
-                <Card key={index} className={`${tool.premium ? 'bg-gradient-to-br from-gold/10 to-gold/5 border-gold/30' : 'bg-[#040505] border-silver-500/20'} hover:shadow-lg transition-all duration-300`}>
+              ].map((contract, index) => (
+                <Card key={index} className="bg-[#040505] border-silver-500/20 hover:bg-black/40 transition-all">
                   <CardContent className="p-6">
                     <div className="flex items-start justify-between mb-4">
-                      <div className={`p-3 rounded-lg ${tool.premium ? 'bg-green/20' : 'bg-white/10'}`}>
-                        <div className={tool.premium ? 'text-green' : 'text-white'}>
-                          {tool.icon}
+                      <div className="flex items-center space-x-3">
+                        <div className="w-12 h-12 bg-green/20 rounded-lg flex items-center justify-center">
+                          <FileText className="w-6 h-6 text-green" />
+                        </div>
+                        <div>
+                          <h3 className="text-white font-semibold text-lg">{contract.title}</h3>
+                          <p className="text-silver-100 text-sm">{contract.client}</p>
                         </div>
                       </div>
-                      {tool.premium && (
-                        <Badge className="bg-green text-navy text-xs">
-                          <Crown className="w-3 h-3 mr-1" />
-                          Premium
-                        </Badge>
-                      )}
+                      <Badge 
+                        className={`${
+                          contract.status === 'Activo' ? 'bg-green text-navy' :
+                          contract.status === 'Vigente' ? 'bg-blue-500 text-white' :
+                          'bg-yellow-500 text-navy'
+                        }`}
+                      >
+                        {contract.status}
+                      </Badge>
                     </div>
-                    <h3 className="text-white font-semibold mb-2">{tool.title}</h3>
-                    <p className="text-silver-100 text-sm mb-4">{tool.description}</p>
-                    <Button 
-                      className={`w-full ${tool.premium ? 'bg-green hover:bg-green/80 text-navy' : 'bg-white/10 hover:bg-white/20 text-white'}`}
-                    >
-                      Acceder
-                    </Button>
+                    
+                    <div className="space-y-3 mb-6">
+                      <div className="grid grid-cols-2 gap-4 text-sm">
+                        <div>
+                          <span className="text-silver-100">ID Contrato:</span>
+                          <p className="text-white font-mono">{contract.id}</p>
+                        </div>
+                        <div>
+                          <span className="text-silver-100">Tipo:</span>
+                          <p className="text-white">{contract.type}</p>
+                        </div>
+                      </div>
+                      
+                      <div className="grid grid-cols-2 gap-4 text-sm">
+                        <div>
+                          <span className="text-silver-100">Fecha de Firma:</span>
+                          <p className="text-white">{new Date(contract.signedDate).toLocaleDateString('es-ES')}</p>
+                        </div>
+                        <div>
+                          <span className="text-silver-100">Tamaño:</span>
+                          <p className="text-white">{contract.fileSize}</p>
+                        </div>
+                      </div>
+                    </div>
+                    
+                    <div className="flex space-x-3">
+                      <Button className="flex-1 bg-green hover:bg-green/80 text-navy">
+                        <Download className="w-4 h-4 mr-2" />
+                        Descargar PDF
+                      </Button>
+                      <Button variant="outline" className="border-silver-500/20 text-white hover:bg-white/10">
+                        Ver Detalles
+                      </Button>
+                    </div>
                   </CardContent>
                 </Card>
               ))}
             </div>
+            
+            {/* Summary Card */}
+            <Card className="bg-gradient-to-r from-green/20 to-green/10 border-green/30 mt-8">
+              <CardContent className="p-6">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center space-x-4">
+                    <div className="w-12 h-12 bg-green/20 rounded-full flex items-center justify-center">
+                      <FileText className="w-6 h-6 text-green" />
+                    </div>
+                    <div>
+                      <h3 className="text-white font-semibold text-lg">Total de Contratos</h3>
+                      <p className="text-silver-100">6 documentos disponibles para descarga</p>
+                    </div>
+                  </div>
+                  <Button className="bg-green hover:bg-green/80 text-navy">
+                    Descargar Todos
+                  </Button>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+        )}
+
+        {activeTab === "herramientas" && (
+          <div>
+            <h1 className="text-3xl font-bold text-white mb-2">Herramientas de Trabajo</h1>
+            <p className="text-silver-100 mb-6">Gestiona tus citas y reuniones con clientes</p>
+            
+            <Card className="bg-[#040505] border-silver-500/20 max-w-2xl mx-auto">
+              <CardContent className="p-8 text-center">
+                <div className="w-20 h-20 bg-green/20 rounded-full flex items-center justify-center mx-auto mb-6">
+                  <Calendar className="w-10 h-10 text-green" />
+                </div>
+                
+                <h2 className="text-2xl font-bold text-white mb-4">Calendario de Citas</h2>
+                <p className="text-silver-100 mb-6">
+                  Programa y gestiona reuniones con clientes potenciales y existentes. 
+                  Sincroniza tu calendario y configura recordatorios automáticos.
+                </p>
+                
+                <div className="space-y-4 mb-8">
+                  <div className="flex items-center justify-center space-x-3 text-silver-100">
+                    <div className="w-2 h-2 bg-green rounded-full"></div>
+                    <span>Sincronización con Google Calendar</span>
+                  </div>
+                  <div className="flex items-center justify-center space-x-3 text-silver-100">
+                    <div className="w-2 h-2 bg-green rounded-full"></div>
+                    <span>Recordatorios automáticos por email</span>
+                  </div>
+                  <div className="flex items-center justify-center space-x-3 text-silver-100">
+                    <div className="w-2 h-2 bg-green rounded-full"></div>
+                    <span>Enlaces de videollamada automáticos</span>
+                  </div>
+                </div>
+                
+                <Button className="bg-green hover:bg-green/80 text-navy px-8 py-3 text-lg font-medium">
+                  Abrir Calendario
+                </Button>
+              </CardContent>
+            </Card>
           </div>
         )}
       </div>
