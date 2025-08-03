@@ -271,18 +271,12 @@ export default function Dashboard() {
             <Card className="bg-[#040505] border-silver-500/20">
               <CardContent className="p-6">
                 <Tabs defaultValue="personal" className="w-full">
-                  <TabsList className="grid w-full grid-cols-4 bg-black/50">
+                  <TabsList className="grid w-full grid-cols-2 bg-black/50">
                     <TabsTrigger value="personal" className="data-[state=active]:bg-[#344e41]">
                       Información Personal
                     </TabsTrigger>
                     <TabsTrigger value="kyc" className="data-[state=active]:bg-[#344e41]">
                       Estado KYC
-                    </TabsTrigger>
-                    <TabsTrigger value="productos" className="data-[state=active]:bg-[#344e41]">
-                      Productos
-                    </TabsTrigger>
-                    <TabsTrigger value="transacciones" className="data-[state=active]:bg-[#344e41]">
-                      Transacciones
                     </TabsTrigger>
                   </TabsList>
                   
@@ -435,220 +429,41 @@ export default function Dashboard() {
                     </div>
                   </TabsContent>
                   
-                  <TabsContent value="productos" className="mt-6">
-                    <Tabs defaultValue="activos" className="w-full">
-                      <TabsList className="grid w-full grid-cols-3 bg-black/50">
-                        <TabsTrigger value="activos" className="data-[state=active]:bg-[#387b46]">
-                          ACTIVOS
-                        </TabsTrigger>
-                        <TabsTrigger value="completados" className="data-[state=active]:bg-[#344e41]">
-                          COMPLETADOS
-                        </TabsTrigger>
-                        <TabsTrigger value="cancelados" className="data-[state=active]:bg-[#344e41]">
-                          CANCELADOS
-                        </TabsTrigger>
-                      </TabsList>
-                      
-                      <TabsContent value="activos" className="mt-6">
-                        <div className="space-y-4">
-                          <div className="bg-black/70 rounded-lg p-6">
-                            <div className="flex items-start justify-between mb-4">
-                              <div>
-                                <h4 className="text-lg font-semibold text-white">Fondo de Inversión Verde Europa</h4>
-                                <Badge className="bg-green-500 text-white mt-2">En curso</Badge>
-                              </div>
-                              <div className="text-right">
-                                <p className="text-2xl font-bold text-green">5.000 €</p>
-                              </div>
-                            </div>
-                            <div className="grid grid-cols-2 gap-4 text-sm">
-                              <div>
-                                <p className="text-silver-100">Fecha de inicio</p>
-                                <p className="text-white font-medium">12/05/2025</p>
-                              </div>
-                              <div>
-                                <p className="text-silver-100">Rentabilidad Estimada</p>
-                                <p className="text-white font-medium">6.2% anual</p>
-                              </div>
-                            </div>
-                          </div>
-                          
-                          <div className="bg-black/70 rounded-lg p-6">
-                            <div className="flex items-start justify-between mb-4">
-                              <div>
-                                <h4 className="text-lg font-semibold text-white">Plan Ahorro Flexible Plus</h4>
-                                <Badge className="bg-green-500 text-white mt-2">Activo</Badge>
-                              </div>
-                              <div className="text-right">
-                                <p className="text-2xl font-bold text-green">2.500 €</p>
-                              </div>
-                            </div>
-                            <div className="grid grid-cols-2 gap-4 text-sm">
-                              <div>
-                                <p className="text-silver-100">Fecha de inicio</p>
-                                <p className="text-white font-medium">01/07/2025</p>
-                              </div>
-                              <div>
-                                <p className="text-silver-100">Rentabilidad Estimada</p>
-                                <p className="text-white font-medium">3.8% anual</p>
-                              </div>
-                            </div>
-                          </div>
-                        </div>
-                      </TabsContent>
-                      
-                      <TabsContent value="completados" className="mt-6">
-                        <div className="space-y-4">
-                          <div className="bg-black/70 rounded-lg p-6">
-                            <div className="flex items-start justify-between mb-4">
-                              <div>
-                                <h4 className="text-lg font-semibold text-white">Bono Corporativo Energía Solar</h4>
-                                <Badge className="bg-blue-500 text-white mt-2">Éxito</Badge>
-                              </div>
-                              <div className="text-right">
-                                <p className="text-2xl font-bold text-green">10.000 €</p>
-                              </div>
-                            </div>
-                            <div className="grid grid-cols-3 gap-4 text-sm">
-                              <div>
-                                <p className="text-silver-100">Inicio</p>
-                                <p className="text-white font-medium">10/03/2024</p>
-                              </div>
-                              <div>
-                                <p className="text-silver-100">Finalizado</p>
-                                <p className="text-white font-medium">10/03/2025</p>
-                              </div>
-                              <div>
-                                <p className="text-silver-100">Rentabilidad Final</p>
-                                <p className="text-white font-medium">5.5%</p>
-                              </div>
-                            </div>
-                          </div>
-                          
-                          <div className="bg-black/70 rounded-lg p-6">
-                            <div className="flex items-start justify-between mb-4">
-                              <div>
-                                <h4 className="text-lg font-semibold text-white">Fondo Tecnología Asia</h4>
-                                <Badge className="bg-blue-500 text-white mt-2">Éxito</Badge>
-                              </div>
-                              <div className="text-right">
-                                <p className="text-2xl font-bold text-green">7.000 €</p>
-                              </div>
-                            </div>
-                            <div className="grid grid-cols-3 gap-4 text-sm">
-                              <div>
-                                <p className="text-silver-100">Inicio</p>
-                                <p className="text-white font-medium">15/01/2023</p>
-                              </div>
-                              <div>
-                                <p className="text-silver-100">Finalizado</p>
-                                <p className="text-white font-medium">15/01/2024</p>
-                              </div>
-                              <div>
-                                <p className="text-silver-100">Rentabilidad Final</p>
-                                <p className="text-white font-medium">4.9%</p>
-                              </div>
-                            </div>
-                          </div>
-                        </div>
-                      </TabsContent>
-                      
-                      <TabsContent value="cancelados" className="mt-6">
-                        <div className="space-y-4">
-                          <div className="bg-black/70 rounded-lg p-6">
-                            <div className="flex items-start justify-between mb-4">
-                              <div>
-                                <h4 className="text-lg font-semibold text-white">Fondo Startups LatAm</h4>
-                                <Badge className="bg-red-500 text-white mt-2">Cancelado</Badge>
-                              </div>
-                              <div className="text-right">
-                                <p className="text-2xl font-bold text-gray-400">3.000 €</p>
-                              </div>
-                            </div>
-                            <div className="grid grid-cols-2 gap-4 text-sm">
-                              <div>
-                                <p className="text-silver-100">Fecha de cancelación</p>
-                                <p className="text-white font-medium">02/04/2025</p>
-                              </div>
-                              <div>
-                                <p className="text-silver-100">Motivo</p>
-                                <p className="text-white font-medium">No se alcanzó el capital mínimo requerido</p>
-                              </div>
-                            </div>
-                          </div>
-                          
-                          <div className="bg-black/70 rounded-lg p-6">
-                            <div className="flex items-start justify-between mb-4">
-                              <div>
-                                <h4 className="text-lg font-semibold text-white">Plan de Ahorro Salud</h4>
-                                <Badge className="bg-red-500 text-white mt-2">Cancelado</Badge>
-                              </div>
-                              <div className="text-right">
-                                <p className="text-2xl font-bold text-gray-400">1.500 €</p>
-                              </div>
-                            </div>
-                            <div className="grid grid-cols-2 gap-4 text-sm">
-                              <div>
-                                <p className="text-silver-100">Fecha de cancelación</p>
-                                <p className="text-white font-medium">20/06/2025</p>
-                              </div>
-                              <div>
-                                <p className="text-silver-100">Motivo</p>
-                                <p className="text-white font-medium">Cancelado por el usuario antes del inicio</p>
-                              </div>
-                            </div>
-                          </div>
-                        </div>
-                      </TabsContent>
-                    </Tabs>
-                  </TabsContent>
-                  
-                  <TabsContent value="transacciones" className="mt-6">
-                    <div className="space-y-6">
-                      <div className="flex items-center justify-between">
-                        <h3 className="text-2xl font-bold text-white">Historial de Transacciones</h3>
-                        <Select defaultValue="todos">
-                          <SelectTrigger className="w-40 bg-black/50 border-silver-500/20 text-white">
-                            <SelectValue />
-                          </SelectTrigger>
-                          <SelectContent className="bg-black border-silver-500/20">
-                            <SelectItem value="todos">Todos</SelectItem>
-                            <SelectItem value="depositos">Depósitos</SelectItem>
-                            <SelectItem value="retiros">Retiros</SelectItem>
-                          </SelectContent>
-                        </Select>
-                      </div>
-                      
-                      <div className="bg-black/70 rounded-lg overflow-hidden">
-                        <table className="w-full">
-                          <thead className="bg-black/50">
-                            <tr>
-                              <th className="text-left p-4 text-white font-semibold">FECHA</th>
-                              <th className="text-left p-4 text-white font-semibold">TIPO</th>
-                              <th className="text-left p-4 text-white font-semibold">DESCRIPCIÓN</th>
-                              <th className="text-left p-4 text-white font-semibold">MONTO</th>
-                              <th className="text-left p-4 text-white font-semibold">ESTADO</th>
-                            </tr>
-                          </thead>
-                          <tbody>
-                            {/* Empty table body */}
-                          </tbody>
-                        </table>
-                        
-                        <div className="p-8 text-center">
-                          <p className="text-silver-100 text-lg">No hay transacciones para mostrar</p>
-                        </div>
-                      </div>
-                    </div>
-                  </TabsContent>
+
                 </Tabs>
               </CardContent>
             </Card>
           </div>
         ) : activeTab === "productos" ? (
           <div>
-            {showProductDetail ? (
-              /* Product Detail View */
+            <div className="flex justify-between items-center mb-8">
+              <div>
+                <h1 className="text-3xl font-bold text-white">Productos e Inversiones</h1>
+                <p className="text-silver-100">Gestiona tus productos disponibles e inversiones activas</p>
+              </div>
+            </div>
+            
+            <Card className="bg-[#040505] border-silver-500/20 mb-8">
+              <CardContent className="p-6">
+                <Tabs defaultValue="disponibles" className="w-full">
+                  <TabsList className="grid w-full grid-cols-4 bg-black/50">
+                    <TabsTrigger value="disponibles" className="data-[state=active]:bg-[#344e41]">
+                      Disponibles
+                    </TabsTrigger>
+                    <TabsTrigger value="activos" className="data-[state=active]:bg-[#344e41]">
+                      Mis Productos
+                    </TabsTrigger>
+                    <TabsTrigger value="historial" className="data-[state=active]:bg-[#344e41]">
+                      Historial
+                    </TabsTrigger>
+                    <TabsTrigger value="transacciones" className="data-[state=active]:bg-[#344e41]">
+                      Transacciones
+                    </TabsTrigger>
+                  </TabsList>
+                  
+                  <TabsContent value="disponibles" className="mt-6">
+                    {showProductDetail ? (
+                      /* Product Detail View */
               <div>
                 {/* Back Button */}
                 <div className="mb-6">
@@ -818,6 +633,111 @@ export default function Dashboard() {
                 </div>
               </div>
             )}
+                  </TabsContent>
+                  
+                  <TabsContent value="activos" className="mt-6">
+                    <div className="space-y-4">
+                      <div className="bg-black/70 rounded-lg p-6">
+                        <div className="flex items-start justify-between mb-4">
+                          <div>
+                            <h4 className="text-lg font-semibold text-white">Plazo fijo 9% 365 días</h4>
+                            <Badge className="bg-green-500 text-white mt-2">Activo</Badge>
+                          </div>
+                          <div className="text-right">
+                            <p className="text-2xl font-bold text-green-500">€50.000</p>
+                          </div>
+                        </div>
+                        <div className="grid grid-cols-2 gap-4 text-sm">
+                          <div>
+                            <p className="text-silver-100">Fecha de inicio</p>
+                            <p className="text-white font-medium">01/01/2025</p>
+                          </div>
+                          <div>
+                            <p className="text-silver-100">Rentabilidad Estimada</p>
+                            <p className="text-white font-medium">9.0% anual</p>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </TabsContent>
+                  
+                  <TabsContent value="historial" className="mt-6">
+                    <div className="space-y-4">
+                      <div className="bg-black/70 rounded-lg p-6">
+                        <div className="flex items-start justify-between mb-4">
+                          <div>
+                            <h4 className="text-lg font-semibold text-white">Plazo fijo 7% completado</h4>
+                            <Badge className="bg-blue-500 text-white mt-2">Completado</Badge>
+                          </div>
+                          <div className="text-right">
+                            <p className="text-2xl font-bold text-green-500">€25.000</p>
+                          </div>
+                        </div>
+                        <div className="grid grid-cols-3 gap-4 text-sm">
+                          <div>
+                            <p className="text-silver-100">Inicio</p>
+                            <p className="text-white font-medium">01/01/2024</p>
+                          </div>
+                          <div>
+                            <p className="text-silver-100">Finalizado</p>
+                            <p className="text-white font-medium">31/12/2024</p>
+                          </div>
+                          <div>
+                            <p className="text-silver-100">Rentabilidad Final</p>
+                            <p className="text-white font-medium">7.0%</p>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </TabsContent>
+                  
+                  <TabsContent value="transacciones" className="mt-6">
+                    <div className="space-y-6">
+                      <div className="flex items-center justify-between">
+                        <h3 className="text-2xl font-bold text-white">Historial de Transacciones</h3>
+                        <Select defaultValue="todos">
+                          <SelectTrigger className="w-40 bg-black/50 border-silver-500/20 text-white">
+                            <SelectValue />
+                          </SelectTrigger>
+                          <SelectContent className="bg-black border-silver-500/20">
+                            <SelectItem value="todos">Todos</SelectItem>
+                            <SelectItem value="depositos">Depósitos</SelectItem>
+                            <SelectItem value="retiros">Retiros</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+                      
+                      <div className="bg-black/70 rounded-lg overflow-hidden">
+                        <table className="w-full">
+                          <thead className="bg-black/50">
+                            <tr>
+                              <th className="text-left p-4 text-white font-semibold">FECHA</th>
+                              <th className="text-left p-4 text-white font-semibold">TIPO</th>
+                              <th className="text-left p-4 text-white font-semibold">DESCRIPCIÓN</th>
+                              <th className="text-left p-4 text-white font-semibold">MONTO</th>
+                              <th className="text-left p-4 text-white font-semibold">ESTADO</th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                            <tr className="border-b border-silver-500/20">
+                              <td className="p-4 text-silver-100">01/01/2025</td>
+                              <td className="p-4">
+                                <Badge className="bg-green-500 text-white">Depósito</Badge>
+                              </td>
+                              <td className="p-4 text-white">Inversión inicial Plazo fijo 9%</td>
+                              <td className="p-4 text-green-500 font-semibold">+€50.000</td>
+                              <td className="p-4">
+                                <Badge className="bg-green-500 text-white">Completado</Badge>
+                              </td>
+                            </tr>
+                          </tbody>
+                        </table>
+                      </div>
+                    </div>
+                  </TabsContent>
+                </Tabs>
+              </CardContent>
+            </Card>
           </div>
         ) : (
           <div>
