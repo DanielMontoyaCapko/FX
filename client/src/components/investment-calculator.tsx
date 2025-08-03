@@ -4,8 +4,9 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { X, Calculator, TrendingUp } from "lucide-react";
+import { X, Calculator, TrendingUp, Download } from "lucide-react";
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
+import html2canvas from 'html2canvas';
 
 interface InvestmentCalculatorProps {
   onClose: () => void;
@@ -41,6 +42,76 @@ export default function InvestmentCalculator({ onClose }: InvestmentCalculatorPr
   const totalGain = finalAmount - parseFloat(amount);
   const gainPercentage = ((totalGain / parseFloat(amount)) * 100).toFixed(2);
 
+  const handleDownloadSimulation = async () => {
+    try {
+      // Get chart element for screenshot
+      const chartElement = document.getElementById('simulation-chart');
+      if (!chartElement) {
+        alert('Error al capturar la gráfica. Inténtalo de nuevo.');
+        return;
+      }
+
+      // Capture chart as image
+      const canvas = await html2canvas(chartElement, {
+        backgroundColor: '#040505',
+        scale: 2,
+        useCORS: true
+      });
+      
+      // Generate PDF with chart and data
+      const { jsPDF } = await import('jspdf');
+      const doc = new jsPDF();
+
+      // Header
+      doc.setFontSize(20);
+      doc.setTextColor(52, 78, 65);
+      doc.text('NAKAMA&PARTNERS', 20, 30);
+      doc.setFontSize(16);
+      doc.text('Simulación de Inversión', 20, 45);
+
+      // Simulation data
+      doc.setFontSize(12);
+      doc.setTextColor(0, 0, 0);
+      doc.text('Fecha: ' + new Date().toLocaleDateString('es-ES'), 20, 65);
+      doc.text('Simulación generada desde calculadora interactiva', 20, 75);
+
+      // Investment summary
+      doc.setFontSize(14);
+      doc.setTextColor(52, 78, 65);
+      doc.text('PARÁMETROS DE INVERSIÓN', 20, 95);
+      
+      doc.setFontSize(12);
+      doc.setTextColor(0, 0, 0);
+      doc.text(`Monto inicial: €${parseFloat(amount).toLocaleString()}`, 20, 110);
+      doc.text(`Plazo: ${term} meses`, 20, 120);
+      doc.text('Rentabilidad anual: 9.0% (Garantizada)', 20, 130);
+
+      // Results
+      doc.setFontSize(14);
+      doc.setTextColor(52, 78, 65);
+      doc.text('RESULTADOS PROYECTADOS', 20, 150);
+      
+      doc.setFontSize(12);
+      doc.setTextColor(0, 0, 0);
+      doc.text(`Ganancia total: €${totalGain.toLocaleString()}`, 20, 165);
+      doc.text(`Valor final: €${finalAmount.toLocaleString()}`, 20, 175);
+      doc.text(`Rentabilidad total: ${gainPercentage}%`, 20, 185);
+
+      // Add chart image
+      const imgData = canvas.toDataURL('image/png');
+      const imgWidth = 170;
+      const imgHeight = (canvas.height * imgWidth) / canvas.width;
+      doc.addImage(imgData, 'PNG', 20, 200, imgWidth, Math.min(imgHeight, 80));
+
+      // Save the PDF
+      doc.save(`simulacion-inversion-${parseFloat(amount).toLocaleString()}-${term}m-${new Date().toISOString().split('T')[0]}.pdf`);
+      
+    } catch (error) {
+      console.error('Error generating simulation PDF:', error);
+      alert('Error al generar la simulación. Inténtalo de nuevo.');
+    }
+  };
+
   const CustomTooltip = ({ active, payload, label }: any) => {
     if (active && payload && payload.length) {
       const compound = payload[0].value;
@@ -59,7 +130,7 @@ export default function InvestmentCalculator({ onClose }: InvestmentCalculatorPr
 
   return (
     <div className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4 z-50">
-      <Card className="bg-[#040505] border-silver-500/20 w-full max-w-4xl max-h-[90vh] overflow-y-auto">
+      <Card className="bg-[#040505] border-silver-500/20 w-full max-w-7xl max-h-[90vh] overflow-y-auto">
         <CardHeader className="flex flex-row items-center justify-between">
           <div className="flex items-center space-x-3">
             <div className="w-10 h-10 bg-green-500/20 rounded-full flex items-center justify-center">
@@ -160,7 +231,7 @@ export default function InvestmentCalculator({ onClose }: InvestmentCalculatorPr
             {/* Chart */}
             <div className="space-y-4">
               <h3 className="text-white font-semibold">Evolución de la Inversión</h3>
-              <div className="h-80 bg-black/70 rounded-lg p-4">
+              <div id="simulation-chart" className="h-96 bg-black/70 rounded-lg p-4">
                 <ResponsiveContainer width="100%" height="100%">
                   <LineChart data={projectionData} margin={{ top: 5, right: 30, left: 20, bottom: 5 }}>
                     <CartesianGrid strokeDasharray="3 3" stroke="#334155" opacity={0.3} />
@@ -187,12 +258,13 @@ export default function InvestmentCalculator({ onClose }: InvestmentCalculatorPr
                 </ResponsiveContainer>
               </div>
               
-              <div className="grid grid-cols-2 gap-4">
-                <Button className="bg-green-600 hover:bg-green-700 text-white">
-                  Solicitar Información
-                </Button>
-                <Button variant="outline" className="border-green-500 text-green-500 hover:bg-green-500/10">
-                  Contactar Asesor
+              <div className="flex justify-center">
+                <Button 
+                  onClick={handleDownloadSimulation}
+                  className="bg-green-600 hover:bg-green-700 text-white px-8"
+                >
+                  <Download className="h-4 w-4 mr-2" />
+                  Descargar Simulación
                 </Button>
               </div>
             </div>
