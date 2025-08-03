@@ -353,7 +353,7 @@ export default function Dashboard() {
                           </div>
                           <label 
                             htmlFor="photo-upload" 
-                            className="absolute bottom-0 right-0 bg-green hover:bg-green/80 rounded-full p-2 cursor-pointer transition-colors"
+                            className="absolute bottom-0 right-0 bg-green-600 hover:bg-green-700 rounded-full p-2 cursor-pointer transition-colors"
                           >
                             <Camera className="w-4 h-4 text-white" />
                           </label>
@@ -466,8 +466,8 @@ export default function Dashboard() {
                   <TabsContent value="kyc" className="mt-6">
                     <div className="bg-black/70 rounded-lg p-8 text-center">
                       <div className="flex items-center justify-center mb-6">
-                        <div className="bg-green/20 rounded-full p-3 mr-4">
-                          <User className="h-8 w-8 text-green" />
+                        <div className="bg-green-500/20 rounded-full p-3 mr-4">
+                          <User className="h-8 w-8 text-green-500" />
                         </div>
                         <div className="text-left">
                           <h3 className="text-2xl font-bold text-white mb-2">Verificación KYC</h3>
@@ -476,7 +476,7 @@ export default function Dashboard() {
                           </p>
                         </div>
                         <div className="ml-auto">
-                          <Badge className="bg-green text-navy px-4 py-2 text-sm font-semibold">
+                          <Badge className="bg-green-500 text-white px-4 py-2 text-sm font-semibold">
                             Approved
                           </Badge>
                         </div>
@@ -522,7 +522,7 @@ export default function Dashboard() {
               <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
                 <Button 
                   variant="outline" 
-                  className="border-green/50 text-white hover:bg-green/10 hover:border-green py-4"
+                  className="border-green-500/50 text-white hover:bg-green-500/10 hover:border-green-500 py-4"
                   onClick={() => setActiveProductsView("mis-productos")}
                 >
                   <Package className="h-5 w-5 mr-2" />
@@ -530,7 +530,7 @@ export default function Dashboard() {
                 </Button>
                 <Button 
                   variant="outline" 
-                  className="border-navy/50 text-white hover:bg-navy/10 hover:border-navy py-4"
+                  className="border-blue-500/50 text-white hover:bg-blue-500/10 hover:border-blue-500 py-4"
                   onClick={() => setActiveProductsView("historial")}
                 >
                   <Calendar className="h-5 w-5 mr-2" />
@@ -538,7 +538,7 @@ export default function Dashboard() {
                 </Button>
                 <Button 
                   variant="outline" 
-                  className="border-charcoal/50 text-white hover:bg-charcoal/10 hover:border-charcoal py-4"
+                  className="border-yellow-500/50 text-white hover:bg-yellow-500/10 hover:border-yellow-500 py-4"
                   onClick={() => setActiveProductsView("transacciones")}
                 >
                   <TrendingUp className="h-5 w-5 mr-2" />
@@ -546,7 +546,7 @@ export default function Dashboard() {
                 </Button>
                 <Button 
                   variant="outline" 
-                  className="border-silver-500/50 text-white hover:bg-silver-500/10 hover:border-silver-500 py-4"
+                  className="border-purple-500/50 text-white hover:bg-purple-500/10 hover:border-purple-500 py-4"
                   onClick={() => setActiveProductsView("contratos")}
                 >
                   <Download className="h-5 w-5 mr-2" />
@@ -557,11 +557,11 @@ export default function Dashboard() {
               {/* Products Grid */}
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
                 {/* Product Card 1 - Only 9% Product */}
-                <Card className="bg-[#040505] border-silver-500/20 hover:border-green/50 hover:shadow-lg hover:shadow-green/20 transition-all">
+                <Card className="bg-[#040505] border-silver-500/20 hover:border-green-500/50 hover:shadow-lg hover:shadow-green-500/20 transition-all">
                   <CardContent className="p-6">
                     <div className="flex items-center gap-3 mb-4">
                       <h2 className="text-xl font-bold text-white">Plazo fijo 9% 365 días</h2>
-                      <Badge className="bg-navy text-white">365 días</Badge>
+                      <Badge className="bg-blue-500 text-white">365 días</Badge>
                     </div>
                     
                     <p className="text-silver-100 mb-6 leading-relaxed text-sm">
@@ -571,14 +571,14 @@ export default function Dashboard() {
                     
                     <div className="flex items-center justify-between mb-6">
                       <div>
-                        <p className="text-2xl font-bold text-green">9.00%</p>
+                        <p className="text-2xl font-bold text-green-500">9.00%</p>
                         <p className="text-silver-100 text-xs">Rentabilidad anual</p>
                       </div>
-                      <Badge className="bg-charcoal text-white">No renovable</Badge>
+                      <Badge className="bg-orange-500 text-white">No renovable</Badge>
                     </div>
                     
                     <Button 
-                      className="bg-green hover:bg-green/80 text-navy w-full py-2"
+                      className="bg-green-600 hover:bg-green-700 text-white w-full py-2"
                     >
                       VER DETALLES
                     </Button>
@@ -606,24 +606,24 @@ export default function Dashboard() {
                 {/* Tabs para Activos, Completados, Cancelados */}
                 <Tabs value={activeProductsSubTab} onValueChange={setActiveProductsSubTab} className="mb-6">
                   <TabsList className="grid w-full grid-cols-3 bg-black/50 border border-silver-500/20">
-                    <TabsTrigger value="activos" className="data-[state=active]:bg-green">Activos</TabsTrigger>
-                    <TabsTrigger value="completados" className="data-[state=active]:bg-green">Completados</TabsTrigger>
-                    <TabsTrigger value="cancelados" className="data-[state=active]:bg-charcoal">Cancelados</TabsTrigger>
+                    <TabsTrigger value="activos" className="data-[state=active]:bg-green-600">Activos</TabsTrigger>
+                    <TabsTrigger value="completados" className="data-[state=active]:bg-blue-600">Completados</TabsTrigger>
+                    <TabsTrigger value="cancelados" className="data-[state=active]:bg-red-600">Cancelados</TabsTrigger>
                   </TabsList>
 
                   {/* Productos Activos */}
                   <TabsContent value="activos" className="mt-6">
                     <div className="space-y-4">
                       {productosActivos.map((producto, index) => (
-                        <Card key={index} className="bg-black/70 border-silver-500/20 hover:border-green/50 transition-all">
+                        <Card key={index} className="bg-black/70 border-silver-500/20 hover:border-green-500/50 transition-all">
                           <CardContent className="p-6">
                             <div className="flex items-start justify-between mb-4">
                               <div>
                                 <h4 className="text-lg font-semibold text-white mb-2">{producto.nombre}</h4>
-                                <Badge className="bg-green text-navy">{producto.estado}</Badge>
+                                <Badge className="bg-green-500 text-white">{producto.estado}</Badge>
                               </div>
                               <div className="text-right">
-                                <p className="text-2xl font-bold text-green">{producto.monto}</p>
+                                <p className="text-2xl font-bold text-green-500">{producto.monto}</p>
                               </div>
                             </div>
                             <div className="grid grid-cols-2 gap-4 text-sm">
@@ -646,15 +646,15 @@ export default function Dashboard() {
                   <TabsContent value="completados" className="mt-6">
                     <div className="space-y-4">
                       {productosCompletados.map((producto, index) => (
-                        <Card key={index} className="bg-black/70 border-silver-500/20 hover:border-green/50 transition-all">
+                        <Card key={index} className="bg-black/70 border-silver-500/20 hover:border-blue-500/50 transition-all">
                           <CardContent className="p-6">
                             <div className="flex items-start justify-between mb-4">
                               <div>
                                 <h4 className="text-lg font-semibold text-white mb-2">{producto.nombre}</h4>
-                                <Badge className="bg-green text-navy">{producto.estado}</Badge>
+                                <Badge className="bg-blue-500 text-white">{producto.estado}</Badge>
                               </div>
                               <div className="text-right">
-                                <p className="text-2xl font-bold text-green">{producto.monto}</p>
+                                <p className="text-2xl font-bold text-green-500">{producto.monto}</p>
                               </div>
                             </div>
                             <div className="grid grid-cols-3 gap-4 text-sm">
@@ -681,15 +681,15 @@ export default function Dashboard() {
                   <TabsContent value="cancelados" className="mt-6">
                     <div className="space-y-4">
                       {productosCancelados.map((producto, index) => (
-                        <Card key={index} className="bg-black/70 border-silver-500/20 hover:border-charcoal/50 transition-all">
+                        <Card key={index} className="bg-black/70 border-silver-500/20 hover:border-red-500/50 transition-all">
                           <CardContent className="p-6">
                             <div className="flex items-start justify-between mb-4">
                               <div>
                                 <h4 className="text-lg font-semibold text-white mb-2">{producto.nombre}</h4>
-                                <Badge className="bg-charcoal text-white">{producto.estado}</Badge>
+                                <Badge className="bg-red-500 text-white">{producto.estado}</Badge>
                               </div>
                               <div className="text-right">
-                                <p className="text-2xl font-bold text-silver-300">{producto.monto}</p>
+                                <p className="text-2xl font-bold text-red-400">{producto.monto}</p>
                               </div>
                             </div>
                             <div className="grid grid-cols-1 gap-4 text-sm">
@@ -730,7 +730,7 @@ export default function Dashboard() {
                 <Card className="bg-black/70 border-silver-500/20">
                   <CardContent className="p-6">
                     <div className="text-center text-silver-100">
-                      <Calendar className="h-12 w-12 mx-auto mb-4 text-navy" />
+                      <Calendar className="h-12 w-12 mx-auto mb-4 text-blue-500" />
                       <p className="text-lg mb-2">No hay actividades recientes</p>
                       <p className="text-sm">El historial de actividades aparecerá aquí cuando realices operaciones</p>
                     </div>
@@ -757,12 +757,12 @@ export default function Dashboard() {
                 {/* Lista de contratos */}
                 <div className="space-y-4">
                   {/* Contrato de ejemplo */}
-                  <Card className="bg-black/70 border-silver-500/20 hover:border-green/50 transition-all">
+                  <Card className="bg-black/70 border-silver-500/20 hover:border-purple-500/50 transition-all">
                     <CardContent className="p-6">
                       <div className="flex items-center justify-between">
                         <div className="flex-1">
                           <div className="flex items-center gap-3 mb-2">
-                            <div className="w-10 h-10 bg-green rounded-lg flex items-center justify-center">
+                            <div className="w-10 h-10 bg-purple-500 rounded-lg flex items-center justify-center">
                               <Download className="h-5 w-5 text-white" />
                             </div>
                             <div>
@@ -785,13 +785,13 @@ export default function Dashboard() {
                             </div>
                             <div>
                               <p className="text-silver-100">Estado</p>
-                              <Badge className="bg-green text-navy">Disponible</Badge>
+                              <Badge className="bg-green-500 text-white">Disponible</Badge>
                             </div>
                           </div>
                         </div>
                         <div className="ml-6">
                           <Button 
-                            className="bg-green hover:bg-green/80 text-navy px-6"
+                            className="bg-purple-600 hover:bg-purple-700 text-white px-6"
                             onClick={() => {
                               // Aquí iría la lógica de descarga
                               alert("Funcionalidad de descarga pendiente de implementar");
@@ -809,7 +809,7 @@ export default function Dashboard() {
                   <Card className="bg-black/50 border-silver-500/20 border-dashed">
                     <CardContent className="p-8">
                       <div className="text-center text-silver-100">
-                        <Download className="h-12 w-12 mx-auto mb-4 text-green" />
+                        <Download className="h-12 w-12 mx-auto mb-4 text-purple-500" />
                         <p className="text-lg mb-2">Más contratos próximamente</p>
                         <p className="text-sm">Los nuevos contratos aparecerán aquí cuando estén disponibles</p>
                       </div>
@@ -885,7 +885,7 @@ export default function Dashboard() {
             {/* KPIs */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
               {kpis.map((kpi, index) => (
-                <Card key={index} className="bg-[#040505] border-silver-500/20 border-transparent transition-all duration-300 hover:border-green hover:bg-[#040505]/80 hover:shadow-lg hover:shadow-green/20 cursor-pointer">
+                <Card key={index} className="bg-[#040505] border-silver-500/20 border-transparent transition-all duration-300 hover:border-green-500 hover:bg-[#040505]/80 hover:shadow-lg hover:shadow-green-500/20 cursor-pointer">
                   <CardContent className="p-6">
                     <div className="flex items-center justify-between">
                       <div>
@@ -893,7 +893,7 @@ export default function Dashboard() {
                         <p className="text-2xl font-bold text-white">{kpi.value}</p>
                       </div>
                       <div className={`flex items-center space-x-1 ${
-                        kpi.trending === "up" ? "text-green" : "text-charcoal"
+                        kpi.trending === "up" ? "text-green-500" : "text-red-500"
                       }`}>
                         {kpi.trending === "up" ? <TrendingUp className="h-4 w-4" /> : <TrendingDown className="h-4 w-4" />}
                         <span className="text-sm">{kpi.change}</span>
@@ -920,7 +920,7 @@ export default function Dashboard() {
                   </div>
 
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-                    <div className="bg-black/70 p-6 rounded-lg text-center border border-transparent transition-all duration-300 hover:border-green hover:bg-black/80 hover:shadow-lg hover:shadow-green/20 cursor-pointer">
+                    <div className="bg-black/70 p-6 rounded-lg text-center border border-transparent transition-all duration-300 hover:border-green-500 hover:bg-black/80 hover:shadow-lg hover:shadow-green-500/20 cursor-pointer">
                       <div className="w-12 h-12 bg-[#387b46] rounded-full flex items-center justify-center mx-auto mb-4">
                         <TrendingUp className="h-6 w-6 text-white" />
                       </div>
@@ -929,7 +929,7 @@ export default function Dashboard() {
                       <p className="text-silver-100 text-sm">Retorno fijo y predecible</p>
                     </div>
 
-                    <div className="bg-black/70 p-6 rounded-lg text-center border border-transparent transition-all duration-300 hover:border-green hover:bg-black/80 hover:shadow-lg hover:shadow-green/20 cursor-pointer">
+                    <div className="bg-black/70 p-6 rounded-lg text-center border border-transparent transition-all duration-300 hover:border-green-500 hover:bg-black/80 hover:shadow-lg hover:shadow-green-500/20 cursor-pointer">
                       <div className="w-12 h-12 bg-[#387b46] rounded-full flex items-center justify-center mx-auto mb-4">
                         <TrendingUp className="h-6 w-6 text-white" />
                       </div>
@@ -938,7 +938,7 @@ export default function Dashboard() {
                       <p className="text-silver-100 text-sm">Garantía bancaria completa</p>
                     </div>
 
-                    <div className="bg-black/70 p-6 rounded-lg text-center border border-transparent transition-all duration-300 hover:border-green hover:bg-black/80 hover:shadow-lg hover:shadow-green/20 cursor-pointer">
+                    <div className="bg-black/70 p-6 rounded-lg text-center border border-transparent transition-all duration-300 hover:border-green-500 hover:bg-black/80 hover:shadow-lg hover:shadow-green-500/20 cursor-pointer">
                       <div className="w-12 h-12 bg-[#387b46] rounded-full flex items-center justify-center mx-auto mb-4">
                         <Calendar className="h-6 w-6 text-white" />
                       </div>
@@ -963,7 +963,7 @@ export default function Dashboard() {
 
             <div className="grid grid-cols-1 gap-8">
               {/* Recent Activity */}
-              <Card className="bg-[#040505] border-silver-500/20 border-transparent transition-all duration-300 hover:border-green hover:bg-[#040505]/80 hover:shadow-lg hover:shadow-green/20 cursor-pointer">
+              <Card className="bg-[#040505] border-silver-500/20 border-transparent transition-all duration-300 hover:border-green-500 hover:bg-[#040505]/80 hover:shadow-lg hover:shadow-green-500/20 cursor-pointer">
                 <CardHeader>
                   <CardTitle className="text-white">Actividad Reciente</CardTitle>
                   <CardDescription className="text-silver-100">Últimas acciones en el sistema</CardDescription>

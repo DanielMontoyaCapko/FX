@@ -104,7 +104,7 @@ export default function PartnerDashboard() {
 
         {/* Partner Status Badge */}
         <div className="mt-auto pt-8">
-          <div className="bg-gradient-to-r from-green/20 to-green/10 border border-green/30 rounded-lg p-3">
+          <div className="bg-gradient-to-r from-gold/20 to-gold/10 border border-gold/30 rounded-lg p-3">
             <div className="flex items-center space-x-2">
               <Star className="w-4 h-4 text-green" />
               <span className="text-white text-sm font-medium">{partnerStats.tier}</span>
@@ -128,7 +128,7 @@ export default function PartnerDashboard() {
               
               {/* Commission Showcase - Large and Motivational */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
-                <Card className="bg-gradient-to-br from-green/20 to-green/10 border-green/30">
+                <Card className="bg-gradient-to-br from-green/30 to-emerald-800/30 border-green/50">
                   <CardContent className="p-8 text-center">
                     <DollarSign className="w-12 h-12 text-green mx-auto mb-4" />
                     <div className="text-5xl font-bold text-white mb-2">
@@ -139,20 +139,20 @@ export default function PartnerDashboard() {
                   </CardContent>
                 </Card>
 
-                <Card className="bg-gradient-to-br from-navy/20 to-charcoal/30 border-green/30">
+                <Card className="bg-gradient-to-br from-gold/30 to-yellow-600/30 border-gold/50">
                   <CardContent className="p-8 text-center">
-                    <Trophy className="w-12 h-12 text-green mx-auto mb-4" />
+                    <Trophy className="w-12 h-12 text-gold mx-auto mb-4" />
                     <div className="text-5xl font-bold text-white mb-2">
                       ${(partnerStats.ytdCommission / 1000).toFixed(0)}K
                     </div>
-                    <p className="text-green text-lg font-medium">Total Año 2025</p>
+                    <p className="text-gold text-lg font-medium">Total Año 2025</p>
                     <p className="text-silver-100 text-sm mt-2">Objetivo: $250K (75% completado)</p>
                   </CardContent>
                 </Card>
               </div>
 
               {/* Progress Section */}
-              <Card className="bg-gradient-to-r from-charcoal/30 to-navy/20 border-green/30 mb-8">
+              <Card className="bg-gradient-to-r from-gold/20 to-gold/10 border-gold/30 mb-8">
                 <CardContent className="p-6">
                   <div className="flex items-center justify-between mb-4">
                     <div className="flex items-center space-x-3">
@@ -248,7 +248,7 @@ export default function PartnerDashboard() {
                   ].map((client, index) => (
                     <div key={index} className="flex items-center justify-between p-4 bg-black/30 rounded-lg border border-silver-500/10">
                       <div className="flex items-center space-x-4">
-                        <div className="w-10 h-10 bg-gradient-to-br from-charcoal/50 to-navy/50 rounded-full flex items-center justify-center border border-green/30">
+                        <div className="w-10 h-10 bg-gradient-to-br from-green/20 to-green/10 rounded-full flex items-center justify-center">
                           <span className="text-green font-semibold text-sm">{client.name.split(' ').map(n => n[0]).join('')}</span>
                         </div>
                         <div>
@@ -384,11 +384,11 @@ export default function PartnerDashboard() {
                   premium: true
                 }
               ].map((tool, index) => (
-                <Card key={index} className={`${tool.premium ? 'bg-gradient-to-br from-green/10 to-charcoal/20 border-green/30' : 'bg-[#040505] border-silver-500/20'} hover:shadow-lg transition-all duration-300`}>
+                <Card key={index} className={`${tool.premium ? 'bg-gradient-to-br from-gold/10 to-gold/5 border-gold/30' : 'bg-[#040505] border-silver-500/20'} hover:shadow-lg transition-all duration-300`}>
                   <CardContent className="p-6">
                     <div className="flex items-start justify-between mb-4">
-                      <div className={`p-3 rounded-lg ${tool.premium ? 'bg-green/20' : 'bg-charcoal/50'}`}>
-                        <div className={tool.premium ? 'text-green' : 'text-silver-100'}>
+                      <div className={`p-3 rounded-lg ${tool.premium ? 'bg-green/20' : 'bg-white/10'}`}>
+                        <div className={tool.premium ? 'text-green' : 'text-white'}>
                           {tool.icon}
                         </div>
                       </div>
@@ -402,7 +402,7 @@ export default function PartnerDashboard() {
                     <h3 className="text-white font-semibold mb-2">{tool.title}</h3>
                     <p className="text-silver-100 text-sm mb-4">{tool.description}</p>
                     <Button 
-                      className={`w-full ${tool.premium ? 'bg-green hover:bg-green/80 text-navy' : 'bg-charcoal hover:bg-charcoal/80 text-white'}`}
+                      className={`w-full ${tool.premium ? 'bg-green hover:bg-green/80 text-navy' : 'bg-white/10 hover:bg-white/20 text-white'}`}
                     >
                       Acceder
                     </Button>
