@@ -5,6 +5,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Progress } from "@/components/ui/progress";
+import { Input } from "@/components/ui/input";
 import { 
   Users, 
   TrendingUp, 
@@ -31,6 +32,51 @@ export default function PartnerDashboard() {
   useScrollToTop();
   const { user, logout } = useAuth();
   const [activeTab, setActiveTab] = useState("resumen");
+  const [isEditingProfile, setIsEditingProfile] = useState(false);
+  const [profileData, setProfileData] = useState({
+    name: user?.name || 'Partner Usuario',
+    email: user?.email || '',
+    phone: '+34 666 555 444',
+    birthDate: '15/03/1985',
+    address: 'Calle Mayor 123, 4º B, 28001 Madrid, España'
+  });
+  const [profilePhoto, setProfilePhoto] = useState<string | null>(null);
+
+  const handlePhotoUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        setProfilePhoto(e.target?.result as string);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+  const handleProfileInputChange = (field: string, value: string) => {
+    setProfileData(prev => ({
+      ...prev,
+      [field]: value
+    }));
+  };
+
+  const handleSaveProfile = () => {
+    // Here you would typically save to backend
+    setIsEditingProfile(false);
+    // Show success message
+  };
+
+  const handleCancelEdit = () => {
+    // Reset to original values
+    setProfileData({
+      name: user?.name || 'Partner Usuario',
+      email: user?.email || '',
+      phone: '+34 666 555 444',
+      birthDate: '15/03/1985',
+      address: 'Calle Mayor 123, 4º B, 28001 Madrid, España'
+    });
+    setIsEditingProfile(false);
+  };
 
   // Calculate days until next commission payout (every 15th of the month)
   const calculateDaysToCommission = () => {
@@ -165,20 +211,38 @@ export default function PartnerDashboard() {
                 {/* Profile Picture Section */}
                 <div className="flex items-center space-x-6">
                   <div className="relative">
-                    <div className="w-24 h-24 bg-gradient-to-br from-green/30 to-green/10 rounded-full flex items-center justify-center border-2 border-green/30">
-                      <User className="w-12 h-12 text-green" />
+                    <div className="w-24 h-24 bg-gradient-to-br from-green/30 to-green/10 rounded-full flex items-center justify-center border-2 border-green/30 overflow-hidden">
+                      {profilePhoto ? (
+                        <img src={profilePhoto} alt="Profile" className="w-full h-full object-cover" />
+                      ) : (
+                        <User className="w-12 h-12 text-green" />
+                      )}
                     </div>
-                    <button className="absolute bottom-0 right-0 bg-green hover:bg-green/80 text-navy rounded-full p-2 transition-colors">
+                    <button 
+                      onClick={() => document.getElementById('photo-upload')?.click()}
+                      className="absolute bottom-0 right-0 bg-green hover:bg-green/80 text-navy rounded-full p-2 transition-colors"
+                    >
                       <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" />
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 13a3 3 0 11-6 0 3 3 0 016 0z" />
                       </svg>
                     </button>
+                    <input
+                      id="photo-upload"
+                      type="file"
+                      accept="image/*"
+                      onChange={handlePhotoUpload}
+                      className="hidden"
+                    />
                   </div>
                   <div>
-                    <h3 className="text-white text-lg font-semibold">{user?.name || 'Partner Usuario'}</h3>
+                    <h3 className="text-white text-lg font-semibold">{profileData.name}</h3>
                     <p className="text-silver-100">Foto de perfil</p>
-                    <Button variant="outline" className="mt-2 border-silver-500/20 text-white hover:bg-white/10">
+                    <Button 
+                      variant="outline" 
+                      onClick={() => document.getElementById('photo-upload')?.click()}
+                      className="mt-2 border-silver-500/20 text-white hover:bg-white/10"
+                    >
                       Cambiar foto
                     </Button>
                   </div>
@@ -188,44 +252,108 @@ export default function PartnerDashboard() {
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div className="space-y-2">
                     <label className="text-white text-sm font-medium">Nombre Completo</label>
-                    <div className="bg-black/30 p-3 rounded-lg border border-silver-500/20">
-                      <p className="text-white">{user?.name || 'Partner Usuario'}</p>
-                    </div>
+                    {isEditingProfile ? (
+                      <Input
+                        value={profileData.name}
+                        onChange={(e) => handleProfileInputChange('name', e.target.value)}
+                        className="bg-black/30 border-silver-500/20 text-white"
+                      />
+                    ) : (
+                      <div className="bg-black/30 p-3 rounded-lg border border-silver-500/20">
+                        <p className="text-white">{profileData.name}</p>
+                      </div>
+                    )}
                   </div>
                   
                   <div className="space-y-2">
                     <label className="text-white text-sm font-medium">Email</label>
-                    <div className="bg-black/30 p-3 rounded-lg border border-silver-500/20">
-                      <p className="text-white">{user?.email}</p>
-                    </div>
+                    {isEditingProfile ? (
+                      <Input
+                        value={profileData.email}
+                        onChange={(e) => handleProfileInputChange('email', e.target.value)}
+                        className="bg-black/30 border-silver-500/20 text-white"
+                        type="email"
+                      />
+                    ) : (
+                      <div className="bg-black/30 p-3 rounded-lg border border-silver-500/20">
+                        <p className="text-white">{profileData.email}</p>
+                      </div>
+                    )}
                   </div>
                   
                   <div className="space-y-2">
                     <label className="text-white text-sm font-medium">Número de Teléfono</label>
-                    <div className="bg-black/30 p-3 rounded-lg border border-silver-500/20">
-                      <p className="text-white">+34 666 555 444</p>
-                    </div>
+                    {isEditingProfile ? (
+                      <Input
+                        value={profileData.phone}
+                        onChange={(e) => handleProfileInputChange('phone', e.target.value)}
+                        className="bg-black/30 border-silver-500/20 text-white"
+                        type="tel"
+                      />
+                    ) : (
+                      <div className="bg-black/30 p-3 rounded-lg border border-silver-500/20">
+                        <p className="text-white">{profileData.phone}</p>
+                      </div>
+                    )}
                   </div>
                   
                   <div className="space-y-2">
                     <label className="text-white text-sm font-medium">Fecha de Nacimiento</label>
-                    <div className="bg-black/30 p-3 rounded-lg border border-silver-500/20">
-                      <p className="text-white">15/03/1985</p>
-                    </div>
+                    {isEditingProfile ? (
+                      <Input
+                        value={profileData.birthDate}
+                        onChange={(e) => handleProfileInputChange('birthDate', e.target.value)}
+                        className="bg-black/30 border-silver-500/20 text-white"
+                        placeholder="DD/MM/YYYY"
+                      />
+                    ) : (
+                      <div className="bg-black/30 p-3 rounded-lg border border-silver-500/20">
+                        <p className="text-white">{profileData.birthDate}</p>
+                      </div>
+                    )}
                   </div>
                   
                   <div className="space-y-2 md:col-span-2">
                     <label className="text-white text-sm font-medium">Dirección</label>
-                    <div className="bg-black/30 p-3 rounded-lg border border-silver-500/20">
-                      <p className="text-white">Calle Mayor 123, 4º B, 28001 Madrid, España</p>
-                    </div>
+                    {isEditingProfile ? (
+                      <Input
+                        value={profileData.address}
+                        onChange={(e) => handleProfileInputChange('address', e.target.value)}
+                        className="bg-black/30 border-silver-500/20 text-white"
+                      />
+                    ) : (
+                      <div className="bg-black/30 p-3 rounded-lg border border-silver-500/20">
+                        <p className="text-white">{profileData.address}</p>
+                      </div>
+                    )}
                   </div>
                 </div>
                 
-                <div className="flex justify-end">
-                  <Button className="bg-green hover:bg-green/80 text-navy px-8">
-                    Editar Información
-                  </Button>
+                <div className="flex justify-end space-x-4">
+                  {isEditingProfile ? (
+                    <>
+                      <Button 
+                        variant="outline" 
+                        onClick={handleCancelEdit}
+                        className="border-silver-500/20 text-white hover:bg-white/10"
+                      >
+                        Cancelar
+                      </Button>
+                      <Button 
+                        onClick={handleSaveProfile}
+                        className="bg-green hover:bg-green/80 text-navy px-8"
+                      >
+                        Guardar Cambios
+                      </Button>
+                    </>
+                  ) : (
+                    <Button 
+                      onClick={() => setIsEditingProfile(true)}
+                      className="bg-green hover:bg-green/80 text-navy px-8"
+                    >
+                      Editar Información
+                    </Button>
+                  )}
                 </div>
               </CardContent>
             </Card>
