@@ -273,7 +273,7 @@ export default function PartnerDashboard() {
             <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
               <Card className="bg-[#040505] border-silver-500/20">
                 <CardContent className="p-4 text-center">
-                  <div className="text-2xl font-bold text-white">4</div>
+                  <div className="text-2xl font-bold text-white">3</div>
                   <p className="text-silver-100 text-sm">Total Clientes</p>
                 </CardContent>
               </Card>
@@ -283,15 +283,15 @@ export default function PartnerDashboard() {
                   <p className="text-silver-100 text-sm">Con Interés Compuesto</p>
                 </CardContent>
               </Card>
-              <Card className="bg-[#040505] border-yellow-500/20">
+              <Card className="bg-[#040505] border-green/20">
                 <CardContent className="p-4 text-center">
-                  <div className="text-2xl font-bold text-yellow-400">1</div>
-                  <p className="text-silver-100 text-sm">Próximo Vencimiento</p>
+                  <div className="text-2xl font-bold text-green">3</div>
+                  <p className="text-silver-100 text-sm">Activos</p>
                 </CardContent>
               </Card>
-              <Card className="bg-[#040505] border-red-500/20">
+              <Card className="bg-[#040505] border-silver-500/20">
                 <CardContent className="p-4 text-center">
-                  <div className="text-2xl font-bold text-red-400">1</div>
+                  <div className="text-2xl font-bold text-silver-100">0</div>
                   <p className="text-silver-100 text-sm">Vencidos</p>
                 </CardContent>
               </Card>
@@ -337,24 +337,12 @@ export default function PartnerDashboard() {
                       returns: 18000, 
                       tier: "Premium", 
                       status: "Activo",
-                      depositDate: "2023-11-20",
-                      maturityDate: "2024-11-20",
+                      depositDate: "2024-08-20",
+                      maturityDate: "2025-08-20",
                       compoundInterest: true,
                       email: "ana.lopez@email.com",
                       phone: "+34 666 345 678"
-                    },
-                    { 
-                      name: "José Martín", 
-                      investment: 50000, 
-                      returns: 4500, 
-                      tier: "Basic", 
-                      status: "Próximo Vencimiento",
-                      depositDate: "2024-02-01",
-                      maturityDate: "2025-02-01",
-                      compoundInterest: false,
-                      email: "jose.martin@email.com",
-                      phone: "+34 666 567 890"
-                    },
+                    }
                   ].map((client, index) => {
                     const daysToMaturity = Math.ceil((new Date(client.maturityDate).getTime() - new Date().getTime()) / (1000 * 3600 * 24));
                     const isNearMaturity = daysToMaturity <= 30 && daysToMaturity > 0;
