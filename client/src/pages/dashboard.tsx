@@ -784,44 +784,7 @@ export default function Dashboard() {
 
 
 
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-              {/* Recent Leads */}
-              <Card className="bg-[#040505] border-silver-500/20">
-                <CardHeader>
-                  <CardTitle className="text-white">Leads Recientes</CardTitle>
-                  <CardDescription className="text-silver-100">Últimos contactos registrados</CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <div className="space-y-4">
-                    {recentLeads.map((lead, index) => (
-                      <div key={index} className="flex items-center justify-between p-3 bg-black/70 rounded-lg">
-                        <div className="flex items-center space-x-3">
-                          <div className="w-10 h-10 bg-[#344e41] rounded-full flex items-center justify-center">
-                            <span className="text-white font-semibold text-sm">
-                              {lead.name.split(' ').map(n => n[0]).join('')}
-                            </span>
-                          </div>
-                          <div>
-                            <p className="text-white font-medium">{lead.name}</p>
-                            <p className="text-silver-100 text-sm">{lead.email}</p>
-                          </div>
-                        </div>
-                        <div className="text-right">
-                          <p className="text-green font-semibold">{lead.investment}</p>
-                          <div className="flex items-center space-x-2">
-                            <Badge variant="secondary" className="bg-black/50">
-                              <Globe className="h-3 w-3 mr-1" />
-                              {lead.channel}
-                            </Badge>
-                            <span className="text-silver-100 text-xs">{lead.date}</span>
-                          </div>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                </CardContent>
-              </Card>
-
+            <div className="grid grid-cols-1 gap-8">
               {/* Recent Activity */}
               <Card className="bg-[#040505] border-silver-500/20">
                 <CardHeader>
