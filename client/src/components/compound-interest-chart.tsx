@@ -74,19 +74,19 @@ export default function CompoundInterestChart({
         </p>
       </div>
       
-      <div className="h-80">
+      <div className="h-[500px]">
         <ResponsiveContainer width="100%" height="100%">
-          <LineChart data={data} margin={{ top: 5, right: 30, left: 20, bottom: 5 }}>
+          <LineChart data={data} margin={{ top: 20, right: 40, left: 30, bottom: 20 }}>
             <CartesianGrid strokeDasharray="3 3" stroke="#334155" opacity={0.3} />
             <XAxis 
               dataKey="year" 
               stroke="#94a3b8"
-              fontSize={12}
+              fontSize={14}
               tickFormatter={(value) => `Año ${value}`}
             />
             <YAxis 
               stroke="#94a3b8"
-              fontSize={12}
+              fontSize={14}
               tickFormatter={(value) => `€${(value / 1000).toFixed(0)}K`}
             />
             <Tooltip content={<CustomTooltip />} />
@@ -103,17 +103,17 @@ export default function CompoundInterestChart({
               type="monotone" 
               dataKey="conInteres" 
               stroke="#22c55e" 
-              strokeWidth={3}
-              dot={{ fill: '#22c55e', strokeWidth: 2, r: 4 }}
+              strokeWidth={4}
+              dot={{ fill: '#22c55e', strokeWidth: 2, r: 5 }}
               name="Con Interés Compuesto"
             />
             <Line 
               type="monotone" 
               dataKey="sinInteres" 
               stroke="#9ca3af" 
-              strokeWidth={2}
-              strokeDasharray="5 5"
-              dot={{ fill: '#9ca3af', strokeWidth: 2, r: 3 }}
+              strokeWidth={3}
+              strokeDasharray="8 5"
+              dot={{ fill: '#9ca3af', strokeWidth: 2, r: 4 }}
               name="Sin Interés Compuesto"
             />
           </LineChart>
