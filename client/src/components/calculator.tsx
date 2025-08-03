@@ -145,10 +145,10 @@ export default function Calculator() {
   };
 
   return (
-    <section className="py-16 bg-transparent relative">
+    <section className="py-8 bg-transparent relative">
       <div className="container mx-auto px-6">
         {/* Header Section */}
-        <div className="text-center mb-16 relative">
+        <div className="text-center mb-8 relative">
           <h2 className="font-playfair text-4xl md:text-5xl font-bold text-white mb-6">
             Calculadora Premium de <span className="text-green">Inversiones</span>
           </h2>

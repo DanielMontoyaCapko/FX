@@ -20,7 +20,7 @@ export default function Calculadora() {
         
         <Calculator />
         
-        <section className="py-10 bg-transparent">
+        <section className="py-6 bg-transparent">
           <div className="container mx-auto px-6">
             <div className="max-w-4xl mx-auto">
               <h2 className="font-playfair text-3xl font-bold text-white mb-8 text-center">
