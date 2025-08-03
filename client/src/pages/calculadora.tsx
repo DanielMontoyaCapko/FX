@@ -14,14 +14,7 @@ export default function Calculadora() {
         <main className="pt-32">
         <section className="py-6 bg-transparent">
           <div className="container mx-auto px-6">
-            <div className="text-center mb-8">
-              <h1 className="font-playfair text-5xl md:text-6xl font-bold text-white mb-6">
-                <span className="text-green">Calculadora</span> de Rentabilidad
-              </h1>
-              <p className="text-xl text-silver-100 max-w-3xl mx-auto">
-                Descubre cuánto podrías ganar con nuestro 9% fijo anual. Calcula tu rentabilidad de manera interactiva.
-              </p>
-            </div>
+
           </div>
         </section>
         
