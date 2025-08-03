@@ -371,66 +371,66 @@ export default function PartnerDashboard() {
                 Bienvenido a tu panel de control ejecutivo
               </p>
               
-              {/* Commission Showcase - Large and Motivational */}
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-                <Card className="bg-gradient-to-br from-green/30 to-emerald-800/30 border-green/50">
-                  <CardContent className="p-8 text-center">
-                    <DollarSign className="w-12 h-12 text-green mx-auto mb-4" />
-                    <div className="text-5xl font-bold text-white mb-2">
-                      ${partnerStats.monthlyCommission.toLocaleString()}
+              {/* Commission and Progress Grid */}
+              <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+                <Card className="bg-[#040505] border-silver-500/20">
+                  <CardContent className="p-6">
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <p className="text-silver-100 text-sm font-medium">Comisiones Este Mes</p>
+                        <p className="text-white text-3xl font-bold">${partnerStats.monthlyCommission.toLocaleString()}</p>
+                        <p className="text-green text-xs">¡Excelente rendimiento!</p>
+                      </div>
+                      <DollarSign className="w-8 h-8 text-green" />
                     </div>
-                    <p className="text-green text-lg font-medium">Comisiones Este Mes</p>
-                    <p className="text-silver-100 text-sm mt-2">¡Excelente rendimiento!</p>
                   </CardContent>
                 </Card>
 
-                <Card className="bg-gradient-to-br from-gold/30 to-yellow-600/30 border-gold/50">
-                  <CardContent className="p-8 text-center">
-                    <Trophy className="w-12 h-12 text-gold mx-auto mb-4" />
-                    <div className="text-5xl font-bold text-white mb-2">
-                      ${(partnerStats.ytdCommission / 1000).toFixed(0)}K
+                <Card className="bg-[#040505] border-silver-500/20">
+                  <CardContent className="p-6">
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <p className="text-silver-100 text-sm font-medium">Total Año 2025</p>
+                        <p className="text-white text-3xl font-bold">${(partnerStats.ytdCommission / 1000).toFixed(0)}K</p>
+                        <p className="text-green text-xs">Objetivo: $250K (75% completado)</p>
+                      </div>
+                      <Trophy className="w-8 h-8 text-green" />
                     </div>
-                    <p className="text-gold text-lg font-medium">Total Año 2025</p>
-                    <p className="text-silver-100 text-sm mt-2">Objetivo: $250K (75% completado)</p>
                   </CardContent>
                 </Card>
 
-                <Card className="bg-gradient-to-br from-blue-600/30 to-indigo-800/30 border-blue-500/50">
-                  <CardContent className="p-8 text-center">
-                    <Calendar className="w-12 h-12 text-blue-400 mx-auto mb-4" />
-                    <div className="text-5xl font-bold text-white mb-2">
-                      {partnerStats.daysToCommission}
+                <Card className="bg-[#040505] border-silver-500/20">
+                  <CardContent className="p-6">
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <p className="text-silver-100 text-sm font-medium">
+                          {partnerStats.daysToCommission === 1 ? 'Día para Cobro' : 'Días para Cobro'}
+                        </p>
+                        <p className="text-white text-3xl font-bold">{partnerStats.daysToCommission}</p>
+                        <p className="text-green text-xs">
+                          {partnerStats.daysToCommission === 0 ? '¡Hoy es día de pago!' : 
+                           partnerStats.daysToCommission === 1 ? 'Mañana es día de pago' : 
+                           'Próximo pago de comisiones'}
+                        </p>
+                      </div>
+                      <Calendar className="w-8 h-8 text-green" />
                     </div>
-                    <p className="text-blue-400 text-lg font-medium">
-                      {partnerStats.daysToCommission === 1 ? 'Día para Cobro' : 'Días para Cobro'}
-                    </p>
-                    <p className="text-silver-100 text-sm mt-2">
-                      {partnerStats.daysToCommission === 0 ? '¡Hoy es día de pago!' : 
-                       partnerStats.daysToCommission === 1 ? 'Mañana es día de pago' : 
-                       'Próximo pago de comisiones'}
-                    </p>
+                  </CardContent>
+                </Card>
+
+                <Card className="bg-[#040505] border-silver-500/20">
+                  <CardContent className="p-6">
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <p className="text-silver-100 text-sm font-medium">Progreso hacia Diamond Partner</p>
+                        <p className="text-white text-3xl font-bold">{partnerStats.nextTierProgress}%</p>
+                        <p className="text-green text-xs">Faltan $820K en volumen</p>
+                      </div>
+                      <Crown className="w-8 h-8 text-green" />
+                    </div>
                   </CardContent>
                 </Card>
               </div>
-
-              {/* Progress Section */}
-              <Card className="bg-gradient-to-r from-gold/20 to-gold/10 border-gold/30 mb-8">
-                <CardContent className="p-6">
-                  <div className="flex items-center justify-between mb-4">
-                    <div className="flex items-center space-x-3">
-                      <Crown className="w-6 h-6 text-green" />
-                      <div>
-                        <h3 className="text-white font-semibold">Progreso hacia Diamond Partner</h3>
-                        <p className="text-silver-100 text-sm">Faltan $820K en volumen para la siguiente fase</p>
-                      </div>
-                    </div>
-                    <div className="text-right">
-                      <div className="text-green font-bold text-lg">{partnerStats.nextTierProgress}%</div>
-                    </div>
-                  </div>
-                  <Progress value={partnerStats.nextTierProgress} className="h-3" />
-                </CardContent>
-              </Card>
             </div>
 
             {/* Metrics Grid */}
