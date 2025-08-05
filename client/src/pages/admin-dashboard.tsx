@@ -219,6 +219,17 @@ export default function AdminDashboard() {
 
   const handleCreateUser = async () => {
     try {
+      // Validate form data
+      if (!newUser.name || !newUser.email || !newUser.password) {
+        alert('Por favor complete todos los campos obligatorios');
+        return;
+      }
+      
+      if (newUser.password.length < 6) {
+        alert('La contraseña debe tener al menos 6 caracteres');
+        return;
+      }
+
       const token = localStorage.getItem('token');
       const response = await fetch('/api/register', {
         method: 'POST',
@@ -230,6 +241,7 @@ export default function AdminDashboard() {
       });
 
       if (response.ok) {
+        alert('Usuario creado exitosamente');
         setShowUserDialog(false);
         setNewUser({
           name: "",
@@ -240,14 +252,29 @@ export default function AdminDashboard() {
           grade: "Bronze"
         });
         loadDashboardData();
+      } else {
+        const errorData = await response.json();
+        alert(`Error: ${errorData.error || 'No se pudo crear el usuario'}`);
       }
     } catch (error) {
       console.error('Error creating user:', error);
+      alert('Error de conexión al crear usuario');
     }
   };
 
   const handleCreateProduct = async () => {
     try {
+      // Validate form data
+      if (!newProduct.name || !newProduct.interestRate || !newProduct.termDays || !newProduct.minAmount || !newProduct.maxAmount) {
+        alert('Por favor complete todos los campos obligatorios');
+        return;
+      }
+
+      if (isNaN(parseInt(newProduct.termDays)) || parseInt(newProduct.termDays) <= 0) {
+        alert('El plazo debe ser un número válido mayor a 0');
+        return;
+      }
+
       const token = localStorage.getItem('token');
       const response = await fetch('/api/admin/products', {
         method: 'POST',
@@ -262,6 +289,7 @@ export default function AdminDashboard() {
       });
 
       if (response.ok) {
+        alert('Producto creado exitosamente');
         setShowProductDialog(false);
         setNewProduct({
           name: "",
@@ -274,9 +302,13 @@ export default function AdminDashboard() {
           contractTemplate: ""
         });
         loadDashboardData();
+      } else {
+        const errorData = await response.json();
+        alert(`Error: ${errorData.error || 'No se pudo crear el producto'}`);
       }
     } catch (error) {
       console.error('Error creating product:', error);
+      alert('Error de conexión al crear producto');
     }
   };
 
