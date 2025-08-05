@@ -147,6 +147,47 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Admin routes (require admin role)
+  app.get("/api/admin/users", authMiddleware, requireRole('admin'), async (req, res) => {
+    try {
+      const users = await storage.getAllUsers();
+      res.json({ success: true, users });
+    } catch (error) {
+      console.error("Error fetching users:", error);
+      res.status(500).json({ error: "Failed to fetch users" });
+    }
+  });
+
+  app.get("/api/admin/kyc", authMiddleware, requireRole('admin'), async (req, res) => {
+    try {
+      const kyc = await storage.getAllKyc();
+      res.json({ success: true, kyc });
+    } catch (error) {
+      console.error("Error fetching KYC:", error);
+      res.status(500).json({ error: "Failed to fetch KYC records" });
+    }
+  });
+
+  app.get("/api/admin/products", authMiddleware, requireRole('admin'), async (req, res) => {
+    try {
+      const products = await storage.getAllProducts();
+      res.json({ success: true, products });
+    } catch (error) {
+      console.error("Error fetching products:", error);
+      res.status(500).json({ error: "Failed to fetch products" });
+    }
+  });
+
+  app.get("/api/admin/contracts", authMiddleware, requireRole('admin'), async (req, res) => {
+    try {
+      const contracts = await storage.getAllContracts();
+      res.json({ success: true, contracts });
+    } catch (error) {
+      console.error("Error fetching contracts:", error);
+      res.status(500).json({ error: "Failed to fetch contracts" });
+    }
+  });
+
   const httpServer = createServer(app);
   return httpServer;
 }

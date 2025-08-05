@@ -1,4 +1,4 @@
-import { leads, calculatorResults, users, type Lead, type InsertLead, type CalculatorResult, type InsertCalculatorResult, type User, type InsertUser } from "@shared/schema";
+import { leads, calculatorResults, users, kyc, products, contracts, type Lead, type InsertLead, type CalculatorResult, type InsertCalculatorResult, type User, type InsertUser, type Kyc, type InsertKyc, type Product, type InsertProduct, type Contract, type InsertContract } from "@shared/schema";
 import { db } from "./db";
 import { eq } from "drizzle-orm";
 import bcrypt from "bcryptjs";
@@ -13,6 +13,12 @@ export interface IStorage {
   getUserByEmail(email: string): Promise<User | undefined>;
   getUserById(id: number): Promise<User | undefined>;
   validatePassword(plainPassword: string, hashedPassword: string): Promise<boolean>;
+  
+  // Admin methods
+  getAllUsers(): Promise<User[]>;
+  getAllKyc(): Promise<Kyc[]>;
+  getAllProducts(): Promise<Product[]>;
+  getAllContracts(): Promise<any[]>;
 }
 
 export class DatabaseStorage implements IStorage {
@@ -56,6 +62,38 @@ export class DatabaseStorage implements IStorage {
 
   async validatePassword(plainPassword: string, hashedPassword: string): Promise<boolean> {
     return bcrypt.compare(plainPassword, hashedPassword);
+  }
+
+  // Admin methods
+  async getAllUsers(): Promise<User[]> {
+    return await db.select().from(users);
+  }
+
+  async getAllKyc(): Promise<Kyc[]> {
+    return await db.select().from(kyc);
+  }
+
+  async getAllProducts(): Promise<Product[]> {
+    return await db.select().from(products);
+  }
+
+  async getAllContracts(): Promise<any[]> {
+    const result = await db
+      .select({
+        id: contracts.id,
+        userId: contracts.userId,
+        userName: users.name,
+        productId: contracts.productId,
+        productName: products.name,
+        amount: contracts.amount,
+        status: contracts.status,
+        createdAt: contracts.createdAt
+      })
+      .from(contracts)
+      .leftJoin(users, eq(contracts.userId, users.id))
+      .leftJoin(products, eq(contracts.productId, products.id));
+    
+    return result;
   }
 }
 

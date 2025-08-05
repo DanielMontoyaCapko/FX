@@ -3,6 +3,7 @@ import { useLocation } from "wouter";
 import { useEffect } from "react";
 import Dashboard from "./dashboard";
 import PartnerDashboard from "./partner-dashboard";
+import AdminDashboard from "./admin-dashboard";
 
 export default function DashboardRouter() {
   const { user, isLoading } = useAuth();
@@ -27,7 +28,9 @@ export default function DashboardRouter() {
   }
 
   // Route to appropriate dashboard based on user role
-  if (user.role === "partner") {
+  if (user.role === "admin") {
+    return <AdminDashboard />;
+  } else if (user.role === "partner") {
     return <PartnerDashboard />;
   } else {
     return <Dashboard />;

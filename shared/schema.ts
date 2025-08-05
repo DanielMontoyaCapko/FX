@@ -8,7 +8,50 @@ export const users = pgTable("users", {
   email: varchar("email", { length: 255 }).notNull().unique(),
   password: varchar("password", { length: 255 }).notNull(),
   name: varchar("name", { length: 255 }).notNull(),
-  role: varchar("role", { length: 50 }).notNull().default("client"), // 'client' | 'partner'
+  role: varchar("role", { length: 50 }).notNull().default("client"), // 'client' | 'partner' | 'admin'
+  sponsor: varchar("sponsor", { length: 255 }), // sponsor user for referrals
+  grade: varchar("grade", { length: 50 }).default("Bronze"), // Bronze, Silver, Gold, Diamond
+  verificationStatus: varchar("verification_status", { length: 50 }).default("pending"), // verified, pending
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  updatedAt: timestamp("updated_at").defaultNow().notNull(),
+});
+
+// KYC table
+export const kyc = pgTable("kyc", {
+  id: serial("id").primaryKey(),
+  userId: integer("user_id").references(() => users.id).notNull(),
+  fullName: varchar("full_name", { length: 255 }).notNull(),
+  documentType: varchar("document_type", { length: 50 }).notNull(), // passport, dni, license
+  documentNumber: varchar("document_number", { length: 100 }).notNull(),
+  country: varchar("country", { length: 100 }).notNull(),
+  status: varchar("status", { length: 50 }).default("pending"), // approved, pending, rejected
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  updatedAt: timestamp("updated_at").defaultNow().notNull(),
+});
+
+// Products table
+export const products = pgTable("products", {
+  id: serial("id").primaryKey(),
+  name: varchar("name", { length: 255 }).notNull(),
+  interestRate: varchar("interest_rate", { length: 10 }).notNull(), // stored as string like "9.00"
+  termDays: integer("term_days").notNull(),
+  minAmount: varchar("min_amount", { length: 20 }).notNull(), // stored as string for precision
+  maxAmount: varchar("max_amount", { length: 20 }).notNull(),
+  status: varchar("status", { length: 50 }).default("active"), // active, inactive
+  autoRenewal: boolean("auto_renewal").default(false),
+  contractTemplate: text("contract_template"), // URL or text of contract
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+});
+
+// Contracts table
+export const contracts = pgTable("contracts", {
+  id: serial("id").primaryKey(),
+  userId: integer("user_id").references(() => users.id).notNull(),
+  productId: integer("product_id").references(() => products.id).notNull(),
+  amount: varchar("amount", { length: 20 }).notNull(), // stored as string for precision
+  status: varchar("status", { length: 50 }).default("ready_to_start"), // active, ready_to_start, completed, cancelled
+  startDate: timestamp("start_date"),
+  endDate: timestamp("end_date"),
   createdAt: timestamp("created_at").defaultNow().notNull(),
   updatedAt: timestamp("updated_at").defaultNow().notNull(),
 });
@@ -61,7 +104,25 @@ export const registerSchema = z.object({
   email: z.string().email("Invalid email format"),
   password: z.string().min(6, "Password must be at least 6 characters"),
   name: z.string().min(2, "Name must be at least 2 characters"),
-  role: z.enum(["client", "partner"]).default("client"),
+  role: z.enum(["client", "partner", "admin"]).default("client"),
+});
+
+// New table schemas
+export const insertKycSchema = createInsertSchema(kyc).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
+});
+
+export const insertProductSchema = createInsertSchema(products).omit({
+  id: true,
+  createdAt: true,
+});
+
+export const insertContractSchema = createInsertSchema(contracts).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
 });
 
 export type InsertLead = z.infer<typeof insertLeadSchema>;
@@ -72,3 +133,9 @@ export type InsertUser = z.infer<typeof insertUserSchema>;
 export type User = typeof users.$inferSelect;
 export type LoginRequest = z.infer<typeof loginSchema>;
 export type RegisterRequest = z.infer<typeof registerSchema>;
+export type InsertKyc = z.infer<typeof insertKycSchema>;
+export type Kyc = typeof kyc.$inferSelect;
+export type InsertProduct = z.infer<typeof insertProductSchema>;
+export type Product = typeof products.$inferSelect;
+export type InsertContract = z.infer<typeof insertContractSchema>;
+export type Contract = typeof contracts.$inferSelect;
