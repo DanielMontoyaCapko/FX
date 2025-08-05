@@ -106,8 +106,10 @@ export default function AdminDashboard() {
   // Dialog states
   const [showUserDialog, setShowUserDialog] = useState(false);
   const [showProductDialog, setShowProductDialog] = useState(false);
+  const [showKycDialog, setShowKycDialog] = useState(false);
   const [editingUser, setEditingUser] = useState<UserData | null>(null);
   const [editingProduct, setEditingProduct] = useState<ProductData | null>(null);
+  const [editingKyc, setEditingKyc] = useState<KycData | null>(null);
 
   // Form states
   const [newUser, setNewUser] = useState({
@@ -483,6 +485,45 @@ export default function AdminDashboard() {
       autoRenewal: false,
       contractTemplate: ""
     });
+  };
+
+  const handleEditKyc = (kyc: KycData) => {
+    setEditingKyc(kyc);
+    setShowKycDialog(true);
+  };
+
+  const handleCloseKycDialog = () => {
+    setShowKycDialog(false);
+    setEditingKyc(null);
+  };
+
+  const handleUpdateKycForm = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!editingKyc) return;
+
+    try {
+      const token = localStorage.getItem('token');
+      const response = await fetch(`/api/admin/kyc/${editingKyc.id}`, {
+        method: 'PUT',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ status: editingKyc.status })
+      });
+
+      if (response.ok) {
+        alert(`Estado KYC actualizado a ${editingKyc.status === 'approved' ? 'Aprobado' : editingKyc.status === 'rejected' ? 'Rechazado' : 'Pendiente'}`);
+        handleCloseKycDialog();
+        await loadDashboardData();
+      } else {
+        const errorData = await response.json();
+        alert(`Error: ${errorData.error || 'No se pudo actualizar el estado KYC'}`);
+      }
+    } catch (error) {
+      console.error('Error updating KYC:', error);
+      alert('Error de conexión al actualizar KYC');
+    }
   };
 
   if (loading) {
@@ -889,28 +930,17 @@ export default function AdminDashboard() {
                           <td className="p-4 text-white">{record.documentNumber}</td>
                           <td className="p-4 text-white">{record.country}</td>
                           <td className="p-4">
-                            <div className="flex items-center space-x-2">
-                              <Badge 
-                                variant={
-                                  record.status === 'approved' ? 'default' : 
-                                  record.status === 'pending' ? 'secondary' : 
-                                  'destructive'
-                                }
-                              >
-                                {record.status === 'approved' ? 'Aprobado' : 
-                                 record.status === 'pending' ? 'Pendiente' : 
-                                 'Rechazado'}
-                              </Badge>
-                              <select 
-                                value={record.status}
-                                onChange={(e) => handleUpdateKycStatus(record.id, e.target.value as any)}
-                                className="ml-2 px-2 py-1 bg-navy border border-green rounded text-xs text-white"
-                              >
-                                <option value="pending">Pendiente</option>
-                                <option value="approved">Aprobado</option>
-                                <option value="rejected">Rechazado</option>
-                              </select>
-                            </div>
+                            <Badge 
+                              variant={
+                                record.status === 'approved' ? 'default' : 
+                                record.status === 'pending' ? 'secondary' : 
+                                'destructive'
+                              }
+                            >
+                              {record.status === 'approved' ? 'Aprobado' : 
+                               record.status === 'pending' ? 'Pendiente' : 
+                               'Rechazado'}
+                            </Badge>
                           </td>
                           <td className="p-4 text-white">
                             {new Date(record.createdAt).toLocaleDateString('es-ES')}
@@ -920,7 +950,12 @@ export default function AdminDashboard() {
                               <Button size="sm" variant="outline" className="border-silver-500/20">
                                 <Eye className="w-4 h-4" />
                               </Button>
-                              <Button size="sm" variant="outline" className="border-silver-500/20">
+                              <Button 
+                                size="sm" 
+                                variant="outline" 
+                                className="border-silver-500/20"
+                                onClick={() => handleEditKyc(record)}
+                              >
                                 <Edit className="w-4 h-4" />
                               </Button>
                             </div>
@@ -1213,6 +1248,64 @@ export default function AdminDashboard() {
             </Card>
           </div>
         )}
+
+        {/* KYC Edit Dialog */}
+        <Dialog open={showKycDialog} onOpenChange={handleCloseKycDialog}>
+          <DialogContent className="bg-[#040505] border-silver-500/20 text-white">
+            <DialogHeader>
+              <DialogTitle>Editar Estado KYC</DialogTitle>
+              <DialogDescription className="text-silver-100">
+                Modificar el estado de verificación KYC para {editingKyc?.fullName}
+              </DialogDescription>
+            </DialogHeader>
+            {editingKyc && (
+              <form onSubmit={handleUpdateKycForm}>
+                <div className="grid gap-4 py-4">
+                  <div className="grid grid-cols-4 items-center gap-4">
+                    <Label className="text-right">Usuario</Label>
+                    <div className="col-span-3 text-silver-100">{editingKyc.fullName}</div>
+                  </div>
+                  <div className="grid grid-cols-4 items-center gap-4">
+                    <Label className="text-right">Documento</Label>
+                    <div className="col-span-3 text-silver-100">
+                      {editingKyc.documentType.toUpperCase()} - {editingKyc.documentNumber}
+                    </div>
+                  </div>
+                  <div className="grid grid-cols-4 items-center gap-4">
+                    <Label className="text-right">País</Label>
+                    <div className="col-span-3 text-silver-100">{editingKyc.country}</div>
+                  </div>
+                  <div className="grid grid-cols-4 items-center gap-4">
+                    <Label htmlFor="kycStatus" className="text-right">Estado</Label>
+                    <Select 
+                      value={editingKyc.status} 
+                      onValueChange={(value: 'approved' | 'pending' | 'rejected') => 
+                        setEditingKyc({...editingKyc, status: value})
+                      }
+                    >
+                      <SelectTrigger className="col-span-3 bg-navy border-silver-500/20 text-white">
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent className="bg-[#040505] border-silver-500/20">
+                        <SelectItem value="pending">Pendiente</SelectItem>
+                        <SelectItem value="approved">Aprobado</SelectItem>
+                        <SelectItem value="rejected">Rechazado</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                </div>
+                <DialogFooter>
+                  <Button type="button" variant="outline" onClick={handleCloseKycDialog}>
+                    Cancelar
+                  </Button>
+                  <Button type="submit" className="bg-green hover:bg-green/80 text-navy">
+                    Actualizar Estado
+                  </Button>
+                </DialogFooter>
+              </form>
+            )}
+          </DialogContent>
+        </Dialog>
       </div>
     </div>
   );
