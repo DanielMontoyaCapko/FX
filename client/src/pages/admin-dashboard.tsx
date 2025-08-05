@@ -106,6 +106,10 @@ export default function AdminDashboard() {
   // Dialog states
   const [showUserDialog, setShowUserDialog] = useState(false);
   const [showProductDialog, setShowProductDialog] = useState(false);
+  
+  // Debug logs
+  console.log('showUserDialog:', showUserDialog);
+  console.log('showProductDialog:', showProductDialog);
   const [editingUser, setEditingUser] = useState<UserData | null>(null);
   const [editingProduct, setEditingProduct] = useState<ProductData | null>(null);
 
@@ -662,7 +666,13 @@ export default function AdminDashboard() {
               <h1 className="text-3xl font-bold text-white">Gestión de Usuarios</h1>
               <Dialog open={showUserDialog} onOpenChange={handleCloseUserDialog}>
                 <DialogTrigger asChild>
-                  <Button className="bg-green hover:bg-green/80 text-navy">
+                  <Button 
+                    className="bg-green hover:bg-green/80 text-navy"
+                    onClick={() => {
+                      console.log('Add User button clicked');
+                      setShowUserDialog(true);
+                    }}
+                  >
                     <Plus className="w-4 h-4 mr-2" />
                     Agregar Usuario
                   </Button>
@@ -928,7 +938,13 @@ export default function AdminDashboard() {
               <h1 className="text-3xl font-bold text-white">Gestión de Productos</h1>
               <Dialog open={showProductDialog} onOpenChange={handleCloseProductDialog}>
                 <DialogTrigger asChild>
-                  <Button className="bg-green hover:bg-green/80 text-navy">
+                  <Button 
+                    className="bg-green hover:bg-green/80 text-navy"
+                    onClick={() => {
+                      console.log('Add Product button clicked');
+                      setShowProductDialog(true);
+                    }}
+                  >
                     <Plus className="w-4 h-4 mr-2" />
                     Agregar Producto
                   </Button>
