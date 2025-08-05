@@ -106,10 +106,6 @@ export default function AdminDashboard() {
   // Dialog states
   const [showUserDialog, setShowUserDialog] = useState(false);
   const [showProductDialog, setShowProductDialog] = useState(false);
-  
-  // Debug logs
-  console.log('showUserDialog:', showUserDialog);
-  console.log('showProductDialog:', showProductDialog);
   const [editingUser, setEditingUser] = useState<UserData | null>(null);
   const [editingProduct, setEditingProduct] = useState<ProductData | null>(null);
 
@@ -664,19 +660,26 @@ export default function AdminDashboard() {
           <div>
             <div className="flex justify-between items-center mb-6">
               <h1 className="text-3xl font-bold text-white">Gestión de Usuarios</h1>
+              <Button 
+                className="bg-green hover:bg-green/80 text-navy"
+                onClick={() => {
+                  setEditingUser(null);
+                  setNewUser({
+                    name: "",
+                    email: "",
+                    password: "",
+                    role: "client",
+                    sponsor: "",
+                    grade: "Bronze"
+                  });
+                  setShowUserDialog(true);
+                }}
+              >
+                <Plus className="w-4 h-4 mr-2" />
+                Agregar Usuario
+              </Button>
+
               <Dialog open={showUserDialog} onOpenChange={handleCloseUserDialog}>
-                <DialogTrigger asChild>
-                  <Button 
-                    className="bg-green hover:bg-green/80 text-navy"
-                    onClick={() => {
-                      console.log('Add User button clicked');
-                      setShowUserDialog(true);
-                    }}
-                  >
-                    <Plus className="w-4 h-4 mr-2" />
-                    Agregar Usuario
-                  </Button>
-                </DialogTrigger>
                 <DialogContent className="bg-[#040505] border-silver-500/20 text-white">
                   <DialogHeader>
                     <DialogTitle>{editingUser ? 'Editar Usuario' : 'Agregar Nuevo Usuario'}</DialogTitle>
@@ -936,19 +939,28 @@ export default function AdminDashboard() {
           <div>
             <div className="flex justify-between items-center mb-6">
               <h1 className="text-3xl font-bold text-white">Gestión de Productos</h1>
+              <Button 
+                className="bg-green hover:bg-green/80 text-navy"
+                onClick={() => {
+                  setEditingProduct(null);
+                  setNewProduct({
+                    name: "",
+                    interestRate: "",
+                    termDays: "",
+                    minAmount: "",
+                    maxAmount: "",
+                    status: "active",
+                    autoRenewal: false,
+                    contractTemplate: ""
+                  });
+                  setShowProductDialog(true);
+                }}
+              >
+                <Plus className="w-4 h-4 mr-2" />
+                Agregar Producto
+              </Button>
+
               <Dialog open={showProductDialog} onOpenChange={handleCloseProductDialog}>
-                <DialogTrigger asChild>
-                  <Button 
-                    className="bg-green hover:bg-green/80 text-navy"
-                    onClick={() => {
-                      console.log('Add Product button clicked');
-                      setShowProductDialog(true);
-                    }}
-                  >
-                    <Plus className="w-4 h-4 mr-2" />
-                    Agregar Producto
-                  </Button>
-                </DialogTrigger>
                 <DialogContent className="bg-[#040505] border-silver-500/20 text-white max-w-2xl">
                   <DialogHeader>
                     <DialogTitle>{editingProduct ? 'Editar Producto' : 'Agregar Nuevo Producto'}</DialogTitle>
