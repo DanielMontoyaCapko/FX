@@ -101,6 +101,40 @@ export class DatabaseStorage implements IStorage {
     const [product] = await db.insert(products).values(productData).returning();
     return product;
   }
+
+  async updateUser(userId: number, updates: any) {
+    // Hash password if provided
+    if (updates.password) {
+      const saltRounds = 12;
+      updates.password = await bcrypt.hash(updates.password, saltRounds);
+    }
+    
+    const result = await db
+      .update(users)
+      .set({ ...updates, updatedAt: new Date() })
+      .where(eq(users.id, userId))
+      .returning();
+    return result[0];
+  }
+
+  async deleteUser(userId: number) {
+    // Note: In a real app, you might want to soft delete or check for dependencies
+    await db.delete(users).where(eq(users.id, userId));
+  }
+
+  async updateProduct(productId: number, updates: any) {
+    const result = await db
+      .update(products)
+      .set(updates)
+      .where(eq(products.id, productId))
+      .returning();
+    return result[0];
+  }
+
+  async deleteProduct(productId: number) {
+    // Note: In a real app, you might want to check for dependencies (contracts)
+    await db.delete(products).where(eq(products.id, productId));
+  }
 }
 
 export const storage = new DatabaseStorage();

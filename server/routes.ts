@@ -199,6 +199,64 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Update user
+  app.put('/api/admin/users/:id', authMiddleware, requireRole('admin'), async (req, res) => {
+    try {
+      const userId = parseInt(req.params.id);
+      const updates = req.body;
+      
+      // Don't allow updating ID
+      delete updates.id;
+      
+      const user = await storage.updateUser(userId, updates);
+      res.json({ success: true, user });
+    } catch (error) {
+      console.error('Error updating user:', error);
+      res.status(500).json({ error: 'Failed to update user' });
+    }
+  });
+
+  // Delete user
+  app.delete('/api/admin/users/:id', authMiddleware, requireRole('admin'), async (req, res) => {
+    try {
+      const userId = parseInt(req.params.id);
+      await storage.deleteUser(userId);
+      res.json({ success: true });
+    } catch (error) {
+      console.error('Error deleting user:', error);
+      res.status(500).json({ error: 'Failed to delete user' });
+    }
+  });
+
+  // Update product
+  app.put('/api/admin/products/:id', authMiddleware, requireRole('admin'), async (req, res) => {
+    try {
+      const productId = parseInt(req.params.id);
+      const updates = req.body;
+      
+      // Don't allow updating ID
+      delete updates.id;
+      
+      const product = await storage.updateProduct(productId, updates);
+      res.json({ success: true, product });
+    } catch (error) {
+      console.error('Error updating product:', error);
+      res.status(500).json({ error: 'Failed to update product' });
+    }
+  });
+
+  // Delete product
+  app.delete('/api/admin/products/:id', authMiddleware, requireRole('admin'), async (req, res) => {
+    try {
+      const productId = parseInt(req.params.id);
+      await storage.deleteProduct(productId);
+      res.json({ success: true });
+    } catch (error) {
+      console.error('Error deleting product:', error);
+      res.status(500).json({ error: 'Failed to delete product' });
+    }
+  });
+
   const httpServer = createServer(app);
   return httpServer;
 }

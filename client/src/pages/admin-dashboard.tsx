@@ -106,6 +106,8 @@ export default function AdminDashboard() {
   // Dialog states
   const [showUserDialog, setShowUserDialog] = useState(false);
   const [showProductDialog, setShowProductDialog] = useState(false);
+  const [editingUser, setEditingUser] = useState<UserData | null>(null);
+  const [editingProduct, setEditingProduct] = useState<ProductData | null>(null);
 
   // Form states
   const [newUser, setNewUser] = useState({
@@ -220,29 +222,45 @@ export default function AdminDashboard() {
   const handleCreateUser = async () => {
     try {
       // Validate form data
-      if (!newUser.name || !newUser.email || !newUser.password) {
+      if (!newUser.name || !newUser.email) {
         alert('Por favor complete todos los campos obligatorios');
         return;
       }
       
-      if (newUser.password.length < 6) {
+      // Only validate password for new users (not editing)
+      if (!editingUser && (!newUser.password || newUser.password.length < 6)) {
         alert('La contraseña debe tener al menos 6 caracteres');
         return;
       }
 
       const token = localStorage.getItem('token');
-      const response = await fetch('/api/register', {
-        method: 'POST',
+      let url = '/api/register';
+      let method = 'POST';
+      let body = { ...newUser };
+
+      if (editingUser) {
+        url = `/api/admin/users/${editingUser.id}`;
+        method = 'PUT';
+        // Don't send password if it's empty (means no password change)
+        if (!newUser.password) {
+          const { password, ...bodyWithoutPassword } = body;
+          body = bodyWithoutPassword;
+        }
+      }
+
+      const response = await fetch(url, {
+        method,
         headers: {
           'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json'
         },
-        body: JSON.stringify(newUser)
+        body: JSON.stringify(body)
       });
 
       if (response.ok) {
-        alert('Usuario creado exitosamente');
+        alert(editingUser ? 'Usuario actualizado exitosamente' : 'Usuario creado exitosamente');
         setShowUserDialog(false);
+        setEditingUser(null);
         setNewUser({
           name: "",
           email: "",
@@ -254,11 +272,11 @@ export default function AdminDashboard() {
         loadDashboardData();
       } else {
         const errorData = await response.json();
-        alert(`Error: ${errorData.error || 'No se pudo crear el usuario'}`);
+        alert(`Error: ${errorData.error || 'No se pudo procesar el usuario'}`);
       }
     } catch (error) {
-      console.error('Error creating user:', error);
-      alert('Error de conexión al crear usuario');
+      console.error('Error creating/updating user:', error);
+      alert('Error de conexión al procesar usuario');
     }
   };
 
@@ -276,8 +294,16 @@ export default function AdminDashboard() {
       }
 
       const token = localStorage.getItem('token');
-      const response = await fetch('/api/admin/products', {
-        method: 'POST',
+      let url = '/api/admin/products';
+      let method = 'POST';
+
+      if (editingProduct) {
+        url = `/api/admin/products/${editingProduct.id}`;
+        method = 'PUT';
+      }
+
+      const response = await fetch(url, {
+        method,
         headers: {
           'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json'
@@ -289,8 +315,9 @@ export default function AdminDashboard() {
       });
 
       if (response.ok) {
-        alert('Producto creado exitosamente');
+        alert(editingProduct ? 'Producto actualizado exitosamente' : 'Producto creado exitosamente');
         setShowProductDialog(false);
+        setEditingProduct(null);
         setNewProduct({
           name: "",
           interestRate: "",
@@ -304,12 +331,122 @@ export default function AdminDashboard() {
         loadDashboardData();
       } else {
         const errorData = await response.json();
-        alert(`Error: ${errorData.error || 'No se pudo crear el producto'}`);
+        alert(`Error: ${errorData.error || 'No se pudo procesar el producto'}`);
       }
     } catch (error) {
-      console.error('Error creating product:', error);
-      alert('Error de conexión al crear producto');
+      console.error('Error creating/updating product:', error);
+      alert('Error de conexión al procesar producto');
     }
+  };
+
+  const handleDeleteUser = async (userId: number) => {
+    if (!confirm('¿Está seguro de que desea eliminar este usuario?')) {
+      return;
+    }
+    
+    try {
+      const token = localStorage.getItem('token');
+      const response = await fetch(`/api/admin/users/${userId}`, {
+        method: 'DELETE',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+        }
+      });
+
+      if (response.ok) {
+        alert('Usuario eliminado exitosamente');
+        loadDashboardData();
+      } else {
+        const errorData = await response.json();
+        alert(`Error: ${errorData.error || 'No se pudo eliminar el usuario'}`);
+      }
+    } catch (error) {
+      console.error('Error deleting user:', error);
+      alert('Error de conexión al eliminar usuario');
+    }
+  };
+
+  const handleDeleteProduct = async (productId: number) => {
+    if (!confirm('¿Está seguro de que desea eliminar este producto?')) {
+      return;
+    }
+    
+    try {
+      const token = localStorage.getItem('token');
+      const response = await fetch(`/api/admin/products/${productId}`, {
+        method: 'DELETE',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+        }
+      });
+
+      if (response.ok) {
+        alert('Producto eliminado exitosamente');
+        loadDashboardData();
+      } else {
+        const errorData = await response.json();
+        alert(`Error: ${errorData.error || 'No se pudo eliminar el producto'}`);
+      }
+    } catch (error) {
+      console.error('Error deleting product:', error);
+      alert('Error de conexión al eliminar producto');
+    }
+  };
+
+  const handleEditUser = (user: UserData) => {
+    setEditingUser(user);
+    setNewUser({
+      name: user.name,
+      email: user.email,
+      password: "", // Don't prefill password for security
+      role: user.role,
+      sponsor: user.sponsor || "",
+      grade: user.grade
+    });
+    setShowUserDialog(true);
+  };
+
+  const handleEditProduct = (product: ProductData) => {
+    setEditingProduct(product);
+    setNewProduct({
+      name: product.name,
+      interestRate: product.interestRate,
+      termDays: product.termDays.toString(),
+      minAmount: product.minAmount,
+      maxAmount: product.maxAmount,
+      status: product.status,
+      autoRenewal: product.autoRenewal,
+      contractTemplate: product.contractTemplate || ""
+    });
+    setShowProductDialog(true);
+  };
+
+  const handleCloseUserDialog = () => {
+    setShowUserDialog(false);
+    setEditingUser(null);
+    setNewUser({
+      name: "",
+      email: "",
+      password: "",
+      role: "client",
+      sponsor: "",
+      grade: "Bronze"
+    });
+  };
+
+  const handleCloseProductDialog = () => {
+    setShowProductDialog(false);
+    setEditingProduct(null);
+    setNewProduct({
+      name: "",
+      interestRate: "",
+      termDays: "",
+      minAmount: "",
+      maxAmount: "",
+      status: "active",
+      autoRenewal: false,
+      contractTemplate: ""
+    });
   };
 
   if (loading) {
@@ -487,7 +624,7 @@ export default function AdminDashboard() {
           <div>
             <div className="flex justify-between items-center mb-6">
               <h1 className="text-3xl font-bold text-white">Gestión de Usuarios</h1>
-              <Dialog open={showUserDialog} onOpenChange={setShowUserDialog}>
+              <Dialog open={showUserDialog} onOpenChange={handleCloseUserDialog}>
                 <DialogTrigger asChild>
                   <Button className="bg-green hover:bg-green/80 text-navy">
                     <Plus className="w-4 h-4 mr-2" />
@@ -496,9 +633,9 @@ export default function AdminDashboard() {
                 </DialogTrigger>
                 <DialogContent className="bg-[#040505] border-silver-500/20 text-white">
                   <DialogHeader>
-                    <DialogTitle>Agregar Nuevo Usuario</DialogTitle>
+                    <DialogTitle>{editingUser ? 'Editar Usuario' : 'Agregar Nuevo Usuario'}</DialogTitle>
                     <DialogDescription className="text-silver-100">
-                      Complete los datos para crear un nuevo usuario
+                      {editingUser ? 'Modifique los datos del usuario' : 'Complete los datos para crear un nuevo usuario'}
                     </DialogDescription>
                   </DialogHeader>
                   <div className="grid gap-4 py-4">
@@ -557,7 +694,7 @@ export default function AdminDashboard() {
                   </div>
                   <DialogFooter>
                     <Button onClick={handleCreateUser} className="bg-green hover:bg-green/80 text-navy">
-                      Crear Usuario
+                      {editingUser ? 'Actualizar Usuario' : 'Crear Usuario'}
                     </Button>
                   </DialogFooter>
                 </DialogContent>
@@ -621,10 +758,20 @@ export default function AdminDashboard() {
                               <Button size="sm" variant="outline" className="border-silver-500/20">
                                 <Eye className="w-4 h-4" />
                               </Button>
-                              <Button size="sm" variant="outline" className="border-silver-500/20">
+                              <Button 
+                                size="sm" 
+                                variant="outline" 
+                                className="border-silver-500/20"
+                                onClick={() => handleEditUser(user)}
+                              >
                                 <Edit className="w-4 h-4" />
                               </Button>
-                              <Button size="sm" variant="outline" className="border-red-500/20 text-red-400">
+                              <Button 
+                                size="sm" 
+                                variant="outline" 
+                                className="border-red-500/20 text-red-400"
+                                onClick={() => handleDeleteUser(user.id)}
+                              >
                                 <Trash2 className="w-4 h-4" />
                               </Button>
                             </div>
@@ -732,7 +879,7 @@ export default function AdminDashboard() {
           <div>
             <div className="flex justify-between items-center mb-6">
               <h1 className="text-3xl font-bold text-white">Gestión de Productos</h1>
-              <Dialog open={showProductDialog} onOpenChange={setShowProductDialog}>
+              <Dialog open={showProductDialog} onOpenChange={handleCloseProductDialog}>
                 <DialogTrigger asChild>
                   <Button className="bg-green hover:bg-green/80 text-navy">
                     <Plus className="w-4 h-4 mr-2" />
@@ -741,9 +888,9 @@ export default function AdminDashboard() {
                 </DialogTrigger>
                 <DialogContent className="bg-[#040505] border-silver-500/20 text-white max-w-2xl">
                   <DialogHeader>
-                    <DialogTitle>Agregar Nuevo Producto</DialogTitle>
+                    <DialogTitle>{editingProduct ? 'Editar Producto' : 'Agregar Nuevo Producto'}</DialogTitle>
                     <DialogDescription className="text-silver-100">
-                      Complete los datos para crear un nuevo producto financiero
+                      {editingProduct ? 'Modifique los datos del producto financiero' : 'Complete los datos para crear un nuevo producto financiero'}
                     </DialogDescription>
                   </DialogHeader>
                   <div className="grid gap-4 py-4 max-h-96 overflow-y-auto">
@@ -833,7 +980,7 @@ export default function AdminDashboard() {
                   </div>
                   <DialogFooter>
                     <Button onClick={handleCreateProduct} className="bg-green hover:bg-green/80 text-navy">
-                      Crear Producto
+                      {editingProduct ? 'Actualizar Producto' : 'Crear Producto'}
                     </Button>
                   </DialogFooter>
                 </DialogContent>
@@ -888,10 +1035,20 @@ export default function AdminDashboard() {
                               <Button size="sm" variant="outline" className="border-silver-500/20">
                                 <Eye className="w-4 h-4" />
                               </Button>
-                              <Button size="sm" variant="outline" className="border-silver-500/20">
+                              <Button 
+                                size="sm" 
+                                variant="outline" 
+                                className="border-silver-500/20"
+                                onClick={() => handleEditProduct(product)}
+                              >
                                 <Edit className="w-4 h-4" />
                               </Button>
-                              <Button size="sm" variant="outline" className="border-red-500/20 text-red-400">
+                              <Button 
+                                size="sm" 
+                                variant="outline" 
+                                className="border-red-500/20 text-red-400"
+                                onClick={() => handleDeleteProduct(product.id)}
+                              >
                                 <Trash2 className="w-4 h-4" />
                               </Button>
                             </div>
