@@ -28,7 +28,7 @@ export function useAuth() {
 }
 
 const apiCall = async (url: string, options: RequestInit = {}) => {
-  const token = localStorage.getItem('auth_token');
+  const token = localStorage.getItem('token');
   const headers: Record<string, string> = {
     'Content-Type': 'application/json',
   };
@@ -53,7 +53,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    const token = localStorage.getItem('auth_token');
+    const token = localStorage.getItem('token');
     if (token) {
       fetchUserData();
     } else {
@@ -68,11 +68,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       if (response.success) {
         setUser(response.user);
       } else {
-        localStorage.removeItem('auth_token');
+        localStorage.removeItem('token');
       }
     } catch (error) {
       console.error('Failed to fetch user data:', error);
-      localStorage.removeItem('auth_token');
+      localStorage.removeItem('token');
     } finally {
       setIsLoading(false);
     }
@@ -86,7 +86,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       });
 
       if (response.success) {
-        localStorage.setItem('auth_token', response.token);
+        localStorage.setItem('token', response.token);
         setUser(response.user);
         return { success: true };
       } else {
@@ -105,7 +105,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       });
 
       if (response.success) {
-        localStorage.setItem('auth_token', response.token);
+        localStorage.setItem('token', response.token);
         setUser(response.user);
         return { success: true };
       } else {
@@ -117,7 +117,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   };
 
   const logout = () => {
-    localStorage.removeItem('auth_token');
+    localStorage.removeItem('token');
     setUser(null);
   };
 
