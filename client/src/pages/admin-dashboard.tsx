@@ -107,9 +107,11 @@ export default function AdminDashboard() {
   const [showUserDialog, setShowUserDialog] = useState(false);
   const [showProductDialog, setShowProductDialog] = useState(false);
   const [showKycDialog, setShowKycDialog] = useState(false);
+  const [showContractDialog, setShowContractDialog] = useState(false);
   const [editingUser, setEditingUser] = useState<UserData | null>(null);
   const [editingProduct, setEditingProduct] = useState<ProductData | null>(null);
   const [editingKyc, setEditingKyc] = useState<KycData | null>(null);
+  const [editingContract, setEditingContract] = useState<any>(null);
 
   // Form states
   const [newUser, setNewUser] = useState({
@@ -523,6 +525,51 @@ export default function AdminDashboard() {
     } catch (error) {
       console.error('Error updating KYC:', error);
       alert('Error de conexión al actualizar KYC');
+    }
+  };
+
+  const handleEditContract = (contract: any) => {
+    setEditingContract(contract);
+    setShowContractDialog(true);
+  };
+
+  const handleCloseContractDialog = () => {
+    setShowContractDialog(false);
+    setEditingContract(null);
+  };
+
+  const handleUpdateContractForm = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!editingContract) return;
+
+    try {
+      const token = localStorage.getItem('token');
+      const response = await fetch(`/api/admin/contracts/${editingContract.id}`, {
+        method: 'PUT',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ status: editingContract.status })
+      });
+
+      if (response.ok) {
+        const statusText = {
+          'active': 'Activo',
+          'ready_to_start': 'Listo para Iniciar',
+          'completed': 'Completado',
+          'cancelled': 'Cancelado'
+        };
+        alert(`Estado del contrato actualizado a ${statusText[editingContract.status as keyof typeof statusText]}`);
+        handleCloseContractDialog();
+        await loadDashboardData();
+      } else {
+        const errorData = await response.json();
+        alert(`Error: ${errorData.error || 'No se pudo actualizar el estado del contrato'}`);
+      }
+    } catch (error) {
+      console.error('Error updating contract:', error);
+      alert('Error de conexión al actualizar contrato');
     }
   };
 
@@ -1201,43 +1248,42 @@ export default function AdminDashboard() {
                           <td className="p-4 text-white">{contract.productName}</td>
                           <td className="p-4 text-white">€{parseInt(contract.amount).toLocaleString()}</td>
                           <td className="p-4">
-                            <div className="flex items-center space-x-2">
-                              <Badge 
-                                variant={
-                                  contract.status === 'active' ? 'default' : 
-                                  contract.status === 'ready_to_start' ? 'secondary' : 
-                                  'outline'
-                                }
-                                className={
-                                  contract.status === 'active' ? 'bg-green text-navy' :
-                                  contract.status === 'ready_to_start' ? 'bg-yellow-500 text-navy' :
-                                  ''
-                                }
-                              >
-                                {contract.status === 'active' ? 'Activo' : 
-                                 contract.status === 'ready_to_start' ? 'Listo para Iniciar' : 
-                                 contract.status === 'completed' ? 'Completado' :
-                                 contract.status}
-                              </Badge>
-                              <select 
-                                value={contract.status}
-                                onChange={(e) => handleUpdateContractStatus(contract.id, e.target.value as any)}
-                                className="ml-2 px-2 py-1 bg-navy border border-green rounded text-xs text-white"
-                              >
-                                <option value="ready_to_start">Listo para Iniciar</option>
-                                <option value="active">Activo</option>
-                                <option value="completed">Completado</option>
-                                <option value="cancelled">Cancelado</option>
-                              </select>
-                            </div>
+                            <Badge 
+                              variant={
+                                contract.status === 'active' ? 'default' : 
+                                contract.status === 'ready_to_start' ? 'secondary' : 
+                                'outline'
+                              }
+                              className={
+                                contract.status === 'active' ? 'bg-green text-navy' :
+                                contract.status === 'ready_to_start' ? 'bg-yellow-500 text-navy' :
+                                ''
+                              }
+                            >
+                              {contract.status === 'active' ? 'Activo' : 
+                               contract.status === 'ready_to_start' ? 'Listo para Iniciar' : 
+                               contract.status === 'completed' ? 'Completado' :
+                               contract.status === 'cancelled' ? 'Cancelado' :
+                               contract.status}
+                            </Badge>
                           </td>
                           <td className="p-4 text-white">
                             {new Date(contract.createdAt).toLocaleDateString('es-ES')} {new Date(contract.createdAt).toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' })}
                           </td>
                           <td className="p-4">
-                            <Button size="sm" variant="outline" className="border-silver-500/20">
-                              <Eye className="w-4 h-4" />
-                            </Button>
+                            <div className="flex space-x-2">
+                              <Button size="sm" variant="outline" className="border-silver-500/20">
+                                <Eye className="w-4 h-4" />
+                              </Button>
+                              <Button 
+                                size="sm" 
+                                variant="outline" 
+                                className="border-silver-500/20"
+                                onClick={() => handleEditContract(contract)}
+                              >
+                                <Edit className="w-4 h-4" />
+                              </Button>
+                            </div>
                           </td>
                         </tr>
                       ))}
@@ -1296,6 +1342,73 @@ export default function AdminDashboard() {
                 </div>
                 <DialogFooter>
                   <Button type="button" variant="outline" onClick={handleCloseKycDialog}>
+                    Cancelar
+                  </Button>
+                  <Button type="submit" className="bg-green hover:bg-green/80 text-navy">
+                    Actualizar Estado
+                  </Button>
+                </DialogFooter>
+              </form>
+            )}
+          </DialogContent>
+        </Dialog>
+
+        {/* Contract Edit Dialog */}
+        <Dialog open={showContractDialog} onOpenChange={handleCloseContractDialog}>
+          <DialogContent className="bg-[#040505] border-silver-500/20 text-white">
+            <DialogHeader>
+              <DialogTitle>Editar Estado de Contrato</DialogTitle>
+              <DialogDescription className="text-silver-100">
+                Modificar el estado del contrato para {editingContract?.userName}
+              </DialogDescription>
+            </DialogHeader>
+            {editingContract && (
+              <form onSubmit={handleUpdateContractForm}>
+                <div className="grid gap-4 py-4">
+                  <div className="grid grid-cols-4 items-center gap-4">
+                    <Label className="text-right">ID</Label>
+                    <div className="col-span-3 text-silver-100">{editingContract.id}</div>
+                  </div>
+                  <div className="grid grid-cols-4 items-center gap-4">
+                    <Label className="text-right">Usuario</Label>
+                    <div className="col-span-3 text-silver-100">{editingContract.userName}</div>
+                  </div>
+                  <div className="grid grid-cols-4 items-center gap-4">
+                    <Label className="text-right">Producto</Label>
+                    <div className="col-span-3 text-silver-100">{editingContract.productName}</div>
+                  </div>
+                  <div className="grid grid-cols-4 items-center gap-4">
+                    <Label className="text-right">Monto</Label>
+                    <div className="col-span-3 text-silver-100">€{parseInt(editingContract.amount).toLocaleString()}</div>
+                  </div>
+                  <div className="grid grid-cols-4 items-center gap-4">
+                    <Label className="text-right">Fecha Creación</Label>
+                    <div className="col-span-3 text-silver-100">
+                      {new Date(editingContract.createdAt).toLocaleDateString('es-ES')} {new Date(editingContract.createdAt).toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' })}
+                    </div>
+                  </div>
+                  <div className="grid grid-cols-4 items-center gap-4">
+                    <Label htmlFor="contractStatus" className="text-right">Estado</Label>
+                    <Select 
+                      value={editingContract.status} 
+                      onValueChange={(value: 'active' | 'ready_to_start' | 'completed' | 'cancelled') => 
+                        setEditingContract({...editingContract, status: value})
+                      }
+                    >
+                      <SelectTrigger className="col-span-3 bg-navy border-silver-500/20 text-white">
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent className="bg-[#040505] border-silver-500/20">
+                        <SelectItem value="ready_to_start">Listo para Iniciar</SelectItem>
+                        <SelectItem value="active">Activo</SelectItem>
+                        <SelectItem value="completed">Completado</SelectItem>
+                        <SelectItem value="cancelled">Cancelado</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                </div>
+                <DialogFooter>
+                  <Button type="button" variant="outline" onClick={handleCloseContractDialog}>
                     Cancelar
                   </Button>
                   <Button type="submit" className="bg-green hover:bg-green/80 text-navy">
