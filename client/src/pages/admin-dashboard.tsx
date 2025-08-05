@@ -259,17 +259,8 @@ export default function AdminDashboard() {
 
       if (response.ok) {
         alert(editingUser ? 'Usuario actualizado exitosamente' : 'Usuario creado exitosamente');
-        setShowUserDialog(false);
-        setEditingUser(null);
-        setNewUser({
-          name: "",
-          email: "",
-          password: "",
-          role: "client",
-          sponsor: "",
-          grade: "Bronze"
-        });
-        loadDashboardData();
+        handleCloseUserDialog();
+        await loadDashboardData(); // Ensure data is reloaded
       } else {
         const errorData = await response.json();
         alert(`Error: ${errorData.error || 'No se pudo procesar el usuario'}`);
@@ -316,19 +307,8 @@ export default function AdminDashboard() {
 
       if (response.ok) {
         alert(editingProduct ? 'Producto actualizado exitosamente' : 'Producto creado exitosamente');
-        setShowProductDialog(false);
-        setEditingProduct(null);
-        setNewProduct({
-          name: "",
-          interestRate: "",
-          termDays: "",
-          minAmount: "",
-          maxAmount: "",
-          status: "active",
-          autoRenewal: false,
-          contractTemplate: ""
-        });
-        loadDashboardData();
+        handleCloseProductDialog();
+        await loadDashboardData(); // Ensure data is reloaded
       } else {
         const errorData = await response.json();
         alert(`Error: ${errorData.error || 'No se pudo procesar el producto'}`);
@@ -355,7 +335,7 @@ export default function AdminDashboard() {
 
       if (response.ok) {
         alert('Usuario eliminado exitosamente');
-        loadDashboardData();
+        await loadDashboardData(); // Ensure data is reloaded immediately
       } else {
         const errorData = await response.json();
         alert(`Error: ${errorData.error || 'No se pudo eliminar el usuario'}`);
@@ -382,7 +362,7 @@ export default function AdminDashboard() {
 
       if (response.ok) {
         alert('Producto eliminado exitosamente');
-        loadDashboardData();
+        await loadDashboardData(); // Ensure data is reloaded immediately
       } else {
         const errorData = await response.json();
         alert(`Error: ${errorData.error || 'No se pudo eliminar el producto'}`);
@@ -419,6 +399,62 @@ export default function AdminDashboard() {
       contractTemplate: product.contractTemplate || ""
     });
     setShowProductDialog(true);
+  };
+
+  const handleUpdateKycStatus = async (kycId: number, newStatus: 'approved' | 'pending' | 'rejected') => {
+    try {
+      const token = localStorage.getItem('token');
+      const response = await fetch(`/api/admin/kyc/${kycId}`, {
+        method: 'PUT',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ status: newStatus })
+      });
+
+      if (response.ok) {
+        alert(`Estado KYC actualizado a ${newStatus === 'approved' ? 'Aprobado' : newStatus === 'rejected' ? 'Rechazado' : 'Pendiente'}`);
+        await loadDashboardData(); // Reload to update statistics
+      } else {
+        const errorData = await response.json();
+        alert(`Error: ${errorData.error || 'No se pudo actualizar el estado KYC'}`);
+      }
+    } catch (error) {
+      console.error('Error updating KYC status:', error);
+      alert('Error de conexión al actualizar estado KYC');
+    }
+  };
+
+  const handleUpdateContractStatus = async (contractId: number, newStatus: 'active' | 'ready_to_start' | 'completed' | 'cancelled') => {
+    try {
+      const token = localStorage.getItem('token');
+      const response = await fetch(`/api/admin/contracts/${contractId}`, {
+        method: 'PUT',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ status: newStatus })
+      });
+
+      if (response.ok) {
+        const statusText = {
+          'active': 'Activo',
+          'ready_to_start': 'Listo para Iniciar',
+          'completed': 'Completado',
+          'cancelled': 'Cancelado'
+        };
+        alert(`Estado del contrato actualizado a ${statusText[newStatus]}`);
+        await loadDashboardData(); // Reload to update statistics
+      } else {
+        const errorData = await response.json();
+        alert(`Error: ${errorData.error || 'No se pudo actualizar el estado del contrato'}`);
+      }
+    } catch (error) {
+      console.error('Error updating contract status:', error);
+      alert('Error de conexión al actualizar estado del contrato');
+    }
   };
 
   const handleCloseUserDialog = () => {
@@ -840,17 +876,28 @@ export default function AdminDashboard() {
                           <td className="p-4 text-white">{record.documentNumber}</td>
                           <td className="p-4 text-white">{record.country}</td>
                           <td className="p-4">
-                            <Badge 
-                              variant={
-                                record.status === 'approved' ? 'default' : 
-                                record.status === 'pending' ? 'secondary' : 
-                                'destructive'
-                              }
-                            >
-                              {record.status === 'approved' ? 'Aprobado' : 
-                               record.status === 'pending' ? 'Pendiente' : 
-                               'Rechazado'}
-                            </Badge>
+                            <div className="flex items-center space-x-2">
+                              <Badge 
+                                variant={
+                                  record.status === 'approved' ? 'default' : 
+                                  record.status === 'pending' ? 'secondary' : 
+                                  'destructive'
+                                }
+                              >
+                                {record.status === 'approved' ? 'Aprobado' : 
+                                 record.status === 'pending' ? 'Pendiente' : 
+                                 'Rechazado'}
+                              </Badge>
+                              <select 
+                                value={record.status}
+                                onChange={(e) => handleUpdateKycStatus(record.id, e.target.value as any)}
+                                className="ml-2 px-2 py-1 bg-navy border border-green rounded text-xs text-white"
+                              >
+                                <option value="pending">Pendiente</option>
+                                <option value="approved">Aprobado</option>
+                                <option value="rejected">Rechazado</option>
+                              </select>
+                            </div>
                           </td>
                           <td className="p-4 text-white">
                             {new Date(record.createdAt).toLocaleDateString('es-ES')}
@@ -1091,22 +1138,35 @@ export default function AdminDashboard() {
                           <td className="p-4 text-white">{contract.productName}</td>
                           <td className="p-4 text-white">€{parseInt(contract.amount).toLocaleString()}</td>
                           <td className="p-4">
-                            <Badge 
-                              variant={
-                                contract.status === 'active' ? 'default' : 
-                                contract.status === 'ready_to_start' ? 'secondary' : 
-                                'outline'
-                              }
-                              className={
-                                contract.status === 'active' ? 'bg-green text-navy' :
-                                contract.status === 'ready_to_start' ? 'bg-yellow-500 text-navy' :
-                                ''
-                              }
-                            >
-                              {contract.status === 'active' ? 'Activo' : 
-                               contract.status === 'ready_to_start' ? 'Listo para Iniciar' : 
-                               contract.status}
-                            </Badge>
+                            <div className="flex items-center space-x-2">
+                              <Badge 
+                                variant={
+                                  contract.status === 'active' ? 'default' : 
+                                  contract.status === 'ready_to_start' ? 'secondary' : 
+                                  'outline'
+                                }
+                                className={
+                                  contract.status === 'active' ? 'bg-green text-navy' :
+                                  contract.status === 'ready_to_start' ? 'bg-yellow-500 text-navy' :
+                                  ''
+                                }
+                              >
+                                {contract.status === 'active' ? 'Activo' : 
+                                 contract.status === 'ready_to_start' ? 'Listo para Iniciar' : 
+                                 contract.status === 'completed' ? 'Completado' :
+                                 contract.status}
+                              </Badge>
+                              <select 
+                                value={contract.status}
+                                onChange={(e) => handleUpdateContractStatus(contract.id, e.target.value as any)}
+                                className="ml-2 px-2 py-1 bg-navy border border-green rounded text-xs text-white"
+                              >
+                                <option value="ready_to_start">Listo para Iniciar</option>
+                                <option value="active">Activo</option>
+                                <option value="completed">Completado</option>
+                                <option value="cancelled">Cancelado</option>
+                              </select>
+                            </div>
                           </td>
                           <td className="p-4 text-white">
                             {new Date(contract.createdAt).toLocaleDateString('es-ES')} {new Date(contract.createdAt).toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' })}

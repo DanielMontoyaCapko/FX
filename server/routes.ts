@@ -257,6 +257,34 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Update KYC status
+  app.put('/api/admin/kyc/:id', authMiddleware, requireRole('admin'), async (req, res) => {
+    try {
+      const kycId = parseInt(req.params.id);
+      const { status } = req.body;
+      
+      const kyc = await storage.updateKycStatus(kycId, status);
+      res.json({ success: true, kyc });
+    } catch (error) {
+      console.error('Error updating KYC status:', error);
+      res.status(500).json({ error: 'Failed to update KYC status' });
+    }
+  });
+
+  // Update contract status
+  app.put('/api/admin/contracts/:id', authMiddleware, requireRole('admin'), async (req, res) => {
+    try {
+      const contractId = parseInt(req.params.id);
+      const { status } = req.body;
+      
+      const contract = await storage.updateContractStatus(contractId, status);
+      res.json({ success: true, contract });
+    } catch (error) {
+      console.error('Error updating contract status:', error);
+      res.status(500).json({ error: 'Failed to update contract status' });
+    }
+  });
+
   const httpServer = createServer(app);
   return httpServer;
 }

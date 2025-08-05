@@ -135,6 +135,24 @@ export class DatabaseStorage implements IStorage {
     // Note: In a real app, you might want to check for dependencies (contracts)
     await db.delete(products).where(eq(products.id, productId));
   }
+
+  async updateKycStatus(kycId: number, status: string) {
+    const result = await db
+      .update(kyc)
+      .set({ status })
+      .where(eq(kyc.id, kycId))
+      .returning();
+    return result[0];
+  }
+
+  async updateContractStatus(contractId: number, status: string) {
+    const result = await db
+      .update(contracts)
+      .set({ status })
+      .where(eq(contracts.id, contractId))
+      .returning();
+    return result[0];
+  }
 }
 
 export const storage = new DatabaseStorage();
