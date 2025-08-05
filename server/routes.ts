@@ -188,6 +188,17 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  app.post("/api/admin/products", authMiddleware, requireRole('admin'), async (req, res) => {
+    try {
+      const productData = req.body;
+      const product = await storage.createProduct(productData);
+      res.json({ success: true, product });
+    } catch (error) {
+      console.error("Error creating product:", error);
+      res.status(500).json({ error: "Failed to create product" });
+    }
+  });
+
   const httpServer = createServer(app);
   return httpServer;
 }

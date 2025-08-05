@@ -6,6 +6,10 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { Label } from "@/components/ui/label";
+import { Switch } from "@/components/ui/switch";
+import { Textarea } from "@/components/ui/textarea";
 import { 
   Users, 
   FileCheck, 
@@ -99,6 +103,31 @@ export default function AdminDashboard() {
   const [kycSearch, setKycSearch] = useState("");
   const [kycFilter, setKycFilter] = useState("all");
 
+  // Dialog states
+  const [showUserDialog, setShowUserDialog] = useState(false);
+  const [showProductDialog, setShowProductDialog] = useState(false);
+
+  // Form states
+  const [newUser, setNewUser] = useState({
+    name: "",
+    email: "",
+    password: "",
+    role: "client",
+    sponsor: "",
+    grade: "Bronze"
+  });
+
+  const [newProduct, setNewProduct] = useState({
+    name: "",
+    interestRate: "",
+    termDays: "",
+    minAmount: "",
+    maxAmount: "",
+    status: "active",
+    autoRenewal: false,
+    contractTemplate: ""
+  });
+
   useEffect(() => {
     if (user?.role !== 'admin') {
       setLocation('/login');
@@ -111,12 +140,23 @@ export default function AdminDashboard() {
     try {
       setLoading(true);
       
+      const token = localStorage.getItem('token');
+      if (!token) {
+        setLocation('/login');
+        return;
+      }
+      
+      const headers = {
+        'Authorization': `Bearer ${token}`,
+        'Content-Type': 'application/json'
+      };
+      
       // Load all data
       const [usersRes, kycRes, productsRes, contractsRes] = await Promise.all([
-        fetch('/api/admin/users'),
-        fetch('/api/admin/kyc'),
-        fetch('/api/admin/products'),
-        fetch('/api/admin/contracts')
+        fetch('/api/admin/users', { headers }),
+        fetch('/api/admin/kyc', { headers }),
+        fetch('/api/admin/products', { headers }),
+        fetch('/api/admin/contracts', { headers })
       ]);
 
       const usersData = await usersRes.json();
@@ -176,6 +216,69 @@ export default function AdminDashboard() {
     const matchesFilter = kycFilter === 'all' || k.status === kycFilter;
     return matchesSearch && matchesFilter;
   });
+
+  const handleCreateUser = async () => {
+    try {
+      const token = localStorage.getItem('token');
+      const response = await fetch('/api/register', {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(newUser)
+      });
+
+      if (response.ok) {
+        setShowUserDialog(false);
+        setNewUser({
+          name: "",
+          email: "",
+          password: "",
+          role: "client",
+          sponsor: "",
+          grade: "Bronze"
+        });
+        loadDashboardData();
+      }
+    } catch (error) {
+      console.error('Error creating user:', error);
+    }
+  };
+
+  const handleCreateProduct = async () => {
+    try {
+      const token = localStorage.getItem('token');
+      const response = await fetch('/api/admin/products', {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          ...newProduct,
+          termDays: parseInt(newProduct.termDays)
+        })
+      });
+
+      if (response.ok) {
+        setShowProductDialog(false);
+        setNewProduct({
+          name: "",
+          interestRate: "",
+          termDays: "",
+          minAmount: "",
+          maxAmount: "",
+          status: "active",
+          autoRenewal: false,
+          contractTemplate: ""
+        });
+        loadDashboardData();
+      }
+    } catch (error) {
+      console.error('Error creating product:', error);
+    }
+  };
 
   if (loading) {
     return (
@@ -352,10 +455,81 @@ export default function AdminDashboard() {
           <div>
             <div className="flex justify-between items-center mb-6">
               <h1 className="text-3xl font-bold text-white">Gestión de Usuarios</h1>
-              <Button className="bg-green hover:bg-green/80 text-navy">
-                <Plus className="w-4 h-4 mr-2" />
-                Agregar Usuario
-              </Button>
+              <Dialog open={showUserDialog} onOpenChange={setShowUserDialog}>
+                <DialogTrigger asChild>
+                  <Button className="bg-green hover:bg-green/80 text-navy">
+                    <Plus className="w-4 h-4 mr-2" />
+                    Agregar Usuario
+                  </Button>
+                </DialogTrigger>
+                <DialogContent className="bg-[#040505] border-silver-500/20 text-white">
+                  <DialogHeader>
+                    <DialogTitle>Agregar Nuevo Usuario</DialogTitle>
+                    <DialogDescription className="text-silver-100">
+                      Complete los datos para crear un nuevo usuario
+                    </DialogDescription>
+                  </DialogHeader>
+                  <div className="grid gap-4 py-4">
+                    <div className="grid grid-cols-4 items-center gap-4">
+                      <Label htmlFor="name" className="text-right">Nombre</Label>
+                      <Input
+                        id="name"
+                        value={newUser.name}
+                        onChange={(e) => setNewUser({...newUser, name: e.target.value})}
+                        className="col-span-3 bg-navy border-silver-500/20"
+                      />
+                    </div>
+                    <div className="grid grid-cols-4 items-center gap-4">
+                      <Label htmlFor="email" className="text-right">Email</Label>
+                      <Input
+                        id="email"
+                        type="email"
+                        value={newUser.email}
+                        onChange={(e) => setNewUser({...newUser, email: e.target.value})}
+                        className="col-span-3 bg-navy border-silver-500/20"
+                      />
+                    </div>
+                    <div className="grid grid-cols-4 items-center gap-4">
+                      <Label htmlFor="password" className="text-right">Contraseña</Label>
+                      <Input
+                        id="password"
+                        type="password"
+                        value={newUser.password}
+                        onChange={(e) => setNewUser({...newUser, password: e.target.value})}
+                        className="col-span-3 bg-navy border-silver-500/20"
+                      />
+                    </div>
+                    <div className="grid grid-cols-4 items-center gap-4">
+                      <Label htmlFor="role" className="text-right">Rol</Label>
+                      <Select value={newUser.role} onValueChange={(value) => setNewUser({...newUser, role: value})}>
+                        <SelectTrigger className="col-span-3 bg-navy border-silver-500/20">
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent className="bg-[#040505] border-silver-500/20">
+                          <SelectItem value="client">Cliente</SelectItem>
+                          <SelectItem value="partner">Asesor</SelectItem>
+                          <SelectItem value="admin">Administrador</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                    <div className="grid grid-cols-4 items-center gap-4">
+                      <Label htmlFor="sponsor" className="text-right">Patrocinador</Label>
+                      <Input
+                        id="sponsor"
+                        value={newUser.sponsor}
+                        onChange={(e) => setNewUser({...newUser, sponsor: e.target.value})}
+                        className="col-span-3 bg-navy border-silver-500/20"
+                        placeholder="Opcional"
+                      />
+                    </div>
+                  </div>
+                  <DialogFooter>
+                    <Button onClick={handleCreateUser} className="bg-green hover:bg-green/80 text-navy">
+                      Crear Usuario
+                    </Button>
+                  </DialogFooter>
+                </DialogContent>
+              </Dialog>
             </div>
 
             {/* Search */}
@@ -526,10 +700,112 @@ export default function AdminDashboard() {
           <div>
             <div className="flex justify-between items-center mb-6">
               <h1 className="text-3xl font-bold text-white">Gestión de Productos</h1>
-              <Button className="bg-green hover:bg-green/80 text-navy">
-                <Plus className="w-4 h-4 mr-2" />
-                Agregar Producto
-              </Button>
+              <Dialog open={showProductDialog} onOpenChange={setShowProductDialog}>
+                <DialogTrigger asChild>
+                  <Button className="bg-green hover:bg-green/80 text-navy">
+                    <Plus className="w-4 h-4 mr-2" />
+                    Agregar Producto
+                  </Button>
+                </DialogTrigger>
+                <DialogContent className="bg-[#040505] border-silver-500/20 text-white max-w-2xl">
+                  <DialogHeader>
+                    <DialogTitle>Agregar Nuevo Producto</DialogTitle>
+                    <DialogDescription className="text-silver-100">
+                      Complete los datos para crear un nuevo producto financiero
+                    </DialogDescription>
+                  </DialogHeader>
+                  <div className="grid gap-4 py-4 max-h-96 overflow-y-auto">
+                    <div className="grid grid-cols-4 items-center gap-4">
+                      <Label htmlFor="productName" className="text-right">Nombre</Label>
+                      <Input
+                        id="productName"
+                        value={newProduct.name}
+                        onChange={(e) => setNewProduct({...newProduct, name: e.target.value})}
+                        className="col-span-3 bg-navy border-silver-500/20"
+                      />
+                    </div>
+                    <div className="grid grid-cols-4 items-center gap-4">
+                      <Label htmlFor="interestRate" className="text-right">Tasa (%)</Label>
+                      <Input
+                        id="interestRate"
+                        value={newProduct.interestRate}
+                        onChange={(e) => setNewProduct({...newProduct, interestRate: e.target.value})}
+                        className="col-span-3 bg-navy border-silver-500/20"
+                        placeholder="9.00"
+                      />
+                    </div>
+                    <div className="grid grid-cols-4 items-center gap-4">
+                      <Label htmlFor="termDays" className="text-right">Plazo (días)</Label>
+                      <Input
+                        id="termDays"
+                        type="number"
+                        value={newProduct.termDays}
+                        onChange={(e) => setNewProduct({...newProduct, termDays: e.target.value})}
+                        className="col-span-3 bg-navy border-silver-500/20"
+                        placeholder="365"
+                      />
+                    </div>
+                    <div className="grid grid-cols-4 items-center gap-4">
+                      <Label htmlFor="minAmount" className="text-right">Monto Mín (€)</Label>
+                      <Input
+                        id="minAmount"
+                        value={newProduct.minAmount}
+                        onChange={(e) => setNewProduct({...newProduct, minAmount: e.target.value})}
+                        className="col-span-3 bg-navy border-silver-500/20"
+                        placeholder="50000"
+                      />
+                    </div>
+                    <div className="grid grid-cols-4 items-center gap-4">
+                      <Label htmlFor="maxAmount" className="text-right">Monto Máx (€)</Label>
+                      <Input
+                        id="maxAmount"
+                        value={newProduct.maxAmount}
+                        onChange={(e) => setNewProduct({...newProduct, maxAmount: e.target.value})}
+                        className="col-span-3 bg-navy border-silver-500/20"
+                        placeholder="1000000"
+                      />
+                    </div>
+                    <div className="grid grid-cols-4 items-center gap-4">
+                      <Label htmlFor="productStatus" className="text-right">Estado</Label>
+                      <Select value={newProduct.status} onValueChange={(value) => setNewProduct({...newProduct, status: value})}>
+                        <SelectTrigger className="col-span-3 bg-navy border-silver-500/20">
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent className="bg-[#040505] border-silver-500/20">
+                          <SelectItem value="active">Activo</SelectItem>
+                          <SelectItem value="inactive">Inactivo</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                    <div className="grid grid-cols-4 items-center gap-4">
+                      <Label htmlFor="autoRenewal" className="text-right">Auto Renovación</Label>
+                      <div className="col-span-3">
+                        <Switch
+                          id="autoRenewal"
+                          checked={newProduct.autoRenewal}
+                          onCheckedChange={(checked) => setNewProduct({...newProduct, autoRenewal: checked})}
+                        />
+                      </div>
+                    </div>
+                    <div className="grid grid-cols-4 items-start gap-4">
+                      <Label htmlFor="contractTemplate" className="text-right mt-2">Template Contrato</Label>
+                      <Textarea
+                        id="contractTemplate"
+                        value={newProduct.contractTemplate}
+                        onChange={(e) => setNewProduct({...newProduct, contractTemplate: e.target.value})}
+                        className="col-span-3 bg-navy border-silver-500/20"
+                        placeholder="Template del contrato..."
+                        rows={3}
+                      />
+                    </div>
+                  </div>
+                  <DialogFooter>
+                    <Button onClick={handleCreateProduct} className="bg-green hover:bg-green/80 text-navy">
+                      Crear Producto
+                    </Button>
+                  </DialogFooter>
+                </DialogContent>
+              </Dialog>
             </div>
 
             {/* Products Table */}

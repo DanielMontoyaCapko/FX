@@ -19,6 +19,7 @@ export interface IStorage {
   getAllKyc(): Promise<Kyc[]>;
   getAllProducts(): Promise<Product[]>;
   getAllContracts(): Promise<any[]>;
+  createProduct(productData: InsertProduct): Promise<Product>;
 }
 
 export class DatabaseStorage implements IStorage {
@@ -94,6 +95,11 @@ export class DatabaseStorage implements IStorage {
       .leftJoin(products, eq(contracts.productId, products.id));
     
     return result;
+  }
+
+  async createProduct(productData: InsertProduct): Promise<Product> {
+    const [product] = await db.insert(products).values(productData).returning();
+    return product;
   }
 }
 
