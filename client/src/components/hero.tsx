@@ -1,9 +1,13 @@
 import { Button } from "@/components/ui/button";
 import { useLocation } from "wouter";
 
+import ADCB from "@/assets/ADCB.png";
+import FAB from "@/assets/FAB.png";
+import NBD from "@/assets/NBD.png";
+
 export default function Hero() {
   const [, setLocation] = useLocation();
-  
+
   const goToContact = () => {
     setLocation("/contacto");
   };
@@ -16,19 +20,19 @@ export default function Hero() {
           Capital Protegido por<br />
           Contrato Bancario Pignorado.
         </h1>
-        
+
         <p className="text-xl md:text-2xl text-silver-100 mb-8 max-w-4xl mx-auto leading-relaxed">
           Producto exclusivo para perfiles conservadores, sin exposición al mercado. 
           Gestionado con estructuras bancarias, firmado digitalmente y auditado legalmente.
         </p>
-        
+
         <Button 
           onClick={goToContact}
           className="bg-green text-black px-12 py-4 text-xl font-bold hover:bg-green/90 transition-colors shadow-xl h-auto"
         >
           Quiero más información
         </Button>
-        
+
         <div className="mt-16 grid grid-cols-1 md:grid-cols-3 gap-8 max-w-4xl mx-auto">
           <div className="text-center p-6 rounded-xl bg-black/30 border border-transparent transition-all duration-300 hover:border-green-500 hover:bg-black/50 hover:shadow-lg hover:shadow-green-500/20 cursor-pointer">
             <div className="text-3xl font-bold text-green mb-2">9%</div>
@@ -42,6 +46,11 @@ export default function Hero() {
             <div className="text-3xl font-bold text-green mb-2">0%</div>
             <div className="text-silver-100">Exposición al Mercado</div>
           </div>
+        </div>
+        <div className="mt-16 grid grid-cols-1 md:grid-cols-3 gap-8 max-w-4xl mx-auto">
+          <img src={ADCB} alt="ADCB" className="rounded-xl shadow-lg max-h-32 mx-auto" />
+          <img src={FAB} alt="FAB" className="rounded-xl shadow-lg max-h-32 mx-auto" />
+          <img src={NBD} alt="NBD" className="rounded-xl shadow-lg max-h-32 mx-auto" />
         </div>
       </div>
     </section>

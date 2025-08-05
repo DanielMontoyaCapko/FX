@@ -575,14 +575,14 @@ export default function AdminDashboard() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-navy flex items-center justify-center">
+      <div className="min-h-screen bg-gradient-to-br from-black via-gray-900 to-gray-600 flex items-center justify-center">
         <div className="text-white text-xl">Cargando panel de administración...</div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-navy text-white">
+    <div className="min-h-screen bg-gradient-to-br from-black via-gray-900 to-gray-600 text-white">
       {/* Sidebar */}
       <div className="fixed left-0 top-0 h-full w-64 bg-[#040505] border-r border-silver-500/20 z-40">
         <div className="p-6">
