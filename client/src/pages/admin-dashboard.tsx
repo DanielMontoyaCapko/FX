@@ -243,7 +243,7 @@ export default function AdminDashboard() {
         method = 'PUT';
         // Don't send password if it's empty (means no password change)
         if (!newUser.password) {
-          const { password, ...bodyWithoutPassword } = body;
+          const { password, ...bodyWithoutPassword } = body as any;
           body = bodyWithoutPassword;
         }
       }
