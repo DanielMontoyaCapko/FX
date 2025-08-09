@@ -427,6 +427,18 @@ export default function Dashboard() {
                         </div>
                         
                         <div>
+                          <Label htmlFor="fecha-registro" className="text-white">Fecha de Registro</Label>
+                          <Input
+                            id="fecha-registro"
+                            defaultValue="15/01/2024"
+                            disabled
+                            className="bg-black/70 border-silver-500/20 text-silver-300 cursor-not-allowed"
+                          />
+                        </div>
+                      </div>
+                      
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div>
                           <Label htmlFor="pais" className="text-white">País</Label>
                           <Select defaultValue="espana">
                             <SelectTrigger className="bg-black/50 border-silver-500/20 text-white">
@@ -440,6 +452,10 @@ export default function Dashboard() {
                               <SelectItem value="alemania">Alemania</SelectItem>
                             </SelectContent>
                           </Select>
+                        </div>
+                        
+                        <div>
+                          {/* Empty div to maintain grid layout */}
                         </div>
                       </div>
                       
@@ -869,17 +885,6 @@ export default function Dashboard() {
                 <h1 className="text-3xl font-bold text-white">Dashboard</h1>
                 <p className="text-silver-100">Vista general de tu actividad</p>
               </div>
-              
-              <Select defaultValue="last-30-days">
-                <SelectTrigger className="w-40 bg-black/50 border-silver-500/20 text-white">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent className="bg-black border-silver-500/20">
-                  <SelectItem value="last-7-days">Últimos 7 días</SelectItem>
-                  <SelectItem value="last-30-days">Últimos 30 días</SelectItem>
-                  <SelectItem value="last-90-days">Últimos 90 días</SelectItem>
-                </SelectContent>
-              </Select>
             </div>
 
             {/* KPIs */}
