@@ -46,15 +46,24 @@ export default function Login() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-black via-gray-900 to-gray-600 flex items-center justify-center px-6 md:px-8">
+    <div
+      className={[
+        "relative min-h-screen overflow-hidden",
+        "bg-gradient-to-br from-black via-[#0A1713] to-[#0E2A1F]",
+        // (Sin red de fondo)
+        "before:pointer-events-none before:absolute before:inset-0",
+        "before:bg-[radial-gradient(80%_60%_at_110%_-10%,rgba(16,185,129,0.18),transparent),radial-gradient(60%_40%_at_-20%_110%,rgba(16,185,129,0.12),transparent)]",
+        "flex items-center justify-center px-6 md:px-8",
+      ].join(" ")}
+    >
       {/* Volver al inicio */}
       <div className="absolute top-8 left-8">
         <Button
           onClick={() => setLocation("/")}
           variant="ghost"
-          className="text-white hover:bg-black/50 gap-2 text-xl md:text-2xl"
+          className="text-emerald-100 hover:bg-emerald-900/20 hover:text-emerald-50 gap-2 text-base md:text-lg"
         >
-          <ArrowLeft className="h-6 w-6 md:h-7 md:w-7" />
+          <ArrowLeft className="h-5 w-5 md:h-6 md:w-6" />
           Volver al Inicio
         </Button>
       </div>
@@ -62,81 +71,100 @@ export default function Login() {
       <div className="w-full max-w-lg md:max-w-xl">
         {/* Header */}
         <div className="text-center mb-12 md:mb-14">
-          <div className="flex items-center justify-center space-x-6 mb-8">
+          <div className="flex items-center justify-center space-x-5 mb-6">
             <img
               src={logoImg}
               alt="Logo"
-              className="w-32 h-32 md:w-40 md:h-40"
+              className="w-20 h-20 md:w-24 md:h-24 drop-shadow-[0_0_18px_rgba(16,185,129,0.35)]"
             />
             <div>
-              <h1 className="font-cormorant text-5xl md:text-6xl font-bold text-white">
+              <h1 className="font-cormorant text-4xl md:text-5xl font-bold text-emerald-50">
                 Nakama&Partners
               </h1>
-              <p className="text-green text-2xl md:text-3xl">Portal de Asesores</p>
+              <p className="text-emerald-300 text-lg md:text-2xl">Portal de Asesores</p>
             </div>
           </div>
-          <p className="text-silver-100 text-2xl md:text-3xl">
+          <p className="text-emerald-200/80 text-xl md:text-2xl">
             Accede a tu dashboard profesional
           </p>
         </div>
 
         {/* Login Card */}
-        <Card className="bg-[#040505] border-silver-500/20">
-          <CardHeader className="text-center space-y-4 md:space-y-6">
-            <CardTitle className="text-5xl md:text-6xl text-white">
+        <Card
+          className={[
+            "rounded-3xl bg-black/40 backdrop-blur-sm",
+            "border border-emerald-500/15",
+            "shadow-[0_0_0_1px_rgba(16,185,129,0.12),0_24px_70px_-20px_rgba(16,185,129,0.28)]",
+          ].join(" ")}
+        >
+          <CardHeader className="text-center space-y-3 md:space-y-4">
+            <CardTitle className="text-4xl md:text-5xl text-emerald-50">
               Iniciar Sesión
             </CardTitle>
-            <CardDescription className="text-silver-100 text-2xl md:text-3xl">
+            <CardDescription className="text-emerald-200/80 text-lg md:text-xl">
               Ingresa tus credenciales para acceder
             </CardDescription>
           </CardHeader>
 
-          <CardContent className="p-8 md:p-12">
-            <form onSubmit={handleLogin} className="space-y-8 md:space-y-10">
+          <CardContent className="p-7 md:p-10">
+            <form onSubmit={handleLogin} className="space-y-6 md:space-y-7">
               {/* Email */}
-              <div className="space-y-3">
-                <Label htmlFor="email" className="text-white text-2xl md:text-3xl">
+              <div className="space-y-2.5">
+                <Label htmlFor="email" className="text-emerald-100 text-lg md:text-xl">
                   Email
                 </Label>
                 <div className="relative">
-                  <User className="absolute left-4 top-1/2 -translate-y-1/2 h-7 w-7 md:h-8 md:w-8 text-silver-100" />
+                  <User className="absolute left-4 top-1/2 -translate-y-1/2 h-6 w-6 md:h-7 md:w-7 text-emerald-300/80" />
                   <Input
                     id="email"
                     type="email"
+                    autoComplete="email"
                     placeholder="tu@email.com"
                     value={loginForm.email}
                     onChange={(e) => setLoginForm({ ...loginForm, email: e.target.value })}
-                    className="h-16 md:h-20 pl-14 pr-4 text-2xl md:text-3xl bg-black/70 border-silver-500/20 text-white placeholder-silver-100"
+                    className={[
+                      "h-12 md:h-14 pl-12 pr-4 text-lg md:text-xl",
+                      "bg-emerald-950/40 text-emerald-50 placeholder:text-emerald-200/50",
+                      "border border-emerald-500/20",
+                      "focus-visible:ring-2 focus-visible:ring-emerald-400 focus-visible:ring-offset-0",
+                    ].join(" ")}
                     required
                   />
                 </div>
               </div>
 
               {/* Password */}
-              <div className="space-y-3">
-                <Label htmlFor="password" className="text-white text-2xl md:text-3xl">
+              <div className="space-y-2.5">
+                <Label htmlFor="password" className="text-emerald-100 text-lg md:text-xl">
                   Contraseña
                 </Label>
                 <div className="relative">
-                  <Lock className="absolute left-4 top-1/2 -translate-y-1/2 h-7 w-7 md:h-8 md:w-8 text-silver-100" />
+                  <Lock className="absolute left-4 top-1/2 -translate-y-1/2 h-6 w-6 md:h-7 md:w-7 text-emerald-300/80" />
                   <Input
                     id="password"
                     type={showPassword ? "text" : "password"}
+                    autoComplete="current-password"
                     placeholder="Tu contraseña"
                     value={loginForm.password}
                     onChange={(e) => setLoginForm({ ...loginForm, password: e.target.value })}
-                    className="h-16 md:h-20 pl-14 pr-14 text-2xl md:text-3xl bg-black/70 border-silver-500/20 text-white placeholder-silver-100"
+                    className={[
+                      "h-12 md:h-14 pl-12 pr-12 text-lg md:text-xl",
+                      "bg-emerald-950/40 text-emerald-50 placeholder:text-emerald-200/50",
+                      "border border-emerald-500/20",
+                      "focus-visible:ring-2 focus-visible:ring-emerald-400 focus-visible:ring-offset-0",
+                    ].join(" ")}
                     required
                   />
                   <button
                     type="button"
                     onClick={() => setShowPassword(!showPassword)}
-                    className="absolute right-4 top-1/2 -translate-y-1/2 text-silver-100 hover:text-white"
+                    className="absolute right-4 top-1/2 -translate-y-1/2 text-emerald-300/80 hover:text-emerald-200"
+                    aria-label={showPassword ? "Ocultar contraseña" : "Mostrar contraseña"}
                   >
                     {showPassword ? (
-                      <EyeOff className="h-7 w-7 md:h-8 md:w-8" />
+                      <EyeOff className="h-6 w-6 md:h-7 md:w-7" />
                     ) : (
-                      <Eye className="h-7 w-7 md:h-8 md:w-8" />
+                      <Eye className="h-6 w-6 md:h-7 md:w-7" />
                     )}
                   </button>
                 </div>
@@ -145,7 +173,13 @@ export default function Login() {
               {/* Submit */}
               <Button
                 type="submit"
-                className="w-full h-16 md:h-20 bg-[#344e41] hover:bg-[#2d4235] text-white text-2xl md:text-3xl font-semibold"
+                className={[
+                  "w-full rounded-2xl h-12 md:h-14",
+                  "bg-gradient-to-r from-emerald-600 to-emerald-500",
+                  "hover:from-emerald-500 hover:to-emerald-400",
+                  "text-lg md:text-xl font-semibold",
+                  "shadow-[0_12px_34px_-10px_rgba(16,185,129,0.55)]",
+                ].join(" ")}
                 disabled={isLoading}
               >
                 {isLoading ? "Ingresando..." : "Iniciar Sesión"}
