@@ -632,6 +632,7 @@ export default function PartnerDashboard() {
                           <SelectContent>
                             <SelectItem value="Activo">Activo</SelectItem>
                             <SelectItem value="Pasivo">Pasivo</SelectItem>
+                            <SelectItem value="Vencido">Vencido</SelectItem>
                           </SelectContent>
                         </Select>
                       </div>
@@ -645,20 +646,20 @@ export default function PartnerDashboard() {
             <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
               <Card className="bg-[#040505] border-silver-500/20">
                 <CardContent className="p-4 text-center">
-                  <div className="text-2xl font-bold text-white">3</div>
+                  <div className="text-2xl font-bold text-white">4</div>
                   <p className="text-silver-100 text-sm">Total Clientes</p>
                 </CardContent>
               </Card>
               <Card className="bg-[#040505] border-green/20">
                 <CardContent className="p-4 text-center">
                   <div className="text-2xl font-bold text-green">2</div>
-                  <p className="text-silver-100 text-sm">Con Interés Compuesto</p>
+                  <p className="text-silver-100 text-sm">Activos</p>
                 </CardContent>
               </Card>
-              <Card className="bg-[#040505] border-yellow-500/20">
+              <Card className="bg-[#040505] border-blue-500/20">
                 <CardContent className="p-4 text-center">
-                  <div className="text-2xl font-bold text-yellow-400">1</div>
-                  <p className="text-silver-100 text-sm">Activos</p>
+                  <div className="text-2xl font-bold text-blue-400">3</div>
+                  <p className="text-silver-100 text-sm">Con Interés Compuesto</p>
                 </CardContent>
               </Card>
               <Card className="bg-[#040505] border-red-500/20">
@@ -698,9 +699,9 @@ export default function PartnerDashboard() {
                       investment: 75000, 
                       returns: 6750, 
                       tier: "Standard", 
-                      status: "Pasivo",
+                      status: "Vencido",
                       depositDate: "2024-03-10",
-                      maturityDate: "2025-03-10",
+                      maturityDate: "2024-12-10",
                       compoundInterest: false,
                       email: "carlos.ruiz@email.com",
                       phone: "+34 666 789 012",
@@ -720,6 +721,20 @@ export default function PartnerDashboard() {
                       phone: "+34 666 345 678",
                       pais: "Portugal",
                       sexo: "Mujer"
+                    },
+                    { 
+                      name: "Miguel Santos", 
+                      investment: 120000, 
+                      returns: 10800, 
+                      tier: "Premium", 
+                      status: "Vencido",
+                      depositDate: "2023-11-15",
+                      maturityDate: "2024-11-15",
+                      compoundInterest: true,
+                      email: "miguel.santos@email.com",
+                      phone: "+34 666 987 654",
+                      pais: "España",
+                      sexo: "Hombre"
                     }
                   ].filter(client => {
                     // Apply filters
