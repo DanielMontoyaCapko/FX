@@ -854,6 +854,33 @@ export default function PartnerDashboard() {
             <h1 className="text-3xl font-bold text-white mb-2">Contratos Firmados</h1>
             <p className="text-silver-100 mb-6">Accede y descarga todos tus contratos y documentos legales</p>
             
+            {/* Progress Motivation Card */}
+            <Card className="bg-gradient-to-r from-green/20 to-green/10 border-green/30 mb-6">
+              <CardContent className="p-6">
+                <div className="flex items-center justify-between mb-4">
+                  <div>
+                    <h3 className="text-white font-bold text-xl">Tu Progreso como Asesor</h3>
+                    <p className="text-green text-sm">¡Sigue creciendo tu cartera de clientes!</p>
+                  </div>
+                  <div className="text-right">
+                    <div className="text-3xl font-bold text-green">6</div>
+                    <p className="text-silver-100 text-sm">Contratos Totales</p>
+                  </div>
+                </div>
+                
+                <div className="space-y-3">
+                  <div className="flex justify-between text-sm">
+                    <span className="text-white">Contratos de Inversión</span>
+                    <span className="text-green font-semibold">4 / 10 objetivo</span>
+                  </div>
+                  <div className="w-full bg-black/50 rounded-full h-3">
+                    <div className="bg-gradient-to-r from-green to-green/80 h-3 rounded-full" style={{width: '40%'}}></div>
+                  </div>
+                  <p className="text-silver-100 text-xs">¡Solo 6 contratos más para alcanzar tu objetivo mensual!</p>
+                </div>
+              </CardContent>
+            </Card>
+            
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
               {[
                 {
@@ -861,77 +888,139 @@ export default function PartnerDashboard() {
                   title: "Acuerdo de Partnership Elite",
                   client: "Nakama&Partners",
                   signedDate: "2025-01-15",
+                  endDate: "2026-01-15",
                   type: "Partnership",
                   status: "Activo",
-                  fileSize: "2.3 MB"
+                  fileSize: "2.3 MB",
+                  tier: "Elite",
+                  investment: null
                 },
                 {
                   id: "CONT-2024-087",
                   title: "Contrato de Inversión - María González",
                   client: "María González",
                   signedDate: "2024-01-15",
+                  endDate: "2025-01-15",
                   type: "Inversión",
                   status: "Vigente",
-                  fileSize: "1.8 MB"
+                  fileSize: "1.8 MB",
+                  tier: "Premium",
+                  investment: 150000
                 },
                 {
                   id: "CONT-2024-103",
                   title: "Contrato de Inversión - Carlos Ruiz",
                   client: "Carlos Ruiz",
                   signedDate: "2024-03-10",
+                  endDate: "2024-12-10",
                   type: "Inversión",
-                  status: "Vigente",
-                  fileSize: "1.9 MB"
+                  status: "Vencido",
+                  fileSize: "1.9 MB",
+                  tier: "Standard",
+                  investment: 75000
                 },
                 {
                   id: "CONT-2024-156",
                   title: "Contrato de Inversión - Ana López",
                   client: "Ana López",
                   signedDate: "2024-08-20",
+                  endDate: "2025-08-20",
                   type: "Inversión",
                   status: "Vigente",
-                  fileSize: "2.1 MB"
+                  fileSize: "2.1 MB",
+                  tier: "Premium",
+                  investment: 200000
                 },
                 {
-                  id: "CONT-2024-098",
-                  title: "Addendum Comisiones Q4 2024",
-                  client: "Nakama&Partners",
-                  signedDate: "2024-10-01",
-                  type: "Addendum",
-                  status: "Procesado",
-                  fileSize: "890 KB"
+                  id: "CONT-2023-234",
+                  title: "Contrato de Inversión - Miguel Santos",
+                  client: "Miguel Santos",
+                  signedDate: "2023-11-15",
+                  endDate: "2024-11-15",
+                  type: "Inversión",
+                  status: "Vencido",
+                  fileSize: "2.0 MB",
+                  tier: "Premium",
+                  investment: 120000
                 },
                 {
                   id: "CONT-2025-003",
                   title: "Renovación Partnership 2025",
                   client: "Nakama&Partners",
                   signedDate: "2025-01-01",
+                  endDate: "2026-01-01",
                   type: "Renovación",
                   status: "Activo",
-                  fileSize: "2.7 MB"
+                  fileSize: "2.7 MB",
+                  tier: "Elite",
+                  investment: null
                 }
-              ].map((contract, index) => (
-                <Card key={index} className="bg-[#040505] border-silver-500/20 hover:bg-black/40 transition-all">
+              ].map((contract, index) => {
+                const daysToEnd = Math.ceil((new Date(contract.endDate).getTime() - new Date().getTime()) / (1000 * 3600 * 24));
+                const isExpiring = daysToEnd <= 30 && daysToEnd > 0;
+                const isExpired = daysToEnd <= 0;
+                
+                return (
+                <Card key={index} className={`bg-[#040505] border-silver-500/20 hover:bg-black/40 transition-all ${isExpiring ? 'border-yellow-500/50' : isExpired ? 'border-red-500/50' : ''}`}>
                   <CardContent className="p-6">
                     <div className="flex items-start justify-between mb-4">
                       <div className="flex items-center space-x-3">
                         <div className="w-12 h-12 bg-green/20 rounded-lg flex items-center justify-center">
                           <FileText className="w-6 h-6 text-green" />
                         </div>
-                        <div>
+                        <div className="flex-1">
                           <h3 className="text-white font-semibold text-lg">{contract.title}</h3>
                           <p className="text-silver-100 text-sm">{contract.client}</p>
+                          
+                          {/* Client Tier Badge - Very Prominent */}
+                          {contract.type === 'Inversión' && (
+                            <div className="mt-2">
+                              <Badge 
+                                className={`text-sm px-3 py-1 font-bold ${
+                                  contract.tier === 'Premium' ? 'bg-gradient-to-r from-yellow-400 to-yellow-600 text-black shadow-lg' :
+                                  contract.tier === 'Standard' ? 'bg-gradient-to-r from-blue-500 to-blue-700 text-white shadow-lg' :
+                                  'bg-gradient-to-r from-purple-500 to-purple-700 text-white shadow-lg'
+                                }`}
+                              >
+                                {contract.tier === 'Premium' ? '⭐ CLIENTE PREMIUM' : 
+                                 contract.tier === 'Standard' ? '📋 CLIENTE STANDARD' : 
+                                 '👑 ELITE'}
+                              </Badge>
+                            </div>
+                          )}
+                          
+                          {/* Investment Amount for Investment Contracts */}
+                          {contract.investment && (
+                            <p className="text-green font-semibold text-lg mt-1">
+                              ${contract.investment.toLocaleString()}
+                            </p>
+                          )}
                         </div>
                       </div>
-                      <Badge 
-                        className={`${
-                          contract.status === 'Activo' ? 'bg-green text-navy' :
-                          contract.status === 'Vigente' ? 'bg-blue-500 text-white' :
-                          'bg-yellow-500 text-navy'
-                        }`}
-                      >
-                        {contract.status}
-                      </Badge>
+                      <div className="text-right space-y-2">
+                        <Badge 
+                          className={`${
+                            contract.status === 'Activo' ? 'bg-green text-navy' :
+                            contract.status === 'Vigente' ? 'bg-blue-500 text-white' :
+                            contract.status === 'Vencido' ? 'bg-red-500 text-white' :
+                            'bg-yellow-500 text-navy'
+                          }`}
+                        >
+                          {contract.status}
+                        </Badge>
+                        
+                        {/* Days warning for expiring contracts */}
+                        {isExpiring && (
+                          <div className="text-yellow-400 text-xs font-semibold">
+                            ⚠️ Vence en {daysToEnd} días
+                          </div>
+                        )}
+                        {isExpired && (
+                          <div className="text-red-400 text-xs font-semibold">
+                            ❌ Vencido
+                          </div>
+                        )}
+                      </div>
                     </div>
                     
                     <div className="space-y-3 mb-6">
@@ -946,13 +1035,44 @@ export default function PartnerDashboard() {
                         </div>
                       </div>
                       
-                      <div className="grid grid-cols-2 gap-4 text-sm">
-                        <div>
-                          <span className="text-silver-100">Fecha de Firma:</span>
-                          <p className="text-white">{new Date(contract.signedDate).toLocaleDateString('es-ES')}</p>
+                      {/* Contract Start and End Dates - Very Clear */}
+                      <div className="bg-black/30 rounded-lg p-4 border border-silver-500/20">
+                        <h4 className="text-white font-semibold mb-3 text-center">📅 Duración del Contrato</h4>
+                        <div className="grid grid-cols-2 gap-4">
+                          <div className="text-center">
+                            <span className="text-green text-xs font-medium block">INICIO</span>
+                            <p className="text-white font-bold text-lg">{new Date(contract.signedDate).toLocaleDateString('es-ES')}</p>
+                          </div>
+                          <div className="text-center">
+                            <span className={`text-xs font-medium block ${isExpired ? 'text-red-400' : isExpiring ? 'text-yellow-400' : 'text-green'}`}>
+                              {isExpired ? 'VENCIDO' : 'VENCIMIENTO'}
+                            </span>
+                            <p className={`font-bold text-lg ${isExpired ? 'text-red-400' : isExpiring ? 'text-yellow-400' : 'text-white'}`}>
+                              {new Date(contract.endDate).toLocaleDateString('es-ES')}
+                            </p>
+                          </div>
                         </div>
+                        
+                        {/* Contract progress bar */}
+                        {!isExpired && (
+                          <div className="mt-3">
+                            <div className="flex justify-between text-xs mb-1">
+                              <span className="text-silver-100">Progreso del contrato</span>
+                              <span className="text-white">{Math.min(100, Math.max(0, Math.round(((new Date().getTime() - new Date(contract.signedDate).getTime()) / (new Date(contract.endDate).getTime() - new Date(contract.signedDate).getTime())) * 100)))}%</span>
+                            </div>
+                            <div className="w-full bg-black/50 rounded-full h-2">
+                              <div 
+                                className={`h-2 rounded-full ${isExpiring ? 'bg-gradient-to-r from-yellow-400 to-yellow-600' : 'bg-gradient-to-r from-green to-green/80'}`}
+                                style={{width: `${Math.min(100, Math.max(0, ((new Date().getTime() - new Date(contract.signedDate).getTime()) / (new Date(contract.endDate).getTime() - new Date(contract.signedDate).getTime())) * 100))}%`}}
+                              ></div>
+                            </div>
+                          </div>
+                        )}
+                      </div>
+                      
+                      <div className="grid grid-cols-1 gap-4 text-sm">
                         <div>
-                          <span className="text-silver-100">Tamaño:</span>
+                          <span className="text-silver-100">Tamaño del archivo:</span>
                           <p className="text-white">{contract.fileSize}</p>
                         </div>
                       </div>
@@ -966,10 +1086,16 @@ export default function PartnerDashboard() {
                       <Button variant="outline" className="border-silver-500/20 text-white hover:bg-white/10">
                         Ver Detalles
                       </Button>
+                      {isExpiring && (
+                        <Button className="bg-yellow-500 hover:bg-yellow-600 text-black">
+                          Renovar
+                        </Button>
+                      )}
                     </div>
                   </CardContent>
                 </Card>
-              ))}
+                );
+              })}
             </div>
             
             {/* Summary Card */}
