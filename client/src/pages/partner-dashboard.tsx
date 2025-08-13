@@ -631,7 +631,6 @@ export default function PartnerDashboard() {
                           </SelectTrigger>
                           <SelectContent>
                             <SelectItem value="Activo">Activo</SelectItem>
-                            <SelectItem value="Pasivo">Pasivo</SelectItem>
                             <SelectItem value="Vencido">Vencido</SelectItem>
                           </SelectContent>
                         </Select>
@@ -658,7 +657,7 @@ export default function PartnerDashboard() {
               </Card>
               <Card className="bg-[#040505] border-blue-500/20">
                 <CardContent className="p-4 text-center">
-                  <div className="text-2xl font-bold text-blue-400">3</div>
+                  <div className="text-2xl font-bold text-yellow-400">3</div>
                   <p className="text-silver-100 text-sm">Con Interés Compuesto</p>
                 </CardContent>
               </Card>
