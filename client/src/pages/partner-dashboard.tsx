@@ -6,6 +6,8 @@ import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Progress } from "@/components/ui/progress";
 import { Input } from "@/components/ui/input";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Label } from "@/components/ui/label";
 import { 
   Users, 
   TrendingUp, 
@@ -22,7 +24,10 @@ import {
   Zap,
   User,
   FileText,
-  Download
+  Download,
+  Filter,
+  Search,
+  X
 } from "lucide-react";
 import logoImg from "@/assets/Logo-removeBG_1752488347081.png";
 import { useScrollToTop } from "@/hooks/useScrollToTop";
@@ -41,6 +46,18 @@ export default function PartnerDashboard() {
     address: 'Calle Mayor 123, 4º B, 28001 Madrid, España'
   });
   const [profilePhoto, setProfilePhoto] = useState<string | null>(null);
+  
+  // Client filtering state
+  const [showFilters, setShowFilters] = useState(false);
+  const [filters, setFilters] = useState({
+    inversionMin: '',
+    inversionMax: '',
+    gananciasMin: '',
+    gananciasMax: '',
+    pais: '',
+    sexo: '',
+    estado: ''
+  });
 
   const handlePhotoUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
@@ -500,6 +517,130 @@ export default function PartnerDashboard() {
             <h1 className="text-3xl font-bold text-white mb-2">Gestión de Clientes</h1>
             <p className="text-silver-100 mb-6">Administra tu cartera de inversores y gestiona renovaciones</p>
             
+            {/* Filter Controls */}
+            <div className="mb-6">
+              <div className="flex items-center justify-between mb-4">
+                <Button 
+                  variant="outline" 
+                  onClick={() => setShowFilters(!showFilters)}
+                  className="border-silver-500/20 text-white hover:bg-white/10"
+                >
+                  <Filter className="w-4 h-4 mr-2" />
+                  {showFilters ? 'Ocultar Filtros' : 'Mostrar Filtros'}
+                </Button>
+                
+                {Object.values(filters).some(value => value !== '') && (
+                  <Button 
+                    variant="ghost" 
+                    onClick={() => setFilters({
+                      inversionMin: '',
+                      inversionMax: '',
+                      gananciasMin: '',
+                      gananciasMax: '',
+                      pais: '',
+                      sexo: '',
+                      estado: ''
+                    })}
+                    className="text-silver-100 hover:text-white"
+                  >
+                    <X className="w-4 h-4 mr-2" />
+                    Limpiar Filtros
+                  </Button>
+                )}
+              </div>
+
+              {showFilters && (
+                <Card className="bg-[#040505] border-silver-500/20">
+                  <CardContent className="p-6">
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                      {/* Investment Range */}
+                      <div className="space-y-2">
+                        <Label className="text-white">Inversión Inicial</Label>
+                        <div className="flex space-x-2">
+                          <Input
+                            placeholder="Mín"
+                            value={filters.inversionMin}
+                            onChange={(e) => setFilters({...filters, inversionMin: e.target.value})}
+                            className="bg-black/70 border-silver-500/20 text-white placeholder-silver-100"
+                          />
+                          <Input
+                            placeholder="Máx"
+                            value={filters.inversionMax}
+                            onChange={(e) => setFilters({...filters, inversionMax: e.target.value})}
+                            className="bg-black/70 border-silver-500/20 text-white placeholder-silver-100"
+                          />
+                        </div>
+                      </div>
+
+                      {/* Returns Range */}
+                      <div className="space-y-2">
+                        <Label className="text-white">Dinero Ganado</Label>
+                        <div className="flex space-x-2">
+                          <Input
+                            placeholder="Mín"
+                            value={filters.gananciasMin}
+                            onChange={(e) => setFilters({...filters, gananciasMin: e.target.value})}
+                            className="bg-black/70 border-silver-500/20 text-white placeholder-silver-100"
+                          />
+                          <Input
+                            placeholder="Máx"
+                            value={filters.gananciasMax}
+                            onChange={(e) => setFilters({...filters, gananciasMax: e.target.value})}
+                            className="bg-black/70 border-silver-500/20 text-white placeholder-silver-100"
+                          />
+                        </div>
+                      </div>
+
+                      {/* Country */}
+                      <div className="space-y-2">
+                        <Label className="text-white">País</Label>
+                        <Select value={filters.pais} onValueChange={(value) => setFilters({...filters, pais: value})}>
+                          <SelectTrigger className="bg-black/70 border-silver-500/20 text-white">
+                            <SelectValue placeholder="Seleccionar país" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="España">España</SelectItem>
+                            <SelectItem value="Francia">Francia</SelectItem>
+                            <SelectItem value="Portugal">Portugal</SelectItem>
+                            <SelectItem value="Italia">Italia</SelectItem>
+                            <SelectItem value="Alemania">Alemania</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+
+                      {/* Gender */}
+                      <div className="space-y-2">
+                        <Label className="text-white">Sexo</Label>
+                        <Select value={filters.sexo} onValueChange={(value) => setFilters({...filters, sexo: value})}>
+                          <SelectTrigger className="bg-black/70 border-silver-500/20 text-white">
+                            <SelectValue placeholder="Seleccionar sexo" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="Hombre">Hombre</SelectItem>
+                            <SelectItem value="Mujer">Mujer</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+
+                      {/* Status */}
+                      <div className="space-y-2">
+                        <Label className="text-white">Estado</Label>
+                        <Select value={filters.estado} onValueChange={(value) => setFilters({...filters, estado: value})}>
+                          <SelectTrigger className="bg-black/70 border-silver-500/20 text-white">
+                            <SelectValue placeholder="Seleccionar estado" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="Activo">Activo</SelectItem>
+                            <SelectItem value="Pasivo">Pasivo</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              )}
+            </div>
+
             {/* Client Statistics */}
             <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
               <Card className="bg-[#040505] border-silver-500/20">
@@ -548,19 +689,23 @@ export default function PartnerDashboard() {
                       maturityDate: "2025-01-15",
                       compoundInterest: true,
                       email: "maria.gonzalez@email.com",
-                      phone: "+34 666 123 456"
+                      phone: "+34 666 123 456",
+                      pais: "España",
+                      sexo: "Mujer"
                     },
                     { 
                       name: "Carlos Ruiz", 
                       investment: 75000, 
                       returns: 6750, 
                       tier: "Standard", 
-                      status: "Activo",
+                      status: "Pasivo",
                       depositDate: "2024-03-10",
                       maturityDate: "2025-03-10",
                       compoundInterest: false,
                       email: "carlos.ruiz@email.com",
-                      phone: "+34 666 789 012"
+                      phone: "+34 666 789 012",
+                      pais: "Francia",
+                      sexo: "Hombre"
                     },
                     { 
                       name: "Ana López", 
@@ -572,9 +717,27 @@ export default function PartnerDashboard() {
                       maturityDate: "2025-08-20",
                       compoundInterest: true,
                       email: "ana.lopez@email.com",
-                      phone: "+34 666 345 678"
+                      phone: "+34 666 345 678",
+                      pais: "Portugal",
+                      sexo: "Mujer"
                     }
-                  ].map((client, index) => {
+                  ].filter(client => {
+                    // Apply filters
+                    const inversionMin = filters.inversionMin ? parseFloat(filters.inversionMin) : 0;
+                    const inversionMax = filters.inversionMax ? parseFloat(filters.inversionMax) : Infinity;
+                    const gananciasMin = filters.gananciasMin ? parseFloat(filters.gananciasMin) : 0;
+                    const gananciasMax = filters.gananciasMax ? parseFloat(filters.gananciasMax) : Infinity;
+                    
+                    return (
+                      client.investment >= inversionMin &&
+                      client.investment <= inversionMax &&
+                      client.returns >= gananciasMin &&
+                      client.returns <= gananciasMax &&
+                      (filters.pais === '' || client.pais === filters.pais) &&
+                      (filters.sexo === '' || client.sexo === filters.sexo) &&
+                      (filters.estado === '' || client.status === filters.estado)
+                    );
+                  }).map((client, index) => {
                     const daysToMaturity = Math.ceil((new Date(client.maturityDate).getTime() - new Date().getTime()) / (1000 * 3600 * 24));
                     const isNearMaturity = daysToMaturity <= 30 && daysToMaturity > 0;
                     const isExpired = daysToMaturity <= 0;
@@ -605,6 +768,14 @@ export default function PartnerDashboard() {
                               <div className="space-y-2 text-sm">
                                 <p className="text-silver-100">{client.email}</p>
                                 <p className="text-silver-100">{client.phone}</p>
+                                <div className="flex items-center space-x-2">
+                                  <Badge variant="outline" className="text-xs border-silver-500/20 text-silver-100">
+                                    {client.pais}
+                                  </Badge>
+                                  <Badge variant="outline" className="text-xs border-silver-500/20 text-silver-100">
+                                    {client.sexo}
+                                  </Badge>
+                                </div>
                               </div>
                             </div>
 
