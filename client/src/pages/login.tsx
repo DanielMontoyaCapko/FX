@@ -97,7 +97,7 @@ export default function Login() {
             "shadow-[0_0_0_1px_rgba(16,185,129,0.12),0_24px_70px_-20px_rgba(16,185,129,0.28)]",
           ].join(" ")}
         >
-          <CardHeader className="text-center space-y-3 md:space-y-4">
+          <CardHeader className="text-center space-y-3 md:space-y-20">
             <CardTitle className="text-4xl md:text-5xl text-emerald-50">
               Iniciar Sesión
             </CardTitle>

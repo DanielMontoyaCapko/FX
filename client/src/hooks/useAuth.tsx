@@ -45,7 +45,17 @@ const apiCall = async (url: string, options: RequestInit = {}) => {
     },
   });
 
-  return response.json();
+  if (!response.ok) {
+    throw new Error(`HTTP error! status: ${response.status}`);
+  }
+
+  const text = await response.text();
+  try {
+    return JSON.parse(text);
+  } catch (e) {
+    console.error('Failed to parse JSON response:', text);
+    throw new Error('Server returned invalid JSON');
+  }
 };
 
 export function AuthProvider({ children }: { children: ReactNode }) {
@@ -80,39 +90,63 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const login = async (email: string, password: string): Promise<{ success: boolean; error?: string }> => {
     try {
-      const response = await apiCall('/api/login', {
+      const response = await fetch('/api/login', {
         method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
         body: JSON.stringify({ email, password }),
       });
 
-      if (response.success) {
-        localStorage.setItem('token', response.token);
-        setUser(response.user);
+      if (!response.ok) {
+        const errorText = await response.text();
+        console.error('Login error response:', errorText);
+        return { success: false, error: `HTTP ${response.status}: ${response.statusText}` };
+      }
+
+      const data = await response.json();
+
+      if (data.success) {
+        localStorage.setItem('token', data.token);
+        setUser(data.user);
         return { success: true };
       } else {
-        return { success: false, error: response.error || 'Login failed' };
+        return { success: false, error: data.error || 'Login failed' };
       }
     } catch (error: any) {
-      return { success: false, error: error.message || 'Login failed' };
+      console.error('Login error:', error);
+      return { success: false, error: error.message || 'Network error occurred' };
     }
   };
 
   const register = async (email: string, password: string, name: string, role: 'client' | 'partner'): Promise<{ success: boolean; error?: string }> => {
     try {
-      const response = await apiCall('/api/register', {
+      const response = await fetch('/api/register', {
         method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
         body: JSON.stringify({ email, password, name, role }),
       });
 
-      if (response.success) {
-        localStorage.setItem('token', response.token);
-        setUser(response.user);
+      if (!response.ok) {
+        const errorText = await response.text();
+        console.error('Register error response:', errorText);
+        return { success: false, error: `HTTP ${response.status}: ${response.statusText}` };
+      }
+
+      const data = await response.json();
+
+      if (data.success) {
+        localStorage.setItem('token', data.token);
+        setUser(data.user);
         return { success: true };
       } else {
-        return { success: false, error: response.error || 'Registration failed' };
+        return { success: false, error: data.error || 'Registration failed' };
       }
     } catch (error: any) {
-      return { success: false, error: error.message || 'Registration failed' };
+      console.error('Register error:', error);
+      return { success: false, error: error.message || 'Network error occurred' };
     }
   };
 
