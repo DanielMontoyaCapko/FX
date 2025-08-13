@@ -136,14 +136,7 @@ export default function Login() {
               </Button>
             </form>
 
-            {/* Demo credentials */}
-            <div className="mt-6 p-4 bg-black/70 rounded-lg border border-silver-500/10">
-              <p className="text-xs text-silver-100 text-center">
-                <strong>Cuentas demo:</strong><br />
-                <code className="text-green">cliente@nakama.com</code> | <code className="text-green">partner@nakama.com</code><br />
-                Contraseña: <code className="text-green">demo2025</code>
-              </p>
-            </div>
+
           </CardContent>
         </Card>
       </div>
