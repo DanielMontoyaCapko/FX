@@ -55,7 +55,7 @@ export default function PartnerDashboard() {
     sexo: "",
     estado: "",
   });
-  // NUEVO: estado de orden
+  // orden
   const [sortOrder, setSortOrder] = useState<"" | "asc" | "desc">("");
 
   const handlePhotoUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -292,8 +292,8 @@ export default function PartnerDashboard() {
               <h1 className="text-4xl font-bold text-emerald-50 mb-2">Hola, {user?.name?.split(" ")[0]}</h1>
               <p className="text-emerald-200/80 text-lg mb-6">Bienvenido a tu panel de control ejecutivo</p>
 
-              {/* KPI grid */}
-              <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+              {/* KPI grid (3 tarjetas) */}
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
                 {[
                   {
                     label: "Comisiones Este Mes",
@@ -308,8 +308,7 @@ export default function PartnerDashboard() {
                     icon: Trophy,
                   },
                   {
-                    label:
-                      partnerStats.daysToCommission === 1 ? "Día para Cobro" : "Días para Cobro",
+                    label: partnerStats.daysToCommission === 1 ? "Día para Cobro" : "Días para Cobro",
                     value: `${partnerStats.daysToCommission}`,
                     note:
                       partnerStats.daysToCommission <= 0
@@ -319,14 +318,7 @@ export default function PartnerDashboard() {
                         : "Próximo pago de comisiones",
                     icon: Calendar,
                   },
-                  {
-                    label: "Progreso hacia Diamond Partner",
-                    value: `${partnerStats.nextTierProgress}%`,
-                    note: "Faltan $820K en volumen",
-                    icon: Crown,
-                    progress: true,
-                  },
-                ].map(({ label, value, note, icon: Icon, progress }, i) => (
+                ].map(({ label, value, note, icon: Icon }, i) => (
                   <Card
                     key={i}
                     className="bg-black/40 border border-emerald-500/15 rounded-2xl shadow-[0_0_0_1px_rgba(16,185,129,0.12),0_20px_60px_-20px_rgba(16,185,129,0.25)]"
@@ -340,19 +332,38 @@ export default function PartnerDashboard() {
                         </div>
                         <Icon className="w-8 h-8 text-emerald-400" />
                       </div>
-                      {progress && (
-                        <Progress
-                          value={partnerStats.nextTierProgress}
-                          className="h-3 bg-emerald-900/30 rounded-full [&>div]:bg-gradient-to-r [&>div]:from-emerald-500 [&>div]:to-emerald-400"
-                        />
-                      )}
                     </CardContent>
                   </Card>
                 ))}
               </div>
+
+              {/* Tarjeta alargada de progreso (fila completa) */}
+              <Card className="bg-black/40 border border-emerald-500/15 rounded-2xl shadow-[0_0_0_1px_rgba(16,185,129,0.12),0_20px_60px_-20px_rgba(16,185,129,0.25)] mb-8">
+                <CardContent className="p-6">
+                  <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-6">
+                    <div>
+                      <p className="text-emerald-200/80 text-sm font-medium">Progreso hacia Diamond Partner</p>
+                      <div className="flex items-center gap-3">
+                        <span className="text-emerald-50 text-4xl md:text-5xl font-extrabold">
+                          {partnerStats.nextTierProgress}%
+                        </span>
+                        <Crown className="w-8 h-8 text-emerald-400" />
+                      </div>
+                      <p className="text-emerald-400 text-sm">Faltan $820K en volumen</p>
+                    </div>
+
+                    <div className="w-full md:max-w-xl">
+                      <Progress
+                        value={partnerStats.nextTierProgress}
+                        className="h-4 bg-emerald-900/30 rounded-full [&>div]:bg-gradient-to-r [&>div]:from-emerald-500 [&>div]:to-emerald-400"
+                      />
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
             </div>
 
-            {/* Métricas secundarias */}
+            {/* Métricas secundarias (3 tarjetas) */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
               {[
                 { label: "Clientes Activos", value: partnerStats.totalClients, icon: Users },
@@ -363,10 +374,7 @@ export default function PartnerDashboard() {
                 },
                 { label: "Nuevos Leads", value: partnerStats.newLeadsThisMonth, icon: UserPlus },
               ].map(({ label, value, icon: Icon }, i) => (
-                <Card
-                  key={i}
-                  className="bg-black/40 border border-emerald-500/15 rounded-2xl"
-                >
+                <Card key={i} className="bg-black/40 border border-emerald-500/15 rounded-2xl">
                   <CardContent className="p-6">
                     <div className="flex items-center justify-between">
                       <div>
@@ -428,7 +436,7 @@ export default function PartnerDashboard() {
                         sexo: "",
                         estado: "",
                       });
-                      setSortOrder(""); // reset del orden
+                      setSortOrder("");
                     }}
                     className="text-emerald-200 hover:text-emerald-50"
                   >
@@ -442,7 +450,7 @@ export default function PartnerDashboard() {
                 <Card className="bg-black/40 border border-emerald-500/15 rounded-2xl">
                   <CardContent className="p-6">
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                      {/* NUEVO: Orden (primer bloque) */}
+                      {/* Orden */}
                       <div className="space-y-2">
                         <Label className="text-emerald-50">Ordenar por inversión</Label>
                         <Select value={sortOrder} onValueChange={(v) => setSortOrder(v as "asc" | "desc")}>
@@ -640,11 +648,10 @@ export default function PartnerDashboard() {
                         (filters.estado === "" || client.status === filters.estado)
                       );
                     })
-                    // NUEVO: aplicar orden por inversión
                     .sort((a, b) => {
                       if (sortOrder === "desc") return b.investment - a.investment;
                       if (sortOrder === "asc") return a.investment - b.investment;
-                      return 0; // sin orden
+                      return 0;
                     })
                     .map((client, index) => {
                       const daysToMaturity = Math.ceil(
