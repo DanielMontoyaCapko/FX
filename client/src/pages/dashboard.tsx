@@ -20,6 +20,8 @@ import {
   Calculator,
   ArrowLeft,
   Camera,
+  Filter,
+  X,
 } from "lucide-react";
 import logoImg from "@/assets/Logo-removeBG_1752488347081.png";
 import landscapeSvg from "@/assets/landscape.svg";
@@ -34,8 +36,8 @@ export default function Dashboard() {
   const [showCalculator, setShowCalculator] = useState(false);
   const [profilePhoto, setProfilePhoto] = useState<string | null>(null);
   const [phoneNumber, setPhoneNumber] = useState("646 123 456");
-  const [activeProductsView, setActiveProductsView] = useState("default");
-  const [activeProductsSubTab, setActiveProductsSubTab] = useState("activos");
+  const [activeProductsView, setActiveProductsView] = useState<"default" | "mis-productos" | "historial" | "transacciones" | "contratos">("default");
+  const [activeProductsSubTab, setActiveProductsSubTab] = useState<"activos" | "completados" | "cancelados">("activos");
 
   const handleLogout = () => setLocation("/login");
 
@@ -124,26 +126,26 @@ export default function Dashboard() {
     { type: "download", message: "Estado de cuenta enero 2025 generado", time: "hace 1 día" },
   ];
 
-  // --- Mis productos (añadido 1 ejemplo más por sección) ---
+  // --- Mis productos (ejemplos) ---
   const productosActivos = [
     {
       nombre: "Fondo de Inversión Verde Europa",
       estado: "En curso",
-      monto: "€5.000",
+      cantidad: "€5.000",
       fechaInicio: "12/05/2025",
       rentabilidad: "6.2% anual",
     },
     {
       nombre: "Plan Ahorro Flexible Plus",
       estado: "Activo",
-      monto: "€2.500",
+      cantidad: "€2.500",
       fechaInicio: "01/07/2025",
       rentabilidad: "3.8% anual",
     },
     {
       nombre: "Depósito Estructurado Europa",
       estado: "En curso",
-      monto: "€8.500",
+      cantidad: "€8.500",
       fechaInicio: "22/08/2025",
       rentabilidad: "5.1% anual",
     },
@@ -153,7 +155,7 @@ export default function Dashboard() {
     {
       nombre: "Bono Corporativo Energía Solar",
       estado: "Éxito",
-      monto: "€10.000",
+      cantidad: "€10.000",
       fechaInicio: "10/03/2024",
       fechaFin: "10/03/2025",
       rentabilidadFinal: "5.5%",
@@ -161,7 +163,7 @@ export default function Dashboard() {
     {
       nombre: "Fondo Tecnología Asia",
       estado: "Éxito",
-      monto: "€7.000",
+      cantidad: "€7.000",
       fechaInicio: "15/01/2023",
       fechaFin: "15/01/2024",
       rentabilidadFinal: "4.9%",
@@ -169,7 +171,7 @@ export default function Dashboard() {
     {
       nombre: "Letra del Tesoro España 12M",
       estado: "Éxito",
-      monto: "€6.000",
+      cantidad: "€6.000",
       fechaInicio: "01/02/2023",
       fechaFin: "01/02/2024",
       rentabilidadFinal: "3.7%",
@@ -180,26 +182,120 @@ export default function Dashboard() {
     {
       nombre: "Fondo Startups LatAm",
       estado: "Cancelado",
-      monto: "€3.000",
+      cantidad: "€3.000",
       fechaCancelacion: "02/04/2025",
       motivo: "No se alcanzó el capital mínimo requerido",
     },
     {
       nombre: "Plan de Ahorro Salud",
       estado: "Cancelado",
-      monto: "€1.500",
+      cantidad: "€1.500",
       fechaCancelacion: "20/06/2025",
       motivo: "Cancelado por el usuario antes del inicio",
     },
     {
       nombre: "Fondo Inmobiliario Urbano",
       estado: "Cancelado",
-      monto: "€4.000",
+      cantidad: "€4.000",
       fechaCancelacion: "15/05/2025",
       motivo: "Documentación incompleta del cliente",
     },
   ];
-  // ----------------------------------------------------------
+
+  // ===== Helpers parsing =====
+  const parseEuro = (s: string) => {
+    const num = s.replace(/[^\d,.-]/g, "").replace(/\./g, "").replace(",", ".");
+    const n = Number(num);
+    return isNaN(n) ? 0 : n;
+  };
+  const parsePercent = (s?: string) => {
+    if (!s) return 0;
+    const num = s.replace(/[^\d,.-]/g, "").replace(",", ".");
+    const n = Number(num);
+    return isNaN(n) ? 0 : n;
+  };
+  const parseESDate = (s: string) => {
+    // admite "dd/mm/yyyy"
+    const [d, m, y] = s.split("/").map((p) => parseInt(p, 10));
+    return new Date(y, m - 1, d);
+  };
+
+  // ====== FILTROS: Mis Productos ======
+  const [showMPFilters, setShowMPFilters] = useState(false);
+  const [mpSort, setMpSort] = useState<"" | "cantidadDesc" | "cantidadAsc" | "fechaAsc" | "fechaDesc" | "rentDesc" | "rentAsc">("");
+  const [mpFilters, setMpFilters] = useState({
+    search: "",
+    cantidadMin: "",
+    cantidadMax: "",
+    fechaFrom: "",
+    fechaTo: "",
+    rentMin: "",
+    rentMax: "",
+  });
+
+  // ====== FILTROS: Historial ======
+  const [showHistFilters, setShowHistFilters] = useState(false);
+  const [histFilters, setHistFilters] = useState({
+    search: "",
+    dateFrom: "",
+    dateTo: "",
+    tipo: "", // descarga, simulación, etc.
+  });
+
+  // ====== FILTROS: Transacciones ======
+  const [showTxFilters, setShowTxFilters] = useState(false);
+  const [txSort, setTxSort] = useState<"" | "dateDesc" | "dateAsc" | "cantidadDesc" | "cantidadAsc">("");
+  const [txFilters, setTxFilters] = useState({
+    search: "",
+    tipo: "",
+    estado: "",
+    cantidadMin: "",
+    cantidadMax: "",
+    dateFrom: "",
+    dateTo: "",
+  });
+
+  // datos ejemplo de transacciones
+  const transacciones = [
+    { fecha: "2025-01-15", tipo: "Depósito", descripcion: "Depósito inicial producto 9%", cantidad: 50000, estado: "Completada" },
+    { fecha: "2025-02-15", tipo: "Intereses", descripcion: "Intereses mensuales", cantidad: 375, estado: "Completada" },
+    { fecha: "2025-03-10", tipo: "Retiro", descripcion: "Retiro parcial", cantidad: -1000, estado: "Pendiente" },
+    { fecha: "2025-04-15", tipo: "Intereses", descripcion: "Intereses mensuales", cantidad: 375, estado: "Completada" },
+  ];
+
+  // ====== FILTROS: Contratos ======
+  const [showCFilters, setShowCFilters] = useState(false);
+  const [cSort, setCSort] = useState<"" | "dateDesc" | "dateAsc">("");
+  const [cFilters, setCFilters] = useState({
+    search: "",
+    estado: "", // Disponible / No disponible
+    dateFrom: "",
+    dateTo: "",
+    tipo: "", // PDF/Doc o categoría
+  });
+
+  const contratosCliente = [
+    {
+      id: "DOC-PLAZO-9-365",
+      titulo: "Contrato Plazo Fijo 9% - 365 días",
+      descripcion: "Contrato de depósito bancario con garantía",
+      tipo: "PDF",
+      tamano: "2.3 MB",
+      fecha: "2025-01-01",
+      estado: "Disponible",
+      categoria: "Producto",
+    },
+    {
+      id: "DOC-INFO-PRIV",
+      titulo: "Política de Privacidad",
+      descripcion: "Documento legal informado al cliente",
+      tipo: "PDF",
+      tamano: "0.6 MB",
+      fecha: "2024-12-01",
+      estado: "Disponible",
+      categoria: "Legal",
+    },
+  ];
 
   return (
     <div
@@ -510,7 +606,7 @@ export default function Dashboard() {
               </div>
             ) : activeProductsView === "mis-productos" ? (
               <div className="mb-8">
-                <div className="flex items-center gap-4 mb-6">
+                <div className="flex items-center gap-4 mb-4">
                   <Button
                     variant="outline"
                     onClick={() => setActiveProductsView("default")}
@@ -520,6 +616,134 @@ export default function Dashboard() {
                     Volver
                   </Button>
                   <h2 className="text-2xl font-bold text-emerald-50">Mis Productos</h2>
+                </div>
+
+                {/* Filtros Mis Productos */}
+                <div className="mb-6">
+                  <div className="flex items-center justify-between mb-4">
+                    <Button
+                      variant="outline"
+                      onClick={() => setShowMPFilters(!showMPFilters)}
+                      className="border-emerald-500/20 text-emerald-50 hover:bg-emerald-900/10"
+                    >
+                      <Filter className="w-4 h-4 mr-2" />
+                      {showMPFilters ? "Ocultar Filtros" : "Mostrar Filtros"}
+                    </Button>
+
+                    {(Object.values(mpFilters).some((v) => v !== "") || mpSort !== "") && (
+                      <Button
+                        variant="ghost"
+                        onClick={() => {
+                          setMpSort("");
+                          setMpFilters({
+                            search: "",
+                            cantidadMin: "",
+                            cantidadMax: "",
+                            fechaFrom: "",
+                            fechaTo: "",
+                            rentMin: "",
+                            rentMax: "",
+                          });
+                        }}
+                        className="text-emerald-200 hover:text-emerald-50"
+                      >
+                        <X className="w-4 h-4 mr-2" />
+                        Limpiar Filtros
+                      </Button>
+                    )}
+                  </div>
+
+                  {showMPFilters && (
+                    <Card className="bg-black/40 border border-emerald-500/15 rounded-2xl">
+                      <CardContent className="p-6">
+                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                          <div className="space-y-2">
+                            <Label className="text-emerald-50">Búsqueda</Label>
+                            <Input
+                              placeholder="Buscar por nombre…"
+                              value={mpFilters.search}
+                              onChange={(e) => setMpFilters({ ...mpFilters, search: e.target.value })}
+                              className="bg-black/50 border-emerald-500/20 text-emerald-50"
+                            />
+                          </div>
+
+                          <div className="space-y-2">
+                            <Label className="text-emerald-50">Cantidad (€)</Label>
+                            <div className="flex space-x-2">
+                              <Input
+                                placeholder="Mín"
+                                value={mpFilters.cantidadMin}
+                                onChange={(e) => setMpFilters({ ...mpFilters, cantidadMin: e.target.value })}
+                                className="bg-black/50 border-emerald-500/20 text-emerald-50"
+                              />
+                              <Input
+                                placeholder="Máx"
+                                value={mpFilters.cantidadMax}
+                                onChange={(e) => setMpFilters({ ...mpFilters, cantidadMax: e.target.value })}
+                                className="bg-black/50 border-emerald-500/20 text-emerald-50"
+                              />
+                            </div>
+                          </div>
+
+                          <div className="space-y-2">
+                            <Label className="text-emerald-50">Rend. (%)</Label>
+                            <div className="flex space-x-2">
+                              <Input
+                                placeholder="Mín"
+                                value={mpFilters.rentMin}
+                                onChange={(e) => setMpFilters({ ...mpFilters, rentMin: e.target.value })}
+                                className="bg-black/50 border-emerald-500/20 text-emerald-50"
+                              />
+                              <Input
+                                placeholder="Máx"
+                                value={mpFilters.rentMax}
+                                onChange={(e) => setMpFilters({ ...mpFilters, rentMax: e.target.value })}
+                                className="bg-black/50 border-emerald-500/20 text-emerald-50"
+                              />
+                            </div>
+                            <p className="text-xs text-emerald-200/70">* En “Activos” usa “Rentabilidad Estimada”</p>
+                          </div>
+
+                          <div className="space-y-2">
+                            <Label className="text-emerald-50">Fecha desde</Label>
+                            <Input
+                              type="date"
+                              value={mpFilters.fechaFrom}
+                              onChange={(e) => setMpFilters({ ...mpFilters, fechaFrom: e.target.value })}
+                              className="bg-black/50 border-emerald-500/20 text-emerald-50"
+                            />
+                          </div>
+
+                          <div className="space-y-2">
+                            <Label className="text-emerald-50">Fecha hasta</Label>
+                            <Input
+                              type="date"
+                              value={mpFilters.fechaTo}
+                              onChange={(e) => setMpFilters({ ...mpFilters, fechaTo: e.target.value })}
+                              className="bg-black/50 border-emerald-500/20 text-emerald-50"
+                            />
+                          </div>
+
+                          <div className="space-y-2">
+                            <Label className="text-emerald-50">Ordenar por</Label>
+                            <Select value={mpSort} onValueChange={(v) => setMpSort(v as typeof mpSort)}>
+                              <SelectTrigger className="bg-black/50 border-emerald-500/20 text-emerald-50">
+                                <SelectValue placeholder="Sin orden" />
+                              </SelectTrigger>
+                              <SelectContent>
+                                <SelectItem value="cantidadDesc">Cantidad (Mayor a menor)</SelectItem>
+                                <SelectItem value="cantidadAsc">Cantidad (Menor a mayor)</SelectItem>
+                                <SelectItem value="fechaAsc">Fecha (Más antiguos)</SelectItem>
+                                <SelectItem value="fechaDesc">Fecha (Más recientes)</SelectItem>
+                                <SelectItem value="rentDesc">Rentabilidad (Mayor)</SelectItem>
+                                <SelectItem value="rentAsc">Rentabilidad (Menor)</SelectItem>
+                              </SelectContent>
+                            </Select>
+                          </div>
+                        </div>
+                      </CardContent>
+                    </Card>
+                  )}
                 </div>
 
                 <Tabs value={activeProductsSubTab} onValueChange={setActiveProductsSubTab} className="mb-6">
@@ -535,104 +759,191 @@ export default function Dashboard() {
                     </TabsTrigger>
                   </TabsList>
 
+                  {/* Activos */}
                   <TabsContent value="activos" className="mt-6">
                     <div className="space-y-4">
-                      {productosActivos.map((p, i) => (
-                        <Card key={i} className="bg-black/40 border border-emerald-500/15 hover:border-emerald-400 transition-all rounded-xl">
-                          <CardContent className="p-6">
-                            <div className="flex items-start justify-between mb-4">
-                              <div>
-                                <h4 className="text-lg font-semibold text-emerald-50 mb-2">{p.nombre}</h4>
-                                <Badge className="bg-emerald-500 text-black">{p.estado}</Badge>
+                      {productosActivos
+                        .filter((p) => {
+                          const q = mpFilters.search.toLowerCase();
+                          const matchesSearch = !q || p.nombre.toLowerCase().includes(q);
+
+                          const cantidad = parseEuro(p.cantidad);
+                          const minC = mpFilters.cantidadMin ? parseFloat(mpFilters.cantidadMin) : -Infinity;
+                          const maxC = mpFilters.cantidadMax ? parseFloat(mpFilters.cantidadMax) : Infinity;
+                          const matchesCantidad = cantidad >= minC && cantidad <= maxC;
+
+                          const rent = parsePercent(p.rentabilidad);
+                          const minR = mpFilters.rentMin ? parseFloat(mpFilters.rentMin) : -Infinity;
+                          const maxR = mpFilters.rentMax ? parseFloat(mpFilters.rentMax) : Infinity;
+                          const matchesRent = rent >= minR && rent <= maxR;
+
+                          const f = parseESDate(p.fechaInicio).getTime();
+                          const fromOk = !mpFilters.fechaFrom || f >= new Date(mpFilters.fechaFrom).getTime();
+                          const toOk = !mpFilters.fechaTo || f <= new Date(mpFilters.fechaTo).getTime();
+
+                          return matchesSearch && matchesCantidad && matchesRent && fromOk && toOk;
+                        })
+                        .sort((a, b) => {
+                          if (mpSort === "cantidadDesc") return parseEuro(b.cantidad) - parseEuro(a.cantidad);
+                          if (mpSort === "cantidadAsc") return parseEuro(a.cantidad) - parseEuro(b.cantidad);
+                          if (mpSort === "fechaAsc") return parseESDate(a.fechaInicio).getTime() - parseESDate(b.fechaInicio).getTime();
+                          if (mpSort === "fechaDesc") return parseESDate(b.fechaInicio).getTime() - parseESDate(a.fechaInicio).getTime();
+                          if (mpSort === "rentDesc") return parsePercent(b.rentabilidad) - parsePercent(a.rentabilidad);
+                          if (mpSort === "rentAsc") return parsePercent(a.rentabilidad) - parsePercent(b.rentabilidad);
+                          return 0;
+                        })
+                        .map((p, i) => (
+                          <Card key={i} className="bg-black/40 border border-emerald-500/15 hover:border-emerald-400 transition-all rounded-xl">
+                            <CardContent className="p-6">
+                              <div className="flex items-start justify-between mb-4">
+                                <div>
+                                  <h4 className="text-lg font-semibold text-emerald-50 mb-2">{p.nombre}</h4>
+                                  <Badge className="bg-emerald-500 text-black">{p.estado}</Badge>
+                                </div>
+                                <div className="text-right">
+                                  <p className="text-2xl font-bold text-emerald-400">{p.cantidad}</p>
+                                </div>
                               </div>
-                              <div className="text-right">
-                                <p className="text-2xl font-bold text-emerald-400">{p.monto}</p>
+                              <div className="grid grid-cols-2 gap-4 text-sm">
+                                <div>
+                                  <p className="text-emerald-200/80">Fecha de inicio</p>
+                                  <p className="text-emerald-50 font-medium">{p.fechaInicio}</p>
+                                </div>
+                                <div>
+                                  <p className="text-emerald-200/80">Rentabilidad Estimada</p>
+                                  <p className="text-emerald-50 font-medium">{p.rentabilidad}</p>
+                                </div>
                               </div>
-                            </div>
-                            <div className="grid grid-cols-2 gap-4 text-sm">
-                              <div>
-                                <p className="text-emerald-200/80">Fecha de inicio</p>
-                                <p className="text-emerald-50 font-medium">{p.fechaInicio}</p>
-                              </div>
-                              <div>
-                                <p className="text-emerald-200/80">Rentabilidad Estimada</p>
-                                <p className="text-emerald-50 font-medium">{p.rentabilidad}</p>
-                              </div>
-                            </div>
-                          </CardContent>
-                        </Card>
-                      ))}
+                            </CardContent>
+                          </Card>
+                        ))}
                     </div>
                   </TabsContent>
 
+                  {/* Completados */}
                   <TabsContent value="completados" className="mt-6">
                     <div className="space-y-4">
-                      {productosCompletados.map((p, i) => (
-                        <Card key={i} className="bg-black/40 border border-emerald-500/15 hover:border-emerald-400 transition-all rounded-xl">
-                          <CardContent className="p-6">
-                            <div className="flex items-start justify-between mb-4">
-                              <div>
-                                <h4 className="text-lg font-semibold text-emerald-50 mb-2">{p.nombre}</h4>
-                                <Badge className="bg-blue-500 text-white">{p.estado}</Badge>
+                      {productosCompletados
+                        .filter((p) => {
+                          const q = mpFilters.search.toLowerCase();
+                          const matchesSearch = !q || p.nombre.toLowerCase().includes(q);
+
+                          const cantidad = parseEuro(p.cantidad);
+                          const minC = mpFilters.cantidadMin ? parseFloat(mpFilters.cantidadMin) : -Infinity;
+                          const maxC = mpFilters.cantidadMax ? parseFloat(mpFilters.cantidadMax) : Infinity;
+                          const matchesCantidad = cantidad >= minC && cantidad <= maxC;
+
+                          const rent = parsePercent(p.rentabilidadFinal);
+                          const minR = mpFilters.rentMin ? parseFloat(mpFilters.rentMin) : -Infinity;
+                          const maxR = mpFilters.rentMax ? parseFloat(mpFilters.rentMax) : Infinity;
+                          const matchesRent = rent >= minR && rent <= maxR;
+
+                          const f = parseESDate(p.fechaFin).getTime();
+                          const fromOk = !mpFilters.fechaFrom || f >= new Date(mpFilters.fechaFrom).getTime();
+                          const toOk = !mpFilters.fechaTo || f <= new Date(mpFilters.fechaTo).getTime();
+
+                          return matchesSearch && matchesCantidad && matchesRent && fromOk && toOk;
+                        })
+                        .sort((a, b) => {
+                          if (mpSort === "cantidadDesc") return parseEuro(b.cantidad) - parseEuro(a.cantidad);
+                          if (mpSort === "cantidadAsc") return parseEuro(a.cantidad) - parseEuro(b.cantidad);
+                          if (mpSort === "fechaAsc") return parseESDate(a.fechaFin).getTime() - parseESDate(b.fechaFin).getTime();
+                          if (mpSort === "fechaDesc") return parseESDate(b.fechaFin).getTime() - parseESDate(a.fechaFin).getTime();
+                          if (mpSort === "rentDesc") return parsePercent(b.rentabilidadFinal) - parsePercent(a.rentabilidadFinal);
+                          if (mpSort === "rentAsc") return parsePercent(a.rentabilidadFinal) - parsePercent(b.rentabilidadFinal);
+                          return 0;
+                        })
+                        .map((p, i) => (
+                          <Card key={i} className="bg-black/40 border border-emerald-500/15 hover:border-emerald-400 transition-all rounded-xl">
+                            <CardContent className="p-6">
+                              <div className="flex items-start justify-between mb-4">
+                                <div>
+                                  <h4 className="text-lg font-semibold text-emerald-50 mb-2">{p.nombre}</h4>
+                                  <Badge className="bg-blue-500 text-white">{p.estado}</Badge>
+                                </div>
+                                <div className="text-right">
+                                  <p className="text-2xl font-bold text-emerald-400">{p.cantidad}</p>
+                                </div>
                               </div>
-                              <div className="text-right">
-                                <p className="text-2xl font-bold text-emerald-400">{p.monto}</p>
+                              <div className="grid grid-cols-3 gap-4 text-sm">
+                                <div>
+                                  <p className="text-emerald-200/80">Inicio</p>
+                                  <p className="text-emerald-50 font-medium">{p.fechaInicio}</p>
+                                </div>
+                                <div>
+                                  <p className="text-emerald-200/80">Finalizado</p>
+                                  <p className="text-emerald-50 font-medium">{p.fechaFin}</p>
+                                </div>
+                                <div>
+                                  <p className="text-emerald-200/80">Rentabilidad Final</p>
+                                  <p className="text-emerald-50 font-medium">{p.rentabilidadFinal}</p>
+                                </div>
                               </div>
-                            </div>
-                            <div className="grid grid-cols-3 gap-4 text-sm">
-                              <div>
-                                <p className="text-emerald-200/80">Inicio</p>
-                                <p className="text-emerald-50 font-medium">{p.fechaInicio}</p>
-                              </div>
-                              <div>
-                                <p className="text-emerald-200/80">Finalizado</p>
-                                <p className="text-emerald-50 font-medium">{p.fechaFin}</p>
-                              </div>
-                              <div>
-                                <p className="text-emerald-200/80">Rentabilidad Final</p>
-                                <p className="text-emerald-50 font-medium">{p.rentabilidadFinal}</p>
-                              </div>
-                            </div>
-                          </CardContent>
-                        </Card>
-                      ))}
+                            </CardContent>
+                          </Card>
+                        ))}
                     </div>
                   </TabsContent>
 
+                  {/* Cancelados */}
                   <TabsContent value="cancelados" className="mt-6">
                     <div className="space-y-4">
-                      {productosCancelados.map((p, i) => (
-                        <Card key={i} className="bg-black/40 border border-emerald-500/15 hover:border-emerald-400 transition-all rounded-xl">
-                          <CardContent className="p-6">
-                            <div className="flex items-start justify-between mb-4">
-                              <div>
-                                <h4 className="text-lg font-semibold text-emerald-50 mb-2">{p.nombre}</h4>
-                                <Badge className="bg-red-500 text-white">{p.estado}</Badge>
+                      {productosCancelados
+                        .filter((p) => {
+                          const q = mpFilters.search.toLowerCase();
+                          const matchesSearch = !q || p.nombre.toLowerCase().includes(q);
+
+                          const cantidad = parseEuro(p.cantidad);
+                          const minC = mpFilters.cantidadMin ? parseFloat(mpFilters.cantidadMin) : -Infinity;
+                          const maxC = mpFilters.cantidadMax ? parseFloat(mpFilters.cantidadMax) : Infinity;
+                          const matchesCantidad = cantidad >= minC && cantidad <= maxC;
+
+                          const f = parseESDate(p.fechaCancelacion).getTime();
+                          const fromOk = !mpFilters.fechaFrom || f >= new Date(mpFilters.fechaFrom).getTime();
+                          const toOk = !mpFilters.fechaTo || f <= new Date(mpFilters.fechaTo).getTime();
+
+                          // No hay rentabilidad para cancelados -> ignora rangos de rentabilidad
+                          return matchesSearch && matchesCantidad && fromOk && toOk;
+                        })
+                        .sort((a, b) => {
+                          if (mpSort === "cantidadDesc") return parseEuro(b.cantidad) - parseEuro(a.cantidad);
+                          if (mpSort === "cantidadAsc") return parseEuro(a.cantidad) - parseEuro(b.cantidad);
+                          if (mpSort === "fechaAsc") return parseESDate(a.fechaCancelacion).getTime() - parseESDate(b.fechaCancelacion).getTime();
+                          if (mpSort === "fechaDesc") return parseESDate(b.fechaCancelacion).getTime() - parseESDate(a.fechaCancelacion).getTime();
+                          return 0;
+                        })
+                        .map((p, i) => (
+                          <Card key={i} className="bg-black/40 border border-emerald-500/15 hover:border-emerald-400 transition-all rounded-xl">
+                            <CardContent className="p-6">
+                              <div className="flex items-start justify-between mb-4">
+                                <div>
+                                  <h4 className="text-lg font-semibold text-emerald-50 mb-2">{p.nombre}</h4>
+                                  <Badge className="bg-red-500 text-white">{p.estado}</Badge>
+                                </div>
+                                <div className="text-right">
+                                  <p className="text-2xl font-bold text-red-400">{p.cantidad}</p>
+                                </div>
                               </div>
-                              <div className="text-right">
-                                <p className="text-2xl font-bold text-red-400">{p.monto}</p>
+                              <div className="grid grid-cols-1 gap-4 text-sm">
+                                <div>
+                                  <p className="text-emerald-200/80">Fecha de cancelación</p>
+                                  <p className="text-emerald-50 font-medium">{p.fechaCancelacion}</p>
+                                </div>
+                                <div>
+                                  <p className="text-emerald-200/80">Motivo</p>
+                                  <p className="text-emerald-50 font-medium italic">{p.motivo}</p>
+                                </div>
                               </div>
-                            </div>
-                            <div className="grid grid-cols-1 gap-4 text-sm">
-                              <div>
-                                <p className="text-emerald-200/80">Fecha de cancelación</p>
-                                <p className="text-emerald-50 font-medium">{p.fechaCancelacion}</p>
-                              </div>
-                              <div>
-                                <p className="text-emerald-200/80">Motivo</p>
-                                <p className="text-emerald-50 font-medium italic">{p.motivo}</p>
-                              </div>
-                            </div>
-                          </CardContent>
-                        </Card>
-                      ))}
+                            </CardContent>
+                          </Card>
+                        ))}
                     </div>
                   </TabsContent>
                 </Tabs>
               </div>
             ) : activeProductsView === "historial" ? (
               <div className="mb-8">
-                <div className="flex items-center gap-4 mb-6">
+                <div className="flex items-center gap-4 mb-4">
                   <Button
                     variant="outline"
                     onClick={() => setActiveProductsView("default")}
@@ -642,6 +953,80 @@ export default function Dashboard() {
                     Volver
                   </Button>
                   <h2 className="text-2xl font-bold text-emerald-50">Historial de Actividades</h2>
+                </div>
+
+                {/* Filtros Historial */}
+                <div className="mb-6">
+                  <div className="flex items-center justify-between mb-4">
+                    <Button
+                      variant="outline"
+                      onClick={() => setShowHistFilters(!showHistFilters)}
+                      className="border-emerald-500/20 text-emerald-50 hover:bg-emerald-900/10"
+                    >
+                      <Filter className="w-4 h-4 mr-2" />
+                      {showHistFilters ? "Ocultar Filtros" : "Mostrar Filtros"}
+                    </Button>
+
+                    {Object.values(histFilters).some((v) => v !== "") && (
+                      <Button
+                        variant="ghost"
+                        onClick={() => setHistFilters({ search: "", dateFrom: "", dateTo: "", tipo: "" })}
+                        className="text-emerald-200 hover:text-emerald-50"
+                      >
+                        <X className="w-4 h-4 mr-2" />
+                        Limpiar Filtros
+                      </Button>
+                    )}
+                  </div>
+
+                  {showHistFilters && (
+                    <Card className="bg-black/40 border border-emerald-500/15 rounded-2xl">
+                      <CardContent className="p-6">
+                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                          <div className="space-y-2">
+                            <Label className="text-emerald-50">Búsqueda</Label>
+                            <Input
+                              placeholder="Buscar en el historial…"
+                              value={histFilters.search}
+                              onChange={(e) => setHistFilters({ ...histFilters, search: e.target.value })}
+                              className="bg-black/50 border-emerald-500/20 text-emerald-50"
+                            />
+                          </div>
+                          <div className="space-y-2">
+                            <Label className="text-emerald-50">Tipo</Label>
+                            <Select value={histFilters.tipo} onValueChange={(v) => setHistFilters({ ...histFilters, tipo: v })}>
+                              <SelectTrigger className="bg-black/50 border-emerald-500/20 text-emerald-50">
+                                <SelectValue placeholder="Todos" />
+                              </SelectTrigger>
+                              <SelectContent>
+                                <SelectItem value="download">Descarga</SelectItem>
+                                <SelectItem value="simulation">Simulación</SelectItem>
+                                <SelectItem value="lead">Otro</SelectItem>
+                              </SelectContent>
+                            </Select>
+                          </div>
+                          <div className="space-y-2">
+                            <Label className="text-emerald-50">Desde</Label>
+                            <Input
+                              type="date"
+                              value={histFilters.dateFrom}
+                              onChange={(e) => setHistFilters({ ...histFilters, dateFrom: e.target.value })}
+                              className="bg-black/50 border-emerald-500/20 text-emerald-50"
+                            />
+                          </div>
+                          <div className="space-y-2">
+                            <Label className="text-emerald-50">Hasta</Label>
+                            <Input
+                              type="date"
+                              value={histFilters.dateTo}
+                              onChange={(e) => setHistFilters({ ...histFilters, dateTo: e.target.value })}
+                              className="bg-black/50 border-emerald-500/20 text-emerald-50"
+                            />
+                          </div>
+                        </div>
+                      </CardContent>
+                    </Card>
+                  )}
                 </div>
 
                 <Card className="bg-black/40 border border-emerald-500/15 rounded-2xl">
@@ -656,7 +1041,7 @@ export default function Dashboard() {
               </div>
             ) : activeProductsView === "contratos" ? (
               <div className="mb-8">
-                <div className="flex items-center gap-4 mb-6">
+                <div className="flex items-center gap-4 mb-4">
                   <Button
                     variant="outline"
                     onClick={() => setActiveProductsView("default")}
@@ -668,66 +1053,214 @@ export default function Dashboard() {
                   <h2 className="text-2xl font-bold text-emerald-50">Contratos Disponibles</h2>
                 </div>
 
-                <div className="space-y-4">
-                  <Card className="bg-black/40 border border-emerald-500/15 hover:border-emerald-400 transition-all rounded-2xl">
-                    <CardContent className="p-6">
-                      <div className="flex items-center justify-between">
-                        <div className="flex-1">
-                          <div className="flex items-center gap-3 mb-2">
-                            <div className="w-10 h-10 bg-emerald-500 rounded-lg flex items-center justify-center">
-                              <Download className="h-5 w-5 text-black" />
-                            </div>
-                            <div>
-                              <h4 className="text-lg font-semibold text-emerald-50">Contrato Plazo Fijo 9% - 365 días</h4>
-                              <p className="text-emerald-200/80 text-sm">Contrato de depósito bancario con garantía</p>
-                            </div>
-                          </div>
-                          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm mt-4">
-                            <div>
-                              <p className="text-emerald-200/80">Tipo</p>
-                              <p className="text-emerald-50 font-medium">PDF</p>
-                            </div>
-                            <div>
-                              <p className="text-emerald-200/80">Tamaño</p>
-                              <p className="text-emerald-50 font-medium">2.3 MB</p>
-                            </div>
-                            <div>
-                              <p className="text-emerald-200/80">Fecha</p>
-                              <p className="text-emerald-50 font-medium">01/01/2025</p>
-                            </div>
-                            <div>
-                              <p className="text-emerald-200/80">Estado</p>
-                              <Badge className="bg-emerald-500 text-black">Disponible</Badge>
-                            </div>
-                          </div>
-                        </div>
-                        <div className="ml-6">
-                          <Button
-                            className="rounded-xl bg-gradient-to-r from-emerald-600 to-emerald-500 hover:from-emerald-500 hover:to-emerald-400 text-white px-6"
-                            onClick={() => alert("Descarga pendiente de implementar")}
-                          >
-                            <Download className="h-4 w-4 mr-2" />
-                            Descargar
-                          </Button>
-                        </div>
-                      </div>
-                    </CardContent>
-                  </Card>
+                {/* Filtros Contratos */}
+                <div className="mb-6">
+                  <div className="flex items-center justify-between mb-4">
+                    <Button
+                      variant="outline"
+                      onClick={() => setShowCFilters(!showCFilters)}
+                      className="border-emerald-500/20 text-emerald-50 hover:bg-emerald-900/10"
+                    >
+                      <Filter className="w-4 h-4 mr-2" />
+                      {showCFilters ? "Ocultar Filtros" : "Mostrar Filtros"}
+                    </Button>
 
-                  <Card className="bg-black/30 border border-emerald-500/15 border-dashed rounded-2xl">
-                    <CardContent className="p-8">
-                      <div className="text-center text-emerald-200/80">
-                        <Download className="h-12 w-12 mx-auto mb-4 text-emerald-400" />
-                        <p className="text-lg mb-2 text-emerald-50/90">Más contratos próximamente</p>
-                        <p className="text-sm">Aparecerán aquí cuando estén disponibles.</p>
-                      </div>
-                    </CardContent>
-                  </Card>
+                    {(Object.values(cFilters).some((v) => v !== "") || cSort !== "") && (
+                      <Button
+                        variant="ghost"
+                        onClick={() => {
+                          setCFilters({ search: "", estado: "", dateFrom: "", dateTo: "", tipo: "" });
+                          setCSort("");
+                        }}
+                        className="text-emerald-200 hover:text-emerald-50"
+                      >
+                        <X className="w-4 h-4 mr-2" />
+                        Limpiar Filtros
+                      </Button>
+                    )}
+                  </div>
+
+                  {showCFilters && (
+                    <Card className="bg-black/40 border border-emerald-500/15 rounded-2xl">
+                      <CardContent className="p-6">
+                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                          <div className="space-y-2">
+                            <Label className="text-emerald-50">Búsqueda</Label>
+                            <Input
+                              placeholder="Buscar por ID, título o descripción…"
+                              value={cFilters.search}
+                              onChange={(e) => setCFilters({ ...cFilters, search: e.target.value })}
+                              className="bg-black/50 border-emerald-500/20 text-emerald-50"
+                            />
+                          </div>
+                          <div className="space-y-2">
+                            <Label className="text-emerald-50">Estado</Label>
+                            <Select value={cFilters.estado} onValueChange={(v) => setCFilters({ ...cFilters, estado: v })}>
+                              <SelectTrigger className="bg-black/50 border-emerald-500/20 text-emerald-50">
+                                <SelectValue placeholder="Todos" />
+                              </SelectTrigger>
+                              <SelectContent>
+                                <SelectItem value="Disponible">Disponible</SelectItem>
+                                <SelectItem value="No disponible">No disponible</SelectItem>
+                              </SelectContent>
+                            </Select>
+                          </div>
+                          <div className="space-y-2">
+                            <Label className="text-emerald-50">Categoría</Label>
+                            <Select value={cFilters.tipo} onValueChange={(v) => setCFilters({ ...cFilters, tipo: v })}>
+                              <SelectTrigger className="bg-black/50 border-emerald-500/20 text-emerald-50">
+                                <SelectValue placeholder="Todas" />
+                              </SelectTrigger>
+                              <SelectContent>
+                                <SelectItem value="Producto">Producto</SelectItem>
+                                <SelectItem value="Legal">Legal</SelectItem>
+                              </SelectContent>
+                            </Select>
+                          </div>
+                          <div className="space-y-2">
+                            <Label className="text-emerald-50">Desde</Label>
+                            <Input
+                              type="date"
+                              value={cFilters.dateFrom}
+                              onChange={(e) => setCFilters({ ...cFilters, dateFrom: e.target.value })}
+                              className="bg-black/50 border-emerald-500/20 text-emerald-50"
+                            />
+                          </div>
+                          <div className="space-y-2">
+                            <Label className="text-emerald-50">Hasta</Label>
+                            <Input
+                              type="date"
+                              value={cFilters.dateTo}
+                              onChange={(e) => setCFilters({ ...cFilters, dateTo: e.target.value })}
+                              className="bg-black/50 border-emerald-500/20 text-emerald-50"
+                            />
+                          </div>
+                          <div className="space-y-2">
+                            <Label className="text-emerald-50">Ordenar por</Label>
+                            <Select value={cSort} onValueChange={(v) => setCSort(v as typeof cSort)}>
+                              <SelectTrigger className="bg-black/50 border-emerald-500/20 text-emerald-50">
+                                <SelectValue placeholder="Sin orden" />
+                              </SelectTrigger>
+                              <SelectContent>
+                                <SelectItem value="dateDesc">Fecha (Más recientes)</SelectItem>
+                                <SelectItem value="dateAsc">Fecha (Más antiguos)</SelectItem>
+                              </SelectContent>
+                            </Select>
+                          </div>
+                        </div>
+                      </CardContent>
+                    </Card>
+                  )}
+                </div>
+
+                {/* Listado de contratos filtrados */}
+                <div className="space-y-4">
+                  {contratosCliente
+                    .filter((c) => {
+                      const q = cFilters.search.toLowerCase();
+                      const matchesSearch =
+                        !q ||
+                        c.id.toLowerCase().includes(q) ||
+                        c.titulo.toLowerCase().includes(q) ||
+                        c.descripcion.toLowerCase().includes(q);
+
+                      const matchesEstado = !cFilters.estado || c.estado === cFilters.estado;
+                      const matchesTipo = !cFilters.tipo || c.categoria === cFilters.tipo;
+
+                      const t = new Date(c.fecha).getTime();
+                      const fromOk = !cFilters.dateFrom || t >= new Date(cFilters.dateFrom).getTime();
+                      const toOk = !cFilters.dateTo || t <= new Date(cFilters.dateTo).getTime();
+
+                      return matchesSearch && matchesEstado && matchesTipo && fromOk && toOk;
+                    })
+                    .sort((a, b) => {
+                      if (cSort === "dateDesc") return new Date(b.fecha).getTime() - new Date(a.fecha).getTime();
+                      if (cSort === "dateAsc") return new Date(a.fecha).getTime() - new Date(b.fecha).getTime();
+                      return 0;
+                    })
+                    .map((doc) => (
+                      <Card key={doc.id} className="bg-black/40 border border-emerald-500/15 hover:border-emerald-400 transition-all rounded-2xl">
+                        <CardContent className="p-6">
+                          <div className="flex items-center justify-between">
+                            <div className="flex-1">
+                              <div className="flex items-center gap-3 mb-2">
+                                <div className="w-10 h-10 bg-emerald-500 rounded-lg flex items-center justify-center">
+                                  <Download className="h-5 w-5 text-black" />
+                                </div>
+                                <div>
+                                  <h4 className="text-lg font-semibold text-emerald-50">{doc.titulo}</h4>
+                                  <p className="text-emerald-200/80 text-sm">{doc.descripcion}</p>
+                                </div>
+                              </div>
+                              <div className="grid grid-cols-2 md:grid-cols-5 gap-4 text-sm mt-4">
+                                <div>
+                                  <p className="text-emerald-200/80">ID</p>
+                                  <p className="text-emerald-50 font-medium">{doc.id}</p>
+                                </div>
+                                <div>
+                                  <p className="text-emerald-200/80">Tipo</p>
+                                  <p className="text-emerald-50 font-medium">{doc.tipo}</p>
+                                </div>
+                                <div>
+                                  <p className="text-emerald-200/80">Tamaño</p>
+                                  <p className="text-emerald-50 font-medium">{doc.tamano}</p>
+                                </div>
+                                <div>
+                                  <p className="text-emerald-200/80">Fecha</p>
+                                  <p className="text-emerald-50 font-medium">
+                                    {new Date(doc.fecha).toLocaleDateString("es-ES")}
+                                  </p>
+                                </div>
+                                <div>
+                                  <p className="text-emerald-200/80">Estado</p>
+                                  <Badge className="bg-emerald-500 text-black">{doc.estado}</Badge>
+                                </div>
+                              </div>
+                            </div>
+                            <div className="ml-6">
+                              <Button
+                                className="rounded-xl bg-gradient-to-r from-emerald-600 to-emerald-500 hover:from-emerald-500 hover:to-emerald-400 text-white px-6"
+                                onClick={() => alert("Descarga pendiente de implementar")}
+                              >
+                                <Download className="h-4 w-4 mr-2" />
+                                Descargar
+                              </Button>
+                            </div>
+                          </div>
+                        </CardContent>
+                      </Card>
+                    ))}
+
+                  {/* Placeholder si no hay resultados */}
+                  {contratosCliente.filter((c) => {
+                    const q = cFilters.search.toLowerCase();
+                    const matchesSearch =
+                      !q ||
+                      c.id.toLowerCase().includes(q) ||
+                      c.titulo.toLowerCase().includes(q) ||
+                      c.descripcion.toLowerCase().includes(q);
+                    const matchesEstado = !cFilters.estado || c.estado === cFilters.estado;
+                    const matchesTipo = !cFilters.tipo || c.categoria === cFilters.tipo;
+                    const t = new Date(c.fecha).getTime();
+                    const fromOk = !cFilters.dateFrom || t >= new Date(cFilters.dateFrom).getTime();
+                    const toOk = !cFilters.dateTo || t <= new Date(cFilters.dateTo).getTime();
+                    return matchesSearch && matchesEstado && matchesTipo && fromOk && toOk;
+                  }).length === 0 && (
+                    <Card className="bg-black/30 border border-emerald-500/15 border-dashed rounded-2xl">
+                      <CardContent className="p-8">
+                        <div className="text-center text-emerald-200/80">
+                          <Download className="h-12 w-12 mx-auto mb-4 text-emerald-400" />
+                          <p className="text-lg mb-2 text-emerald-50/90">No hay contratos para los filtros aplicados</p>
+                          <p className="text-sm">Ajusta los filtros para ver más resultados.</p>
+                        </div>
+                      </CardContent>
+                    </Card>
+                  )}
                 </div>
               </div>
             ) : activeProductsView === "transacciones" ? (
               <div className="mb-8">
-                <div className="flex items-center gap-4 mb-6">
+                <div className="flex items-center gap-4 mb-4">
                   <Button
                     variant="outline"
                     onClick={() => setActiveProductsView("default")}
@@ -739,13 +1272,147 @@ export default function Dashboard() {
                   <h2 className="text-2xl font-bold text-emerald-50">Historial de Transacciones</h2>
                 </div>
 
+                {/* Filtros Transacciones */}
+                <div className="mb-6">
+                  <div className="flex items-center justify-between mb-4">
+                    <Button
+                      variant="outline"
+                      onClick={() => setShowTxFilters(!showTxFilters)}
+                      className="border-emerald-500/20 text-emerald-50 hover:bg-emerald-900/10"
+                    >
+                      <Filter className="w-4 h-4 mr-2" />
+                      {showTxFilters ? "Ocultar Filtros" : "Mostrar Filtros"}
+                    </Button>
+
+                    {(Object.values(txFilters).some((v) => v !== "") || txSort !== "") && (
+                      <Button
+                        variant="ghost"
+                        onClick={() => {
+                          setTxFilters({
+                            search: "",
+                            tipo: "",
+                            estado: "",
+                            cantidadMin: "",
+                            cantidadMax: "",
+                            dateFrom: "",
+                            dateTo: "",
+                          });
+                          setTxSort("");
+                        }}
+                        className="text-emerald-200 hover:text-emerald-50"
+                      >
+                        <X className="w-4 h-4 mr-2" />
+                        Limpiar Filtros
+                      </Button>
+                    )}
+                  </div>
+
+                  {showTxFilters && (
+                    <Card className="bg-black/40 border border-emerald-500/15 rounded-2xl">
+                      <CardContent className="p-6">
+                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                          <div className="space-y-2">
+                            <Label className="text-emerald-50">Búsqueda</Label>
+                            <Input
+                              placeholder="Buscar por descripción…"
+                              value={txFilters.search}
+                              onChange={(e) => setTxFilters({ ...txFilters, search: e.target.value })}
+                              className="bg-black/50 border-emerald-500/20 text-emerald-50"
+                            />
+                          </div>
+                          <div className="space-y-2">
+                            <Label className="text-emerald-50">Tipo</Label>
+                            <Select value={txFilters.tipo} onValueChange={(v) => setTxFilters({ ...txFilters, tipo: v })}>
+                              <SelectTrigger className="bg-black/50 border-emerald-500/20 text-emerald-50">
+                                <SelectValue placeholder="Todos" />
+                              </SelectTrigger>
+                              <SelectContent>
+                                <SelectItem value="Depósito">Depósito</SelectItem>
+                                <SelectItem value="Retiro">Retiro</SelectItem>
+                                <SelectItem value="Intereses">Intereses</SelectItem>
+                                <SelectItem value="Renovación">Renovación</SelectItem>
+                              </SelectContent>
+                            </Select>
+                          </div>
+                          <div className="space-y-2">
+                            <Label className="text-emerald-50">Estado</Label>
+                            <Select value={txFilters.estado} onValueChange={(v) => setTxFilters({ ...txFilters, estado: v })}>
+                              <SelectTrigger className="bg-black/50 border-emerald-500/20 text-emerald-50">
+                                <SelectValue placeholder="Todos" />
+                              </SelectTrigger>
+                              <SelectContent>
+                                <SelectItem value="Completada">Completada</SelectItem>
+                                <SelectItem value="Pendiente">Pendiente</SelectItem>
+                                <SelectItem value="Rechazada">Rechazada</SelectItem>
+                              </SelectContent>
+                            </Select>
+                          </div>
+
+                          <div className="space-y-2">
+                            <Label className="text-emerald-50">Cantidad (€)</Label>
+                            <div className="flex space-x-2">
+                              <Input
+                                placeholder="Mín"
+                                value={txFilters.cantidadMin}
+                                onChange={(e) => setTxFilters({ ...txFilters, cantidadMin: e.target.value })}
+                                className="bg-black/50 border-emerald-500/20 text-emerald-50"
+                              />
+                              <Input
+                                placeholder="Máx"
+                                value={txFilters.cantidadMax}
+                                onChange={(e) => setTxFilters({ ...txFilters, cantidadMax: e.target.value })}
+                                className="bg-black/50 border-emerald-500/20 text-emerald-50"
+                              />
+                            </div>
+                          </div>
+
+                          <div className="space-y-2">
+                            <Label className="text-emerald-50">Desde</Label>
+                            <Input
+                              type="date"
+                              value={txFilters.dateFrom}
+                              onChange={(e) => setTxFilters({ ...txFilters, dateFrom: e.target.value })}
+                              className="bg-black/50 border-emerald-500/20 text-emerald-50"
+                            />
+                          </div>
+                          <div className="space-y-2">
+                            <Label className="text-emerald-50">Hasta</Label>
+                            <Input
+                              type="date"
+                              value={txFilters.dateTo}
+                              onChange={(e) => setTxFilters({ ...txFilters, dateTo: e.target.value })}
+                              className="bg-black/50 border-emerald-500/20 text-emerald-50"
+                            />
+                          </div>
+
+                          <div className="space-y-2">
+                            <Label className="text-emerald-50">Ordenar por</Label>
+                            <Select value={txSort} onValueChange={(v) => setTxSort(v as typeof txSort)}>
+                              <SelectTrigger className="bg-black/50 border-emerald-500/20 text-emerald-50">
+                                <SelectValue placeholder="Sin orden" />
+                              </SelectTrigger>
+                              <SelectContent>
+                                <SelectItem value="dateDesc">Fecha (Más recientes)</SelectItem>
+                                <SelectItem value="dateAsc">Fecha (Más antiguos)</SelectItem>
+                                <SelectItem value="cantidadDesc">Cantidad (Mayor a menor)</SelectItem>
+                                <SelectItem value="cantidadAsc">Cantidad (Menor a mayor)</SelectItem>
+                              </SelectContent>
+                            </Select>
+                          </div>
+                        </div>
+                      </CardContent>
+                    </Card>
+                  )}
+                </div>
+
+                {/* Tabla transacciones */}
                 <Card className="bg-black/40 border border-emerald-500/15 rounded-2xl">
                   <CardContent className="p-0">
                     <div className="overflow-hidden rounded-xl">
                       <table className="w-full">
                         <thead className="bg-black/40 border-b border-emerald-500/15">
                           <tr>
-                            {["FECHA", "TIPO", "DESCRIPCIÓN", "MONTO", "ESTADO"].map((h) => (
+                            {["FECHA", "TIPO", "DESCRIPCIÓN", "CANTIDAD", "ESTADO"].map((h) => (
                               <th key={h} className="text-left p-4 text-emerald-200/80 font-medium">
                                 {h}
                               </th>
@@ -753,11 +1420,60 @@ export default function Dashboard() {
                           </tr>
                         </thead>
                         <tbody>
-                          <tr>
-                            <td colSpan={5} className="p-8 text-center text-emerald-200/80">
-                              No hay transacciones para mostrar
-                            </td>
-                          </tr>
+                          {transacciones
+                            .filter((t) => {
+                              const q = txFilters.search.toLowerCase();
+                              const matchesSearch = !q || t.descripcion.toLowerCase().includes(q);
+                              const matchesTipo = !txFilters.tipo || t.tipo === txFilters.tipo;
+                              const matchesEstado = !txFilters.estado || t.estado === txFilters.estado;
+
+                              const minC = txFilters.cantidadMin ? parseFloat(txFilters.cantidadMin) : -Infinity;
+                              const maxC = txFilters.cantidadMax ? parseFloat(txFilters.cantidadMax) : Infinity;
+                              const matchesCantidad = t.cantidad >= minC && t.cantidad <= maxC;
+
+                              const ts = new Date(t.fecha).getTime();
+                              const fromOk = !txFilters.dateFrom || ts >= new Date(txFilters.dateFrom).getTime();
+                              const toOk = !txFilters.dateTo || ts <= new Date(txFilters.dateTo).getTime();
+
+                              return matchesSearch && matchesTipo && matchesEstado && matchesCantidad && fromOk && toOk;
+                            })
+                            .sort((a, b) => {
+                              if (txSort === "dateDesc") return new Date(b.fecha).getTime() - new Date(a.fecha).getTime();
+                              if (txSort === "dateAsc") return new Date(a.fecha).getTime() - new Date(b.fecha).getTime();
+                              if (txSort === "cantidadDesc") return b.cantidad - a.cantidad;
+                              if (txSort === "cantidadAsc") return a.cantidad - b.cantidad;
+                              return 0;
+                            })
+                            .map((t, i) => (
+                              <tr key={i} className="border-b border-emerald-500/10">
+                                <td className="p-4 text-emerald-50">{new Date(t.fecha).toLocaleDateString("es-ES")}</td>
+                                <td className="p-4 text-emerald-50">{t.tipo}</td>
+                                <td className="p-4 text-emerald-50">{t.descripcion}</td>
+                                <td className={`p-4 ${t.cantidad >= 0 ? "text-emerald-400" : "text-red-400"} font-medium`}>
+                                  {t.cantidad.toLocaleString("es-ES", { style: "currency", currency: "EUR" })}
+                                </td>
+                                <td className="p-4">
+                                  <Badge
+                                    className={
+                                      t.estado === "Completada"
+                                        ? "bg-emerald-500 text-black"
+                                        : t.estado === "Pendiente"
+                                        ? "bg-amber-500 text-black"
+                                        : "bg-red-500 text-white"
+                                    }
+                                  >
+                                    {t.estado}
+                                  </Badge>
+                                </td>
+                              </tr>
+                            ))}
+                          {transacciones.filter((_) => true).length === 0 && (
+                            <tr>
+                              <td colSpan={5} className="p-8 text-center text-emerald-200/80">
+                                No hay transacciones para mostrar
+                              </td>
+                            </tr>
+                          )}
                         </tbody>
                       </table>
                     </div>

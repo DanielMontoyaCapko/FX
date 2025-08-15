@@ -44,7 +44,7 @@ export default function PartnerDashboard() {
   });
   const [profilePhoto, setProfilePhoto] = useState<string | null>(null);
 
-  // filtros
+  // filtros CLIENTES
   const [showFilters, setShowFilters] = useState(false);
   const [filters, setFilters] = useState({
     inversionMin: "",
@@ -55,8 +55,24 @@ export default function PartnerDashboard() {
     sexo: "",
     estado: "",
   });
-  // orden
+  // orden CLIENTES
   const [sortOrder, setSortOrder] = useState<"" | "asc" | "desc">("");
+
+  // ====== NUEVO: filtros CONTRATOS ======
+  const [showContractFilters, setShowContractFilters] = useState(false);
+  const [contractSort, setContractSort] = useState<"" | "amountDesc" | "amountAsc" | "endAsc" | "endDesc">("");
+  const [contractFilters, setContractFilters] = useState({
+    search: "",
+    status: "",       // "Activo" | "Vigente" | "Vencido"
+    type: "",         // "Partnership" | "Inversión" | "Renovación"
+    tier: "",         // "Elite" | "Premium" | "Standard"
+    amountMin: "",
+    amountMax: "",
+    signedFrom: "",   // yyyy-mm-dd
+    signedTo: "",     // yyyy-mm-dd
+    vencimiento: "",  // "expiring" | "expired" | "vigente"
+  });
+  // =====================================
 
   const handlePhotoUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
@@ -806,38 +822,195 @@ export default function PartnerDashboard() {
             <h1 className="text-3xl font-bold text-emerald-50 mb-2">Contratos Firmados</h1>
             <p className="text-emerald-200/80 mb-6">Accede y descarga todos tus contratos y documentos legales</p>
 
-            {/* Motivación */}
-            <Card className="bg-gradient-to-r from-emerald-600/15 to-emerald-400/10 border border-emerald-500/30 rounded-2xl mb-6">
-              <CardContent className="p-6">
-                <div className="flex items-center justify-between mb-4">
-                  <div>
-                    <h3 className="text-emerald-50 font-bold text-xl">Tu Progreso como Asesor</h3>
-                    <p className="text-emerald-400 text-sm">¡Sigue creciendo tu cartera de clientes!</p>
-                  </div>
-                  <div className="text-right">
-                    <div className="text-3xl font-bold text-emerald-400">6</div>
-                    <p className="text-emerald-200/80 text-sm">Contratos Totales</p>
-                  </div>
-                </div>
+            {/* ===== Filtros Contratos ===== */}
+            <div className="mb-6">
+              <div className="flex items-center justify-between mb-4">
+                <Button
+                  variant="outline"
+                  onClick={() => setShowContractFilters(!showContractFilters)}
+                  className="border-emerald-500/20 text-emerald-50 hover:bg-emerald-900/10"
+                >
+                  <Filter className="w-4 h-4 mr-2" />
+                  {showContractFilters ? "Ocultar Filtros" : "Mostrar Filtros"}
+                </Button>
 
-                <div className="space-y-3">
-                  <div className="flex justify-between text-sm">
-                    <span className="text-emerald-50">Contratos de Inversión</span>
-                    <span className="text-emerald-400 font-semibold">4 / 10 objetivo</span>
-                  </div>
-                  <div className="w-full bg-black/50 rounded-full h-3">
-                    <div className="bg-gradient-to-r from-emerald-500 to-emerald-400 h-3 rounded-full" style={{ width: "40%" }} />
-                  </div>
-                  <p className="text-emerald-200/80 text-xs">
-                    ¡Solo 6 contratos más para alcanzar tu objetivo mensual!
-                  </p>
-                </div>
-              </CardContent>
-            </Card>
+                {(Object.values(contractFilters).some((v) => v !== "") || contractSort !== "") && (
+                  <Button
+                    variant="ghost"
+                    onClick={() => {
+                      setContractFilters({
+                        search: "",
+                        status: "",
+                        type: "",
+                        tier: "",
+                        amountMin: "",
+                        amountMax: "",
+                        signedFrom: "",
+                        signedTo: "",
+                        vencimiento: "",
+                      });
+                      setContractSort("");
+                    }}
+                    className="text-emerald-200 hover:text-emerald-50"
+                  >
+                    <X className="w-4 h-4 mr-2" />
+                    Limpiar Filtros
+                  </Button>
+                )}
+              </div>
 
-            {/* Cards de contratos */}
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-              {[
+              {showContractFilters && (
+                <Card className="bg-black/40 border border-emerald-500/15 rounded-2xl">
+                  <CardContent className="p-6">
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                      {/* Búsqueda */}
+                      <div className="space-y-2">
+                        <Label className="text-emerald-50">Búsqueda</Label>
+                        <Input
+                          placeholder="Buscar por ID, cliente, título o tipo…"
+                          value={contractFilters.search}
+                          onChange={(e) => setContractFilters({ ...contractFilters, search: e.target.value })}
+                          className="bg-black/50 border-emerald-500/20 text-emerald-50 placeholder:text-emerald-200/60"
+                        />
+                      </div>
+
+                      {/* Estado */}
+                      <div className="space-y-2">
+                        <Label className="text-emerald-50">Estado</Label>
+                        <Select
+                          value={contractFilters.status}
+                          onValueChange={(value) => setContractFilters({ ...contractFilters, status: value })}
+                        >
+                          <SelectTrigger className="bg-black/50 border-emerald-500/20 text-emerald-50">
+                            <SelectValue placeholder="Todos" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="Activo">Activo</SelectItem>
+                            <SelectItem value="Vigente">Vigente</SelectItem>
+                            <SelectItem value="Vencido">Vencido</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+
+                      {/* Tipo */}
+                      <div className="space-y-2">
+                        <Label className="text-emerald-50">Tipo</Label>
+                        <Select
+                          value={contractFilters.type}
+                          onValueChange={(value) => setContractFilters({ ...contractFilters, type: value })}
+                        >
+                          <SelectTrigger className="bg-black/50 border-emerald-500/20 text-emerald-50">
+                            <SelectValue placeholder="Todos" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="Partnership">Partnership</SelectItem>
+                            <SelectItem value="Inversión">Inversión</SelectItem>
+                            <SelectItem value="Renovación">Renovación</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+
+                      {/* Tier */}
+                      <div className="space-y-2">
+                        <Label className="text-emerald-50">Tier</Label>
+                        <Select
+                          value={contractFilters.tier}
+                          onValueChange={(value) => setContractFilters({ ...contractFilters, tier: value })}
+                        >
+                          <SelectTrigger className="bg-black/50 border-emerald-500/20 text-emerald-50">
+                            <SelectValue placeholder="Todos" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="Elite">Elite</SelectItem>
+                            <SelectItem value="Premium">Premium</SelectItem>
+                            <SelectItem value="Standard">Standard</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+
+                      {/* Importe */}
+                      <div className="space-y-2">
+                        <Label className="text-emerald-50">Importe (€)</Label>
+                        <div className="flex space-x-2">
+                          <Input
+                            placeholder="Mín"
+                            value={contractFilters.amountMin}
+                            onChange={(e) => setContractFilters({ ...contractFilters, amountMin: e.target.value })}
+                            className="bg-black/50 border-emerald-500/20 text-emerald-50 placeholder:text-emerald-200/60"
+                          />
+                          <Input
+                            placeholder="Máx"
+                            value={contractFilters.amountMax}
+                            onChange={(e) => setContractFilters({ ...contractFilters, amountMax: e.target.value })}
+                            className="bg-black/50 border-emerald-500/20 text-emerald-50 placeholder:text-emerald-200/60"
+                          />
+                        </div>
+                        <p className="text-xs text-emerald-200/70">* Solo aplica a contratos de Inversión</p>
+                      </div>
+
+                      {/* Firmado desde / hasta */}
+                      <div className="space-y-2">
+                        <Label className="text-emerald-50">Firmado (desde)</Label>
+                        <Input
+                          type="date"
+                          value={contractFilters.signedFrom}
+                          onChange={(e) => setContractFilters({ ...contractFilters, signedFrom: e.target.value })}
+                          className="bg-black/50 border-emerald-500/20 text-emerald-50"
+                        />
+                      </div>
+                      <div className="space-y-2">
+                        <Label className="text-emerald-50">Firmado (hasta)</Label>
+                        <Input
+                          type="date"
+                          value={contractFilters.signedTo}
+                          onChange={(e) => setContractFilters({ ...contractFilters, signedTo: e.target.value })}
+                          className="bg-black/50 border-emerald-500/20 text-emerald-50"
+                        />
+                      </div>
+
+                      {/* Vencimiento */}
+                      <div className="space-y-2">
+                        <Label className="text-emerald-50">Vencimiento</Label>
+                        <Select
+                          value={contractFilters.vencimiento}
+                          onValueChange={(value) => setContractFilters({ ...contractFilters, vencimiento: value })}
+                        >
+                          <SelectTrigger className="bg-black/50 border-emerald-500/20 text-emerald-50">
+                            <SelectValue placeholder="Todos" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="expiring">Por vencer (≤ 30 días)</SelectItem>
+                            <SelectItem value="expired">Vencido</SelectItem>
+                            <SelectItem value="vigente">Vigente (&gt; 30 días)</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+
+                      {/* Orden */}
+                      <div className="space-y-2">
+                        <Label className="text-emerald-50">Ordenar por</Label>
+                        <Select value={contractSort} onValueChange={(v) => setContractSort(v as any)}>
+                          <SelectTrigger className="bg-black/50 border-emerald-500/20 text-emerald-50">
+                            <SelectValue placeholder="Sin orden" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="amountDesc">Monto (Mayor a menor)</SelectItem>
+                            <SelectItem value="amountAsc">Monto (Menor a mayor)</SelectItem>
+                            <SelectItem value="endAsc">Vencimiento (Próximos primero)</SelectItem>
+                            <SelectItem value="endDesc">Vencimiento (Lejanos primero)</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              )}
+            </div>
+            {/* ===== Fin filtros Contratos ===== */}
+
+            {/* Datos y render de contratos filtrados */}
+            {(() => {
+              const contractsData = [
                 {
                   id: "CONT-2025-001",
                   title: "Acuerdo de Partnership Elite",
@@ -848,7 +1021,7 @@ export default function PartnerDashboard() {
                   status: "Activo",
                   fileSize: "2.3 MB",
                   tier: "Elite",
-                  investment: null,
+                  investment: null as number | null,
                 },
                 {
                   id: "CONT-2024-087",
@@ -908,212 +1081,329 @@ export default function PartnerDashboard() {
                   status: "Activo",
                   fileSize: "2.7 MB",
                   tier: "Elite",
-                  investment: null,
+                  investment: null as number | null,
                 },
-              ].map((contract, index) => {
-                const daysToEnd = Math.ceil(
-                  (new Date(contract.endDate).getTime() - new Date().getTime()) / (1000 * 3600 * 24)
-                );
-                const isExpiring = daysToEnd <= 30 && daysToEnd > 0;
-                const isExpired = daysToEnd <= 0;
+              ];
 
-                return (
-                  <Card
-                    key={index}
-                    className={`bg-black/40 border border-emerald-500/15 hover:bg-black/50 transition-all rounded-2xl ${
-                      isExpiring ? "border-amber-500/50" : isExpired ? "border-red-500/50" : ""
-                    }`}
-                  >
+              const filteredContracts = contractsData
+                .filter((c) => {
+                  // Búsqueda
+                  const q = contractFilters.search.toLowerCase();
+                  const matchesSearch =
+                    !q ||
+                    c.id.toLowerCase().includes(q) ||
+                    c.title.toLowerCase().includes(q) ||
+                    c.client.toLowerCase().includes(q) ||
+                    c.type.toLowerCase().includes(q);
+
+                  // Estado, tipo, tier
+                  const matchesStatus = !contractFilters.status || c.status === contractFilters.status;
+                  const matchesType = !contractFilters.type || c.type === contractFilters.type;
+                  const matchesTier = !contractFilters.tier || c.tier === contractFilters.tier;
+
+                  // Importe (solo contratos con investment)
+                  const hasAmountFilter = contractFilters.amountMin !== "" || contractFilters.amountMax !== "";
+                  const minA = contractFilters.amountMin ? parseFloat(contractFilters.amountMin) : -Infinity;
+                  const maxA = contractFilters.amountMax ? parseFloat(contractFilters.amountMax) : Infinity;
+                  const matchesAmount = hasAmountFilter
+                    ? c.investment !== null && c.investment >= minA && c.investment <= maxA
+                    : true;
+
+                  // Fechas firmado
+                  const signed = new Date(c.signedDate).getTime();
+                  const fromOk = !contractFilters.signedFrom || signed >= new Date(contractFilters.signedFrom).getTime();
+                  const toOk = !contractFilters.signedTo || signed <= new Date(contractFilters.signedTo).getTime();
+
+                  // Vencimiento relativo
+                  const daysToEnd = Math.ceil(
+                    (new Date(c.endDate).getTime() - new Date().getTime()) / (1000 * 3600 * 24)
+                  );
+                  const matchesVenc =
+                    !contractFilters.vencimiento ||
+                    (contractFilters.vencimiento === "expiring" && daysToEnd <= 30 && daysToEnd > 0) ||
+                    (contractFilters.vencimiento === "expired" && daysToEnd <= 0) ||
+                    (contractFilters.vencimiento === "vigente" && daysToEnd > 30);
+
+                  return (
+                    matchesSearch &&
+                    matchesStatus &&
+                    matchesType &&
+                    matchesTier &&
+                    matchesAmount &&
+                    fromOk &&
+                    toOk &&
+                    matchesVenc
+                  );
+                })
+                .sort((a, b) => {
+                  if (contractSort === "amountDesc") {
+                    return (b.investment ?? -1) - (a.investment ?? -1);
+                  }
+                  if (contractSort === "amountAsc") {
+                    return (a.investment ?? Number.MAX_SAFE_INTEGER) - (b.investment ?? Number.MAX_SAFE_INTEGER);
+                  }
+                  if (contractSort === "endAsc") {
+                    return new Date(a.endDate).getTime() - new Date(b.endDate).getTime();
+                  }
+                  if (contractSort === "endDesc") {
+                    return new Date(b.endDate).getTime() - new Date(a.endDate).getTime();
+                  }
+                  return 0;
+                });
+
+              return (
+                <>
+                  {/* Resumen filtrado */}
+                  <Card className="bg-gradient-to-r from-emerald-600/15 to-emerald-400/10 border border-emerald-500/30 rounded-2xl mb-6">
                     <CardContent className="p-6">
-                      <div className="flex items-start justify-between mb-4">
-                        <div className="flex items-center space-x-3">
-                          <div className="w-12 h-12 bg-emerald-500/20 rounded-lg flex items-center justify-center">
-                            <FileText className="w-6 h-6 text-emerald-400" />
-                          </div>
-                          <div className="flex-1">
-                            <h3 className="text-emerald-50 font-semibold text-lg">{contract.title}</h3>
-                            <p className="text-emerald-200/80 text-sm">{contract.client}</p>
-
-                            {contract.type === "Inversión" && (
-                              <div className="mt-2">
-                                <Badge
-                                  className={`text-sm px-3 py-1 font-bold ${
-                                    contract.tier === "Premium"
-                                      ? "bg-gradient-to-r from-amber-400 to-amber-600 text-black shadow"
-                                      : contract.tier === "Standard"
-                                      ? "bg-gradient-to-r from-blue-500 to-blue-700 text-white shadow"
-                                      : "bg-gradient-to-r from-purple-500 to-purple-700 text-white shadow"
-                                  }`}
-                                >
-                                  {contract.tier === "Premium"
-                                    ? "⭐ CLIENTE PREMIUM"
-                                    : contract.tier === "Standard"
-                                    ? "📋 CLIENTE STANDARD"
-                                    : "👑 ELITE"}
-                                </Badge>
-                              </div>
-                            )}
-
-                            {contract.investment && (
-                              <p className="text-emerald-400 font-semibold text-lg mt-1">
-                                ${contract.investment.toLocaleString()}
-                              </p>
-                            )}
-                          </div>
+                      <div className="flex items-center justify-between mb-4">
+                        <div>
+                          <h3 className="text-emerald-50 font-bold text-xl">Tu Progreso como Asesor</h3>
+                          <p className="text-emerald-400 text-sm">¡Sigue creciendo tu cartera de clientes!</p>
                         </div>
-                        <div className="text-right space-y-2">
-                          <Badge
-                            className={`${
-                              contract.status === "Activo"
-                                ? "bg-emerald-500 text-black"
-                                : contract.status === "Vigente"
-                                ? "bg-blue-500 text-white"
-                                : contract.status === "Vencido"
-                                ? "bg-red-500 text-white"
-                                : "bg-amber-500 text-black"
-                            }`}
-                          >
-                            {contract.status}
-                          </Badge>
-
-                          {isExpiring && (
-                            <div className="text-amber-400 text-xs font-semibold">⚠️ Vence en {daysToEnd} días</div>
-                          )}
-                          {isExpired && <div className="text-red-400 text-xs font-semibold">❌ Vencido</div>}
+                        <div className="text-right">
+                          <div className="text-3xl font-bold text-emerald-400">{filteredContracts.length}</div>
+                          <p className="text-emerald-200/80 text-sm">Contratos filtrados</p>
                         </div>
                       </div>
 
-                      <div className="space-y-3 mb-6">
-                        <div className="grid grid-cols-2 gap-4 text-sm">
-                          <div>
-                            <span className="text-emerald-200/80">ID Contrato:</span>
-                            <p className="text-emerald-50 font-mono">{contract.id}</p>
-                          </div>
-                          <div>
-                            <span className="text-emerald-200/80">Tipo:</span>
-                            <p className="text-emerald-50">{contract.type}</p>
-                          </div>
+                      <div className="space-y-3">
+                        <div className="flex justify-between text-sm">
+                          <span className="text-emerald-50">Contratos de Inversión</span>
+                          <span className="text-emerald-400 font-semibold">
+                            {filteredContracts.filter((c) => c.type === "Inversión").length}
+                          </span>
                         </div>
-
-                        <div className="bg-black/30 rounded-lg p-4 border border-emerald-500/20">
-                          <h4 className="text-emerald-50 font-semibold mb-3 text-center">📅 Duración del Contrato</h4>
-                          <div className="grid grid-cols-2 gap-4">
-                            <div className="text-center">
-                              <span className="text-emerald-400 text-xs font-medium block">INICIO</span>
-                              <p className="text-emerald-50 font-bold text-lg">
-                                {new Date(contract.signedDate).toLocaleDateString("es-ES")}
-                              </p>
-                            </div>
-                            <div className="text-center">
-                              <span
-                                className={`text-xs font-medium block ${
-                                  isExpired ? "text-red-400" : isExpiring ? "text-amber-400" : "text-emerald-400"
-                                }`}
-                              >
-                                {isExpired ? "VENCIDO" : "VENCIMIENTO"}
-                              </span>
-                              <p
-                                className={`font-bold text-lg ${
-                                  isExpired ? "text-red-400" : isExpiring ? "text-amber-400" : "text-emerald-50"
-                                }`}
-                              >
-                                {new Date(contract.endDate).toLocaleDateString("es-ES")}
-                              </p>
-                            </div>
-                          </div>
-
-                          {!isExpired && (
-                            <div className="mt-3">
-                              <div className="flex justify-between text-xs mb-1">
-                                <span className="text-emerald-200/80">Progreso del contrato</span>
-                                <span className="text-emerald-50">
-                                  {
-                                    Math.min(
-                                      100,
-                                      Math.max(
-                                        0,
-                                        Math.round(
-                                          ((new Date().getTime() - new Date(contract.signedDate).getTime()) /
-                                            (new Date(contract.endDate).getTime() -
-                                              new Date(contract.signedDate).getTime())) *
-                                            100
-                                        )
-                                      )
-                                    )
-                                  }
-                                  %
-                                </span>
-                              </div>
-                              <div className="w-full bg-black/50 rounded-full h-2">
-                                <div
-                                  className={`h-2 rounded-full ${
-                                    isExpiring
-                                      ? "bg-gradient-to-r from-amber-400 to-amber-600"
-                                      : "bg-gradient-to-r from-emerald-500 to-emerald-400"
-                                  }`}
-                                  style={{
-                                    width: `${Math.min(
-                                      100,
-                                      Math.max(
-                                        0,
-                                        ((new Date().getTime() - new Date(contract.signedDate).getTime()) /
-                                          (new Date(contract.endDate).getTime() -
-                                            new Date(contract.signedDate).getTime())) *
-                                          100
-                                      )
-                                    )}%`,
-                                  }}
-                                />
-                              </div>
-                            </div>
-                          )}
+                        <div className="w-full bg-black/50 rounded-full h-3">
+                          <div
+                            className="bg-gradient-to-r from-emerald-500 to-emerald-400 h-3 rounded-full"
+                            style={{
+                              width: `${Math.min(
+                                100,
+                                (filteredContracts.filter((c) => c.type === "Inversión").length /
+                                  Math.max(1, filteredContracts.length)) * 100
+                              ).toFixed(0)}%`,
+                            }}
+                          />
                         </div>
-
-                        <div className="grid grid-cols-1 gap-4 text-sm">
-                          <div>
-                            <span className="text-emerald-200/80">Tamaño del archivo:</span>
-                            <p className="text-emerald-50">{contract.fileSize}</p>
-                          </div>
-                        </div>
-                      </div>
-
-                      <div className="flex space-x-3">
-                        <Button className="flex-1 bg-gradient-to-r from-emerald-600 to-emerald-500 hover:from-emerald-500 hover:to-emerald-400 text-white">
-                          <Download className="w-4 h-4 mr-2" />
-                          Descargar PDF
-                        </Button>
-                        <Button variant="outline" className="border-emerald-500/20 text-emerald-50 hover:bg-emerald-900/10">
-                          Ver Detalles
-                        </Button>
-                        {isExpiring && (
-                          <Button className="bg-amber-500 hover:bg-amber-600 text-black">Renovar</Button>
-                        )}
+                        <p className="text-emerald-200/80 text-xs">
+                          * La barra muestra el porcentaje de contratos de Inversión sobre el total filtrado.
+                        </p>
                       </div>
                     </CardContent>
                   </Card>
-                );
-              })}
-            </div>
 
-            {/* Resumen */}
-            <Card className="bg-gradient-to-r from-emerald-600/15 to-emerald-400/10 border border-emerald-500/30 rounded-2xl mt-8">
-              <CardContent className="p-6">
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center space-x-4">
-                    <div className="w-12 h-12 bg-emerald-500/20 rounded-full flex items-center justify-center">
-                      <FileText className="w-6 h-6 text-emerald-400" />
-                    </div>
-                    <div>
-                      <h3 className="text-emerald-50 font-semibold text-lg">Total de Contratos</h3>
-                      <p className="text-emerald-200/80">6 documentos disponibles para descarga</p>
-                    </div>
+                  {/* Cards de contratos (filtrados) */}
+                  <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                    {filteredContracts.map((contract, index) => {
+                      const daysToEnd = Math.ceil(
+                        (new Date(contract.endDate).getTime() - new Date().getTime()) / (1000 * 3600 * 24)
+                      );
+                      const isExpiring = daysToEnd <= 30 && daysToEnd > 0;
+                      const isExpired = daysToEnd <= 0;
+
+                      return (
+                        <Card
+                          key={index}
+                          className={`bg-black/40 border border-emerald-500/15 hover:bg-black/50 transition-all rounded-2xl ${
+                            isExpiring ? "border-amber-500/50" : isExpired ? "border-red-500/50" : ""
+                          }`}
+                        >
+                          <CardContent className="p-6">
+                            <div className="flex items-start justify-between mb-4">
+                              <div className="flex items-center space-x-3">
+                                <div className="w-12 h-12 bg-emerald-500/20 rounded-lg flex items-center justify-center">
+                                  <FileText className="w-6 h-6 text-emerald-400" />
+                                </div>
+                                <div className="flex-1">
+                                  <h3 className="text-emerald-50 font-semibold text-lg">{contract.title}</h3>
+                                  <p className="text-emerald-200/80 text-sm">{contract.client}</p>
+
+                                  {contract.type === "Inversión" && (
+                                    <div className="mt-2">
+                                      <Badge
+                                        className={`text-sm px-3 py-1 font-bold ${
+                                          contract.tier === "Premium"
+                                            ? "bg-gradient-to-r from-amber-400 to-amber-600 text-black shadow"
+                                            : contract.tier === "Standard"
+                                            ? "bg-gradient-to-r from-blue-500 to-blue-700 text-white shadow"
+                                            : "bg-gradient-to-r from-purple-500 to-purple-700 text-white shadow"
+                                        }`}
+                                      >
+                                        {contract.tier === "Premium"
+                                          ? "⭐ CLIENTE PREMIUM"
+                                          : contract.tier === "Standard"
+                                          ? "📋 CLIENTE STANDARD"
+                                          : "👑 ELITE"}
+                                      </Badge>
+                                    </div>
+                                  )}
+
+                                  {contract.investment && (
+                                    <p className="text-emerald-400 font-semibold text-lg mt-1">
+                                      ${contract.investment.toLocaleString()}
+                                    </p>
+                                  )}
+                                </div>
+                              </div>
+                              <div className="text-right space-y-2">
+                                <Badge
+                                  className={`${
+                                    contract.status === "Activo"
+                                      ? "bg-emerald-500 text-black"
+                                      : contract.status === "Vigente"
+                                      ? "bg-blue-500 text-white"
+                                      : contract.status === "Vencido"
+                                      ? "bg-red-500 text-white"
+                                      : "bg-amber-500 text-black"
+                                  }`}
+                                >
+                                  {contract.status}
+                                </Badge>
+
+                                {isExpiring && (
+                                  <div className="text-amber-400 text-xs font-semibold">⚠️ Vence en {daysToEnd} días</div>
+                                )}
+                                {isExpired && <div className="text-red-400 text-xs font-semibold">❌ Vencido</div>}
+                              </div>
+                            </div>
+
+                            <div className="space-y-3 mb-6">
+                              <div className="grid grid-cols-2 gap-4 text-sm">
+                                <div>
+                                  <span className="text-emerald-200/80">ID Contrato:</span>
+                                  <p className="text-emerald-50 font-mono">{contract.id}</p>
+                                </div>
+                                <div>
+                                  <span className="text-emerald-200/80">Tipo:</span>
+                                  <p className="text-emerald-50">{contract.type}</p>
+                                </div>
+                              </div>
+
+                              <div className="bg-black/30 rounded-lg p-4 border border-emerald-500/20">
+                                <h4 className="text-emerald-50 font-semibold mb-3 text-center">📅 Duración del Contrato</h4>
+                                <div className="grid grid-cols-2 gap-4">
+                                  <div className="text-center">
+                                    <span className="text-emerald-400 text-xs font-medium block">INICIO</span>
+                                    <p className="text-emerald-50 font-bold text-lg">
+                                      {new Date(contract.signedDate).toLocaleDateString("es-ES")}
+                                    </p>
+                                  </div>
+                                  <div className="text-center">
+                                    <span
+                                      className={`text-xs font-medium block ${
+                                        isExpired ? "text-red-400" : isExpiring ? "text-amber-400" : "text-emerald-400"
+                                      }`}
+                                    >
+                                      {isExpired ? "VENCIDO" : "VENCIMIENTO"}
+                                    </span>
+                                    <p
+                                      className={`font-bold text-lg ${
+                                        isExpired ? "text-red-400" : isExpiring ? "text-amber-400" : "text-emerald-50"
+                                      }`}
+                                    >
+                                      {new Date(contract.endDate).toLocaleDateString("es-ES")}
+                                    </p>
+                                  </div>
+                                </div>
+
+                                {!isExpired && (
+                                  <div className="mt-3">
+                                    <div className="flex justify-between text-xs mb-1">
+                                      <span className="text-emerald-200/80">Progreso del contrato</span>
+                                      <span className="text-emerald-50">
+                                        {
+                                          Math.min(
+                                            100,
+                                            Math.max(
+                                              0,
+                                              Math.round(
+                                                ((new Date().getTime() - new Date(contract.signedDate).getTime()) /
+                                                  (new Date(contract.endDate).getTime() -
+                                                    new Date(contract.signedDate).getTime())) *
+                                                  100
+                                              )
+                                            )
+                                          )
+                                        }
+                                        %
+                                      </span>
+                                    </div>
+                                    <div className="w-full bg-black/50 rounded-full h-2">
+                                      <div
+                                        className={`h-2 rounded-full ${
+                                          isExpiring
+                                            ? "bg-gradient-to-r from-amber-400 to-amber-600"
+                                            : "bg-gradient-to-r from-emerald-500 to-emerald-400"
+                                        }`}
+                                        style={{
+                                          width: `${Math.min(
+                                            100,
+                                            Math.max(
+                                              0,
+                                              ((new Date().getTime() - new Date(contract.signedDate).getTime()) /
+                                                (new Date(contract.endDate).getTime() -
+                                                  new Date(contract.signedDate).getTime())) *
+                                                100
+                                            )
+                                          )}%`,
+                                        }}
+                                      />
+                                    </div>
+                                  </div>
+                                )}
+                              </div>
+
+                              <div className="grid grid-cols-1 gap-4 text-sm">
+                                <div>
+                                  <span className="text-emerald-200/80">Tamaño del archivo:</span>
+                                  <p className="text-emerald-50">{contract.fileSize}</p>
+                                </div>
+                              </div>
+                            </div>
+
+                            <div className="flex space-x-3">
+                              <Button className="flex-1 bg-gradient-to-r from-emerald-600 to-emerald-500 hover:from-emerald-500 hover:to-emerald-400 text-white">
+                                <Download className="w-4 h-4 mr-2" />
+                                Descargar PDF
+                              </Button>
+                              <Button variant="outline" className="border-emerald-500/20 text-emerald-50 hover:bg-emerald-900/10">
+                                Ver Detalles
+                              </Button>
+                              {isExpiring && (
+                                <Button className="bg-amber-500 hover:bg-amber-600 text-black">Renovar</Button>
+                              )}
+                            </div>
+                          </CardContent>
+                        </Card>
+                      );
+                    })}
                   </div>
-                  <Button className="bg-gradient-to-r from-emerald-600 to-emerald-500 hover:from-emerald-500 hover:to-emerald-400 text-white">
-                    Descargar Todos
-                  </Button>
-                </div>
-              </CardContent>
-            </Card>
+
+                  {/* Resumen al pie */}
+                  <Card className="bg-gradient-to-r from-emerald-600/15 to-emerald-400/10 border border-emerald-500/30 rounded-2xl mt-8">
+                    <CardContent className="p-6">
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center space-x-4">
+                          <div className="w-12 h-12 bg-emerald-500/20 rounded-full flex items-center justify-center">
+                            <FileText className="w-6 h-6 text-emerald-400" />
+                          </div>
+                          <div>
+                            <h3 className="text-emerald-50 font-semibold text-lg">Total de Contratos</h3>
+                            <p className="text-emerald-200/80">
+                              {filteredContracts.length} documento{filteredContracts.length === 1 ? "" : "s"} disponibles
+                            </p>
+                          </div>
+                        </div>
+                        <Button className="bg-gradient-to-r from-emerald-600 to-emerald-500 hover:from-emerald-500 hover:to-emerald-400 text-white">
+                          Descargar Todos
+                        </Button>
+                      </div>
+                    </CardContent>
+                  </Card>
+                </>
+              );
+            })()}
           </div>
         )}
 

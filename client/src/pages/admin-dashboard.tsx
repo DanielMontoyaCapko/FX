@@ -23,6 +23,8 @@ import {
   LogOut,
   BarChart3,
   Download,
+  Filter,
+  X,
 } from "lucide-react";
 import {
   PieChart as RechartsPieChart,
@@ -102,10 +104,59 @@ export default function AdminDashboard() {
   const [contracts, setContracts] = useState<ContractData[]>([]);
   const [loading, setLoading] = useState(true);
 
-  // Search and filter states
+  // ===== SEARCH & FILTER STATES =====
+  // Usuarios
   const [userSearch, setUserSearch] = useState("");
+  const [showUserFilters, setShowUserFilters] = useState(false);
+  const [userFilters, setUserFilters] = useState({
+    role: "",
+    grade: "",
+    verificationStatus: "",
+    sponsor: "",
+    dateFrom: "",
+    dateTo: "",
+  });
+  const [userSort, setUserSort] = useState<"" | "created_desc" | "created_asc" | "name_asc" | "name_desc">("");
+
+  // KYC
   const [kycSearch, setKycSearch] = useState("");
-  const [kycFilter, setKycFilter] = useState("all");
+  const [kycFilter, setKycFilter] = useState<"all" | "approved" | "pending" | "rejected">("all");
+  const [showKycFilters, setShowKycFilters] = useState(false);
+  const [kycAdvancedFilters, setKycAdvancedFilters] = useState({
+    documentType: "",
+    country: "",
+    dateFrom: "",
+    dateTo: "",
+  });
+  const [kycSort, setKycSort] = useState<"" | "created_desc" | "created_asc" | "name_asc" | "name_desc">("");
+
+  // Productos
+  const [productSearch, setProductSearch] = useState("");
+  const [showProductFilters, setShowProductFilters] = useState(false);
+  const [productFilters, setProductFilters] = useState({
+    status: "",
+    autoRenewal: "",
+    rateMin: "",
+    rateMax: "",
+    termMin: "",
+    termMax: "",
+    amountMin: "",
+    amountMax: "",
+  });
+  const [productSort, setProductSort] = useState<"" | "rate_desc" | "rate_asc" | "term_desc" | "term_asc">("");
+
+  // Contratos
+  const [contractSearch, setContractSearch] = useState("");
+  const [showContractFilters, setShowContractFilters] = useState(false);
+  const [contractFilters, setContractFilters] = useState({
+    status: "",
+    productName: "",
+    dateFrom: "",
+    dateTo: "",
+    amountMin: "",
+    amountMax: "",
+  });
+  const [contractSort, setContractSort] = useState<"" | "date_desc" | "date_asc" | "amount_desc" | "amount_asc">("");
 
   // Dialog states
   const [showUserDialog, setShowUserDialog] = useState(false);
@@ -209,23 +260,148 @@ export default function AdminDashboard() {
     { name: "Completados", value: contracts.filter((c) => c.status === "completed").length, color: "#3b82f6" },
   ];
 
-  // Filter functions
-  const filteredUsers = users.filter(
-    (u) =>
-      u.name.toLowerCase().includes(userSearch.toLowerCase()) ||
-      u.email.toLowerCase().includes(userSearch.toLowerCase()) ||
-      u.id.toString().includes(userSearch)
-  );
+  // Helpers
+  const endOfDay = (d: string) => {
+    const t = new Date(d);
+    t.setHours(23, 59, 59, 999);
+    return t;
+  };
 
-  const filteredKyc = kyc.filter((k) => {
-    const matchesSearch =
-      k.fullName.toLowerCase().includes(kycSearch.toLowerCase()) ||
-      k.documentNumber.toLowerCase().includes(kycSearch.toLowerCase()) ||
-      k.id.toString().includes(kycSearch);
-    const matchesFilter = kycFilter === "all" || k.status === kycFilter;
-    return matchesSearch && matchesFilter;
-  });
+  // Unique values for dropdowns
+  const userGrades = Array.from(new Set(users.map((u) => u.grade).filter(Boolean))) as string[];
+  const kycCountries = ["España", "Francia", "Portugal", "Italia", "Alemania"];
+  const kycDocTypes = Array.from(new Set(kyc.map((k) => k.documentType).filter(Boolean))) as string[];
+  const contractProductNames = Array.from(new Set(contracts.map((c) => c.productName).filter(Boolean))) as string[];
 
+  // ===== FILTERED COLLECTIONS =====
+  // Usuarios
+  const filteredUsers = users
+    .filter(
+      (u) =>
+        u.name.toLowerCase().includes(userSearch.toLowerCase()) ||
+        u.email.toLowerCase().includes(userSearch.toLowerCase()) ||
+        u.id.toString().includes(userSearch)
+    )
+    .filter((u) => (userFilters.role ? u.role === userFilters.role : true))
+    .filter((u) => (userFilters.grade ? u.grade === userFilters.grade : true))
+    .filter((u) =>
+      userFilters.verificationStatus ? u.verificationStatus === userFilters.verificationStatus : true
+    )
+    .filter((u) =>
+      userFilters.sponsor ? (u.sponsor || "").toLowerCase().includes(userFilters.sponsor.toLowerCase()) : true
+    )
+    .filter((u) =>
+      userFilters.dateFrom ? new Date(u.createdAt) >= new Date(userFilters.dateFrom) : true
+    )
+    .filter((u) => (userFilters.dateTo ? new Date(u.createdAt) <= endOfDay(userFilters.dateTo) : true))
+    .sort((a, b) => {
+      if (userSort === "created_desc") return +new Date(b.createdAt) - +new Date(a.createdAt);
+      if (userSort === "created_asc") return +new Date(a.createdAt) - +new Date(b.createdAt);
+      if (userSort === "name_asc") return a.name.localeCompare(b.name);
+      if (userSort === "name_desc") return b.name.localeCompare(a.name);
+      return 0;
+    });
+
+  // KYC
+  const filteredKyc = kyc
+    .filter((k) => {
+      const matchesSearch =
+        k.fullName.toLowerCase().includes(kycSearch.toLowerCase()) ||
+        k.documentNumber.toLowerCase().includes(kycSearch.toLowerCase()) ||
+        k.id.toString().includes(kycSearch);
+      const matchesStatus = kycFilter === "all" || k.status === kycFilter;
+      return matchesSearch && matchesStatus;
+    })
+    .filter((k) => (kycAdvancedFilters.documentType ? k.documentType === kycAdvancedFilters.documentType : true))
+    .filter((k) => (kycAdvancedFilters.country ? k.country === kycAdvancedFilters.country : true))
+    .filter((k) =>
+      kycAdvancedFilters.dateFrom ? new Date(k.createdAt) >= new Date(kycAdvancedFilters.dateFrom) : true
+    )
+    .filter((k) =>
+      kycAdvancedFilters.dateTo ? new Date(k.createdAt) <= endOfDay(kycAdvancedFilters.dateTo) : true
+    )
+    .sort((a, b) => {
+      if (kycSort === "created_desc") return +new Date(b.createdAt) - +new Date(a.createdAt);
+      if (kycSort === "created_asc") return +new Date(a.createdAt) - +new Date(b.createdAt);
+      if (kycSort === "name_asc") return a.fullName.localeCompare(b.fullName);
+      if (kycSort === "name_desc") return b.fullName.localeCompare(a.fullName);
+      return 0;
+    });
+
+  // Productos
+  const filteredProducts = products
+    .filter(
+      (p) =>
+        p.name.toLowerCase().includes(productSearch.toLowerCase()) ||
+        p.id.toString().includes(productSearch)
+    )
+    .filter((p) => (productFilters.status ? p.status === productFilters.status : true))
+    .filter((p) =>
+      productFilters.autoRenewal === ""
+        ? true
+        : productFilters.autoRenewal === "true"
+        ? p.autoRenewal
+        : !p.autoRenewal
+    )
+    .filter((p) => {
+      const rate = parseFloat(p.interestRate);
+      const min = productFilters.rateMin ? parseFloat(productFilters.rateMin) : -Infinity;
+      const max = productFilters.rateMax ? parseFloat(productFilters.rateMax) : Infinity;
+      return rate >= min && rate <= max;
+    })
+    .filter((p) => {
+      const term = p.termDays || 0;
+      const min = productFilters.termMin ? parseInt(productFilters.termMin) : -Infinity;
+      const max = productFilters.termMax ? parseInt(productFilters.termMax) : Infinity;
+      return term >= min && term <= max;
+    })
+    .filter((p) => {
+      const minAmt = parseInt(p.minAmount || "0");
+      const maxAmt = parseInt(p.maxAmount || "0");
+      const fMin = productFilters.amountMin ? parseInt(productFilters.amountMin) : -Infinity;
+      const fMax = productFilters.amountMax ? parseInt(productFilters.amountMax) : Infinity;
+      // Si cualquiera de los montos del producto cae dentro del rango del filtro, lo consideramos válido
+      return (minAmt >= fMin && minAmt <= fMax) || (maxAmt >= fMin && maxAmt <= fMax);
+    })
+    .sort((a, b) => {
+      if (productSort === "rate_desc") return parseFloat(b.interestRate) - parseFloat(a.interestRate);
+      if (productSort === "rate_asc") return parseFloat(a.interestRate) - parseFloat(b.interestRate);
+      if (productSort === "term_desc") return (b.termDays || 0) - (a.termDays || 0);
+      if (productSort === "term_asc") return (a.termDays || 0) - (b.termDays || 0);
+      return 0;
+    });
+
+  // Contratos
+  const filteredContracts = contracts
+    .filter(
+      (c) =>
+        c.userName.toLowerCase().includes(contractSearch.toLowerCase()) ||
+        c.productName.toLowerCase().includes(contractSearch.toLowerCase()) ||
+        c.id.toString().includes(contractSearch)
+    )
+    .filter((c) => (contractFilters.status ? c.status === contractFilters.status : true))
+    .filter((c) => (contractFilters.productName ? c.productName === contractFilters.productName : true))
+    .filter((c) =>
+      contractFilters.dateFrom ? new Date(c.createdAt) >= new Date(contractFilters.dateFrom) : true
+    )
+    .filter((c) =>
+      contractFilters.dateTo ? new Date(c.createdAt) <= endOfDay(contractFilters.dateTo) : true
+    )
+    .filter((c) => {
+      const amt = parseInt(c.amount || "0");
+      const min = contractFilters.amountMin ? parseInt(contractFilters.amountMin) : -Infinity;
+      const max = contractFilters.amountMax ? parseInt(contractFilters.amountMax) : Infinity;
+      return amt >= min && amt <= max;
+    })
+    .sort((a, b) => {
+      if (contractSort === "date_desc") return +new Date(b.createdAt) - +new Date(a.createdAt);
+      if (contractSort === "date_asc") return +new Date(a.createdAt) - +new Date(b.createdAt);
+      if (contractSort === "amount_desc") return parseInt(b.amount) - parseInt(a.amount);
+      if (contractSort === "amount_asc") return parseInt(a.amount) - parseInt(b.amount);
+      return 0;
+    });
+
+  // ===== CRUD handlers (sin cambios salvo cierre de diálogos) =====
   const handleCreateUser = async () => {
     try {
       if (!newUser.name || !newUser.email) {
@@ -707,108 +883,50 @@ export default function AdminDashboard() {
           </div>
         )}
 
+        {/* ====== USUARIOS ====== */}
         {activeTab === "usuarios" && (
           <div>
-            <div className="flex justify-between items-center mb-6">
+            <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between mb-4">
               <h1 className="text-3xl font-bold text-emerald-50">Gestión de Usuarios</h1>
-              <Button
-                className="bg-gradient-to-r from-emerald-600 to-emerald-500 hover:from-emerald-500 hover:to-emerald-400 text-white"
-                onClick={() => {
-                  setEditingUser(null);
-                  setNewUser({ name: "", email: "", password: "", role: "client", sponsor: "", grade: "Bronze" });
-                  setShowUserDialog(true);
-                }}
-              >
-                <Plus className="w-4 h-4 mr-2" />
-                Agregar Usuario
-              </Button>
-
-              <Dialog open={showUserDialog} onOpenChange={handleCloseUserDialog}>
-                <DialogContent className="bg-black/40 border border-emerald-500/15 text-emerald-50">
-                  <DialogHeader>
-                    <DialogTitle>{editingUser ? "Editar Usuario" : "Agregar Nuevo Usuario"}</DialogTitle>
-                    <DialogDescription className="text-emerald-200/80">
-                      {editingUser ? "Modifique los datos del usuario" : "Complete los datos para crear un nuevo usuario"}
-                    </DialogDescription>
-                  </DialogHeader>
-                  <div className="grid gap-4 py-4">
-                    <div className="grid grid-cols-4 items-center gap-4">
-                      <Label htmlFor="name" className="text-right">
-                        Nombre
-                      </Label>
-                      <Input
-                        id="name"
-                        value={newUser.name}
-                        onChange={(e) => setNewUser({ ...newUser, name: e.target.value })}
-                        className="col-span-3 bg-black/50 border-emerald-500/20 text-emerald-50 placeholder:text-emerald-200/60"
-                      />
-                    </div>
-                    <div className="grid grid-cols-4 items-center gap-4">
-                      <Label htmlFor="email" className="text-right">
-                        Email
-                      </Label>
-                      <Input
-                        id="email"
-                        type="email"
-                        value={newUser.email}
-                        onChange={(e) => setNewUser({ ...newUser, email: e.target.value })}
-                        className="col-span-3 bg-black/50 border-emerald-500/20 text-emerald-50 placeholder:text-emerald-200/60"
-                      />
-                    </div>
-                    <div className="grid grid-cols-4 items-center gap-4">
-                      <Label htmlFor="password" className="text-right">
-                        Contraseña
-                      </Label>
-                      <Input
-                        id="password"
-                        type="password"
-                        value={newUser.password}
-                        onChange={(e) => setNewUser({ ...newUser, password: e.target.value })}
-                        className="col-span-3 bg-black/50 border-emerald-500/20 text-emerald-50 placeholder:text-emerald-200/60"
-                      />
-                    </div>
-                    <div className="grid grid-cols-4 items-center gap-4">
-                      <Label htmlFor="role" className="text-right">
-                        Rol
-                      </Label>
-                      <Select value={newUser.role} onValueChange={(value) => setNewUser({ ...newUser, role: value })}>
-                        <SelectTrigger className="col-span-3 bg-black/50 border-emerald-500/20 text-emerald-50">
-                          <SelectValue />
-                        </SelectTrigger>
-                        <SelectContent className="bg-black/40 border-emerald-500/15 text-emerald-50">
-                          <SelectItem value="client">Cliente</SelectItem>
-                          <SelectItem value="partner">Asesor</SelectItem>
-                          <SelectItem value="admin">Administrador</SelectItem>
-                        </SelectContent>
-                      </Select>
-                    </div>
-                    <div className="grid grid-cols-4 items-center gap-4">
-                      <Label htmlFor="sponsor" className="text-right">
-                        Patrocinador
-                      </Label>
-                      <Input
-                        id="sponsor"
-                        value={newUser.sponsor}
-                        onChange={(e) => setNewUser({ ...newUser, sponsor: e.target.value })}
-                        className="col-span-3 bg-black/50 border-emerald-500/20 text-emerald-50 placeholder:text-emerald-200/60"
-                        placeholder="Opcional"
-                      />
-                    </div>
-                  </div>
-                  <DialogFooter>
-                    <Button
-                      onClick={handleCreateUser}
-                      className="bg-gradient-to-r from-emerald-600 to-emerald-500 hover:from-emerald-500 hover:to-emerald-400 text-white"
-                    >
-                      {editingUser ? "Actualizar Usuario" : "Crear Usuario"}
-                    </Button>
-                  </DialogFooter>
-                </DialogContent>
-              </Dialog>
+              <div className="flex gap-2">
+                <Button
+                  variant="outline"
+                  onClick={() => setShowUserFilters((v) => !v)}
+                  className="border-emerald-500/20 text-emerald-50 hover:bg-emerald-900/10"
+                >
+                  <Filter className="w-4 h-4 mr-2" />
+                  {showUserFilters ? "Ocultar Filtros" : "Mostrar Filtros"}
+                </Button>
+                {(Object.values(userFilters).some((v) => v) || userSort || userSearch) && (
+                  <Button
+                    variant="ghost"
+                    onClick={() => {
+                      setUserFilters({ role: "", grade: "", verificationStatus: "", sponsor: "", dateFrom: "", dateTo: "" });
+                      setUserSort("");
+                      setUserSearch("");
+                    }}
+                    className="text-emerald-200 hover:text-emerald-50"
+                  >
+                    <X className="w-4 h-4 mr-2" />
+                    Limpiar Filtros
+                  </Button>
+                )}
+                <Button
+                  className="bg-gradient-to-r from-emerald-600 to-emerald-500 hover:from-emerald-500 hover:to-emerald-400 text-white"
+                  onClick={() => {
+                    setEditingUser(null);
+                    setNewUser({ name: "", email: "", password: "", role: "client", sponsor: "", grade: "Bronze" });
+                    setShowUserDialog(true);
+                  }}
+                >
+                  <Plus className="w-4 h-4 mr-2" />
+                  Agregar Usuario
+                </Button>
+              </div>
             </div>
 
-            {/* Search */}
-            <div className="mb-6">
+            {/* Búsqueda rápida */}
+            <div className="mb-4">
               <div className="relative">
                 <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-emerald-200/80 w-4 h-4" />
                 <Input
@@ -820,7 +938,111 @@ export default function AdminDashboard() {
               </div>
             </div>
 
-            {/* Users Table */}
+            {/* Panel de filtros avanzados */}
+            {showUserFilters && (
+              <Card className="bg-black/40 border border-emerald-500/15 rounded-2xl mb-6">
+                <CardContent className="p-6">
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                    <div className="space-y-2">
+                      <Label className="text-emerald-50">Orden</Label>
+                      <Select value={userSort} onValueChange={(v) => setUserSort(v as any)}>
+                        <SelectTrigger className="bg-black/50 border-emerald-500/20 text-emerald-50">
+                          <SelectValue placeholder="Sin orden" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="created_desc">Fecha creación: más reciente</SelectItem>
+                          <SelectItem value="created_asc">Fecha creación: más antiguo</SelectItem>
+                          <SelectItem value="name_asc">Nombre A-Z</SelectItem>
+                          <SelectItem value="name_desc">Nombre Z-A</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+
+                    <div className="space-y-2">
+                      <Label className="text-emerald-50">Rol</Label>
+                      <Select value={userFilters.role} onValueChange={(v) => setUserFilters({ ...userFilters, role: v })}>
+                        <SelectTrigger className="bg-black/50 border-emerald-500/20 text-emerald-50">
+                          <SelectValue placeholder="Todos" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="client">Cliente</SelectItem>
+                          <SelectItem value="partner">Asesor</SelectItem>
+                          <SelectItem value="admin">Administrador</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+
+                    <div className="space-y-2">
+                      <Label className="text-emerald-50">Grado</Label>
+                      <Select value={userFilters.grade} onValueChange={(v) => setUserFilters({ ...userFilters, grade: v })}>
+                        <SelectTrigger className="bg-black/50 border-emerald-500/20 text-emerald-50">
+                          <SelectValue placeholder="Todos" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {userGrades.length === 0 ? (
+                            <>
+                              <SelectItem value="Bronze">Bronze</SelectItem>
+                              <SelectItem value="Silver">Silver</SelectItem>
+                              <SelectItem value="Gold">Gold</SelectItem>
+                              <SelectItem value="Platinum">Platinum</SelectItem>
+                            </>
+                          ) : (
+                            userGrades.map((g) => <SelectItem key={g} value={g}>{g}</SelectItem>)
+                          )}
+                        </SelectContent>
+                      </Select>
+                    </div>
+
+                    <div className="space-y-2">
+                      <Label className="text-emerald-50">Verificación</Label>
+                      <Select
+                        value={userFilters.verificationStatus}
+                        onValueChange={(v) => setUserFilters({ ...userFilters, verificationStatus: v })}
+                      >
+                        <SelectTrigger className="bg-black/50 border-emerald-500/20 text-emerald-50">
+                          <SelectValue placeholder="Todos" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="verified">Verificado</SelectItem>
+                          <SelectItem value="pending">Pendiente</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+
+                    <div className="space-y-2">
+                      <Label className="text-emerald-50">Patrocinador</Label>
+                      <Input
+                        placeholder="Nombre/email patrocinador"
+                        value={userFilters.sponsor}
+                        onChange={(e) => setUserFilters({ ...userFilters, sponsor: e.target.value })}
+                        className="bg-black/50 border-emerald-500/20 text-emerald-50 placeholder:text-emerald-200/60"
+                      />
+                    </div>
+
+                    <div className="space-y-2">
+                      <Label className="text-emerald-50">Desde</Label>
+                      <Input
+                        type="date"
+                        value={userFilters.dateFrom}
+                        onChange={(e) => setUserFilters({ ...userFilters, dateFrom: e.target.value })}
+                        className="bg-black/50 border-emerald-500/20 text-emerald-50"
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label className="text-emerald-50">Hasta</Label>
+                      <Input
+                        type="date"
+                        value={userFilters.dateTo}
+                        onChange={(e) => setUserFilters({ ...userFilters, dateTo: e.target.value })}
+                        className="bg-black/50 border-emerald-500/20 text-emerald-50"
+                      />
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            )}
+
+            {/* Tabla de usuarios */}
             <Card className="bg-black/40 border border-emerald-500/15 rounded-2xl">
               <CardContent className="p-0">
                 <div className="overflow-x-auto">
@@ -908,20 +1130,112 @@ export default function AdminDashboard() {
                           </td>
                         </tr>
                       ))}
+                      {filteredUsers.length === 0 && (
+                        <tr>
+                          <td colSpan={9} className="p-6 text-center text-emerald-200/80">
+                            Sin resultados.
+                          </td>
+                        </tr>
+                      )}
                     </tbody>
                   </table>
                 </div>
               </CardContent>
             </Card>
+
+            {/* Dialog Crear/Editar Usuario */}
+            <Dialog open={showUserDialog} onOpenChange={handleCloseUserDialog}>
+              <DialogContent className="bg-black/40 border border-emerald-500/15 text-emerald-50">
+                <DialogHeader>
+                  <DialogTitle>{editingUser ? "Editar Usuario" : "Agregar Nuevo Usuario"}</DialogTitle>
+                  <DialogDescription className="text-emerald-200/80">
+                    {editingUser ? "Modifique los datos del usuario" : "Complete los datos para crear un nuevo usuario"}
+                  </DialogDescription>
+                </DialogHeader>
+                <div className="grid gap-4 py-4">
+                  <div className="grid grid-cols-4 items-center gap-4">
+                    <Label htmlFor="name" className="text-right">
+                      Nombre
+                    </Label>
+                    <Input
+                      id="name"
+                      value={newUser.name}
+                      onChange={(e) => setNewUser({ ...newUser, name: e.target.value })}
+                      className="col-span-3 bg-black/50 border-emerald-500/20 text-emerald-50 placeholder:text-emerald-200/60"
+                    />
+                  </div>
+                  <div className="grid grid-cols-4 items-center gap-4">
+                    <Label htmlFor="email" className="text-right">
+                      Email
+                    </Label>
+                    <Input
+                      id="email"
+                      type="email"
+                      value={newUser.email}
+                      onChange={(e) => setNewUser({ ...newUser, email: e.target.value })}
+                      className="col-span-3 bg-black/50 border-emerald-500/20 text-emerald-50 placeholder:text-emerald-200/60"
+                    />
+                  </div>
+                  <div className="grid grid-cols-4 items-center gap-4">
+                    <Label htmlFor="password" className="text-right">
+                      Contraseña
+                    </Label>
+                    <Input
+                      id="password"
+                      type="password"
+                      value={newUser.password}
+                      onChange={(e) => setNewUser({ ...newUser, password: e.target.value })}
+                      className="col-span-3 bg-black/50 border-emerald-500/20 text-emerald-50 placeholder:text-emerald-200/60"
+                    />
+                  </div>
+                  <div className="grid grid-cols-4 items-center gap-4">
+                    <Label htmlFor="role" className="text-right">
+                      Rol
+                    </Label>
+                    <Select value={newUser.role} onValueChange={(value) => setNewUser({ ...newUser, role: value })}>
+                      <SelectTrigger className="col-span-3 bg-black/50 border-emerald-500/20 text-emerald-50">
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent className="bg-black/40 border-emerald-500/15 text-emerald-50">
+                        <SelectItem value="client">Cliente</SelectItem>
+                        <SelectItem value="partner">Asesor</SelectItem>
+                        <SelectItem value="admin">Administrador</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <div className="grid grid-cols-4 items-center gap-4">
+                    <Label htmlFor="sponsor" className="text-right">
+                      Patrocinador
+                    </Label>
+                    <Input
+                      id="sponsor"
+                      value={newUser.sponsor}
+                      onChange={(e) => setNewUser({ ...newUser, sponsor: e.target.value })}
+                      className="col-span-3 bg-black/50 border-emerald-500/20 text-emerald-50 placeholder:text-emerald-200/60"
+                      placeholder="Opcional"
+                    />
+                  </div>
+                </div>
+                <DialogFooter>
+                  <Button
+                    onClick={handleCreateUser}
+                    className="bg-gradient-to-r from-emerald-600 to-emerald-500 hover:from-emerald-500 hover:to-emerald-400 text-white"
+                  >
+                    {editingUser ? "Actualizar Usuario" : "Crear Usuario"}
+                  </Button>
+                </DialogFooter>
+              </DialogContent>
+            </Dialog>
           </div>
         )}
 
+        {/* ====== KYC ====== */}
         {activeTab === "kyc" && (
           <div>
-            <h1 className="text-3xl font-bold text-emerald-50 mb-6">Gestión KYC</h1>
+            <h1 className="text-3xl font-bold text-emerald-50 mb-4">Gestión KYC</h1>
 
-            {/* Search and Filter */}
-            <div className="flex gap-4 mb-6">
+            {/* Búsqueda + estado */}
+            <div className="flex flex-col md:flex-row gap-4 mb-4">
               <div className="relative flex-1">
                 <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-emerald-200/80 w-4 h-4" />
                 <Input
@@ -931,9 +1245,9 @@ export default function AdminDashboard() {
                   className="pl-10 bg-black/50 border-emerald-500/20 text-emerald-50 placeholder:text-emerald-200/60"
                 />
               </div>
-              <Select value={kycFilter} onValueChange={setKycFilter}>
-                <SelectTrigger className="w-48 bg-black/50 border-emerald-500/20 text-emerald-50">
-                  <SelectValue />
+              <Select value={kycFilter} onValueChange={(v: any) => setKycFilter(v)}>
+                <SelectTrigger className="w-full md:w-48 bg-black/50 border-emerald-500/20 text-emerald-50">
+                  <SelectValue placeholder="Estado" />
                 </SelectTrigger>
                 <SelectContent className="bg-black/40 border-emerald-500/15 text-emerald-50">
                   <SelectItem value="all">Todos</SelectItem>
@@ -944,7 +1258,117 @@ export default function AdminDashboard() {
               </Select>
             </div>
 
-            {/* KYC Table */}
+            {/* Controles filtros avanzados */}
+            <div className="flex items-center justify-between mb-4">
+              <Button
+                variant="outline"
+                onClick={() => setShowKycFilters((v) => !v)}
+                className="border-emerald-500/20 text-emerald-50 hover:bg-emerald-900/10"
+              >
+                <Filter className="w-4 h-4 mr-2" />
+                {showKycFilters ? "Ocultar Filtros" : "Mostrar Filtros"}
+              </Button>
+              {(kycFilter !== "all" ||
+                Object.values(kycAdvancedFilters).some((v) => v) ||
+                kycSort ||
+                kycSearch) && (
+                <Button
+                  variant="ghost"
+                  onClick={() => {
+                    setKycFilter("all");
+                    setKycAdvancedFilters({ documentType: "", country: "", dateFrom: "", dateTo: "" });
+                    setKycSort("");
+                    setKycSearch("");
+                  }}
+                  className="text-emerald-200 hover:text-emerald-50"
+                >
+                  <X className="w-4 h-4 mr-2" />
+                  Limpiar Filtros
+                </Button>
+              )}
+            </div>
+
+            {showKycFilters && (
+              <Card className="bg-black/40 border border-emerald-500/15 rounded-2xl mb-6">
+                <CardContent className="p-6">
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                    <div className="space-y-2">
+                      <Label className="text-emerald-50">Orden</Label>
+                      <Select value={kycSort} onValueChange={(v) => setKycSort(v as any)}>
+                        <SelectTrigger className="bg-black/50 border-emerald-500/20 text-emerald-50">
+                          <SelectValue placeholder="Sin orden" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="created_desc">Fecha: más reciente</SelectItem>
+                          <SelectItem value="created_asc">Fecha: más antiguo</SelectItem>
+                          <SelectItem value="name_asc">Nombre A-Z</SelectItem>
+                          <SelectItem value="name_desc">Nombre Z-A</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+
+                    <div className="space-y-2">
+                      <Label className="text-emerald-50">Tipo de Documento</Label>
+                      <Select
+                        value={kycAdvancedFilters.documentType}
+                        onValueChange={(v) => setKycAdvancedFilters({ ...kycAdvancedFilters, documentType: v })}
+                      >
+                        <SelectTrigger className="bg-black/50 border-emerald-500/20 text-emerald-50">
+                          <SelectValue placeholder="Todos" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {kycDocTypes.map((d) => (
+                            <SelectItem key={d} value={d}>
+                              {d.toUpperCase()}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </div>
+
+                    <div className="space-y-2">
+                      <Label className="text-emerald-50">País</Label>
+                      <Select
+                        value={kycAdvancedFilters.country}
+                        onValueChange={(v) => setKycAdvancedFilters({ ...kycAdvancedFilters, country: v })}
+                      >
+                        <SelectTrigger className="bg-black/50 border-emerald-500/20 text-emerald-50">
+                          <SelectValue placeholder="Todos" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {kycCountries.map((c) => (
+                            <SelectItem key={c} value={c}>
+                              {c}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </div>
+
+                    <div className="space-y-2">
+                      <Label className="text-emerald-50">Desde</Label>
+                      <Input
+                        type="date"
+                        value={kycAdvancedFilters.dateFrom}
+                        onChange={(e) => setKycAdvancedFilters({ ...kycAdvancedFilters, dateFrom: e.target.value })}
+                        className="bg-black/50 border-emerald-500/20 text-emerald-50"
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label className="text-emerald-50">Hasta</Label>
+                      <Input
+                        type="date"
+                        value={kycAdvancedFilters.dateTo}
+                        onChange={(e) => setKycAdvancedFilters({ ...kycAdvancedFilters, dateTo: e.target.value })}
+                        className="bg-black/50 border-emerald-500/20 text-emerald-50"
+                      />
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            )}
+
+            {/* Tabla KYC */}
             <Card className="bg-black/40 border border-emerald-500/15 rounded-2xl">
               <CardContent className="p-0">
                 <div className="overflow-x-auto">
@@ -1003,6 +1427,13 @@ export default function AdminDashboard() {
                           </td>
                         </tr>
                       ))}
+                      {filteredKyc.length === 0 && (
+                        <tr>
+                          <td colSpan={8} className="p-6 text-center text-emerald-200/80">
+                            Sin resultados.
+                          </td>
+                        </tr>
+                      )}
                     </tbody>
                   </table>
                 </div>
@@ -1011,119 +1442,197 @@ export default function AdminDashboard() {
           </div>
         )}
 
+        {/* ====== PRODUCTOS ====== */}
         {activeTab === "productos" && (
           <div>
-            <div className="flex justify-between items-center mb-6">
+            <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between mb-4">
               <h1 className="text-3xl font-bold text-emerald-50">Gestión de Productos</h1>
-              <Button
-                className="bg-gradient-to-r from-emerald-600 to-emerald-500 hover:from-emerald-500 hover:to-emerald-400 text-white"
-                onClick={() => {
-                  setEditingProduct(null);
-                  setNewProduct({
-                    name: "",
-                    interestRate: "",
-                    termDays: "",
-                    minAmount: "",
-                    maxAmount: "",
-                    status: "active",
-                    autoRenewal: false,
-                    contractTemplate: "",
-                  });
-                  setShowProductDialog(true);
-                }}
-              >
-                <Plus className="w-4 h-4 mr-2" />
-                Agregar Producto
-              </Button>
+              <div className="flex gap-2">
+                <Button
+                  variant="outline"
+                  onClick={() => setShowProductFilters((v) => !v)}
+                  className="border-emerald-500/20 text-emerald-50 hover:bg-emerald-900/10"
+                >
+                  <Filter className="w-4 h-4 mr-2" />
+                  {showProductFilters ? "Ocultar Filtros" : "Mostrar Filtros"}
+                </Button>
+                {(Object.values(productFilters).some((v) => v) || productSort || productSearch) && (
+                  <Button
+                    variant="ghost"
+                    onClick={() => {
+                      setProductFilters({
+                        status: "",
+                        autoRenewal: "",
+                        rateMin: "",
+                        rateMax: "",
+                        termMin: "",
+                        termMax: "",
+                        amountMin: "",
+                        amountMax: "",
+                      });
+                      setProductSort("");
+                      setProductSearch("");
+                    }}
+                    className="text-emerald-200 hover:text-emerald-50"
+                  >
+                    <X className="w-4 h-4 mr-2" />
+                    Limpiar Filtros
+                  </Button>
+                )}
+                <Button
+                  className="bg-gradient-to-r from-emerald-600 to-emerald-500 hover:from-emerald-500 hover:to-emerald-400 text-white"
+                  onClick={() => {
+                    setEditingProduct(null);
+                    setNewProduct({
+                      name: "",
+                      interestRate: "",
+                      termDays: "",
+                      minAmount: "",
+                      maxAmount: "",
+                      status: "active",
+                      autoRenewal: false,
+                      contractTemplate: "",
+                    });
+                    setShowProductDialog(true);
+                  }}
+                >
+                  <Plus className="w-4 h-4 mr-2" />
+                  Agregar Producto
+                </Button>
+              </div>
+            </div>
 
-              <Dialog open={showProductDialog} onOpenChange={handleCloseProductDialog}>
-                <DialogContent className="bg-black/40 border border-emerald-500/15 text-emerald-50 max-w-2xl">
-                  <DialogHeader>
-                    <DialogTitle>{editingProduct ? "Editar Producto" : "Agregar Nuevo Producto"}</DialogTitle>
-                    <DialogDescription className="text-emerald-200/80">
-                      {editingProduct
-                        ? "Modifique los datos del producto financiero"
-                        : "Complete los datos para crear un nuevo producto financiero"}
-                    </DialogDescription>
-                  </DialogHeader>
-                  <div className="grid gap-4 py-4 max-h-96 overflow-y-auto">
-                    {[
-                      { id: "productName", label: "Nombre", value: newProduct.name, key: "name" },
-                      { id: "interestRate", label: "Tasa (%)", value: newProduct.interestRate, key: "interestRate", placeholder: "9.00" },
-                      { id: "termDays", label: "Plazo (días)", value: newProduct.termDays, key: "termDays", type: "number", placeholder: "365" },
-                      { id: "minAmount", label: "Monto Mín (€)", value: newProduct.minAmount, key: "minAmount", placeholder: "50000" },
-                      { id: "maxAmount", label: "Monto Máx (€)", value: newProduct.maxAmount, key: "maxAmount", placeholder: "1000000" },
-                    ].map((f) => (
-                      <div key={f.id} className="grid grid-cols-4 items-center gap-4">
-                        <Label htmlFor={f.id} className="text-right">
-                          {f.label}
-                        </Label>
-                        <Input
-                          id={f.id}
-                          type={(f as any).type || "text"}
-                          value={(newProduct as any)[f.key]}
-                          onChange={(e) => setNewProduct({ ...newProduct, [f.key]: e.target.value } as any)}
-                          className="col-span-3 bg-black/50 border-emerald-500/20 text-emerald-50 placeholder:text-emerald-200/60"
-                          placeholder={(f as any).placeholder}
-                        />
-                      </div>
-                    ))}
+            {/* Búsqueda rápida productos */}
+            <div className="mb-4">
+              <div className="relative">
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-emerald-200/80 w-4 h-4" />
+                <Input
+                  placeholder="Buscar por ID o nombre de producto..."
+                  value={productSearch}
+                  onChange={(e) => setProductSearch(e.target.value)}
+                  className="pl-10 bg-black/50 border-emerald-500/20 text-emerald-50 placeholder:text-emerald-200/60"
+                />
+              </div>
+            </div>
 
-                    <div className="grid grid-cols-4 items-center gap-4">
-                      <Label htmlFor="productStatus" className="text-right">
-                        Estado
-                      </Label>
-                      <Select value={newProduct.status} onValueChange={(value) => setNewProduct({ ...newProduct, status: value })}>
-                        <SelectTrigger className="col-span-3 bg-black/50 border-emerald-500/20 text-emerald-50">
-                          <SelectValue />
+            {/* Panel filtros productos */}
+            {showProductFilters && (
+              <Card className="bg-black/40 border border-emerald-500/15 rounded-2xl mb-6">
+                <CardContent className="p-6">
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                    <div className="space-y-2">
+                      <Label className="text-emerald-50">Orden</Label>
+                      <Select value={productSort} onValueChange={(v) => setProductSort(v as any)}>
+                        <SelectTrigger className="bg-black/50 border-emerald-500/20 text-emerald-50">
+                          <SelectValue placeholder="Sin orden" />
                         </SelectTrigger>
-                        <SelectContent className="bg-black/40 border-emerald-500/15 text-emerald-50">
+                        <SelectContent>
+                          <SelectItem value="rate_desc">Tasa: mayor a menor</SelectItem>
+                          <SelectItem value="rate_asc">Tasa: menor a mayor</SelectItem>
+                          <SelectItem value="term_desc">Plazo: mayor a menor</SelectItem>
+                          <SelectItem value="term_asc">Plazo: menor a mayor</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+
+                    <div className="space-y-2">
+                      <Label className="text-emerald-50">Estado</Label>
+                      <Select
+                        value={productFilters.status}
+                        onValueChange={(v) => setProductFilters({ ...productFilters, status: v })}
+                      >
+                        <SelectTrigger className="bg-black/50 border-emerald-500/20 text-emerald-50">
+                          <SelectValue placeholder="Todos" />
+                        </SelectTrigger>
+                        <SelectContent>
                           <SelectItem value="active">Activo</SelectItem>
                           <SelectItem value="inactive">Inactivo</SelectItem>
                         </SelectContent>
                       </Select>
                     </div>
 
-                    <div className="grid grid-cols-4 items-center gap-4">
-                      <Label htmlFor="autoRenewal" className="text-right">
-                        Auto Renovación
-                      </Label>
-                      <div className="col-span-3">
-                        <Switch
-                          id="autoRenewal"
-                          checked={newProduct.autoRenewal}
-                          onCheckedChange={(checked) => setNewProduct({ ...newProduct, autoRenewal: checked })}
-                        />
-                      </div>
+                    <div className="space-y-2">
+                      <Label className="text-emerald-50">Auto Renovación</Label>
+                      <Select
+                        value={productFilters.autoRenewal}
+                        onValueChange={(v) => setProductFilters({ ...productFilters, autoRenewal: v })}
+                      >
+                        <SelectTrigger className="bg-black/50 border-emerald-500/20 text-emerald-50">
+                          <SelectValue placeholder="Todos" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="true">Sí</SelectItem>
+                          <SelectItem value="false">No</SelectItem>
+                        </SelectContent>
+                      </Select>
                     </div>
 
-                    <div className="grid grid-cols-4 items-start gap-4">
-                      <Label htmlFor="contractTemplate" className="text-right mt-2">
-                        Template Contrato
-                      </Label>
-                      <Textarea
-                        id="contractTemplate"
-                        value={newProduct.contractTemplate}
-                        onChange={(e) => setNewProduct({ ...newProduct, contractTemplate: e.target.value })}
-                        className="col-span-3 bg-black/50 border-emerald-500/20 text-emerald-50 placeholder:text-emerald-200/60"
-                        placeholder="Template del contrato..."
-                        rows={3}
+                    <div className="space-y-2">
+                      <Label className="text-emerald-50">Tasa (%) mín</Label>
+                      <Input
+                        placeholder="Ej: 5"
+                        value={productFilters.rateMin}
+                        onChange={(e) => setProductFilters({ ...productFilters, rateMin: e.target.value })}
+                        className="bg-black/50 border-emerald-500/20 text-emerald-50"
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label className="text-emerald-50">Tasa (%) máx</Label>
+                      <Input
+                        placeholder="Ej: 12"
+                        value={productFilters.rateMax}
+                        onChange={(e) => setProductFilters({ ...productFilters, rateMax: e.target.value })}
+                        className="bg-black/50 border-emerald-500/20 text-emerald-50"
+                      />
+                    </div>
+
+                    <div className="space-y-2">
+                      <Label className="text-emerald-50">Plazo mín (días)</Label>
+                      <Input
+                        type="number"
+                        placeholder="Ej: 30"
+                        value={productFilters.termMin}
+                        onChange={(e) => setProductFilters({ ...productFilters, termMin: e.target.value })}
+                        className="bg-black/50 border-emerald-500/20 text-emerald-50"
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label className="text-emerald-50">Plazo máx (días)</Label>
+                      <Input
+                        type="number"
+                        placeholder="Ej: 365"
+                        value={productFilters.termMax}
+                        onChange={(e) => setProductFilters({ ...productFilters, termMax: e.target.value })}
+                        className="bg-black/50 border-emerald-500/20 text-emerald-50"
+                      />
+                    </div>
+
+                    <div className="space-y-2">
+                      <Label className="text-emerald-50">Monto mín (€)</Label>
+                      <Input
+                        type="number"
+                        placeholder="Ej: 50000"
+                        value={productFilters.amountMin}
+                        onChange={(e) => setProductFilters({ ...productFilters, amountMin: e.target.value })}
+                        className="bg-black/50 border-emerald-500/20 text-emerald-50"
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label className="text-emerald-50">Monto máx (€)</Label>
+                      <Input
+                        type="number"
+                        placeholder="Ej: 1000000"
+                        value={productFilters.amountMax}
+                        onChange={(e) => setProductFilters({ ...productFilters, amountMax: e.target.value })}
+                        className="bg-black/50 border-emerald-500/20 text-emerald-50"
                       />
                     </div>
                   </div>
-                  <DialogFooter>
-                    <Button
-                      onClick={handleCreateProduct}
-                      className="bg-gradient-to-r from-emerald-600 to-emerald-500 hover:from-emerald-500 hover:to-emerald-400 text-white"
-                    >
-                      {editingProduct ? "Actualizar Producto" : "Crear Producto"}
-                    </Button>
-                  </DialogFooter>
-                </DialogContent>
-              </Dialog>
-            </div>
+                </CardContent>
+              </Card>
+            )}
 
-            {/* Products Table */}
+            {/* Tabla productos */}
             <Card className="bg-black/40 border border-emerald-500/15 rounded-2xl">
               <CardContent className="p-0">
                 <div className="overflow-x-auto">
@@ -1149,7 +1658,7 @@ export default function AdminDashboard() {
                       </tr>
                     </thead>
                     <tbody>
-                      {products.map((product) => (
+                      {filteredProducts.map((product) => (
                         <tr key={product.id} className="border-b border-emerald-500/10">
                           <td className="p-4 text-emerald-50">{product.id}</td>
                           <td className="p-4 text-emerald-50">{product.name}</td>
@@ -1199,19 +1708,254 @@ export default function AdminDashboard() {
                           </td>
                         </tr>
                       ))}
+                      {filteredProducts.length === 0 && (
+                        <tr>
+                          <td colSpan={10} className="p-6 text-center text-emerald-200/80">
+                            Sin resultados.
+                          </td>
+                        </tr>
+                      )}
                     </tbody>
                   </table>
                 </div>
               </CardContent>
             </Card>
+
+            {/* Dialog Crear/Editar Producto */}
+            <Dialog open={showProductDialog} onOpenChange={handleCloseProductDialog}>
+              <DialogContent className="bg-black/40 border border-emerald-500/15 text-emerald-50 max-w-2xl">
+                <DialogHeader>
+                  <DialogTitle>{editingProduct ? "Editar Producto" : "Agregar Nuevo Producto"}</DialogTitle>
+                  <DialogDescription className="text-emerald-200/80">
+                    {editingProduct
+                      ? "Modifique los datos del producto financiero"
+                      : "Complete los datos para crear un nuevo producto financiero"}
+                  </DialogDescription>
+                </DialogHeader>
+                <div className="grid gap-4 py-4 max-h-96 overflow-y-auto">
+                  {[
+                    { id: "productName", label: "Nombre", value: newProduct.name, key: "name" },
+                    { id: "interestRate", label: "Tasa (%)", value: newProduct.interestRate, key: "interestRate", placeholder: "9.00" },
+                    { id: "termDays", label: "Plazo (días)", value: newProduct.termDays, key: "termDays", type: "number", placeholder: "365" },
+                    { id: "minAmount", label: "Monto Mín (€)", value: newProduct.minAmount, key: "minAmount", placeholder: "50000" },
+                    { id: "maxAmount", label: "Monto Máx (€)", value: newProduct.maxAmount, key: "maxAmount", placeholder: "1000000" },
+                  ].map((f) => (
+                    <div key={f.id} className="grid grid-cols-4 items-center gap-4">
+                      <Label htmlFor={f.id} className="text-right">
+                        {f.label}
+                      </Label>
+                      <Input
+                        id={f.id}
+                        type={(f as any).type || "text"}
+                        value={(newProduct as any)[f.key]}
+                        onChange={(e) => setNewProduct({ ...newProduct, [f.key]: e.target.value } as any)}
+                        className="col-span-3 bg-black/50 border-emerald-500/20 text-emerald-50 placeholder:text-emerald-200/60"
+                        placeholder={(f as any).placeholder}
+                      />
+                    </div>
+                  ))}
+
+                  <div className="grid grid-cols-4 items-center gap-4">
+                    <Label htmlFor="productStatus" className="text-right">
+                      Estado
+                    </Label>
+                    <Select value={newProduct.status} onValueChange={(value) => setNewProduct({ ...newProduct, status: value })}>
+                      <SelectTrigger className="col-span-3 bg-black/50 border-emerald-500/20 text-emerald-50">
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent className="bg-black/40 border-emerald-500/15 text-emerald-50">
+                        <SelectItem value="active">Activo</SelectItem>
+                        <SelectItem value="inactive">Inactivo</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+
+                  <div className="grid grid-cols-4 items-center gap-4">
+                    <Label htmlFor="autoRenewal" className="text-right">
+                      Auto Renovación
+                    </Label>
+                    <div className="col-span-3">
+                      <Switch
+                        id="autoRenewal"
+                        checked={newProduct.autoRenewal}
+                        onCheckedChange={(checked) => setNewProduct({ ...newProduct, autoRenewal: checked })}
+                      />
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-4 items-start gap-4">
+                    <Label htmlFor="contractTemplate" className="text-right mt-2">
+                      Template Contrato
+                    </Label>
+                    <Textarea
+                      id="contractTemplate"
+                      value={newProduct.contractTemplate}
+                      onChange={(e) => setNewProduct({ ...newProduct, contractTemplate: e.target.value })}
+                      className="col-span-3 bg-black/50 border-emerald-500/20 text-emerald-50 placeholder:text-emerald-200/60"
+                      placeholder="Template del contrato..."
+                      rows={3}
+                    />
+                  </div>
+                </div>
+                <DialogFooter>
+                  <Button
+                    onClick={handleCreateProduct}
+                    className="bg-gradient-to-r from-emerald-600 to-emerald-500 hover:from-emerald-500 hover:to-emerald-400 text-white"
+                  >
+                    {editingProduct ? "Actualizar Producto" : "Crear Producto"}
+                  </Button>
+                </DialogFooter>
+              </DialogContent>
+            </Dialog>
           </div>
         )}
 
+        {/* ====== CONTRATOS ====== */}
         {activeTab === "contratos" && (
           <div>
-            <h1 className="text-3xl font-bold text-emerald-50 mb-6">Gestión de Contratos</h1>
+            <div className="flex flex-col md:flex-row md:items-center md:justify-between mb-4 gap-4">
+              <h1 className="text-3xl font-bold text-emerald-50">Gestión de Contratos</h1>
+              <div className="flex gap-2">
+                <Button
+                  variant="outline"
+                  onClick={() => setShowContractFilters((v) => !v)}
+                  className="border-emerald-500/20 text-emerald-50 hover:bg-emerald-900/10"
+                >
+                  <Filter className="w-4 h-4 mr-2" />
+                  {showContractFilters ? "Ocultar Filtros" : "Mostrar Filtros"}
+                </Button>
+                {(Object.values(contractFilters).some((v) => v) || contractSort || contractSearch) && (
+                  <Button
+                    variant="ghost"
+                    onClick={() => {
+                      setContractFilters({ status: "", productName: "", dateFrom: "", dateTo: "", amountMin: "", amountMax: "" });
+                      setContractSort("");
+                      setContractSearch("");
+                    }}
+                    className="text-emerald-200 hover:text-emerald-50"
+                  >
+                    <X className="w-4 h-4 mr-2" />
+                    Limpiar Filtros
+                  </Button>
+                )}
+              </div>
+            </div>
 
-            {/* Contracts Table */}
+            {/* Búsqueda rápida contratos */}
+            <div className="mb-4">
+              <div className="relative">
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-emerald-200/80 w-4 h-4" />
+                <Input
+                  placeholder="Buscar por ID, usuario o producto..."
+                  value={contractSearch}
+                  onChange={(e) => setContractSearch(e.target.value)}
+                  className="pl-10 bg-black/50 border-emerald-500/20 text-emerald-50 placeholder:text-emerald-200/60"
+                />
+              </div>
+            </div>
+
+            {/* Panel filtros contratos */}
+            {showContractFilters && (
+              <Card className="bg-black/40 border border-emerald-500/15 rounded-2xl mb-6">
+                <CardContent className="p-6">
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                    <div className="space-y-2">
+                      <Label className="text-emerald-50">Orden</Label>
+                      <Select value={contractSort} onValueChange={(v) => setContractSort(v as any)}>
+                        <SelectTrigger className="bg-black/50 border-emerald-500/20 text-emerald-50">
+                          <SelectValue placeholder="Sin orden" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="date_desc">Fecha: más reciente</SelectItem>
+                          <SelectItem value="date_asc">Fecha: más antiguo</SelectItem>
+                          <SelectItem value="amount_desc">Monto: mayor a menor</SelectItem>
+                          <SelectItem value="amount_asc">Monto: menor a mayor</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+
+                    <div className="space-y-2">
+                      <Label className="text-emerald-50">Estado</Label>
+                      <Select
+                        value={contractFilters.status}
+                        onValueChange={(v) => setContractFilters({ ...contractFilters, status: v })}
+                      >
+                        <SelectTrigger className="bg-black/50 border-emerald-500/20 text-emerald-50">
+                          <SelectValue placeholder="Todos" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="ready_to_start">Listo para Iniciar</SelectItem>
+                          <SelectItem value="active">Activo</SelectItem>
+                          <SelectItem value="completed">Completado</SelectItem>
+                          <SelectItem value="cancelled">Cancelado</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+
+                    <div className="space-y-2">
+                      <Label className="text-emerald-50">Producto</Label>
+                      <Select
+                        value={contractFilters.productName}
+                        onValueChange={(v) => setContractFilters({ ...contractFilters, productName: v })}
+                      >
+                        <SelectTrigger className="bg-black/50 border-emerald-500/20 text-emerald-50">
+                          <SelectValue placeholder="Todos" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {contractProductNames.map((n) => (
+                            <SelectItem key={n} value={n}>
+                              {n}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </div>
+
+                    <div className="space-y-2">
+                      <Label className="text-emerald-50">Desde</Label>
+                      <Input
+                        type="date"
+                        value={contractFilters.dateFrom}
+                        onChange={(e) => setContractFilters({ ...contractFilters, dateFrom: e.target.value })}
+                        className="bg-black/50 border-emerald-500/20 text-emerald-50"
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label className="text-emerald-50">Hasta</Label>
+                      <Input
+                        type="date"
+                        value={contractFilters.dateTo}
+                        onChange={(e) => setContractFilters({ ...contractFilters, dateTo: e.target.value })}
+                        className="bg-black/50 border-emerald-500/20 text-emerald-50"
+                      />
+                    </div>
+
+                    <div className="space-y-2">
+                      <Label className="text-emerald-50">Monto mín (€)</Label>
+                      <Input
+                        type="number"
+                        placeholder="Ej: 10000"
+                        value={contractFilters.amountMin}
+                        onChange={(e) => setContractFilters({ ...contractFilters, amountMin: e.target.value })}
+                        className="bg-black/50 border-emerald-500/20 text-emerald-50"
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label className="text-emerald-50">Monto máx (€)</Label>
+                      <Input
+                        type="number"
+                        placeholder="Ej: 500000"
+                        value={contractFilters.amountMax}
+                        onChange={(e) => setContractFilters({ ...contractFilters, amountMax: e.target.value })}
+                        className="bg-black/50 border-emerald-500/20 text-emerald-50"
+                      />
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            )}
+
+            {/* Tabla contratos */}
             <Card className="bg-black/40 border border-emerald-500/15 rounded-2xl">
               <CardContent className="p-0">
                 <div className="overflow-x-auto">
@@ -1226,7 +1970,7 @@ export default function AdminDashboard() {
                       </tr>
                     </thead>
                     <tbody>
-                      {contracts.map((contract) => (
+                      {filteredContracts.map((contract) => (
                         <tr key={contract.id} className="border-b border-emerald-500/10">
                           <td className="p-4 text-emerald-50">{contract.id}</td>
                           <td className="p-4 text-emerald-50">{contract.userName}</td>
@@ -1241,6 +1985,8 @@ export default function AdminDashboard() {
                                   ? "bg-amber-500 text-black"
                                   : contract.status === "completed"
                                   ? "bg-blue-500 text-white"
+                                  : contract.status === "cancelled"
+                                  ? "bg-emerald-900/30 text-emerald-200"
                                   : "bg-emerald-900/30 text-emerald-200"
                               }
                             >
@@ -1276,6 +2022,13 @@ export default function AdminDashboard() {
                           </td>
                         </tr>
                       ))}
+                      {filteredContracts.length === 0 && (
+                        <tr>
+                          <td colSpan={7} className="p-6 text-center text-emerald-200/80">
+                            Sin resultados.
+                          </td>
+                        </tr>
+                      )}
                     </tbody>
                   </table>
                 </div>
@@ -1284,6 +2037,7 @@ export default function AdminDashboard() {
           </div>
         )}
 
+        {/* ====== DIALOGS EDIT ====== */}
         {/* KYC Edit Dialog */}
         <Dialog open={showKycDialog} onOpenChange={handleCloseKycDialog}>
           <DialogContent className="bg-black/40 border border-emerald-500/15 text-emerald-50">
