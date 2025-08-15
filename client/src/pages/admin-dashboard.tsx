@@ -61,6 +61,7 @@ interface UserData {
   grade: string;
   verificationStatus: string;
   createdAt: string;
+  gender?: string | null; // se rellenará automáticamente
 }
 
 interface ProductData {
@@ -113,6 +114,7 @@ export default function AdminDashboard() {
     grade: "",
     verificationStatus: "",
     sponsor: "",
+    gender: "", // filtro de género
     dateFrom: "",
     dateTo: "",
   });
@@ -197,6 +199,40 @@ export default function AdminDashboard() {
     loadDashboardData();
   }, [user]);
 
+  // ====== Normalización / Inferencia de género ======
+  const stripAccents = (s: string) =>
+    s.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+
+  const normalizeGender = (g: any): "" | "Hombre" | "Mujer" | "Otro" => {
+    if (g == null) return "";
+    const s = String(g).trim().toLowerCase();
+    if (["hombre", "male", "m", "masculino"].includes(s)) return "Hombre";
+    if (["mujer", "female", "f", "femenino"].includes(s)) return "Mujer";
+    return "Otro";
+  };
+
+  // Overrides explícitos por nombre (lo pedido: Juan -> Hombre, María/Maria -> Mujer)
+  const NAME_GENDER_OVERRIDES: Record<string, "Hombre" | "Mujer"> = {
+    juan: "Hombre",
+    maria: "Mujer",
+    maría: "Mujer",
+  };
+
+  const guessGenderFromName = (fullName: string): "Hombre" | "Mujer" | "Otro" => {
+    if (!fullName) return "Otro";
+    const first = stripAccents(fullName.split(/\s+/)[0].toLowerCase());
+    return NAME_GENDER_OVERRIDES[first] ?? "Otro";
+  };
+
+  const ensureUsersHaveGender = (list: UserData[]): UserData[] =>
+    list.map((u) => {
+      const normalized = normalizeGender(u.gender);
+      return {
+        ...u,
+        gender: normalized || guessGenderFromName(u.name),
+      };
+    });
+
   const loadDashboardData = async () => {
     try {
       setLoading(true);
@@ -224,13 +260,15 @@ export default function AdminDashboard() {
       const productsData = await productsRes.json();
       const contractsData = await contractsRes.json();
 
-      setUsers(usersData.users || []);
+      const usersWithGender = ensureUsersHaveGender(usersData.users || []);
+
+      setUsers(usersWithGender);
       setKyc(kycData.kyc || []);
       setProducts(productsData.products || []);
       setContracts(contractsData.contracts || []);
 
       setStats({
-        totalUsers: usersData.users?.length || 0,
+        totalUsers: usersWithGender.length || 0,
         totalProducts: productsData.products?.length || 0,
         totalContracts: contractsData.contracts?.length || 0,
         pendingKyc: kycData.kyc?.filter((k: KycData) => k.status === "pending").length || 0,
@@ -269,6 +307,9 @@ export default function AdminDashboard() {
 
   // Unique values for dropdowns
   const userGrades = Array.from(new Set(users.map((u) => u.grade).filter(Boolean))) as string[];
+  const userGenders = Array.from(
+    new Set(users.map((u) => (normalizeGender(u.gender) || guessGenderFromName(u.name))).filter(Boolean))
+  ) as string[];
   const kycCountries = ["España", "Francia", "Portugal", "Italia", "Alemania"];
   const kycDocTypes = Array.from(new Set(kyc.map((k) => k.documentType).filter(Boolean))) as string[];
   const contractProductNames = Array.from(new Set(contracts.map((c) => c.productName).filter(Boolean))) as string[];
@@ -289,6 +330,9 @@ export default function AdminDashboard() {
     )
     .filter((u) =>
       userFilters.sponsor ? (u.sponsor || "").toLowerCase().includes(userFilters.sponsor.toLowerCase()) : true
+    )
+    .filter((u) =>
+      userFilters.gender ? (normalizeGender(u.gender) || guessGenderFromName(u.name)) === userFilters.gender : true
     )
     .filter((u) =>
       userFilters.dateFrom ? new Date(u.createdAt) >= new Date(userFilters.dateFrom) : true
@@ -360,7 +404,6 @@ export default function AdminDashboard() {
       const maxAmt = parseInt(p.maxAmount || "0");
       const fMin = productFilters.amountMin ? parseInt(productFilters.amountMin) : -Infinity;
       const fMax = productFilters.amountMax ? parseInt(productFilters.amountMax) : Infinity;
-      // Si cualquiera de los montos del producto cae dentro del rango del filtro, lo consideramos válido
       return (minAmt >= fMin && minAmt <= fMax) || (maxAmt >= fMin && maxAmt <= fMax);
     })
     .sort((a, b) => {
@@ -401,7 +444,7 @@ export default function AdminDashboard() {
       return 0;
     });
 
-  // ===== CRUD handlers (sin cambios salvo cierre de diálogos) =====
+  // ===== CRUD handlers (sin cambios) =====
   const handleCreateUser = async () => {
     try {
       if (!newUser.name || !newUser.email) {
@@ -436,7 +479,7 @@ export default function AdminDashboard() {
       if (response.ok) {
         alert(editingUser ? "Usuario actualizado exitosamente" : "Usuario creado exitosamente");
         handleCloseUserDialog();
-        await loadDashboardData();
+        await loadDashboardData(); // recarga y vuelve a inferir género
       } else {
         const errorData = await response.json();
         alert(`Error: ${errorData.error || "No se pudo procesar el usuario"}`);
@@ -901,7 +944,15 @@ export default function AdminDashboard() {
                   <Button
                     variant="ghost"
                     onClick={() => {
-                      setUserFilters({ role: "", grade: "", verificationStatus: "", sponsor: "", dateFrom: "", dateTo: "" });
+                      setUserFilters({
+                        role: "",
+                        grade: "",
+                        verificationStatus: "",
+                        sponsor: "",
+                        gender: "",
+                        dateFrom: "",
+                        dateTo: "",
+                      });
                       setUserSort("");
                       setUserSearch("");
                     }}
@@ -987,7 +1038,39 @@ export default function AdminDashboard() {
                               <SelectItem value="Platinum">Platinum</SelectItem>
                             </>
                           ) : (
-                            userGrades.map((g) => <SelectItem key={g} value={g}>{g}</SelectItem>)
+                            userGrades.map((g) => (
+                              <SelectItem key={g} value={g}>
+                                {g}
+                              </SelectItem>
+                            ))
+                          )}
+                        </SelectContent>
+                      </Select>
+                    </div>
+
+                    {/* Filtro por Género (no se muestra en tabla) */}
+                    <div className="space-y-2">
+                      <Label className="text-emerald-50">Género</Label>
+                      <Select
+                        value={userFilters.gender}
+                        onValueChange={(v) => setUserFilters({ ...userFilters, gender: v })}
+                      >
+                        <SelectTrigger className="bg-black/50 border-emerald-500/20 text-emerald-50">
+                          <SelectValue placeholder="Todos" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {userGenders.length === 0 ? (
+                            <>
+                              <SelectItem value="Hombre">Hombre</SelectItem>
+                              <SelectItem value="Mujer">Mujer</SelectItem>
+                              <SelectItem value="Otro">Otro</SelectItem>
+                            </>
+                          ) : (
+                            userGenders.map((g) => (
+                              <SelectItem key={g} value={g}>
+                                {g}
+                              </SelectItem>
+                            ))
                           )}
                         </SelectContent>
                       </Select>
@@ -1042,7 +1125,7 @@ export default function AdminDashboard() {
               </Card>
             )}
 
-            {/* Tabla de usuarios */}
+            {/* Tabla de usuarios (SIN columna de género) */}
             <Card className="bg-black/40 border border-emerald-500/15 rounded-2xl">
               <CardContent className="p-0">
                 <div className="overflow-x-auto">
