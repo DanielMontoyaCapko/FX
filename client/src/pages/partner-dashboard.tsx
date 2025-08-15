@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { useAuth } from "@/hooks/useAuth";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -24,7 +24,9 @@ import {
   FileText,
   Download,
   Filter,
-  X
+  X,
+  ExternalLink,
+  Globe,
 } from "lucide-react";
 import logoImg from "@/assets/Logo-removeBG_1752488347081.png";
 import { useScrollToTop } from "@/hooks/useScrollToTop";
@@ -73,6 +75,27 @@ export default function PartnerDashboard() {
     vencimiento: "",  // "expiring" | "expired" | "vigente"
   });
   // =====================================
+
+  // ====== NUEVO: Google Calendar (herramientas) ======
+  const [gcalView, setGcalView] = useState<"month" | "week" | "agenda">("month");
+  const [gcalTz, setGcalTz] = useState<string>("Europe/Madrid");
+  // Calendario público de ejemplo: Festivos de España (puedes cambiarlo por el tuyo público)
+  const gcalPublicSrc = "es.spain%23holiday%40group.v.calendar.google.com";
+  const gcalMode = useMemo(
+    () => (gcalView === "agenda" ? "AGENDA" : gcalView === "week" ? "WEEK" : "MONTH"),
+    [gcalView]
+  );
+  const gcalEmbedUrl = useMemo(
+    () =>
+      `https://calendar.google.com/calendar/embed?src=${gcalPublicSrc}&ctz=${encodeURIComponent(
+        gcalTz
+      )}&mode=${gcalMode}&wkst=1&showTitle=0&showPrint=0&showCalendars=0&showTabs=1&bgcolor=%230A1713`,
+    [gcalMode, gcalTz]
+  );
+  const handleOpenGoogleCalendar = () => {
+    window.open("https://calendar.google.com/calendar/u/0/r", "_blank", "noopener,noreferrer");
+  };
+  // ====================================================
 
   const handlePhotoUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
@@ -1412,7 +1435,8 @@ export default function PartnerDashboard() {
             <h1 className="text-3xl font-bold text-emerald-50 mb-2">Herramientas de Trabajo</h1>
             <p className="text-emerald-200/80 mb-6">Gestiona tus citas y reuniones con clientes</p>
 
-            <Card className="bg-black/40 border border-emerald-500/15 rounded-2xl max-w-2xl mx-auto">
+            {/* Intro rápida */}
+            <Card className="bg-black/40 border border-emerald-500/15 rounded-2xl max-w-2xl mx-auto mb-8">
               <CardContent className="p-8 text-center">
                 <div className="w-20 h-20 bg-emerald-500/20 rounded-full flex items-center justify-center mx-auto mb-6">
                   <Calendar className="w-10 h-10 text-emerald-400" />
@@ -1424,7 +1448,7 @@ export default function PartnerDashboard() {
                   calendario y configura recordatorios automáticos.
                 </p>
 
-                <div className="space-y-4 mb-8">
+                <div className="space-y-4 mb-6">
                   {[
                     "Sincronización con Google Calendar",
                     "Recordatorios automáticos por email",
@@ -1437,11 +1461,96 @@ export default function PartnerDashboard() {
                   ))}
                 </div>
 
-                <Button className="bg-gradient-to-r from-emerald-600 to-emerald-500 hover:from-emerald-500 hover:to-emerald-400 text-white px-8 py-3 text-lg font-medium">
-                  Abrir Calendario
+                <Button
+                  onClick={handleOpenGoogleCalendar}
+                  className="bg-gradient-to-r from-emerald-600 to-emerald-500 hover:from-emerald-500 hover:to-emerald-400 text-white px-8 py-3 text-lg font-medium"
+                >
+                  <ExternalLink className="w-4 h-4 mr-2" />
+                  Abrir Google Calendar
                 </Button>
               </CardContent>
             </Card>
+
+            {/* ===== NUEVO: Visor integrado de Google Calendar ===== */}
+            <Card className="bg-black/40 border border-emerald-500/15 rounded-2xl">
+              <CardHeader className="pb-2">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <CardTitle className="text-emerald-50">Google Calendar (Demo Integrado)</CardTitle>
+                    <CardDescription className="text-emerald-200/80">
+                      Vista embebida de un calendario público de ejemplo (Festivos España).
+                    </CardDescription>
+                  </div>
+                  <div className="hidden sm:flex items-center gap-2">
+                    <Button onClick={handleOpenGoogleCalendar} variant="outline" className="border-emerald-500/20">
+                      <ExternalLink className="w-4 h-4 mr-2" />
+                      Abrir en nueva pestaña
+                    </Button>
+                  </div>
+                </div>
+              </CardHeader>
+
+              <CardContent className="pt-2">
+                {/* Controles */}
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-3 mb-4">
+                  <div className="space-y-1">
+                    <Label className="text-emerald-50">Vista</Label>
+                    <Select value={gcalView} onValueChange={(v: any) => setGcalView(v)}>
+                      <SelectTrigger className="bg-black/50 border-emerald-500/20 text-emerald-50">
+                        <SelectValue placeholder="Mes" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="month">Mes</SelectItem>
+                        <SelectItem value="week">Semana</SelectItem>
+                        <SelectItem value="agenda">Agenda</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+
+                  <div className="space-y-1">
+                    <Label className="text-emerald-50 flex items-center gap-2">
+                      <Globe className="w-4 h-4" /> Zona horaria
+                    </Label>
+                    <Select value={gcalTz} onValueChange={setGcalTz}>
+                      <SelectTrigger className="bg-black/50 border-emerald-500/20 text-emerald-50">
+                        <SelectValue placeholder="Zona horaria" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="Europe/Madrid">Europe/Madrid</SelectItem>
+                        <SelectItem value="Europe/Lisbon">Europe/Lisbon</SelectItem>
+                        <SelectItem value="Europe/Paris">Europe/Paris</SelectItem>
+                        <SelectItem value="UTC">UTC</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+
+                  <div className="flex md:justify-end items-end">
+                    <Button onClick={handleOpenGoogleCalendar} className="w-full md:w-auto">
+                      <ExternalLink className="w-4 h-4 mr-2" />
+                      Abrir Google Calendar
+                    </Button>
+                  </div>
+                </div>
+
+                {/* Iframe */}
+                <div className="rounded-2xl overflow-hidden border border-emerald-500/15 bg-black/50 shadow-[0_0_0_1px_rgba(16,185,129,0.08),0_20px_60px_-20px_rgba(16,185,129,0.25)]">
+                  <iframe
+                    title="Google Calendar Demo"
+                    src={gcalEmbedUrl}
+                    style={{ border: 0 }}
+                    width="100%"
+                    height="720"
+                    frameBorder={0}
+                    scrolling="no"
+                  />
+                </div>
+
+                <p className="text-xs text-emerald-200/70 mt-3">
+                  * Para enlazar tu propio calendario, reemplaza el parámetro <code>src</code> por tu calendario público.
+                </p>
+              </CardContent>
+            </Card>
+            {/* ===== FIN Visor integrado ===== */}
           </div>
         )}
       </main>
