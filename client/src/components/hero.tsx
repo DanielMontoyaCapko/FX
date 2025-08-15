@@ -1,9 +1,9 @@
 import { Button } from "@/components/ui/button";
 import { useLocation } from "wouter";
 
-import ADCB from "@/assets/ADCB.png";
-import FAB from "@/assets/FAB.png";
-import NBD from "@/assets/NBD.png";
+import ADCB from "@/assets/ADCB_BANK.png";
+import FAB from "@/assets/FAB_BANK.png";
+import NBD from "@/assets/NBD_BANK.png";
 
 export default function Hero() {
   const [, setLocation] = useLocation();
@@ -47,10 +47,10 @@ export default function Hero() {
             <div className="text-silver-100">Exposición al Mercado</div>
           </div>
         </div>
-        <div className="mt-16 grid grid-cols-1 md:grid-cols-3 gap-8 max-w-4xl mx-auto">
-          <img src={ADCB} alt="ADCB" className="rounded-xl shadow-lg max-h-32 mx-auto" />
-          <img src={FAB} alt="FAB" className="rounded-xl shadow-lg max-h-32 mx-auto" />
-          <img src={NBD} alt="NBD" className="rounded-xl shadow-lg max-h-32 mx-auto" />
+        <div className="mt-2 grid grid-cols-1 md:grid-cols-3 gap-12 max-w-4xl mx-auto">
+          <img src={ADCB} alt="ADCB" className="rounded-xl shadow-lg max-h-52 mx-auto" />
+          <img src={FAB} alt="FAB" className="rounded-xl shadow-lg max-h-52 mx-auto" />
+          <img src={NBD} alt="NBD" className="rounded-xl shadow-lg max-h-52 mx-auto" />
         </div>
       </div>
     </section>
