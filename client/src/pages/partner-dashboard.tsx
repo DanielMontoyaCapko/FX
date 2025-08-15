@@ -55,6 +55,8 @@ export default function PartnerDashboard() {
     sexo: "",
     estado: "",
   });
+  // NUEVO: estado de orden
+  const [sortOrder, setSortOrder] = useState<"" | "asc" | "desc">("");
 
   const handlePhotoUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
@@ -110,7 +112,6 @@ export default function PartnerDashboard() {
     <div
       className={[
         "relative min-h-screen text-white flex",
-        // Fondo negro→verde y brillos como el login
         "bg-gradient-to-br from-black via-[#0A1713] to-[#0E2A1F]",
         "before:pointer-events-none before:absolute before:inset-0",
         "before:bg-[radial-gradient(80%_60%_at_110%_-10%,rgba(16,185,129,0.18),transparent),radial-gradient(60%_40%_at_-20%_110%,rgba(16,185,129,0.12),transparent)]",
@@ -414,10 +415,10 @@ export default function PartnerDashboard() {
                   {showFilters ? "Ocultar Filtros" : "Mostrar Filtros"}
                 </Button>
 
-                {Object.values(filters).some((v) => v !== "") && (
+                {(Object.values(filters).some((v) => v !== "") || sortOrder !== "") && (
                   <Button
                     variant="ghost"
-                    onClick={() =>
+                    onClick={() => {
                       setFilters({
                         inversionMin: "",
                         inversionMax: "",
@@ -426,8 +427,9 @@ export default function PartnerDashboard() {
                         pais: "",
                         sexo: "",
                         estado: "",
-                      })
-                    }
+                      });
+                      setSortOrder(""); // reset del orden
+                    }}
                     className="text-emerald-200 hover:text-emerald-50"
                   >
                     <X className="w-4 h-4 mr-2" />
@@ -440,6 +442,20 @@ export default function PartnerDashboard() {
                 <Card className="bg-black/40 border border-emerald-500/15 rounded-2xl">
                   <CardContent className="p-6">
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                      {/* NUEVO: Orden (primer bloque) */}
+                      <div className="space-y-2">
+                        <Label className="text-emerald-50">Ordenar por inversión</Label>
+                        <Select value={sortOrder} onValueChange={(v) => setSortOrder(v as "asc" | "desc")}>
+                          <SelectTrigger className="bg-black/50 border-emerald-500/20 text-emerald-50">
+                            <SelectValue placeholder="Sin orden" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="desc">Mayor a menor</SelectItem>
+                            <SelectItem value="asc">Menor a mayor</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+
                       <div className="space-y-2">
                         <Label className="text-emerald-50">Inversión Inicial</Label>
                         <div className="flex space-x-2">
@@ -623,6 +639,12 @@ export default function PartnerDashboard() {
                         (filters.sexo === "" || client.sexo === filters.sexo) &&
                         (filters.estado === "" || client.status === filters.estado)
                       );
+                    })
+                    // NUEVO: aplicar orden por inversión
+                    .sort((a, b) => {
+                      if (sortOrder === "desc") return b.investment - a.investment;
+                      if (sortOrder === "asc") return a.investment - b.investment;
+                      return 0; // sin orden
                     })
                     .map((client, index) => {
                       const daysToMaturity = Math.ceil(
@@ -1010,7 +1032,7 @@ export default function PartnerDashboard() {
                                             100
                                         )
                                       )
-                                    ) // %
+                                    )
                                   }
                                   %
                                 </span>
