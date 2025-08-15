@@ -104,7 +104,7 @@ export default function PartnerDashboard() {
     activeInvestments: 2340000,
     newLeadsThisMonth: 5,
     tier: "Elite Partner",
-    nextTierProgress: 78,
+    nextTierProgress: 79,
     daysToCommission: calculateDaysToCommission(),
   };
 
