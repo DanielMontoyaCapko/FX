@@ -29,6 +29,45 @@ import { useScrollToTop } from "@/hooks/useScrollToTop";
 import CompoundInterestChart from "@/components/compound-interest-chart";
 import InvestmentCalculator from "@/components/investment-calculator";
 
+// --- Barra de progreso reutilizable ---
+function ProgressBar({
+  percent,
+  noteWhenOver100 = false,
+}: {
+  percent: number;
+  noteWhenOver100?: boolean;
+}) {
+  const capped = Math.min(percent, 100);
+
+  return (
+    <div className="mt-4">
+      <div className="flex items-center justify-between text-sm text-emerald-200/80 mb-2">
+        <span>Progreso</span>
+        <span className="text-emerald-50 font-medium">{Math.round(percent)}%</span>
+      </div>
+
+      <div className="relative h-2 rounded-full bg-emerald-900/30 overflow-visible">
+        <div
+          className="absolute left-0 top-0 h-2 rounded-full bg-emerald-500/80"
+          style={{ width: `${capped}%` }}
+        />
+        {percent > 100 && (
+          <div
+            className="absolute top-1/2 -translate-y-1/2 right-0 translate-x-2 h-2 w-6 rounded-full bg-emerald-400 shadow-[0_0_0_2px_rgba(16,185,129,0.25)]"
+            aria-hidden
+          />
+        )}
+      </div>
+
+      {noteWhenOver100 && percent > 100 && (
+        <p className="mt-2 text-xs text-emerald-200/70 italic">
+          * Progreso superior al 100% (se supera el objetivo)
+        </p>
+      )}
+    </div>
+  );
+}
+
 export default function Dashboard() {
   useScrollToTop();
   const [, setLocation] = useLocation();
@@ -111,11 +150,11 @@ export default function Dashboard() {
 
   const handleCalculateInvestment = () => setShowCalculator(true);
 
+  // ===== KPIs (sin "Rentabilidad Anual") =====
   const kpis = [
-    { title: "Capital Invertido", value: "€50.000", change: "100% completado", trending: "up" },
-    { title: "Progreso en Meses", value: "Mes 3 de 12", change: "25% del período", trending: "up" },
-    { title: "Beneficio Total Estimado", value: "€4.500", change: "A fin de año", trending: "up" },
-    { title: "Rentabilidad Anual", value: "9.0%", change: "Garantizada", trending: "up" },
+    { title: "Capital Invertido", value: "€50.000", change: "110% del objetivo", trending: "up" as const },
+    { title: "Progreso en Meses", value: "Mes 3 de 12", change: "25% del período", trending: "up" as const },
+    { title: "Beneficio Total Estimado", value: "€4.500", change: "A fin de año", trending: "up" as const },
   ] as const;
 
   const recentActivity = [
@@ -128,78 +167,21 @@ export default function Dashboard() {
 
   // --- Mis productos (ejemplos) ---
   const productosActivos = [
-    {
-      nombre: "Fondo de Inversión Verde Europa",
-      estado: "En curso",
-      cantidad: "€5.000",
-      fechaInicio: "12/05/2025",
-      rentabilidad: "6.2% anual",
-    },
-    {
-      nombre: "Plan Ahorro Flexible Plus",
-      estado: "Activo",
-      cantidad: "€2.500",
-      fechaInicio: "01/07/2025",
-      rentabilidad: "3.8% anual",
-    },
-    {
-      nombre: "Depósito Estructurado Europa",
-      estado: "En curso",
-      cantidad: "€8.500",
-      fechaInicio: "22/08/2025",
-      rentabilidad: "5.1% anual",
-    },
+    { nombre: "Fondo de Inversión Verde Europa", estado: "En curso", cantidad: "€5.000", fechaInicio: "12/05/2025", rentabilidad: "6.2% anual" },
+    { nombre: "Plan Ahorro Flexible Plus", estado: "Activo", cantidad: "€2.500", fechaInicio: "01/07/2025", rentabilidad: "3.8% anual" },
+    { nombre: "Depósito Estructurado Europa", estado: "En curso", cantidad: "€8.500", fechaInicio: "22/08/2025", rentabilidad: "5.1% anual" },
   ];
 
   const productosCompletados = [
-    {
-      nombre: "Bono Corporativo Energía Solar",
-      estado: "Éxito",
-      cantidad: "€10.000",
-      fechaInicio: "10/03/2024",
-      fechaFin: "10/03/2025",
-      rentabilidadFinal: "5.5%",
-    },
-    {
-      nombre: "Fondo Tecnología Asia",
-      estado: "Éxito",
-      cantidad: "€7.000",
-      fechaInicio: "15/01/2023",
-      fechaFin: "15/01/2024",
-      rentabilidadFinal: "4.9%",
-    },
-    {
-      nombre: "Letra del Tesoro España 12M",
-      estado: "Éxito",
-      cantidad: "€6.000",
-      fechaInicio: "01/02/2023",
-      fechaFin: "01/02/2024",
-      rentabilidadFinal: "3.7%",
-    },
+    { nombre: "Bono Corporativo Energía Solar", estado: "Éxito", cantidad: "€10.000", fechaInicio: "10/03/2024", fechaFin: "10/03/2025", rentabilidadFinal: "5.5%" },
+    { nombre: "Fondo Tecnología Asia", estado: "Éxito", cantidad: "€7.000", fechaInicio: "15/01/2023", fechaFin: "15/01/2024", rentabilidadFinal: "4.9%" },
+    { nombre: "Letra del Tesoro España 12M", estado: "Éxito", cantidad: "€6.000", fechaInicio: "01/02/2023", fechaFin: "01/02/2024", rentabilidadFinal: "3.7%" },
   ];
 
   const productosCancelados = [
-    {
-      nombre: "Fondo Startups LatAm",
-      estado: "Cancelado",
-      cantidad: "€3.000",
-      fechaCancelacion: "02/04/2025",
-      motivo: "No se alcanzó el capital mínimo requerido",
-    },
-    {
-      nombre: "Plan de Ahorro Salud",
-      estado: "Cancelado",
-      cantidad: "€1.500",
-      fechaCancelacion: "20/06/2025",
-      motivo: "Cancelado por el usuario antes del inicio",
-    },
-    {
-      nombre: "Fondo Inmobiliario Urbano",
-      estado: "Cancelado",
-      cantidad: "€4.000",
-      fechaCancelacion: "15/05/2025",
-      motivo: "Documentación incompleta del cliente",
-    },
+    { nombre: "Fondo Startups LatAm", estado: "Cancelado", cantidad: "€3.000", fechaCancelacion: "02/04/2025", motivo: "No se alcanzó el capital mínimo requerido" },
+    { nombre: "Plan de Ahorro Salud", estado: "Cancelado", cantidad: "€1.500", fechaCancelacion: "20/06/2025", motivo: "Cancelado por el usuario antes del inicio" },
+    { nombre: "Fondo Inmobiliario Urbano", estado: "Cancelado", cantidad: "€4.000", fechaCancelacion: "15/05/2025", motivo: "Documentación incompleta del cliente" },
   ];
 
   // ===== Helpers parsing =====
@@ -215,7 +197,6 @@ export default function Dashboard() {
     return isNaN(n) ? 0 : n;
   };
   const parseESDate = (s: string) => {
-    // admite "dd/mm/yyyy"
     const [d, m, y] = s.split("/").map((p) => parseInt(p, 10));
     return new Date(y, m - 1, d);
   };
@@ -223,39 +204,17 @@ export default function Dashboard() {
   // ====== FILTROS: Mis Productos ======
   const [showMPFilters, setShowMPFilters] = useState(false);
   const [mpSort, setMpSort] = useState<"" | "cantidadDesc" | "cantidadAsc" | "fechaAsc" | "fechaDesc" | "rentDesc" | "rentAsc">("");
-  const [mpFilters, setMpFilters] = useState({
-    search: "",
-    cantidadMin: "",
-    cantidadMax: "",
-    fechaFrom: "",
-    fechaTo: "",
-    rentMin: "",
-    rentMax: "",
-  });
+  const [mpFilters, setMpFilters] = useState({ search: "", cantidadMin: "", cantidadMax: "", fechaFrom: "", fechaTo: "", rentMin: "", rentMax: "" });
 
   // ====== FILTROS: Historial ======
   const [showHistFilters, setShowHistFilters] = useState(false);
-  const [histFilters, setHistFilters] = useState({
-    search: "",
-    dateFrom: "",
-    dateTo: "",
-    tipo: "", // descarga, simulación, etc.
-  });
+  const [histFilters, setHistFilters] = useState({ search: "", dateFrom: "", dateTo: "", tipo: "" });
 
   // ====== FILTROS: Transacciones ======
   const [showTxFilters, setShowTxFilters] = useState(false);
   const [txSort, setTxSort] = useState<"" | "dateDesc" | "dateAsc" | "cantidadDesc" | "cantidadAsc">("");
-  const [txFilters, setTxFilters] = useState({
-    search: "",
-    tipo: "",
-    estado: "",
-    cantidadMin: "",
-    cantidadMax: "",
-    dateFrom: "",
-    dateTo: "",
-  });
+  const [txFilters, setTxFilters] = useState({ search: "", tipo: "", estado: "", cantidadMin: "", cantidadMax: "", dateFrom: "", dateTo: "" });
 
-  // datos ejemplo de transacciones
   const transacciones = [
     { fecha: "2025-01-15", tipo: "Depósito", descripcion: "Depósito inicial producto 9%", cantidad: 50000, estado: "Completada" },
     { fecha: "2025-02-15", tipo: "Intereses", descripcion: "Intereses mensuales", cantidad: 375, estado: "Completada" },
@@ -266,35 +225,11 @@ export default function Dashboard() {
   // ====== FILTROS: Contratos ======
   const [showCFilters, setShowCFilters] = useState(false);
   const [cSort, setCSort] = useState<"" | "dateDesc" | "dateAsc">("");
-  const [cFilters, setCFilters] = useState({
-    search: "",
-    estado: "", // Disponible / No disponible
-    dateFrom: "",
-    dateTo: "",
-    tipo: "", // PDF/Doc o categoría
-  });
+  const [cFilters, setCFilters] = useState({ search: "", estado: "", dateFrom: "", dateTo: "", tipo: "" });
 
   const contratosCliente = [
-    {
-      id: "DOC-PLAZO-9-365",
-      titulo: "Contrato Plazo Fijo 9% - 365 días",
-      descripcion: "Contrato de depósito bancario con garantía",
-      tipo: "PDF",
-      tamano: "2.3 MB",
-      fecha: "2025-01-01",
-      estado: "Disponible",
-      categoria: "Producto",
-    },
-    {
-      id: "DOC-INFO-PRIV",
-      titulo: "Política de Privacidad",
-      descripcion: "Documento legal informado al cliente",
-      tipo: "PDF",
-      tamano: "0.6 MB",
-      fecha: "2024-12-01",
-      estado: "Disponible",
-      categoria: "Legal",
-    },
+    { id: "DOC-PLAZO-9-365", titulo: "Contrato Plazo Fijo 9% - 365 días", descripcion: "Contrato de depósito bancario con garantía", tipo: "PDF", tamano: "2.3 MB", fecha: "2025-01-01", estado: "Disponible", categoria: "Producto" },
+    { id: "DOC-INFO-PRIV", titulo: "Política de Privacidad", descripcion: "Documento legal informado al cliente", tipo: "PDF", tamano: "0.6 MB", fecha: "2024-12-01", estado: "Disponible", categoria: "Legal" },
   ];
 
   return (
@@ -902,7 +837,6 @@ export default function Dashboard() {
                           const fromOk = !mpFilters.fechaFrom || f >= new Date(mpFilters.fechaFrom).getTime();
                           const toOk = !mpFilters.fechaTo || f <= new Date(mpFilters.fechaTo).getTime();
 
-                          // No hay rentabilidad para cancelados -> ignora rangos de rentabilidad
                           return matchesSearch && matchesCantidad && fromOk && toOk;
                         })
                         .sort((a, b) => {
@@ -1490,8 +1424,8 @@ export default function Dashboard() {
               <p className="text-emerald-200/80">Vista general de tu actividad</p>
             </div>
 
-            {/* KPIs */}
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+            {/* KPIs (3 tarjetas) */}
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
               {kpis.map((kpi, i) => (
                 <Card
                   key={i}
@@ -1508,12 +1442,20 @@ export default function Dashboard() {
                         <span className="text-sm">{kpi.change}</span>
                       </div>
                     </div>
+
+                    {/* Barras de progreso para los 2 KPIs solicitados */}
+                    {kpi.title === "Capital Invertido" && (
+                      <ProgressBar percent={110} noteWhenOver100 />
+                    )}
+                    {kpi.title === "Progreso en Meses" && (
+                      <ProgressBar percent={25} />
+                    )}
                   </CardContent>
                 </Card>
               ))}
             </div>
 
-            {/* Producto destacado + gráfico compuesto */}
+            {/* Producto destacado + gráfica (proyección a 10 años) */}
             <Card className="bg-black/40 border border-emerald-500/15 rounded-2xl mb-8">
               <CardContent className="p-8">
                 <div className="text-center mb-6">
@@ -1544,6 +1486,7 @@ export default function Dashboard() {
                 </div>
 
                 <div className="mb-2">
+                  <p className="text-emerald-200/80 text-sm mb-2">Proyección a 10 años</p>
                   <CompoundInterestChart initialAmount={50000} years={10} rate={0.09} className="max-w-7xl mx-auto w-full" />
                 </div>
               </CardContent>
