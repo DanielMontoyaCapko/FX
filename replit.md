@@ -134,6 +134,7 @@ To test the authentication system:
 ## Changelog
 
 Changelog:
+- January 15, 2025. Fixed Vercel deployment error "vite: command not found" by moving Vite and esbuild to production dependencies and creating vercel.json configuration
 - July 16, 2025. Changed navigation button text from "Asesores" to "Partners" for brand consistency
 - July 15, 2025. Implemented automatic scroll to top when navigating between sections via menu
 - July 15, 2025. Updated comparison table to show "Nakama&Partners" instead of "FundedXam Capital"
