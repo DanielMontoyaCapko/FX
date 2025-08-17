@@ -3,7 +3,6 @@ import { useAuth } from "@/hooks/useAuth";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Progress } from "@/components/ui/progress";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -19,7 +18,6 @@ import {
   Calendar,
   LogOut,
   Star,
-  Trophy,
   User,
   FileText,
   Download,
@@ -712,7 +710,7 @@ export default function PartnerDashboard() {
                         >
                           <CardContent className="p-6">
                             <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                              {/* Info */}
+                              {/* Info (izquierda) */}
                               <div className="space-y-4">
                                 <div className="flex items-center space-x-4">
                                   <div className="w-12 h-12 bg-gradient-to-br from-emerald-500/20 to-emerald-500/10 rounded-full flex items-center justify-center">
@@ -759,59 +757,68 @@ export default function PartnerDashboard() {
                                 </div>
                               </div>
 
-                              {/* Detalles */}
+                              {/* Detalles (centro) */}
                               <div className="space-y-4">
                                 <div>
                                   <p className="text-emerald-200/80 text-sm">Inversión Inicial</p>
                                   <p className="text-emerald-50 font-bold text-2xl">
                                     ${client.investment.toLocaleString()}
                                   </p>
-                                  <p className="text-emerald-400 text-sm">
-                                    Rendimientos: +${client.returns.toLocaleString()}
-                                  </p>
+                                  {/* Rendimientos pequeño eliminado para no duplicar */}
                                 </div>
 
                                 <div className="grid grid-cols-2 gap-4 text-sm">
-                                  <div>
-                                    <p className="text-emerald-200/80">Fecha Depósito</p>
-                                    <p className="text-emerald-50 font-medium">
-                                      {new Date(client.depositDate).toLocaleDateString("es-ES")}
-                                    </p>
+                                  {/* Izquierda: Depósito + Interés Compuesto debajo */}
+                                  <div className="space-y-2">
+                                    <div>
+                                      <p className="text-emerald-200/80">Fecha Depósito</p>
+                                      <p className="text-emerald-50 font-medium">
+                                        {new Date(client.depositDate).toLocaleDateString("es-ES")}
+                                      </p>
+                                    </div>
+                                    <div>
+                                      <p className="text-emerald-200/80">Interés Compuesto</p>
+                                      <p
+                                        className={`font-medium ${
+                                          client.compoundInterest ? "text-emerald-400" : "text-amber-400"
+                                        }`}
+                                      >
+                                        {client.compoundInterest ? "Sí" : "No"}
+                                      </p>
+                                    </div>
                                   </div>
+
+                                  {/* Derecha: Fecha de Vencimiento (con estado) */}
                                   <div>
-                                    <p className="text-emerald-200/80">Interés Compuesto</p>
+                                    <p className="text-emerald-200/80">Fecha Vencimiento</p>
+                                    <p className="text-emerald-50 font-medium">
+                                      {new Date(client.maturityDate).toLocaleDateString("es-ES")}
+                                    </p>
                                     <p
-                                      className={`font-medium ${
-                                        client.compoundInterest ? "text-emerald-400" : "text-amber-400"
+                                      className={`text-sm font-medium ${
+                                        isExpired
+                                          ? "text-red-400"
+                                          : isNearMaturity
+                                          ? "text-amber-400"
+                                          : "text-emerald-400"
                                       }`}
                                     >
-                                      {client.compoundInterest ? "Sí" : "No"}
+                                      {isExpired
+                                        ? "Vencido"
+                                        : isNearMaturity
+                                        ? `Vence en ${daysToMaturity} días`
+                                        : `${daysToMaturity} días restantes`}
                                     </p>
                                   </div>
                                 </div>
                               </div>
 
-                              {/* Vencimiento */}
+                              {/* Derecha: Rendimientos grande + botones */}
                               <div className="space-y-4">
                                 <div>
-                                  <p className="text-emerald-200/80 text-sm">Fecha Vencimiento</p>
-                                  <p className="text-emerald-50 font-medium">
-                                    {new Date(client.maturityDate).toLocaleDateString("es-ES")}
-                                  </p>
-                                  <p
-                                    className={`text-sm font-medium ${
-                                      isExpired
-                                        ? "text-red-400"
-                                        : isNearMaturity
-                                        ? "text-amber-400"
-                                        : "text-emerald-400"
-                                    }`}
-                                  >
-                                    {isExpired
-                                      ? "Vencido"
-                                      : isNearMaturity
-                                      ? `Vence en ${daysToMaturity} días`
-                                      : `${daysToMaturity} días restantes`}
+                                  <p className="text-emerald-200/80 text-sm">Rendimientos</p>
+                                  <p className="text-emerald-400 font-extrabold text-3xl">
+                                    +${client.returns.toLocaleString()}
                                   </p>
                                 </div>
 
