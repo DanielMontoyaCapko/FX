@@ -4,6 +4,8 @@ import { QueryClientProvider } from "@tanstack/react-query";
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { AuthProvider } from "@/hooks/useAuth";
+import { LoadingScreen } from "@/components/LoadingScreen";
+import { useState, useEffect } from "react";
 
 import Home from "@/pages/home";
 import Inversiones from "@/pages/inversiones";
@@ -42,6 +44,46 @@ function Router() {
 }
 
 function App() {
+  const [isLoading, setIsLoading] = useState(true);
+  const [showContent, setShowContent] = useState(false);
+
+  const handleLoadingComplete = () => {
+    setIsLoading(false);
+    // Small delay to allow for smooth transition
+    setTimeout(() => {
+      setShowContent(true);
+    }, 300);
+  };
+
+  // Show loading screen on first visit
+  useEffect(() => {
+    const hasVisited = sessionStorage.getItem('nakama-visited');
+    if (hasVisited) {
+      // Skip loading screen if already visited in this session
+      setIsLoading(false);
+      setShowContent(true);
+    }
+  }, []);
+
+  // Mark as visited when loading completes
+  useEffect(() => {
+    if (!isLoading && showContent) {
+      sessionStorage.setItem('nakama-visited', 'true');
+    }
+  }, [isLoading, showContent]);
+
+  if (isLoading) {
+    return <LoadingScreen onLoadingComplete={handleLoadingComplete} />;
+  }
+
+  if (!showContent) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-black via-gray-900 to-black flex items-center justify-center">
+        <div className="w-8 h-8 border-2 border-emerald-400 border-t-transparent rounded-full animate-spin"></div>
+      </div>
+    );
+  }
+
   return (
     <QueryClientProvider client={queryClient}>
       <AuthProvider>
