@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { useLocation } from "wouter";
 
@@ -10,21 +10,25 @@ export default function Hero() {
   const [, setLocation] = useLocation();
   const goToContact = () => setLocation("/contacto");
 
-  // ---- 5 logos (puedes cambiar el orden si quieres)
+  // 5 logos
   const logos = useMemo(() => [ADCB, FAB, NBD, ADCB, FAB], []);
 
-  // ---- Refs para medir y ajustar animación
+  // Refs y ancho del grupo A (para fijar el viewport y que solo se vean 5)
   const trackRef = useRef<HTMLDivElement>(null);
   const groupRef = useRef<HTMLDivElement>(null);
+  const [groupW, setGroupW] = useState(0);
 
   useEffect(() => {
     const update = () => {
       if (!trackRef.current || !groupRef.current) return;
-      const half = groupRef.current.getBoundingClientRect().width; // ancho del GRUPO A
 
-      // ← 20% de la velocidad previa (120 px/s → 24 px/s)
-      const speed = 24;
-      const dur = Math.max(half / speed, 12); // evita duraciones muy cortas
+      // Ancho del grupo A (5 logos)
+      const half = groupRef.current.getBoundingClientRect().width;
+      setGroupW(half); // -> el wrapper tendrá exactamente este ancho
+
+      // Velocidad reducida (px/s)
+      const speed = 12;
+      const dur = Math.max(half / speed, 12);
 
       trackRef.current.style.setProperty("--half", `${half}px`);
       trackRef.current.style.setProperty("--dur", `${dur}s`);
@@ -34,19 +38,10 @@ export default function Hero() {
     if (groupRef.current) ro.observe(groupRef.current);
     update();
 
-    // Recalcular al cargar imágenes
-    const imgs = groupRef.current?.querySelectorAll("img") ?? [];
-    let loaded = 0;
-    imgs.forEach((img) => {
+    // Recalcular cuando carguen las imágenes
+    groupRef.current?.querySelectorAll("img")?.forEach((img) => {
       const el = img as HTMLImageElement;
-      if (el.complete) {
-        loaded++;
-      } else {
-        el.addEventListener("load", () => {
-          loaded++;
-          if (loaded === imgs.length) update();
-        });
-      }
+      if (!el.complete) el.addEventListener("load", update, { once: true });
     });
 
     return () => ro.disconnect();
@@ -54,7 +49,7 @@ export default function Hero() {
 
   return (
     <section id="inicio" className="min-h-[90svh] flex items-start justify-center pt-32 md:pt-40">
-      {/* keyframes + uso de CSS vars */}
+      {/* Keyframes del carrusel */}
       <style>{`
         @keyframes marqueeLoop {
           from { transform: translateX(0); }
@@ -97,20 +92,23 @@ export default function Hero() {
           </div>
         </div>
 
-        {/* Carrusel de logos — loop continuo */}
-        <div className="relative mt-14 max-w-6xl mx-auto">
-          {/* fades laterales */}
-          <div className="pointer-events-none absolute left-0 top-0 h-full w-16 md:w-24 bg-gradient-to-r from-black to-transparent" />
-          <div className="pointer-events-none absolute right-0 top-0 h-full w-16 md:w-24 bg-gradient-to-l from-black to-transparent" />
+        {/* Carrusel (solo 5 logos visibles) */}
+        <div
+          className="relative mt-14 mx-auto"
+          style={{ width: groupW ? `min(100%, ${groupW}px)` : undefined }}
+        >
+          {/* Fades laterales */}
+          <div className="pointer-events-none absolute left-0 top-0 h-full w-12 md:w-16 bg-gradient-to-r from-black to-transparent" />
+          <div className="pointer-events-none absolute right-0 top-0 h-full w-12 md:w-16 bg-gradient-to-l from-black to-transparent" />
 
           <div className="overflow-hidden">
-            {/* track animado: de 0 a -anchoDelGrupoA */}
+            {/* Track animado de 0 a -anchoGrupoA */}
             <div
               ref={trackRef}
               style={{ animation: "marqueeLoop var(--dur, 28s) linear infinite" }}
               className="flex w-max will-change-transform"
             >
-              {/* Grupo A: gap + padding-right = costura */}
+              {/* Grupo A */}
               <div
                 ref={groupRef}
                 className="flex items-center gap-10 md:gap-14 shrink-0 pr-10 md:pr-14"
@@ -120,14 +118,13 @@ export default function Hero() {
                     key={`a-${i}`}
                     src={src}
                     alt={`logo-${i + 1}`}
-                    /* 50% más grande */
                     className="block h-12 md:h-[3.75rem] lg:h-[4.5rem] flex-none opacity-45 hover:opacity-70 transition-opacity duration-300 object-contain grayscale select-none"
                     draggable={false}
                   />
                 ))}
               </div>
 
-              {/* Grupo B (clon 1:1) */}
+              {/* Grupo B (clon) */}
               <div className="flex items-center gap-10 md:gap-14 shrink-0" aria-hidden="true">
                 {logos.map((src, i) => (
                   <img
