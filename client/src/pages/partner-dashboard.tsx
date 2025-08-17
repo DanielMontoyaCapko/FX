@@ -7,6 +7,7 @@ import { Progress } from "@/components/ui/progress";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Label } from "@/components/ui/label";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
   Users,
   TrendingUp,
@@ -25,6 +26,9 @@ import {
   X,
   ExternalLink,
   Globe,
+  Trophy,
+  Camera,
+  Phone,
 } from "lucide-react";
 import logoImg from "@/assets/Logo-removeBG_1752488347081.png";
 import { useScrollToTop } from "@/hooks/useScrollToTop";
@@ -34,12 +38,14 @@ export default function PartnerDashboard() {
   useScrollToTop();
   const { user, logout } = useAuth();
   const [activeTab, setActiveTab] = useState("resumen");
-  const [isEditingProfile, setIsEditingProfile] = useState(false);
+
+  // Datos de perfil (incluye Fecha de registro - NO editable)
   const [profileData, setProfileData] = useState({
     name: user?.name || "Partner Usuario",
     email: user?.email || "",
     phone: "+34 666 555 444",
     birthDate: "15/03/1985",
+    registerDate: "15/01/2024", // NUEVO: campo no editable
     address: "Calle Mayor 123, 4º B, 28001 Madrid, España",
   });
   const [profilePhoto, setProfilePhoto] = useState<string | null>(null);
@@ -63,14 +69,14 @@ export default function PartnerDashboard() {
   const [contractSort, setContractSort] = useState<"" | "amountDesc" | "amountAsc" | "endAsc" | "endDesc">("");
   const [contractFilters, setContractFilters] = useState({
     search: "",
-    status: "",       // "Activo" | "Vigente" | "Vencido"
-    type: "",         // "Partnership" | "Inversión" | "Renovación"
-    tier: "",         // "Elite" | "Premium" | "Standard"
+    status: "", // "Activo" | "Vigente" | "Vencido"
+    type: "", // "Partnership" | "Inversión" | "Renovación"
+    tier: "", // "Elite" | "Premium" | "Standard"
     amountMin: "",
     amountMax: "",
-    signedFrom: "",   // yyyy-mm-dd
-    signedTo: "",     // yyyy-mm-dd
-    vencimiento: "",  // "expiring" | "expired" | "vigente"
+    signedFrom: "", // yyyy-mm-dd
+    signedTo: "", // yyyy-mm-dd
+    vencimiento: "", // "expiring" | "expired" | "vigente"
   });
   // =====================================
 
@@ -108,18 +114,6 @@ export default function PartnerDashboard() {
     setProfileData((prev) => ({ ...prev, [field]: value }));
   };
 
-  const handleSaveProfile = () => setIsEditingProfile(false);
-  const handleCancelEdit = () => {
-    setProfileData({
-      name: user?.name || "Partner Usuario",
-      email: user?.email || "",
-      phone: "+34 666 555 444",
-      birthDate: "15/03/1985",
-      address: "Calle Mayor 123, 4º B, 28001 Madrid, España",
-    });
-    setIsEditingProfile(false);
-  };
-
   // días hasta comisión
   const calculateDaysToCommission = () => {
     const now = new Date();
@@ -127,9 +121,7 @@ export default function PartnerDashboard() {
     const currentMonth = now.getMonth();
     const currentYear = now.getFullYear();
     const nextPayoutDate =
-      currentDay <= 15
-        ? new Date(currentYear, currentMonth, 15)
-        : new Date(currentYear, currentMonth + 1, 15);
+      currentDay <= 15 ? new Date(currentYear, currentMonth, 15) : new Date(currentYear, currentMonth + 1, 15);
     const daysDiff = Math.ceil((nextPayoutDate.getTime() - now.getTime()) / (1000 * 3600 * 24));
     return daysDiff;
   };
@@ -140,9 +132,9 @@ export default function PartnerDashboard() {
     ytdCommission: 186200,
     activeInvestments: 2340000,
     newLeadsThisMonth: 5,
-    tier: "Elite Partner",
     nextTierProgress: 79,
     daysToCommission: calculateDaysToCommission(),
+    tier: "Elite Partner",
   };
 
   return (
@@ -164,11 +156,7 @@ export default function PartnerDashboard() {
         ].join(" ")}
       >
         <div className="flex items-center space-x-3 mb-8">
-          <img
-            src={logoImg}
-            alt="Nakama&Partners"
-            className="w-10 h-10 drop-shadow-[0_0_14px_rgba(16,185,129,0.35)]"
-          />
+          <img src={logoImg} alt="Nakama&Partners" className="w-10 h-10 drop-shadow-[0_0_14px_rgba(16,185,129,0.35)]" />
           <div>
             <h1 className="font-cormorant text-xl font-bold text-emerald-50">Nakama&Partners</h1>
             <p className="text-emerald-300 text-xs">Portal de Partner</p>
@@ -221,103 +209,170 @@ export default function PartnerDashboard() {
 
       {/* Main */}
       <main className="flex-1 p-8 ml-64">
+        {/* ===== PERFIL con bloque a ancho completo (igual que cliente) ===== */}
         {activeTab === "perfil" && (
           <div>
             <h1 className="text-3xl font-bold text-emerald-50 mb-2">Perfil de Partner</h1>
             <p className="text-emerald-200/80 mb-6">Gestiona tu información personal y configuración de cuenta</p>
 
-            <Card className="bg-black/40 backdrop-blur-sm border border-emerald-500/15 max-w-4xl mx-auto rounded-2xl">
-              <CardHeader>
-                <CardTitle className="text-emerald-50">Información Personal</CardTitle>
-                <CardDescription className="text-emerald-200/80">
-                  Datos básicos de tu cuenta de partner
-                </CardDescription>
-              </CardHeader>
-              <CardContent className="space-y-8">
-                {/* Foto */}
-                <div className="flex items-center space-x-6">
-                  <div className="relative">
-                    <div className="w-24 h-24 bg-gradient-to-br from-emerald-500/25 to-emerald-500/10 rounded-full flex items-center justify-center border-2 border-emerald-500/25 overflow-hidden">
-                      {profilePhoto ? (
-                        <img src={profilePhoto} alt="Profile" className="w-full h-full object-cover" />
-                      ) : (
-                        <User className="w-12 h-12 text-emerald-400" />
-                      )}
-                    </div>
-                    <button
-                      onClick={() => document.getElementById("photo-upload")?.click()}
-                      className="absolute bottom-0 right-0 bg-emerald-500 hover:bg-emerald-400 text-black rounded-full p-2 transition-colors"
+            {/* 🔴 CAMBIO: se elimina max-w-4xl mx-auto para ocupar todo el ancho, igual que en Cliente */}
+            <Card className="bg-black/40 backdrop-blur-sm border border-emerald-500/15 rounded-2xl">
+              <CardContent className="p-6">
+                <Tabs defaultValue="personal" className="w-full">
+                  <TabsList className="grid w-full grid-cols-2 bg-black/40 border border-emerald-500/15 rounded-xl">
+                    <TabsTrigger
+                      value="personal"
+                      className="data-[state=active]:bg-emerald-600/20 data-[state=active]:text-emerald-50 rounded-lg"
                     >
-                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" />
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 13a3 3 0 11-6 0 3 3 0 016 0z" />
-                      </svg>
-                    </button>
-                    <input id="photo-upload" type="file" accept="image/*" onChange={handlePhotoUpload} className="hidden" />
-                  </div>
-                  <div>
-                    <h3 className="text-emerald-50 text-lg font-semibold">{profileData.name}</h3>
-                    <p className="text-emerald-200/80">Foto de perfil</p>
-                    <Button
-                      variant="outline"
-                      onClick={() => document.getElementById("photo-upload")?.click()}
-                      className="mt-2 border-emerald-500/20 text-emerald-50 hover:bg-emerald-900/10"
+                      Información Personal
+                    </TabsTrigger>
+                    <TabsTrigger
+                      value="kyc"
+                      className="data-[state=active]:bg-emerald-600/20 data-[state=active]:text-emerald-50 rounded-lg"
                     >
-                      Cambiar foto
-                    </Button>
-                  </div>
-                </div>
+                      Estado KYC
+                    </TabsTrigger>
+                  </TabsList>
 
-                {/* Datos */}
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  {[
-                    { key: "name", label: "Nombre Completo", type: "text" },
-                    { key: "email", label: "Email", type: "email" },
-                    { key: "phone", label: "Número de Teléfono", type: "tel" },
-                    { key: "birthDate", label: "Fecha de Nacimiento", type: "text" },
-                    { key: "address", label: "Dirección", type: "text", full: true },
-                  ].map(({ key, label, type, full }) => (
-                    <div key={key} className={`space-y-2 ${full ? "md:col-span-2" : ""}`}>
-                      <label className="text-emerald-50 text-sm font-medium">{label}</label>
-                      {isEditingProfile ? (
-                        <Input
-                          type={type as any}
-                          value={(profileData as any)[key]}
-                          onChange={(e) => handleProfileInputChange(key, e.target.value)}
-                          className="bg-black/30 border-emerald-500/20 text-emerald-50 placeholder:text-emerald-200/60"
-                        />
-                      ) : (
-                        <div className="bg-black/30 p-3 rounded-lg border border-emerald-500/20">
-                          <p className="text-emerald-50">{(profileData as any)[key]}</p>
+                  {/* === Información Personal (como en cliente) === */}
+                  <TabsContent value="personal" className="mt-6">
+                    <form className="space-y-6">
+                      {/* Foto de perfil + botón cámara */}
+                      <div className="flex flex-col items-center mb-8">
+                        <div className="relative mb-4">
+                          <div className="w-32 h-32 rounded-full overflow-hidden bg-black/50 border-2 border-emerald-500/20 flex items-center justify-center">
+                            {profilePhoto ? (
+                              <img src={profilePhoto} alt="Foto de perfil" className="w-full h-full object-cover" />
+                            ) : (
+                              <User className="w-16 h-16 text-emerald-300" />
+                            )}
+                          </div>
+                          <label
+                            htmlFor="photo-upload"
+                            className="absolute bottom-0 right-0 bg-emerald-600 hover:bg-emerald-500 rounded-full p-2 cursor-pointer transition-colors"
+                          >
+                            <Camera className="w-4 h-4 text-white" />
+                          </label>
+                          <input id="photo-upload" type="file" accept="image/*" onChange={handlePhotoUpload} className="hidden" />
                         </div>
-                      )}
-                    </div>
-                  ))}
-                </div>
+                        <p className="text-emerald-200/80 text-sm text-center">Haz clic en el icono de cámara para subir tu foto</p>
+                      </div>
 
-                <div className="flex justify-end space-x-4">
-                  {isEditingProfile ? (
-                    <>
-                      <Button
-                        variant="outline"
-                        onClick={handleCancelEdit}
-                        className="border-emerald-500/20 text-emerald-50 hover:bg-emerald-900/10"
-                      >
-                        Cancelar
-                      </Button>
-                      <Button className="bg-gradient-to-r from-emerald-600 to-emerald-500 hover:from-emerald-500 hover:to-emerald-400 text-white px-8">
-                        Guardar Cambios
-                      </Button>
-                    </>
-                  ) : (
-                    <Button
-                      onClick={() => setIsEditingProfile(true)}
-                      className="bg-gradient-to-r from-emerald-600 to-emerald-500 hover:from-emerald-500 hover:to-emerald-400 text-white px-8"
-                    >
-                      Editar Información
-                    </Button>
-                  )}
-                </div>
+                      {/* Campos */}
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div>
+                          <Label htmlFor="nombre" className="text-emerald-50">
+                            Nombre Completo
+                          </Label>
+                          <Input
+                            id="nombre"
+                            value={profileData.name}
+                            onChange={(e) => handleProfileInputChange("name", e.target.value)}
+                            className="bg-black/50 border-emerald-500/20 text-emerald-50"
+                          />
+                        </div>
+                        <div>
+                          <Label htmlFor="email" className="text-emerald-50">
+                            Correo Electrónico
+                          </Label>
+                          <Input
+                            id="email"
+                            value={profileData.email}
+                            disabled
+                            className="bg-black/60 border-emerald-500/20 text-emerald-300/80 cursor-not-allowed"
+                          />
+                        </div>
+                      </div>
+
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div>
+                          <Label htmlFor="telefono" className="text-emerald-50">
+                            Número de Teléfono
+                          </Label>
+                          <div className="relative">
+                            <Phone className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-emerald-300/70" />
+                            <Input
+                              id="telefono"
+                              value={profileData.phone}
+                              onChange={(e) => handleProfileInputChange("phone", e.target.value)}
+                              placeholder="Ej: +34 666 555 444"
+                              className="bg-black/50 border-emerald-500/20 text-emerald-50 pl-10"
+                            />
+                          </div>
+                        </div>
+                        <div>
+                          <Label htmlFor="fecha-nacimiento" className="text-emerald-50">
+                            Fecha de Nacimiento
+                          </Label>
+                          <Input
+                            id="fecha-nacimiento"
+                            value={profileData.birthDate}
+                            onChange={(e) => handleProfileInputChange("birthDate", e.target.value)}
+                            className="bg-black/50 border-emerald-500/20 text-emerald-50"
+                          />
+                        </div>
+                      </div>
+
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div>
+                          <Label htmlFor="fecha-registro" className="text-emerald-50">
+                            Fecha de Registro
+                          </Label>
+                          <Input
+                            id="fecha-registro"
+                            value={profileData.registerDate}
+                            disabled
+                            className="bg-black/60 border-emerald-500/20 text-emerald-300/80 cursor-not-allowed"
+                          />
+                        </div>
+                        <div />
+                      </div>
+
+                      <div>
+                        <Label htmlFor="direccion" className="text-emerald-50">
+                          Dirección
+                        </Label>
+                        <Input
+                          id="direccion"
+                          value={profileData.address}
+                          onChange={(e) => handleProfileInputChange("address", e.target.value)}
+                          className="bg-black/50 border-emerald-500/20 text-emerald-50"
+                        />
+                      </div>
+
+                      <div className="pt-4">
+                        <Button
+                          type="submit"
+                          className="w-full rounded-xl bg-gradient-to-r from-emerald-600 to-emerald-500 hover:from-emerald-500 hover:to-emerald-400 text-white font-semibold"
+                          onClick={(e) => {
+                            e.preventDefault();
+                            // Aquí iría tu lógica de guardado
+                          }}
+                        >
+                          ACTUALIZAR INFORMACIÓN PERSONAL
+                        </Button>
+                      </div>
+                    </form>
+                  </TabsContent>
+
+                  {/* === Estado KYC (igual que cliente) === */}
+                  <TabsContent value="kyc" className="mt-6">
+                    <div className="bg-black/40 rounded-xl p-8 border border-emerald-500/15">
+                      <div className="flex items-center justify-center mb-6">
+                        <div className="bg-emerald-500/20 rounded-full p-3 mr-4">
+                          <User className="h-8 w-8 text-emerald-400" />
+                        </div>
+                        <div className="text-left">
+                          <h3 className="text-2xl font-bold text-emerald-50 mb-1">Verificación KYC</h3>
+                          <p className="text-emerald-200/80">¡Tu cuenta está verificada! Ya puedes operar sin límites.</p>
+                        </div>
+                        <div className="ml-auto">
+                          <Badge className="bg-emerald-500 text-black px-4 py-2 text-sm font-semibold">Approved</Badge>
+                        </div>
+                      </div>
+                    </div>
+                  </TabsContent>
+                </Tabs>
               </CardContent>
             </Card>
           </div>
@@ -374,7 +429,7 @@ export default function PartnerDashboard() {
                 ))}
               </div>
 
-              {/* Tarjeta alargada de progreso (fila completa) */}
+              {/* Tarjeta alargada de progreso */}
               <Card className="bg-black/40 border border-emerald-500/15 rounded-2xl shadow-[0_0_0_1px_rgba(16,185,129,0.12),0_20px_60px_-20px_rgba(16,185,129,0.25)] mb-8">
                 <CardContent className="p-6">
                   <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-6">
@@ -400,7 +455,7 @@ export default function PartnerDashboard() {
               </Card>
             </div>
 
-            {/* Métricas secundarias (3 tarjetas) */}
+            {/* Métricas secundarias */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
               {[
                 { label: "Clientes Activos", value: partnerStats.totalClients, icon: Users },
@@ -444,9 +499,7 @@ export default function PartnerDashboard() {
         {activeTab === "clientes" && (
           <div>
             <h1 className="text-3xl font-bold text-emerald-50 mb-2">Gestión de Clientes</h1>
-            <p className="text-emerald-200/80 mb-6">
-              Administra tu cartera de inversores y gestiona renovaciones
-            </p>
+            <p className="text-emerald-200/80 mb-6">Administra tu cartera de inversores y gestiona renovaciones</p>
 
             {/* Filtros */}
             <div className="mb-6">
@@ -605,9 +658,7 @@ export default function PartnerDashboard() {
             <Card className="bg-black/40 border border-emerald-500/15 rounded-2xl">
               <CardHeader>
                 <CardTitle className="text-emerald-50">Cartera de Clientes</CardTitle>
-                <CardDescription className="text-emerald-200/80">
-                  Información detallada para seguimiento y renovaciones
-                </CardDescription>
+                <CardDescription className="text-emerald-200/80">Información detallada para seguimiento y renovaciones</CardDescription>
               </CardHeader>
               <CardContent>
                 <div className="space-y-6">
@@ -701,11 +752,7 @@ export default function PartnerDashboard() {
                         <Card
                           key={index}
                           className={`bg-black/30 border ${
-                            isNearMaturity
-                              ? "border-amber-500/50"
-                              : isExpired
-                              ? "border-red-500/50"
-                              : "border-emerald-500/15"
+                            isNearMaturity ? "border-amber-500/50" : isExpired ? "border-red-500/50" : "border-emerald-500/15"
                           } hover:bg-black/40 transition-all rounded-2xl`}
                         >
                           <CardContent className="p-6">
@@ -761,14 +808,11 @@ export default function PartnerDashboard() {
                               <div className="space-y-4">
                                 <div>
                                   <p className="text-emerald-200/80 text-sm">Inversión Inicial</p>
-                                  <p className="text-emerald-50 font-bold text-2xl">
-                                    ${client.investment.toLocaleString()}
-                                  </p>
-                                  {/* Rendimientos pequeño eliminado para no duplicar */}
+                                  <p className="text-emerald-50 font-bold text-2xl">${client.investment.toLocaleString()}</p>
                                 </div>
 
                                 <div className="grid grid-cols-2 gap-4 text-sm">
-                                  {/* Izquierda: Depósito + Interés Compuesto debajo */}
+                                  {/* Izquierda: Depósito + Interés Compuesto */}
                                   <div className="space-y-2">
                                     <div>
                                       <p className="text-emerald-200/80">Fecha Depósito</p>
@@ -778,17 +822,13 @@ export default function PartnerDashboard() {
                                     </div>
                                     <div>
                                       <p className="text-emerald-200/80">Interés Compuesto</p>
-                                      <p
-                                        className={`font-medium ${
-                                          client.compoundInterest ? "text-emerald-400" : "text-amber-400"
-                                        }`}
-                                      >
+                                      <p className={`font-medium ${client.compoundInterest ? "text-emerald-400" : "text-amber-400"}`}>
                                         {client.compoundInterest ? "Sí" : "No"}
                                       </p>
                                     </div>
                                   </div>
 
-                                  {/* Derecha: Fecha de Vencimiento (con estado) */}
+                                  {/* Derecha: Vencimiento */}
                                   <div>
                                     <p className="text-emerald-200/80">Fecha Vencimiento</p>
                                     <p className="text-emerald-50 font-medium">
@@ -796,11 +836,7 @@ export default function PartnerDashboard() {
                                     </p>
                                     <p
                                       className={`text-sm font-medium ${
-                                        isExpired
-                                          ? "text-red-400"
-                                          : isNearMaturity
-                                          ? "text-amber-400"
-                                          : "text-emerald-400"
+                                        isExpired ? "text-red-400" : isNearMaturity ? "text-amber-400" : "text-emerald-400"
                                       }`}
                                     >
                                       {isExpired
@@ -813,13 +849,11 @@ export default function PartnerDashboard() {
                                 </div>
                               </div>
 
-                              {/* Derecha: Rendimientos grande + botones */}
+                              {/* Derecha: Rendimientos + botones */}
                               <div className="space-y-4">
                                 <div>
                                   <p className="text-emerald-200/80 text-sm">Rendimientos</p>
-                                  <p className="text-emerald-400 font-extrabold text-3xl">
-                                    +${client.returns.toLocaleString()}
-                                  </p>
+                                  <p className="text-emerald-400 font-extrabold text-3xl">+${client.returns.toLocaleString()}</p>
                                 </div>
 
                                 <div className="space-y-2">
@@ -907,10 +941,7 @@ export default function PartnerDashboard() {
                       {/* Estado */}
                       <div className="space-y-2">
                         <Label className="text-emerald-50">Estado</Label>
-                        <Select
-                          value={contractFilters.status}
-                          onValueChange={(value) => setContractFilters({ ...contractFilters, status: value })}
-                        >
+                        <Select value={contractFilters.status} onValueChange={(value) => setContractFilters({ ...contractFilters, status: value })}>
                           <SelectTrigger className="bg-black/50 border-emerald-500/20 text-emerald-50">
                             <SelectValue placeholder="Todos" />
                           </SelectTrigger>
@@ -925,10 +956,7 @@ export default function PartnerDashboard() {
                       {/* Tipo */}
                       <div className="space-y-2">
                         <Label className="text-emerald-50">Tipo</Label>
-                        <Select
-                          value={contractFilters.type}
-                          onValueChange={(value) => setContractFilters({ ...contractFilters, type: value })}
-                        >
+                        <Select value={contractFilters.type} onValueChange={(value) => setContractFilters({ ...contractFilters, type: value })}>
                           <SelectTrigger className="bg-black/50 border-emerald-500/20 text-emerald-50">
                             <SelectValue placeholder="Todos" />
                           </SelectTrigger>
@@ -943,10 +971,7 @@ export default function PartnerDashboard() {
                       {/* Tier */}
                       <div className="space-y-2">
                         <Label className="text-emerald-50">Tier</Label>
-                        <Select
-                          value={contractFilters.tier}
-                          onValueChange={(value) => setContractFilters({ ...contractFilters, tier: value })}
-                        >
+                        <Select value={contractFilters.tier} onValueChange={(value) => setContractFilters({ ...contractFilters, tier: value })}>
                           <SelectTrigger className="bg-black/50 border-emerald-500/20 text-emerald-50">
                             <SelectValue placeholder="Todos" />
                           </SelectTrigger>
@@ -1001,10 +1026,7 @@ export default function PartnerDashboard() {
                       {/* Vencimiento */}
                       <div className="space-y-2">
                         <Label className="text-emerald-50">Vencimiento</Label>
-                        <Select
-                          value={contractFilters.vencimiento}
-                          onValueChange={(value) => setContractFilters({ ...contractFilters, vencimiento: value })}
-                        >
+                        <Select value={contractFilters.vencimiento} onValueChange={(value) => setContractFilters({ ...contractFilters, vencimiento: value })}>
                           <SelectTrigger className="bg-black/50 border-emerald-500/20 text-emerald-50">
                             <SelectValue placeholder="Todos" />
                           </SelectTrigger>
@@ -1117,7 +1139,6 @@ export default function PartnerDashboard() {
 
               const filteredContracts = contractsData
                 .filter((c) => {
-                  // Búsqueda
                   const q = contractFilters.search.toLowerCase();
                   const matchesSearch =
                     !q ||
@@ -1126,44 +1147,27 @@ export default function PartnerDashboard() {
                     c.client.toLowerCase().includes(q) ||
                     c.type.toLowerCase().includes(q);
 
-                  // Estado, tipo, tier
                   const matchesStatus = !contractFilters.status || c.status === contractFilters.status;
                   const matchesType = !contractFilters.type || c.type === contractFilters.type;
                   const matchesTier = !contractFilters.tier || c.tier === contractFilters.tier;
 
-                  // Importe (solo contratos con investment)
                   const hasAmountFilter = contractFilters.amountMin !== "" || contractFilters.amountMax !== "";
                   const minA = contractFilters.amountMin ? parseFloat(contractFilters.amountMin) : -Infinity;
                   const maxA = contractFilters.amountMax ? parseFloat(contractFilters.amountMax) : Infinity;
-                  const matchesAmount = hasAmountFilter
-                    ? c.investment !== null && c.investment >= minA && c.investment <= maxA
-                    : true;
+                  const matchesAmount = hasAmountFilter ? c.investment !== null && c.investment >= minA && c.investment <= maxA : true;
 
-                  // Fechas firmado
                   const signed = new Date(c.signedDate).getTime();
                   const fromOk = !contractFilters.signedFrom || signed >= new Date(contractFilters.signedFrom).getTime();
                   const toOk = !contractFilters.signedTo || signed <= new Date(contractFilters.signedTo).getTime();
 
-                  // Vencimiento relativo
-                  const daysToEnd = Math.ceil(
-                    (new Date(c.endDate).getTime() - new Date().getTime()) / (1000 * 3600 * 24)
-                  );
+                  const daysToEnd = Math.ceil((new Date(c.endDate).getTime() - new Date().getTime()) / (1000 * 3600 * 24));
                   const matchesVenc =
                     !contractFilters.vencimiento ||
                     (contractFilters.vencimiento === "expiring" && daysToEnd <= 30 && daysToEnd > 0) ||
                     (contractFilters.vencimiento === "expired" && daysToEnd <= 0) ||
                     (contractFilters.vencimiento === "vigente" && daysToEnd > 30);
 
-                  return (
-                    matchesSearch &&
-                    matchesStatus &&
-                    matchesType &&
-                    matchesTier &&
-                    matchesAmount &&
-                    fromOk &&
-                    toOk &&
-                    matchesVenc
-                  );
+                  return matchesSearch && matchesStatus && matchesType && matchesTier && matchesAmount && fromOk && toOk && matchesVenc;
                 })
                 .sort((a, b) => {
                   if (contractSort === "amountDesc") {
@@ -1211,24 +1215,21 @@ export default function PartnerDashboard() {
                               width: `${Math.min(
                                 100,
                                 (filteredContracts.filter((c) => c.type === "Inversión").length /
-                                  Math.max(1, filteredContracts.length)) * 100
+                                  Math.max(1, filteredContracts.length)) *
+                                  100
                               ).toFixed(0)}%`,
                             }}
                           />
                         </div>
-                        <p className="text-emerald-200/80 text-xs">
-                          * La barra muestra el porcentaje de contratos de Inversión sobre el total filtrado.
-                        </p>
+                        <p className="text-emerald-200/80 text-xs">* La barra muestra el porcentaje de contratos de Inversión sobre el total filtrado.</p>
                       </div>
                     </CardContent>
                   </Card>
 
-                  {/* Cards de contratos (filtrados) */}
+                  {/* Cards de contratos (uniformes) */}
                   <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                     {filteredContracts.map((contract, index) => {
-                      const daysToEnd = Math.ceil(
-                        (new Date(contract.endDate).getTime() - new Date().getTime()) / (1000 * 3600 * 24)
-                      );
+                      const daysToEnd = Math.ceil((new Date(contract.endDate).getTime() - new Date().getTime()) / (1000 * 3600 * 24));
                       const isExpiring = daysToEnd <= 30 && daysToEnd > 0;
                       const isExpired = daysToEnd <= 0;
 
@@ -1249,27 +1250,16 @@ export default function PartnerDashboard() {
                                   <h3 className="text-emerald-50 font-semibold text-lg">{contract.title}</h3>
                                   <p className="text-emerald-200/80 text-sm">{contract.client}</p>
 
-                                  {contract.type === "Inversión" && (
+                                  {/* Tier uniforme */}
+                                  {contract.tier && (
                                     <div className="mt-2">
-                                      <Badge
-                                        className={`text-sm px-3 py-1 font-bold ${
-                                          contract.tier === "Premium"
-                                            ? "bg-gradient-to-r from-amber-400 to-amber-600 text-black shadow"
-                                            : contract.tier === "Standard"
-                                            ? "bg-gradient-to-r from-blue-500 to-blue-700 text-white shadow"
-                                            : "bg-gradient-to-r from-purple-500 to-purple-700 text-white shadow"
-                                        }`}
-                                      >
-                                        {contract.tier === "Premium"
-                                          ? "⭐ CLIENTE PREMIUM"
-                                          : contract.tier === "Standard"
-                                          ? "📋 CLIENTE STANDARD"
-                                          : "👑 ELITE"}
+                                      <Badge variant="outline" className="text-xs border-emerald-500/25 text-emerald-200">
+                                        {contract.tier}
                                       </Badge>
                                     </div>
                                   )}
 
-                                  {contract.investment && (
+                                  {typeof contract.investment === "number" && (
                                     <p className="text-emerald-400 font-semibold text-lg mt-1">
                                       ${contract.investment.toLocaleString()}
                                     </p>
@@ -1291,9 +1281,7 @@ export default function PartnerDashboard() {
                                   {contract.status}
                                 </Badge>
 
-                                {isExpiring && (
-                                  <div className="text-amber-400 text-xs font-semibold">⚠️ Vence en {daysToEnd} días</div>
-                                )}
+                                {isExpiring && <div className="text-amber-400 text-xs font-semibold">⚠️ Vence en {daysToEnd} días</div>}
                                 {isExpired && <div className="text-red-400 text-xs font-semibold">❌ Vencido</div>}
                               </div>
                             </div>
@@ -1315,9 +1303,7 @@ export default function PartnerDashboard() {
                                 <div className="grid grid-cols-2 gap-4">
                                   <div className="text-center">
                                     <span className="text-emerald-400 text-xs font-medium block">INICIO</span>
-                                    <p className="text-emerald-50 font-bold text-lg">
-                                      {new Date(contract.signedDate).toLocaleDateString("es-ES")}
-                                    </p>
+                                    <p className="text-emerald-50 font-bold text-lg">{new Date(contract.signedDate).toLocaleDateString("es-ES")}</p>
                                   </div>
                                   <div className="text-center">
                                     <span
@@ -1342,29 +1328,24 @@ export default function PartnerDashboard() {
                                     <div className="flex justify-between text-xs mb-1">
                                       <span className="text-emerald-200/80">Progreso del contrato</span>
                                       <span className="text-emerald-50">
-                                        {
-                                          Math.min(
-                                            100,
-                                            Math.max(
-                                              0,
-                                              Math.round(
-                                                ((new Date().getTime() - new Date(contract.signedDate).getTime()) /
-                                                  (new Date(contract.endDate).getTime() -
-                                                    new Date(contract.signedDate).getTime())) *
-                                                  100
-                                              )
+                                        {Math.min(
+                                          100,
+                                          Math.max(
+                                            0,
+                                            Math.round(
+                                              ((new Date().getTime() - new Date(contract.signedDate).getTime()) /
+                                                (new Date(contract.endDate).getTime() - new Date(contract.signedDate).getTime())) *
+                                                100
                                             )
                                           )
-                                        }
+                                        )}
                                         %
                                       </span>
                                     </div>
                                     <div className="w-full bg-black/50 rounded-full h-2">
                                       <div
                                         className={`h-2 rounded-full ${
-                                          isExpiring
-                                            ? "bg-gradient-to-r from-amber-400 to-amber-600"
-                                            : "bg-gradient-to-r from-emerald-500 to-emerald-400"
+                                          isExpiring ? "bg-gradient-to-r from-amber-400 to-amber-600" : "bg-gradient-to-r from-emerald-500 to-emerald-400"
                                         }`}
                                         style={{
                                           width: `${Math.min(
@@ -1372,8 +1353,7 @@ export default function PartnerDashboard() {
                                             Math.max(
                                               0,
                                               ((new Date().getTime() - new Date(contract.signedDate).getTime()) /
-                                                (new Date(contract.endDate).getTime() -
-                                                  new Date(contract.signedDate).getTime())) *
+                                                (new Date(contract.endDate).getTime() - new Date(contract.signedDate).getTime())) *
                                                 100
                                             )
                                           )}%`,
@@ -1400,9 +1380,7 @@ export default function PartnerDashboard() {
                               <Button variant="outline" className="border-emerald-500/20 text-emerald-50 hover:bg-emerald-900/10">
                                 Ver Detalles
                               </Button>
-                              {isExpiring && (
-                                <Button className="bg-amber-500 hover:bg-amber-600 text-black">Renovar</Button>
-                              )}
+                              {isExpiring && <Button className="bg-amber-500 hover:bg-amber-600 text-black">Renovar</Button>}
                             </div>
                           </CardContent>
                         </Card>
@@ -1451,21 +1429,18 @@ export default function PartnerDashboard() {
 
                 <h2 className="text-2xl font-bold text-emerald-50 mb-4">Calendario de Citas</h2>
                 <p className="text-emerald-200/80 mb-6">
-                  Programa y gestiona reuniones con clientes potenciales y existentes. Sincroniza tu
-                  calendario y configura recordatorios automáticos.
+                  Programa y gestiona reuniones con clientes potenciales y existentes. Sincroniza tu calendario y configura recordatorios automáticos.
                 </p>
 
                 <div className="space-y-4 mb-6">
-                  {[
-                    "Sincronización con Google Calendar",
-                    "Recordatorios automáticos por email",
-                    "Enlaces de videollamada automáticos",
-                  ].map((t, i) => (
-                    <div key={i} className="flex items-center justify-center space-x-3 text-emerald-200/80">
-                      <div className="w-2 h-2 bg-emerald-400 rounded-full" />
-                      <span>{t}</span>
-                    </div>
-                  ))}
+                  {["Sincronización con Google Calendar", "Recordatorios automáticos por email", "Enlaces de videollamada automáticos"].map(
+                    (t, i) => (
+                      <div key={i} className="flex items-center justify-center space-x-3 text-emerald-200/80">
+                        <div className="w-2 h-2 bg-emerald-400 rounded-full" />
+                        <span>{t}</span>
+                      </div>
+                    )
+                  )}
                 </div>
 
                 <Button
@@ -1478,15 +1453,13 @@ export default function PartnerDashboard() {
               </CardContent>
             </Card>
 
-            {/* ===== NUEVO: Visor integrado de Google Calendar ===== */}
+            {/* ===== Visor integrado de Google Calendar ===== */}
             <Card className="bg-black/40 border border-emerald-500/15 rounded-2xl">
               <CardHeader className="pb-2">
                 <div className="flex items-center justify-between">
                   <div>
                     <CardTitle className="text-emerald-50">Google Calendar (Demo Integrado)</CardTitle>
-                    <CardDescription className="text-emerald-200/80">
-                      Vista embebida de un calendario público de ejemplo (Festivos España).
-                    </CardDescription>
+                    <CardDescription className="text-emerald-200/80">Vista embebida de un calendario público de ejemplo (Festivos España).</CardDescription>
                   </div>
                   <div className="hidden sm:flex items-center gap-2">
                     <Button onClick={handleOpenGoogleCalendar} variant="outline" className="border-emerald-500/20">
