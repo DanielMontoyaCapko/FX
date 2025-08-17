@@ -25,6 +25,9 @@ import {
   Download,
   Filter,
   X,
+  User as UserIcon,
+  Crown,
+  Calendar,
 } from "lucide-react";
 import {
   PieChart as RechartsPieChart,
@@ -132,6 +135,9 @@ export default function AdminDashboard() {
   });
   const [kycSort, setKycSort] = useState<"" | "created_desc" | "created_asc" | "name_asc" | "name_desc">("");
 
+  // 🔹 NUEVO: filtro específico por Estado (Aprobado / Rechazado) en filtros avanzados
+  const [kycStateAr, setKycStateAr] = useState<"" | "approved" | "rejected">("");
+
   // Productos
   const [productSearch, setProductSearch] = useState("");
   const [showProductFilters, setShowProductFilters] = useState(false);
@@ -169,6 +175,9 @@ export default function AdminDashboard() {
   const [editingProduct, setEditingProduct] = useState<ProductData | null>(null);
   const [editingKyc, setEditingKyc] = useState<KycData | null>(null);
   const [editingContract, setEditingContract] = useState<any>(null);
+
+  // NUEVO: ficha de usuario (perfil detallado)
+  const [selectedUser, setSelectedUser] = useState<UserData | null>(null);
 
   // Form states
   const [newUser, setNewUser] = useState({
@@ -211,7 +220,7 @@ export default function AdminDashboard() {
     return "Otro";
   };
 
-  // Overrides explícitos por nombre (lo pedido: Juan -> Hombre, María/Maria -> Mujer)
+  // Overrides explícitos por nombre
   const NAME_GENDER_OVERRIDES: Record<string, "Hombre" | "Mujer"> = {
     juan: "Hombre",
     maria: "Mujer",
@@ -304,6 +313,8 @@ export default function AdminDashboard() {
     t.setHours(23, 59, 59, 999);
     return t;
   };
+  const fmtEur = (n: number) =>
+    new Intl.NumberFormat("es-ES", { style: "currency", currency: "EUR", maximumFractionDigits: 0 }).format(n);
 
   // Unique values for dropdowns
   const userGrades = Array.from(new Set(users.map((u) => u.grade).filter(Boolean))) as string[];
@@ -364,6 +375,8 @@ export default function AdminDashboard() {
     .filter((k) =>
       kycAdvancedFilters.dateTo ? new Date(k.createdAt) <= endOfDay(kycAdvancedFilters.dateTo) : true
     )
+    // 🔹 Aplicar Estado Aprobado/Rechazado (ignora pendientes)
+    .filter((k) => (kycStateAr ? k.status === kycStateAr : true))
     .sort((a, b) => {
       if (kycSort === "created_desc") return +new Date(b.createdAt) - +new Date(a.createdAt);
       if (kycSort === "created_asc") return +new Date(a.createdAt) - +new Date(b.createdAt);
@@ -444,7 +457,7 @@ export default function AdminDashboard() {
       return 0;
     });
 
-  // ===== CRUD handlers (sin cambios) =====
+  // ===== CRUD handlers (sin cambios relevantes) =====
   const handleCreateUser = async () => {
     try {
       if (!newUser.name || !newUser.email) {
@@ -759,6 +772,27 @@ export default function AdminDashboard() {
       console.error("Error updating contract:", error);
       alert("Error de conexión al actualizar contrato");
     }
+  };
+
+  // ===== Navegación a FICHA de usuario (mejora botón "ver") =====
+  const openUserProfileById = (id: number) => {
+    const u = users.find((x) => x.id === id);
+    if (!u) {
+      alert("Usuario no encontrado.");
+      return;
+    }
+    setSelectedUser(u);
+    setActiveTab("usuario_ficha");
+    setLocation(`/admin/usuarios/${id}`);
+  };
+
+  const openUserProfileByName = (fullName: string) => {
+    const u = users.find((x) => x.name.toLowerCase() === fullName.toLowerCase());
+    if (!u) {
+      alert("No se encontró un usuario con ese nombre.");
+      return;
+    }
+    openUserProfileById(u.id);
   };
 
   if (loading) {
@@ -1190,7 +1224,13 @@ export default function AdminDashboard() {
                           </td>
                           <td className="p-4">
                             <div className="flex space-x-2">
-                              <Button size="sm" variant="outline" className="border-emerald-500/20 text-emerald-50">
+                              <Button
+                                size="sm"
+                                variant="outline"
+                                className="border-emerald-500/20 text-emerald-50"
+                                onClick={() => openUserProfileById(u.id)}
+                                title="Ver ficha del usuario"
+                              >
                                 <Eye className="w-4 h-4" />
                               </Button>
                               <Button
@@ -1353,6 +1393,7 @@ export default function AdminDashboard() {
               </Button>
               {(kycFilter !== "all" ||
                 Object.values(kycAdvancedFilters).some((v) => v) ||
+                kycStateAr ||
                 kycSort ||
                 kycSearch) && (
                 <Button
@@ -1360,6 +1401,7 @@ export default function AdminDashboard() {
                   onClick={() => {
                     setKycFilter("all");
                     setKycAdvancedFilters({ documentType: "", country: "", dateFrom: "", dateTo: "" });
+                    setKycStateAr("");
                     setKycSort("");
                     setKycSearch("");
                   }}
@@ -1446,6 +1488,20 @@ export default function AdminDashboard() {
                         className="bg-black/50 border-emerald-500/20 text-emerald-50"
                       />
                     </div>
+
+                    {/* Estado (A/R) — al final */}
+                    <div className="space-y-2">
+                      <Label className="text-emerald-50">Estado (A/R)</Label>
+                      <Select value={kycStateAr} onValueChange={(v: any) => setKycStateAr(v)}>
+                        <SelectTrigger className="bg-black/50 border-emerald-500/20 text-emerald-50">
+                          <SelectValue placeholder="Todos" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="approved">Aprobado</SelectItem>
+                          <SelectItem value="rejected">Rechazado</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
                   </div>
                 </CardContent>
               </Card>
@@ -1495,7 +1551,13 @@ export default function AdminDashboard() {
                           </td>
                           <td className="p-4">
                             <div className="flex space-x-2">
-                              <Button size="sm" variant="outline" className="border-emerald-500/20 text-emerald-50">
+                              <Button
+                                size="sm"
+                                variant="outline"
+                                className="border-emerald-500/20 text-emerald-50"
+                                onClick={() => openUserProfileByName(record.fullName)}
+                                title="Ver ficha del usuario"
+                              >
                                 <Eye className="w-4 h-4" />
                               </Button>
                               <Button
@@ -2090,7 +2152,13 @@ export default function AdminDashboard() {
                           </td>
                           <td className="p-4">
                             <div className="flex space-x-2">
-                              <Button size="sm" variant="outline" className="border-emerald-500/20 text-emerald-50">
+                              <Button
+                                size="sm"
+                                variant="outline"
+                                className="border-emerald-500/20 text-emerald-50"
+                                title="Ver ficha del usuario"
+                                onClick={() => openUserProfileById(contract.userId)}
+                              >
                                 <Eye className="w-4 h-4" />
                               </Button>
                               <Button
@@ -2117,6 +2185,262 @@ export default function AdminDashboard() {
                 </div>
               </CardContent>
             </Card>
+          </div>
+        )}
+
+        {/* ====== FICHA DETALLADA DE USUARIO ====== */}
+        {activeTab === "usuario_ficha" && selectedUser && (
+          <div>
+            <div className="flex items-center justify-between mb-6">
+              <div className="flex items-center gap-3">
+                <div className="w-12 h-12 rounded-full bg-emerald-500/20 flex items-center justify-center">
+                  <UserIcon className="w-6 h-6 text-emerald-400" />
+                </div>
+                <div>
+                  <h1 className="text-3xl font-bold text-emerald-50">{selectedUser.name}</h1>
+                  <p className="text-emerald-200/80">{selectedUser.email}</p>
+                </div>
+              </div>
+
+              <div className="flex items-center gap-2">
+                <Badge className={selectedUser.role === "partner" ? "bg-emerald-500 text-black" : "bg-emerald-900/30 text-emerald-200"}>
+                  {selectedUser.role === "admin" ? "Administrador" : selectedUser.role === "partner" ? "Asesor" : "Cliente"}
+                </Badge>
+                <Badge className="bg-emerald-900/30 text-emerald-200 flex items-center gap-1">
+                  <Crown className="w-3 h-3" />
+                  {selectedUser.grade}
+                </Badge>
+                <Badge className={selectedUser.verificationStatus === "verified" ? "bg-emerald-500 text-black" : "bg-amber-500 text-black"}>
+                  {selectedUser.verificationStatus === "verified" ? "Verificado" : "Pendiente"}
+                </Badge>
+              </div>
+            </div>
+
+            {/* KPIs del cliente */}
+            {(() => {
+              const userContracts = contracts.filter((c) => c.userId === selectedUser.id);
+              const activeAmt = userContracts
+                .filter((c) => c.status === "active" || c.status === "ready_to_start")
+                .reduce((sum, c) => sum + (parseInt(c.amount || "0") || 0), 0);
+              const completedAmt = userContracts
+                .filter((c) => c.status === "completed")
+                .reduce((sum, c) => sum + (parseInt(c.amount || "0") || 0), 0);
+              const lastDeposit = userContracts
+                .slice()
+                .sort((a, b) => +new Date(b.createdAt) - +new Date(a.createdAt))[0];
+
+              const kycMatch = kyc.find((k) => k.fullName.toLowerCase() === selectedUser.name.toLowerCase());
+
+              return (
+                <>
+                  <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+                    {[
+                      { label: "Capital invertido", value: fmtEur(activeAmt) },
+                      { label: "Contratos activos", value: userContracts.filter((c) => c.status === "active").length.toString() },
+                      { label: "Completados", value: userContracts.filter((c) => c.status === "completed").length.toString() },
+                      {
+                        label: "Último depósito",
+                        value: lastDeposit ? new Date(lastDeposit.createdAt).toLocaleDateString("es-ES") : "-",
+                      },
+                    ].map(({ label, value }, i) => (
+                      <Card key={i} className="bg-black/40 border border-emerald-500/15 rounded-2xl">
+                        <CardContent className="p-6">
+                          <p className="text-emerald-200/80 text-sm">{label}</p>
+                          <p className="text-emerald-50 text-2xl font-bold">{value}</p>
+                        </CardContent>
+                      </Card>
+                    ))}
+                  </div>
+
+                  {/* Datos personales y estado KYC */}
+                  <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+                    <Card className="bg-black/40 border border-emerald-500/15 rounded-2xl">
+                      <CardHeader>
+                        <CardTitle className="text-emerald-50">Datos personales</CardTitle>
+                        <CardDescription className="text-emerald-200/80">
+                          Información básica del cliente
+                        </CardDescription>
+                      </CardHeader>
+                      <CardContent className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <div>
+                          <p className="text-emerald-200/80 text-sm">Nombre</p>
+                          <p className="text-emerald-50 font-medium">{selectedUser.name}</p>
+                        </div>
+                        <div>
+                          <p className="text-emerald-200/80 text-sm">Email</p>
+                          <p className="text-emerald-50 font-medium">{selectedUser.email}</p>
+                        </div>
+                        <div>
+                          <p className="text-emerald-200/80 text-sm">Patrocinador</p>
+                          <p className="text-emerald-50 font-medium">{selectedUser.sponsor || "-"}</p>
+                        </div>
+                        <div>
+                          <p className="text-emerald-200/80 text-sm">Género (inferido)</p>
+                          <p className="text-emerald-50 font-medium">
+                            {normalizeGender(selectedUser.gender) || guessGenderFromName(selectedUser.name)}
+                          </p>
+                        </div>
+                        <div>
+                          <p className="text-emerald-200/80 text-sm">Fecha de alta</p>
+                          <p className="text-emerald-50 font-medium">
+                            {new Date(selectedUser.createdAt).toLocaleDateString("es-ES")}
+                          </p>
+                        </div>
+                        <div>
+                          <p className="text-emerald-200/80 text-sm">Rol</p>
+                          <p className="text-emerald-50 font-medium">
+                            {selectedUser.role === "admin" ? "Administrador" : selectedUser.role === "partner" ? "Asesor" : "Cliente"}
+                          </p>
+                        </div>
+                      </CardContent>
+                    </Card>
+
+                    <Card className="bg-black/40 border border-emerald-500/15 rounded-2xl">
+                      <CardHeader>
+                        <CardTitle className="text-emerald-50">Verificación KYC</CardTitle>
+                        <CardDescription className="text-emerald-200/80">
+                          Estado y documento del cliente
+                        </CardDescription>
+                      </CardHeader>
+                      <CardContent className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <div className="sm:col-span-2">
+                          <Badge
+                            className={
+                              kycMatch
+                                ? kycMatch.status === "approved"
+                                  ? "bg-emerald-500 text-black"
+                                  : kycMatch.status === "pending"
+                                  ? "bg-amber-500 text-black"
+                                  : "bg-red-500 text-white"
+                                : "bg-emerald-900/30 text-emerald-200"
+                            }
+                          >
+                            {kycMatch
+                              ? kycMatch.status === "approved"
+                                ? "Aprobado"
+                                : kycMatch.status === "pending"
+                                ? "Pendiente"
+                                : "Rechazado"
+                              : "Sin registro KYC"}
+                          </Badge>
+                        </div>
+                        <div>
+                          <p className="text-emerald-200/80 text-sm">Tipo Documento</p>
+                          <p className="text-emerald-50 font-medium">{kycMatch?.documentType?.toUpperCase() || "-"}</p>
+                        </div>
+                        <div>
+                          <p className="text-emerald-200/80 text-sm">Número</p>
+                          <p className="text-emerald-50 font-medium">{kycMatch?.documentNumber || "-"}</p>
+                        </div>
+                        <div>
+                          <p className="text-emerald-200/80 text-sm">País</p>
+                          <p className="text-emerald-50 font-medium">{kycMatch?.country || "-"}</p>
+                        </div>
+                        <div>
+                          <p className="text-emerald-200/80 text-sm">Fecha de registro</p>
+                          <p className="text-emerald-50 font-medium">
+                            {kycMatch ? new Date(kycMatch.createdAt).toLocaleDateString("es-ES") : "-"}
+                          </p>
+                        </div>
+                      </CardContent>
+                    </Card>
+                  </div>
+
+                  {/* Contratos del cliente */}
+                  <Card className="bg-black/40 border border-emerald-500/15 rounded-2xl">
+                    <CardHeader>
+                      <CardTitle className="text-emerald-50">Contratos del cliente</CardTitle>
+                      <CardDescription className="text-emerald-200/80">
+                        Detalle de depósitos, productos y estado
+                      </CardDescription>
+                    </CardHeader>
+                    <CardContent>
+                      {contracts.filter((c) => c.userId === selectedUser.id).length === 0 ? (
+                        <div className="text-emerald-200/80">Este usuario no tiene contratos registrados.</div>
+                      ) : (
+                        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                          {contracts
+                            .filter((c) => c.userId === selectedUser.id)
+                            .sort((a, b) => +new Date(b.createdAt) - +new Date(a.createdAt))
+                            .map((contract) => (
+                              <Card
+                                key={contract.id}
+                                className="bg-black/30 border border-emerald-500/15 hover:bg-black/40 transition-all rounded-2xl"
+                              >
+                                <CardContent className="p-6">
+                                  <div className="flex items-start justify-between">
+                                    <div>
+                                      <h3 className="text-emerald-50 font-semibold text-lg">{contract.productName}</h3>
+                                      <p className="text-emerald-200/80">ID: {contract.id}</p>
+                                    </div>
+                                    <Badge
+                                      className={
+                                        contract.status === "active"
+                                          ? "bg-emerald-500 text-black"
+                                          : contract.status === "ready_to_start"
+                                          ? "bg-amber-500 text-black"
+                                          : contract.status === "completed"
+                                          ? "bg-blue-500 text-white"
+                                          : "bg-emerald-900/30 text-emerald-200"
+                                      }
+                                    >
+                                      {contract.status === "active"
+                                        ? "Activo"
+                                        : contract.status === "ready_to_start"
+                                        ? "Listo para Iniciar"
+                                        : contract.status === "completed"
+                                        ? "Completado"
+                                        : "Cancelado"}
+                                    </Badge>
+                                  </div>
+
+                                  <div className="grid grid-cols-2 gap-4 mt-4">
+                                    <div>
+                                      <p className="text-emerald-200/80 text-sm">Capital</p>
+                                      <p className="text-emerald-50 font-bold text-xl">{fmtEur(parseInt(contract.amount || "0"))}</p>
+                                    </div>
+                                    <div>
+                                      <p className="text-emerald-200/80 text-sm">Fecha</p>
+                                      <p className="text-emerald-50 font-medium">
+                                        {new Date(contract.createdAt).toLocaleDateString("es-ES")}
+                                      </p>
+                                    </div>
+                                  </div>
+
+                                  <div className="mt-4 flex gap-2">
+                                    <Button variant="outline" className="border-emerald-500/20 text-emerald-50">
+                                      <FileText className="w-4 h-4 mr-2" />
+                                      Ver contrato
+                                    </Button>
+                                    <Button className="bg-gradient-to-r from-emerald-600 to-emerald-500 hover:from-emerald-500 hover:to-emerald-400 text-white">
+                                      <Download className="w-4 h-4 mr-2" />
+                                      Descargar PDF
+                                    </Button>
+                                  </div>
+                                </CardContent>
+                              </Card>
+                            ))}
+                        </div>
+                      )}
+                    </CardContent>
+                  </Card>
+
+                  <div className="mt-8">
+                    <Button
+                      variant="outline"
+                      className="border-emerald-500/20 text-emerald-50"
+                      onClick={() => {
+                        setActiveTab("usuarios");
+                        setSelectedUser(null);
+                        setLocation("/admin/usuarios");
+                      }}
+                    >
+                      Volver a Usuarios
+                    </Button>
+                  </div>
+                </>
+              );
+            })()}
           </div>
         )}
 
