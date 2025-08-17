@@ -260,8 +260,8 @@ export default function Dashboard() {
 
         <nav className="space-y-2 flex-1">
           {[
-            { id: "inicio", label: "Inicio", icon: () => <span /> },
             { id: "perfil", label: "Perfil", icon: () => <span /> },
+            { id: "inicio", label: "Resumen", icon: () => <span /> },
             { id: "productos", label: "Productos", icon: () => <span /> },
           ].map((item) => (
             <button
