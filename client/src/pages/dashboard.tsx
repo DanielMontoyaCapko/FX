@@ -27,6 +27,7 @@ import {
   CheckCircle2,
   AlertTriangle,
   ClipboardList,
+  Phone,
   Hash,
   QrCode,
 } from "lucide-react";
@@ -2192,9 +2193,9 @@ export default function Dashboard() {
   )}
 </main>
 
-{/* Modales */}
-{showCalculator && <InvestmentCalculator onClose={() => setShowCalculator(false)} />}
-</div>
-);
+  {/* Modales */}
+  {showCalculator && <InvestmentCalculator onClose={() => setShowCalculator(false)} />}
+  </div>
+  );
 }
 
