@@ -13,10 +13,10 @@ export default function Hero() {
   const [, setLocation] = useLocation();
   const goToContact = () => setLocation("/contacto");
 
-  // 6 logos en este orden: ADCB → FAB → NBD → DIB → MASHREQ → RAK
+  // Orden: ADCB → FAB → NBD → DIB → MASHREQ → RAK
   const logos = useMemo(() => [ADCB, FAB, NBD, DIB, MASHREQ, RAK], []);
 
-  // Refs y ancho del grupo A (para fijar el viewport y que se vea el grupo completo de 6)
+  // Refs para medir el ancho del grupo A y ajustar la animación/viewport
   const trackRef = useRef<HTMLDivElement>(null);
   const groupRef = useRef<HTMLDivElement>(null);
   const [groupW, setGroupW] = useState(0);
@@ -25,11 +25,10 @@ export default function Hero() {
     const update = () => {
       if (!trackRef.current || !groupRef.current) return;
 
-      // Ancho del grupo A (6 logos)
-      const half = groupRef.current.getBoundingClientRect().width;
-      setGroupW(half); // -> el wrapper tendrá exactamente este ancho
+      const half = groupRef.current.getBoundingClientRect().width; // ancho del grupo A
+      setGroupW(half);
 
-      // Velocidad reducida (px/s)
+      // Velocidad en px/s (ajusta a gusto)
       const speed = 12;
       const dur = Math.max(half / speed, 12);
 
@@ -50,9 +49,9 @@ export default function Hero() {
     return () => ro.disconnect();
   }, []);
 
-  // helpers de tamaño (indices 3,4,5 = nuevos → un poco más pequeños)
-  const sizeOld = "h-12 md:h-[3.75rem] lg:h-[4.5rem]";               // 48 / 60 / 72 px
-  const sizeNew = "h-[2.375rem] md:h-[3rem] lg:h-[3.625rem]"; // 38 / 48 / 58 px         // ~44 / 54 / 66 px
+  // Tamaños: primeros 3 logos más grandes; últimos 3 (nuevos) un poco más pequeños
+  const sizeOld = "h-12 md:h-[3.75rem] lg:h-[4.5rem]";            // ~48 / 60 / 72 px
+  const sizeNew = "h-[2.375rem] md:h-[3rem] lg:h-[3.625rem]";     // ~38 / 48 / 58 px
 
   return (
     <section id="inicio" className="min-h-[90svh] flex items-start justify-center pt-32 md:pt-40">
@@ -99,17 +98,21 @@ export default function Hero() {
           </div>
         </div>
 
-        {/* Carrusel (viewport ajustado al ancho del grupo A: 6 logos) */}
+        {/* Carrusel con máscara (fades que respetan el fondo) */}
         <div
           className="relative mt-14 mx-auto"
           style={{ width: groupW ? `min(100%, ${groupW}px)` : undefined }}
         >
-          {/* Fades laterales */}
-          <div className="pointer-events-none absolute left-0 top-0 h-full w-12 md:w-16 bg-gradient-to-r from-black to-transparent" />
-          <div className="pointer-events-none absolute right-0 top-0 h-full w-12 md:w-16 bg-gradient-to-l from-black to-transparent" />
-
-          <div className="overflow-hidden">
-            {/* Track animado de 0 a -anchoGrupoA */}
+          <div
+            className="overflow-hidden"
+            style={{
+              WebkitMaskImage:
+                "linear-gradient(to right, transparent 0, black 10%, black 90%, transparent 100%)",
+              maskImage:
+                "linear-gradient(to right, transparent 0, black 10%, black 90%, transparent 100%)",
+            }}
+          >
+            {/* Track animado */}
             <div
               ref={trackRef}
               style={{ animation: "marqueeLoop var(--dur, 28s) linear infinite" }}
