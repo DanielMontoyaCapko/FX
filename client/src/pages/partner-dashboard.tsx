@@ -29,28 +29,46 @@ import {
   Trophy,
   Camera,
   Phone,
+  Trash2,
+  PlusCircle,
 } from "lucide-react";
 import logoImg from "@/assets/Logo-removeBG_1752488347081.png";
 import { useScrollToTop } from "@/hooks/useScrollToTop";
 import CompoundInterestChart from "@/components/compound-interest-chart";
+
+type Client = {
+  id: string;
+  name: string;
+  investment: number;
+  returns: number;
+  tier: string;
+  status: "Activo" | "Vencido";
+  depositDate: string; // yyyy-mm-dd
+  maturityDate: string; // yyyy-mm-dd
+  compoundInterest: boolean;
+  email: string;
+  phone: string;
+  pais: string;
+  sexo: "Hombre" | "Mujer";
+};
 
 export default function PartnerDashboard() {
   useScrollToTop();
   const { user, logout } = useAuth();
   const [activeTab, setActiveTab] = useState("resumen");
 
-  // Datos de perfil (incluye Fecha de registro - NO editable)
+  // Datos de perfil
   const [profileData, setProfileData] = useState({
     name: user?.name || "Partner Usuario",
     email: user?.email || "",
     phone: "+34 666 555 444",
     birthDate: "15/03/1985",
-    registerDate: "15/01/2024", // NUEVO: campo no editable
+    registerDate: "15/01/2024",
     address: "Calle Mayor 123, 4º B, 28001 Madrid, España",
   });
   const [profilePhoto, setProfilePhoto] = useState<string | null>(null);
 
-  // filtros CLIENTES
+  // Filtros CLIENTES
   const [showFilters, setShowFilters] = useState(false);
   const [filters, setFilters] = useState({
     inversionMin: "",
@@ -61,29 +79,26 @@ export default function PartnerDashboard() {
     sexo: "",
     estado: "",
   });
-  // orden CLIENTES
   const [sortOrder, setSortOrder] = useState<"" | "asc" | "desc">("");
 
-  // ====== NUEVO: filtros CONTRATOS ======
+  // Filtros CONTRATOS
   const [showContractFilters, setShowContractFilters] = useState(false);
   const [contractSort, setContractSort] = useState<"" | "amountDesc" | "amountAsc" | "endAsc" | "endDesc">("");
   const [contractFilters, setContractFilters] = useState({
     search: "",
-    status: "", // "Activo" | "Vigente" | "Vencido"
-    type: "", // "Partnership" | "Inversión" | "Renovación"
-    tier: "", // "Elite" | "Premium" | "Standard"
+    status: "",
+    type: "",
+    tier: "",
     amountMin: "",
     amountMax: "",
-    signedFrom: "", // yyyy-mm-dd
-    signedTo: "", // yyyy-mm-dd
-    vencimiento: "", // "expiring" | "expired" | "vigente"
+    signedFrom: "",
+    signedTo: "",
+    vencimiento: "",
   });
-  // =====================================
 
-  // ====== NUEVO: Google Calendar (herramientas) ======
+  // Google Calendar (herramientas)
   const [gcalView, setGcalView] = useState<"month" | "week" | "agenda">("month");
   const [gcalTz, setGcalTz] = useState<string>("Europe/Madrid");
-  // Calendario público de ejemplo: Festivos de España (puedes cambiarlo por el tuyo público)
   const gcalPublicSrc = "es.spain%23holiday%40group.v.calendar.google.com";
   const gcalMode = useMemo(
     () => (gcalView === "agenda" ? "AGENDA" : gcalView === "week" ? "WEEK" : "MONTH"),
@@ -99,7 +114,6 @@ export default function PartnerDashboard() {
   const handleOpenGoogleCalendar = () => {
     window.open("https://calendar.google.com/calendar/u/0/r", "_blank", "noopener,noreferrer");
   };
-  // ====================================================
 
   const handlePhotoUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
@@ -114,7 +128,174 @@ export default function PartnerDashboard() {
     setProfileData((prev) => ({ ...prev, [field]: value }));
   };
 
-  // días hasta comisión
+  // ======== CLIENTES: estado, alta y eliminación ========
+  const todayISO = new Date().toISOString().slice(0, 10);
+  const nextYearISO = new Date(new Date().setFullYear(new Date().getFullYear() + 1))
+    .toISOString()
+    .slice(0, 10);
+
+  const [clients, setClients] = useState<Client[]>([
+    {
+      id: "c1",
+      name: "María González",
+      investment: 150000,
+      returns: 13500,
+      tier: "Premium",
+      status: "Activo",
+      depositDate: "2024-01-15",
+      maturityDate: "2025-01-15",
+      compoundInterest: true,
+      email: "maria.gonzalez@email.com",
+      phone: "+34 666 123 456",
+      pais: "España",
+      sexo: "Mujer",
+    },
+    {
+      id: "c2",
+      name: "Carlos Ruiz",
+      investment: 75000,
+      returns: 6750,
+      tier: "Standard",
+      status: "Vencido",
+      depositDate: "2024-03-10",
+      maturityDate: "2024-12-10",
+      compoundInterest: false,
+      email: "carlos.ruiz@email.com",
+      phone: "+34 666 789 012",
+      pais: "Francia",
+      sexo: "Hombre",
+    },
+    {
+      id: "c3",
+      name: "Ana López",
+      investment: 200000,
+      returns: 18000,
+      tier: "Premium",
+      status: "Activo",
+      depositDate: "2024-08-20",
+      maturityDate: "2025-08-20",
+      compoundInterest: true,
+      email: "ana.lopez@email.com",
+      phone: "+34 666 345 678",
+      pais: "Portugal",
+      sexo: "Mujer",
+    },
+    {
+      id: "c4",
+      name: "Miguel Santos",
+      investment: 120000,
+      returns: 10800,
+      tier: "Premium",
+      status: "Vencido",
+      depositDate: "2023-11-15",
+      maturityDate: "2024-11-15",
+      compoundInterest: true,
+      email: "miguel.santos@email.com",
+      phone: "+34 666 987 654",
+      pais: "España",
+      sexo: "Hombre",
+    },
+  ]);
+
+  const [showAddClient, setShowAddClient] = useState(false);
+  const [newClient, setNewClient] = useState<Omit<Client, "id">>({
+    name: "",
+    investment: 50000,
+    returns: 0,
+    tier: "Standard",
+    status: "Activo",
+    depositDate: todayISO,
+    maturityDate: nextYearISO,
+    compoundInterest: true,
+    email: "",
+    phone: "",
+    pais: "España",
+    sexo: "Hombre",
+  });
+
+  const handleAddClient = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!newClient.name.trim()) return;
+    setClients((prev) => [{ id: `c${Date.now()}`, ...newClient }, ...prev]);
+    setNewClient({
+      name: "",
+      investment: 50000,
+      returns: 0,
+      tier: "Standard",
+      status: "Activo",
+      depositDate: todayISO,
+      maturityDate: nextYearISO,
+      compoundInterest: true,
+      email: "",
+      phone: "",
+      pais: "España",
+      sexo: "Hombre",
+    });
+    setShowAddClient(false);
+  };
+
+  // ✅ Doble verificación para eliminación
+  const handleDeleteClient = (id: string, name: string) => {
+    const first = confirm(`¿Seguro que quieres eliminar a "${name}"?`);
+    if (!first) return;
+    const second = confirm(
+      `Última confirmación.\nEsta acción eliminará permanentemente a "${name}" y no se puede deshacer.\n¿Confirmas la eliminación?`
+    );
+    if (!second) return;
+    setClients((prev) => prev.filter((c) => c.id !== id));
+  };
+
+  // KPIs de clientes (para tarjetas rápidas y otras vistas)
+  const statsClients = useMemo(() => {
+    const total = clients.length;
+    const activos = clients.filter((c) => c.status === "Activo").length;
+    const comp = clients.filter((c) => c.compoundInterest).length;
+    const vencidos = clients.filter((c) => {
+      const days = Math.ceil((new Date(c.maturityDate).getTime() - Date.now()) / 86400000);
+      return days <= 0 || c.status === "Vencido";
+    }).length;
+    return { total, activos, comp, vencidos };
+  }, [clients]);
+
+  // 📊 Estadísticas superiores del dashboard RESUMEN alimentadas por los clientes
+  const resumenStats = useMemo(() => {
+    const activeClients = clients.filter((c) => c.status === "Activo");
+    const activeVolume = activeClients.reduce((sum, c) => sum + c.investment, 0);
+    const expiringSoon = activeClients.filter((c) => {
+      const days = Math.ceil((new Date(c.maturityDate).getTime() - Date.now()) / 86400000);
+      return days > 0 && days <= 30;
+    }).length;
+    return { activeClients: activeClients.length, activeVolume, expiringSoon };
+  }, [clients]);
+
+  const filteredClients = useMemo(() => {
+    const list = clients
+      .filter((client) => {
+        const inversionMin = filters.inversionMin ? parseFloat(filters.inversionMin) : 0;
+        const inversionMax = filters.inversionMax ? parseFloat(filters.inversionMax) : Infinity;
+        const gananciasMin = filters.gananciasMin ? parseFloat(filters.gananciasMin) : 0;
+        const gananciasMax = filters.gananciasMax ? parseFloat(filters.gananciasMax) : Infinity;
+
+        return (
+          client.investment >= inversionMin &&
+          client.investment <= inversionMax &&
+          client.returns >= gananciasMin &&
+          client.returns <= gananciasMax &&
+          (filters.pais === "" || client.pais === filters.pais) &&
+          (filters.sexo === "" || client.sexo === filters.sexo) &&
+          (filters.estado === "" || client.status === filters.estado)
+        );
+      })
+      .sort((a, b) => {
+        if (sortOrder === "desc") return b.investment - a.investment;
+        if (sortOrder === "asc") return a.investment - b.investment;
+        return 0;
+      });
+
+    return list;
+  }, [clients, filters, sortOrder]);
+
+  // días hasta comisión (para KPI de pagos)
   const calculateDaysToCommission = () => {
     const now = new Date();
     const currentDay = now.getDate();
@@ -127,11 +308,8 @@ export default function PartnerDashboard() {
   };
 
   const partnerStats = {
-    totalClients: 47,
     monthlyCommission: 15650,
     ytdCommission: 186200,
-    activeInvestments: 2340000,
-    newLeadsThisMonth: 5,
     nextTierProgress: 79,
     daysToCommission: calculateDaysToCommission(),
     tier: "Elite Partner",
@@ -157,10 +335,6 @@ export default function PartnerDashboard() {
       >
         <div className="flex items-center space-x-3 mb-8">
           <img src={logoImg} alt="Nakama&Partners" className="w-10 h-10 drop-shadow-[0_0_14px_rgba(16,185,129,0.35)]" />
-          <div>
-            <h1 className="font-cormorant text-xl font-bold text-emerald-50">Nakama&Partners</h1>
-            <p className="text-emerald-300 text-xs">Portal de Partner</p>
-          </div>
         </div>
 
         <nav className="space-y-2 flex-1">
@@ -209,13 +383,12 @@ export default function PartnerDashboard() {
 
       {/* Main */}
       <main className="flex-1 p-8 ml-64">
-        {/* ===== PERFIL con bloque a ancho completo (igual que cliente) ===== */}
+        {/* ===== PERFIL ===== */}
         {activeTab === "perfil" && (
           <div>
             <h1 className="text-3xl font-bold text-emerald-50 mb-2">Perfil de Partner</h1>
             <p className="text-emerald-200/80 mb-6">Gestiona tu información personal y configuración de cuenta</p>
 
-            {/* 🔴 CAMBIO: se elimina max-w-4xl mx-auto para ocupar todo el ancho, igual que en Cliente */}
             <Card className="bg-black/40 backdrop-blur-sm border border-emerald-500/15 rounded-2xl">
               <CardContent className="p-6">
                 <Tabs defaultValue="personal" className="w-full">
@@ -234,10 +407,8 @@ export default function PartnerDashboard() {
                     </TabsTrigger>
                   </TabsList>
 
-                  {/* === Información Personal (como en cliente) === */}
                   <TabsContent value="personal" className="mt-6">
                     <form className="space-y-6">
-                      {/* Foto de perfil + botón cámara */}
                       <div className="flex flex-col items-center mb-8">
                         <div className="relative mb-4">
                           <div className="w-32 h-32 rounded-full overflow-hidden bg-black/50 border-2 border-emerald-500/20 flex items-center justify-center">
@@ -258,7 +429,6 @@ export default function PartnerDashboard() {
                         <p className="text-emerald-200/80 text-sm text-center">Haz clic en el icono de cámara para subir tu foto</p>
                       </div>
 
-                      {/* Campos */}
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <div>
                           <Label htmlFor="nombre" className="text-emerald-50">
@@ -346,7 +516,6 @@ export default function PartnerDashboard() {
                           className="w-full rounded-xl bg-gradient-to-r from-emerald-600 to-emerald-500 hover:from-emerald-500 hover:to-emerald-400 text-white font-semibold"
                           onClick={(e) => {
                             e.preventDefault();
-                            // Aquí iría tu lógica de guardado
                           }}
                         >
                           ACTUALIZAR INFORMACIÓN PERSONAL
@@ -355,7 +524,6 @@ export default function PartnerDashboard() {
                     </form>
                   </TabsContent>
 
-                  {/* === Estado KYC (igual que cliente) === */}
                   <TabsContent value="kyc" className="mt-6">
                     <div className="bg-black/40 rounded-xl p-8 border border-emerald-500/15">
                       <div className="flex items-center justify-center mb-6">
@@ -378,6 +546,7 @@ export default function PartnerDashboard() {
           </div>
         )}
 
+        {/* ===== RESUMEN ===== */}
         {activeTab === "resumen" && (
           <div>
             <div className="mb-8">
@@ -429,7 +598,7 @@ export default function PartnerDashboard() {
                 ))}
               </div>
 
-              {/* Tarjeta alargada de progreso */}
+              {/* Progreso hacia tier */}
               <Card className="bg-black/40 border border-emerald-500/15 rounded-2xl shadow-[0_0_0_1px_rgba(16,185,129,0.12),0_20px_60px_-20px_rgba(16,185,129,0.25)] mb-8">
                 <CardContent className="p-6">
                   <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-6">
@@ -455,16 +624,16 @@ export default function PartnerDashboard() {
               </Card>
             </div>
 
-            {/* Métricas secundarias */}
+            {/* Métricas superiores DINÁMICAS basadas en clientes */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
               {[
-                { label: "Clientes Activos", value: partnerStats.totalClients, icon: Users },
+                { label: "Clientes Activos", value: resumenStats.activeClients, icon: Users },
                 {
-                  label: "Volumen Total",
-                  value: `$${(partnerStats.activeInvestments / 1_000_000).toFixed(1)}M`,
+                  label: "Volumen Activo",
+                  value: `$${resumenStats.activeVolume.toLocaleString()}`,
                   icon: TrendingUp,
                 },
-                { label: "Nuevos Leads", value: partnerStats.newLeadsThisMonth, icon: UserPlus },
+                { label: "Por vencer (≤30 días)", value: resumenStats.expiringSoon, icon: UserPlus },
               ].map(({ label, value, icon: Icon }, i) => (
                 <Card key={i} className="bg-black/40 border border-emerald-500/15 rounded-2xl">
                   <CardContent className="p-6">
@@ -496,6 +665,7 @@ export default function PartnerDashboard() {
           </div>
         )}
 
+        {/* ===== CLIENTES ===== */}
         {activeTab === "clientes" && (
           <div>
             <h1 className="text-3xl font-bold text-emerald-50 mb-2">Gestión de Clientes</h1>
@@ -637,13 +807,13 @@ export default function PartnerDashboard() {
               )}
             </div>
 
-            {/* Stats rápidos */}
+            {/* Stats rápidos (dinámicos) */}
             <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
               {[
-                { value: "4", label: "Total Clientes" },
-                { value: "2", label: "Activos", border: "border-emerald-500/25", text: "text-emerald-400" },
-                { value: "3", label: "Con Interés Compuesto", text: "text-amber-400", border: "border-amber-500/20" },
-                { value: "2", label: "Vencidos", text: "text-red-400", border: "border-red-500/20" },
+                { value: String(statsClients.total), label: "Total Clientes" },
+                { value: String(statsClients.activos), label: "Activos", border: "border-emerald-500/25", text: "text-emerald-400" },
+                { value: String(statsClients.comp), label: "Con Interés Compuesto", text: "text-amber-400", border: "border-amber-500/20" },
+                { value: String(statsClients.vencidos), label: "Vencidos", text: "text-red-400", border: "border-red-500/20" },
               ].map((s, i) => (
                 <Card key={i} className={`bg-black/40 border ${s.border || "border-emerald-500/15"} rounded-2xl`}>
                   <CardContent className="p-4 text-center">
@@ -656,237 +826,336 @@ export default function PartnerDashboard() {
 
             {/* Cartera */}
             <Card className="bg-black/40 border border-emerald-500/15 rounded-2xl">
-              <CardHeader>
+              {/* 🔧 Encabezado a la IZQUIERDA con botón debajo (no centrado) */}
+              <CardHeader className="items-start">
                 <CardTitle className="text-emerald-50">Cartera de Clientes</CardTitle>
-                <CardDescription className="text-emerald-200/80">Información detallada para seguimiento y renovaciones</CardDescription>
+                <CardDescription className="text-emerald-200/80">
+                  Información detallada para seguimiento y renovaciones
+                </CardDescription>
+                <div className="mt-4">
+                  <Button
+                    variant={showAddClient ? "outline" : "default"}
+                    onClick={() => setShowAddClient((v) => !v)}
+                    className={showAddClient ? "border-emerald-500/25" : "bg-emerald-600 hover:bg-emerald-500"}
+                  >
+                    {showAddClient ? <X className="w-4 h-4 mr-2" /> : <PlusCircle className="w-4 h-4 mr-2" />}
+                    {showAddClient ? "Cancelar" : "Añadir cliente"}
+                  </Button>
+                </div>
               </CardHeader>
+
               <CardContent>
+                {/* Formulario alta */}
+                {showAddClient && (
+                  <form
+                    onSubmit={handleAddClient}
+                    className="mb-6 grid grid-cols-1 lg:grid-cols-3 gap-4 bg-black/30 p-4 rounded-xl border border-emerald-500/15"
+                  >
+                    <div className="space-y-1">
+                      <Label className="text-emerald-50">Nombre</Label>
+                      <Input
+                        value={newClient.name}
+                        onChange={(e) => setNewClient({ ...newClient, name: e.target.value })}
+                        className="bg-black/50 border-emerald-500/20 text-emerald-50"
+                        required
+                      />
+                    </div>
+                    <div className="space-y-1">
+                      <Label className="text-emerald-50">Email</Label>
+                      <Input
+                        value={newClient.email}
+                        onChange={(e) => setNewClient({ ...newClient, email: e.target.value })}
+                        className="bg-black/50 border-emerald-500/20 text-emerald-50"
+                      />
+                    </div>
+                    <div className="space-y-1">
+                      <Label className="text-emerald-50">Teléfono</Label>
+                      <Input
+                        value={newClient.phone}
+                        onChange={(e) => setNewClient({ ...newClient, phone: e.target.value })}
+                        className="bg-black/50 border-emerald-500/20 text-emerald-50"
+                      />
+                    </div>
+
+                    <div className="space-y-1">
+                      <Label className="text-emerald-50">Inversión (€)</Label>
+                      <Input
+                        type="number"
+                        value={newClient.investment}
+                        onChange={(e) => setNewClient({ ...newClient, investment: parseFloat(e.target.value || "0") })}
+                        className="bg-black/50 border-emerald-500/20 text-emerald-50"
+                        min={0}
+                      />
+                    </div>
+                    <div className="space-y-1">
+                      <Label className="text-emerald-50">Rendimientos (€)</Label>
+                      <Input
+                        type="number"
+                        value={newClient.returns}
+                        onChange={(e) => setNewClient({ ...newClient, returns: parseFloat(e.target.value || "0") })}
+                        className="bg-black/50 border-emerald-500/20 text-emerald-50"
+                        min={0}
+                      />
+                    </div>
+                    <div className="space-y-1">
+                      <Label className="text-emerald-50">Tier</Label>
+                      <Select value={newClient.tier} onValueChange={(v) => setNewClient({ ...newClient, tier: v })}>
+                        <SelectTrigger className="bg-black/50 border-emerald-500/20 text-emerald-50">
+                          <SelectValue placeholder="Tier" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="Elite">Elite</SelectItem>
+                          <SelectItem value="Premium">Premium</SelectItem>
+                          <SelectItem value="Standard">Standard</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+
+                    <div className="space-y-1">
+                      <Label className="text-emerald-50">Estado</Label>
+                      <Select value={newClient.status} onValueChange={(v: "Activo" | "Vencido") => setNewClient({ ...newClient, status: v })}>
+                        <SelectTrigger className="bg-black/50 border-emerald-500/20 text-emerald-50">
+                          <SelectValue placeholder="Estado" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="Activo">Activo</SelectItem>
+                          <SelectItem value="Vencido">Vencido</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+
+                    <div className="space-y-1">
+                      <Label className="text-emerald-50">Fecha Depósito</Label>
+                      <Input
+                        type="date"
+                        value={newClient.depositDate}
+                        onChange={(e) => setNewClient({ ...newClient, depositDate: e.target.value })}
+                        className="bg-black/50 border-emerald-500/20 text-emerald-50"
+                      />
+                    </div>
+                    <div className="space-y-1">
+                      <Label className="text-emerald-50">Fecha Vencimiento</Label>
+                      <Input
+                        type="date"
+                        value={newClient.maturityDate}
+                        onChange={(e) => setNewClient({ ...newClient, maturityDate: e.target.value })}
+                        className="bg-black/50 border-emerald-500/20 text-emerald-50"
+                      />
+                    </div>
+                    <div className="space-y-1">
+                      <Label className="text-emerald-50">País</Label>
+                      <Select value={newClient.pais} onValueChange={(v) => setNewClient({ ...newClient, pais: v })}>
+                        <SelectTrigger className="bg-black/50 border-emerald-500/20 text-emerald-50">
+                          <SelectValue placeholder="País" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {["España", "Francia", "Portugal", "Italia", "Alemania"].map((p) => (
+                            <SelectItem key={p} value={p}>
+                              {p}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </div>
+                    <div className="space-y-1">
+                      <Label className="text-emerald-50">Sexo</Label>
+                      <Select value={newClient.sexo} onValueChange={(v: "Hombre" | "Mujer") => setNewClient({ ...newClient, sexo: v })}>
+                        <SelectTrigger className="bg-black/50 border-emerald-500/20 text-emerald-50">
+                          <SelectValue placeholder="Sexo" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="Hombre">Hombre</SelectItem>
+                          <SelectItem value="Mujer">Mujer</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                    <div className="space-y-1">
+                      <Label className="text-emerald-50">Interés Compuesto</Label>
+                      <Select
+                        value={newClient.compoundInterest ? "si" : "no"}
+                        onValueChange={(v) => setNewClient({ ...newClient, compoundInterest: v === "si" })}
+                      >
+                        <SelectTrigger className="bg-black/50 border-emerald-500/20 text-emerald-50">
+                          <SelectValue placeholder="Sí / No" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="si">Sí</SelectItem>
+                          <SelectItem value="no">No</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+
+                    <div className="flex items-end">
+                      <Button type="submit" className="w-full bg-emerald-600 hover:bg-emerald-500">
+                        <PlusCircle className="w-4 h-4 mr-2" />
+                        Guardar
+                      </Button>
+                    </div>
+                  </form>
+                )}
+
+                {/* Lista de clientes */}
                 <div className="space-y-6">
-                  {[
-                    {
-                      name: "María González",
-                      investment: 150000,
-                      returns: 13500,
-                      tier: "Premium",
-                      status: "Activo",
-                      depositDate: "2024-01-15",
-                      maturityDate: "2025-01-15",
-                      compoundInterest: true,
-                      email: "maria.gonzalez@email.com",
-                      phone: "+34 666 123 456",
-                      pais: "España",
-                      sexo: "Mujer",
-                    },
-                    {
-                      name: "Carlos Ruiz",
-                      investment: 75000,
-                      returns: 6750,
-                      tier: "Standard",
-                      status: "Vencido",
-                      depositDate: "2024-03-10",
-                      maturityDate: "2024-12-10",
-                      compoundInterest: false,
-                      email: "carlos.ruiz@email.com",
-                      phone: "+34 666 789 012",
-                      pais: "Francia",
-                      sexo: "Hombre",
-                    },
-                    {
-                      name: "Ana López",
-                      investment: 200000,
-                      returns: 18000,
-                      tier: "Premium",
-                      status: "Activo",
-                      depositDate: "2024-08-20",
-                      maturityDate: "2025-08-20",
-                      compoundInterest: true,
-                      email: "ana.lopez@email.com",
-                      phone: "+34 666 345 678",
-                      pais: "Portugal",
-                      sexo: "Mujer",
-                    },
-                    {
-                      name: "Miguel Santos",
-                      investment: 120000,
-                      returns: 10800,
-                      tier: "Premium",
-                      status: "Vencido",
-                      depositDate: "2023-11-15",
-                      maturityDate: "2024-11-15",
-                      compoundInterest: true,
-                      email: "miguel.santos@email.com",
-                      phone: "+34 666 987 654",
-                      pais: "España",
-                      sexo: "Hombre",
-                    },
-                  ]
-                    .filter((client) => {
-                      const inversionMin = filters.inversionMin ? parseFloat(filters.inversionMin) : 0;
-                      const inversionMax = filters.inversionMax ? parseFloat(filters.inversionMax) : Infinity;
-                      const gananciasMin = filters.gananciasMin ? parseFloat(filters.gananciasMin) : 0;
-                      const gananciasMax = filters.gananciasMax ? parseFloat(filters.gananciasMax) : Infinity;
+                  {filteredClients.map((client) => {
+                    const daysToMaturity = Math.ceil(
+                      (new Date(client.maturityDate).getTime() - new Date().getTime()) / (1000 * 3600 * 24)
+                    );
+                    const isNearMaturity = daysToMaturity <= 30 && daysToMaturity > 0;
+                    const isExpired = daysToMaturity <= 0;
 
-                      return (
-                        client.investment >= inversionMin &&
-                        client.investment <= inversionMax &&
-                        client.returns >= gananciasMin &&
-                        client.returns <= gananciasMax &&
-                        (filters.pais === "" || client.pais === filters.pais) &&
-                        (filters.sexo === "" || client.sexo === filters.sexo) &&
-                        (filters.estado === "" || client.status === filters.estado)
-                      );
-                    })
-                    .sort((a, b) => {
-                      if (sortOrder === "desc") return b.investment - a.investment;
-                      if (sortOrder === "asc") return a.investment - b.investment;
-                      return 0;
-                    })
-                    .map((client, index) => {
-                      const daysToMaturity = Math.ceil(
-                        (new Date(client.maturityDate).getTime() - new Date().getTime()) / (1000 * 3600 * 24)
-                      );
-                      const isNearMaturity = daysToMaturity <= 30 && daysToMaturity > 0;
-                      const isExpired = daysToMaturity <= 0;
+                    return (
+                      <Card
+                        key={client.id}
+                        className={`relative bg-black/30 border ${
+                          isNearMaturity ? "border-amber-500/50" : isExpired ? "border-red-500/50" : "border-emerald-500/15"
+                        } hover:bg-black/40 transition-all rounded-2xl`}
+                      >
+                        {/* 🗑️ Botón ELIMINAR arriba a la derecha */}
+                        <div className="absolute top-3 right-3 z-[1]">
+                          <Button
+                            variant="outline"
+                            size="icon"
+                            onClick={() => handleDeleteClient(client.id, client.name)}
+                            className="border-red-500/30 text-red-300 hover:bg-red-500/10"
+                            title="Eliminar cliente"
+                          >
+                            <Trash2 className="w-4 h-4" />
+                          </Button>
+                        </div>
 
-                      return (
-                        <Card
-                          key={index}
-                          className={`bg-black/30 border ${
-                            isNearMaturity ? "border-amber-500/50" : isExpired ? "border-red-500/50" : "border-emerald-500/15"
-                          } hover:bg-black/40 transition-all rounded-2xl`}
-                        >
-                          <CardContent className="p-6">
-                            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                              {/* Info (izquierda) */}
-                              <div className="space-y-4">
-                                <div className="flex items-center space-x-4">
-                                  <div className="w-12 h-12 bg-gradient-to-br from-emerald-500/20 to-emerald-500/10 rounded-full flex items-center justify-center">
-                                    <span className="text-emerald-400 font-semibold">
-                                      {client.name
-                                        .split(" ")
-                                        .map((n) => n[0])
-                                        .join("")}
-                                    </span>
-                                  </div>
-                                  <div>
-                                    <h3 className="text-emerald-50 font-semibold text-lg">{client.name}</h3>
-                                    <div className="flex items-center space-x-2">
-                                      <Badge variant="outline" className="text-xs border-emerald-500/25 text-emerald-200">
-                                        {client.tier}
-                                      </Badge>
-                                      <Badge
-                                        variant="outline"
-                                        className={`text-xs border ${
-                                          client.status === "Activo"
-                                            ? "border-emerald-500/40 text-emerald-300"
-                                            : isNearMaturity
-                                            ? "border-amber-500/40 text-amber-300"
-                                            : "border-emerald-500/25 text-emerald-200"
-                                        }`}
-                                      >
-                                        {client.status}
-                                      </Badge>
-                                    </div>
-                                  </div>
+                        <CardContent className="p-6">
+                          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                            {/* Info (izquierda) */}
+                            <div className="space-y-4">
+                              <div className="flex items-center space-x-4">
+                                <div className="w-12 h-12 bg-gradient-to-br from-emerald-500/20 to-emerald-500/10 rounded-full flex items-center justify-center">
+                                  <span className="text-emerald-400 font-semibold">
+                                    {client.name
+                                      .split(" ")
+                                      .map((n) => n[0])
+                                      .join("")}
+                                  </span>
                                 </div>
-
-                                <div className="space-y-2 text-sm">
-                                  <p className="text-emerald-200/80">{client.email}</p>
-                                  <p className="text-emerald-200/80">{client.phone}</p>
-                                  <div className="flex items-center space-x-2">
-                                    <Badge variant="outline" className="text-xs border-emerald-500/20 text-emerald-200/90">
-                                      {client.pais}
-                                    </Badge>
-                                    <Badge variant="outline" className="text-xs border-emerald-500/20 text-emerald-200/90">
-                                      {client.sexo}
-                                    </Badge>
-                                  </div>
-                                </div>
-                              </div>
-
-                              {/* Detalles (centro) */}
-                              <div className="space-y-4">
                                 <div>
-                                  <p className="text-emerald-200/80 text-sm">Inversión Inicial</p>
-                                  <p className="text-emerald-50 font-bold text-2xl">${client.investment.toLocaleString()}</p>
-                                </div>
-
-                                <div className="grid grid-cols-2 gap-4 text-sm">
-                                  {/* Izquierda: Depósito + Interés Compuesto */}
-                                  <div className="space-y-2">
-                                    <div>
-                                      <p className="text-emerald-200/80">Fecha Depósito</p>
-                                      <p className="text-emerald-50 font-medium">
-                                        {new Date(client.depositDate).toLocaleDateString("es-ES")}
-                                      </p>
-                                    </div>
-                                    <div>
-                                      <p className="text-emerald-200/80">Interés Compuesto</p>
-                                      <p className={`font-medium ${client.compoundInterest ? "text-emerald-400" : "text-amber-400"}`}>
-                                        {client.compoundInterest ? "Sí" : "No"}
-                                      </p>
-                                    </div>
-                                  </div>
-
-                                  {/* Derecha: Vencimiento */}
-                                  <div>
-                                    <p className="text-emerald-200/80">Fecha Vencimiento</p>
-                                    <p className="text-emerald-50 font-medium">
-                                      {new Date(client.maturityDate).toLocaleDateString("es-ES")}
-                                    </p>
-                                    <p
-                                      className={`text-sm font-medium ${
-                                        isExpired ? "text-red-400" : isNearMaturity ? "text-amber-400" : "text-emerald-400"
+                                  <h3 className="text-emerald-50 font-semibold text-lg">{client.name}</h3>
+                                  <div className="flex items-center space-x-2">
+                                    <Badge variant="outline" className="text-xs border-emerald-500/25 text-emerald-200">
+                                      {client.tier}
+                                    </Badge>
+                                    <Badge
+                                      variant="outline"
+                                      className={`text-xs border ${
+                                        client.status === "Activo"
+                                          ? "border-emerald-500/40 text-emerald-300"
+                                          : isNearMaturity
+                                          ? "border-amber-500/40 text-amber-300"
+                                          : "border-emerald-500/25 text-emerald-200"
                                       }`}
                                     >
-                                      {isExpired
-                                        ? "Vencido"
-                                        : isNearMaturity
-                                        ? `Vence en ${daysToMaturity} días`
-                                        : `${daysToMaturity} días restantes`}
-                                    </p>
+                                      {client.status}
+                                    </Badge>
                                   </div>
                                 </div>
                               </div>
 
-                              {/* Derecha: Rendimientos + botones */}
-                              <div className="space-y-4">
-                                <div>
-                                  <p className="text-emerald-200/80 text-sm">Rendimientos</p>
-                                  <p className="text-emerald-400 font-extrabold text-3xl">+${client.returns.toLocaleString()}</p>
-                                </div>
-
-                                <div className="space-y-2">
-                                  {(isNearMaturity || isExpired) && (
-                                    <Button className="w-full bg-gradient-to-r from-emerald-600 to-emerald-500 hover:from-emerald-500 hover:to-emerald-400 text-white text-sm">
-                                      Gestionar Renovación
-                                    </Button>
-                                  )}
-                                  <Button
-                                    variant="outline"
-                                    className="w-full text-emerald-50 border-emerald-500/20 hover:bg-emerald-900/10 text-sm"
-                                  >
-                                    Ver Detalle Completo
-                                  </Button>
+                              <div className="space-y-2 text-sm">
+                                <p className="text-emerald-200/80">{client.email}</p>
+                                <p className="text-emerald-200/80">{client.phone}</p>
+                                <div className="flex items-center space-x-2">
+                                  <Badge variant="outline" className="text-xs border-emerald-500/20 text-emerald-200/90">
+                                    {client.pais}
+                                  </Badge>
+                                  <Badge variant="outline" className="text-xs border-emerald-500/20 text-emerald-200/90">
+                                    {client.sexo}
+                                  </Badge>
                                 </div>
                               </div>
                             </div>
-                          </CardContent>
-                        </Card>
-                      );
-                    })}
+
+                            {/* Detalles (centro) */}
+                            <div className="space-y-4">
+                              <div>
+                                <p className="text-emerald-200/80 text-sm">Inversión Inicial</p>
+                                <p className="text-emerald-50 font-bold text-2xl">${client.investment.toLocaleString()}</p>
+                              </div>
+
+                              <div className="grid grid-cols-2 gap-4 text-sm">
+                                {/* Izquierda: Depósito + Interés Compuesto */}
+                                <div className="space-y-2">
+                                  <div>
+                                    <p className="text-emerald-200/80">Fecha Depósito</p>
+                                    <p className="text-emerald-50 font-medium">
+                                      {new Date(client.depositDate).toLocaleDateString("es-ES")}
+                                    </p>
+                                  </div>
+                                  <div>
+                                    <p className="text-emerald-200/80">Interés Compuesto</p>
+                                    <p className={`font-medium ${client.compoundInterest ? "text-emerald-400" : "text-amber-400"}`}>
+                                      {client.compoundInterest ? "Sí" : "No"}
+                                    </p>
+                                  </div>
+                                </div>
+
+                                {/* Derecha: Vencimiento */}
+                                <div>
+                                  <p className="text-emerald-200/80">Fecha Vencimiento</p>
+                                  <p className="text-emerald-50 font-medium">
+                                    {new Date(client.maturityDate).toLocaleDateString("es-ES")}
+                                  </p>
+                                  <p
+                                    className={`text-sm font-medium ${
+                                      isExpired ? "text-red-400" : isNearMaturity ? "text-amber-400" : "text-emerald-400"
+                                    }`}
+                                  >
+                                    {isExpired
+                                      ? "Vencido"
+                                      : isNearMaturity
+                                      ? `Vence en ${daysToMaturity} días`
+                                      : `${daysToMaturity} días restantes`}
+                                  </p>
+                                </div>
+                              </div>
+                            </div>
+
+                            {/* Derecha: Rendimientos + botones */}
+                            <div className="space-y-4">
+                              <div>
+                                <p className="text-emerald-200/80 text-sm">Rendimientos</p>
+                                <p className="text-emerald-400 font-extrabold text-3xl">+${client.returns.toLocaleString()}</p>
+                              </div>
+
+                              <div className="space-y-2">
+                                {(isNearMaturity || isExpired) && (
+                                  <Button className="w-full bg-gradient-to-r from-emerald-600 to-emerald-500 hover:from-emerald-500 hover:to-emerald-400 text-white text-sm">
+                                    Gestionar Renovación
+                                  </Button>
+                                )}
+                                <Button
+                                  variant="outline"
+                                  className="w-full text-emerald-50 border-emerald-500/20 hover:bg-emerald-900/10 text-sm"
+                                >
+                                  Ver Detalle Completo
+                                </Button>
+                              </div>
+                            </div>
+                          </div>
+                        </CardContent>
+                      </Card>
+                    );
+                  })}
                 </div>
               </CardContent>
             </Card>
           </div>
         )}
 
+        {/* ===== CONTRATOS ===== */}
         {activeTab === "contratos" && (
           <div>
             <h1 className="text-3xl font-bold text-emerald-50 mb-2">Contratos Firmados</h1>
             <p className="text-emerald-200/80 mb-6">Accede y descarga todos tus contratos y documentos legales</p>
 
-            {/* ===== Filtros Contratos ===== */}
+            {/* Filtros Contratos */}
             <div className="mb-6">
               <div className="flex items-center justify-between mb-4">
                 <Button
@@ -1058,9 +1327,8 @@ export default function PartnerDashboard() {
                 </Card>
               )}
             </div>
-            {/* ===== Fin filtros Contratos ===== */}
 
-            {/* Datos y render de contratos filtrados */}
+            {/* Datos de contratos */}
             {(() => {
               const contractsData = [
                 {
@@ -1221,12 +1489,12 @@ export default function PartnerDashboard() {
                             }}
                           />
                         </div>
-                        <p className="text-emerald-200/80 text-xs">* La barra muestra el porcentaje de contratos de Inversión sobre el total filtrado.</p>
+                        <p className="text-emerald-200/80 text-xs">* Porcentaje de contratos de Inversión sobre el total filtrado.</p>
                       </div>
                     </CardContent>
                   </Card>
 
-                  {/* Cards de contratos (uniformes) */}
+                  {/* Cards de contratos */}
                   <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                     {filteredContracts.map((contract, index) => {
                       const daysToEnd = Math.ceil((new Date(contract.endDate).getTime() - new Date().getTime()) / (1000 * 3600 * 24));
@@ -1250,7 +1518,6 @@ export default function PartnerDashboard() {
                                   <h3 className="text-emerald-50 font-semibold text-lg">{contract.title}</h3>
                                   <p className="text-emerald-200/80 text-sm">{contract.client}</p>
 
-                                  {/* Tier uniforme */}
                                   {contract.tier && (
                                     <div className="mt-2">
                                       <Badge variant="outline" className="text-xs border-emerald-500/25 text-emerald-200">
@@ -1415,12 +1682,12 @@ export default function PartnerDashboard() {
           </div>
         )}
 
+        {/* ===== HERRAMIENTAS ===== */}
         {activeTab === "herramientas" && (
           <div>
             <h1 className="text-3xl font-bold text-emerald-50 mb-2">Herramientas de Trabajo</h1>
             <p className="text-emerald-200/80 mb-6">Gestiona tus citas y reuniones con clientes</p>
 
-            {/* Intro rápida */}
             <Card className="bg-black/40 border border-emerald-500/15 rounded-2xl max-w-2xl mx-auto mb-8">
               <CardContent className="p-8 text-center">
                 <div className="w-20 h-20 bg-emerald-500/20 rounded-full flex items-center justify-center mx-auto mb-6">
@@ -1453,7 +1720,6 @@ export default function PartnerDashboard() {
               </CardContent>
             </Card>
 
-            {/* ===== Visor integrado de Google Calendar ===== */}
             <Card className="bg-black/40 border border-emerald-500/15 rounded-2xl">
               <CardHeader className="pb-2">
                 <div className="flex items-center justify-between">
@@ -1471,7 +1737,6 @@ export default function PartnerDashboard() {
               </CardHeader>
 
               <CardContent className="pt-2">
-                {/* Controles */}
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-3 mb-4">
                   <div className="space-y-1">
                     <Label className="text-emerald-50">Vista</Label>
@@ -1512,7 +1777,6 @@ export default function PartnerDashboard() {
                   </div>
                 </div>
 
-                {/* Iframe */}
                 <div className="rounded-2xl overflow-hidden border border-emerald-500/15 bg-black/50 shadow-[0_0_0_1px_rgba(16,185,129,0.08),0_20px_60px_-20px_rgba(16,185,129,0.25)]">
                   <iframe
                     title="Google Calendar Demo"
@@ -1530,7 +1794,6 @@ export default function PartnerDashboard() {
                 </p>
               </CardContent>
             </Card>
-            {/* ===== FIN Visor integrado ===== */}
           </div>
         )}
       </main>
