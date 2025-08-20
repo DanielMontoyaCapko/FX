@@ -5,15 +5,18 @@ import { useLocation } from "wouter";
 import ADCB from "@/assets/ADCB_BANK.png";
 import FAB from "@/assets/FAB_BANK.png";
 import NBD from "@/assets/NBD_BANK.png";
+import DIB from "@/assets/DIB_BANK.png";
+import MASHREQ from "@/assets/MASHREQ_BANK.png";
+import RAK from "@/assets/RAK_BANK.png";
 
 export default function Hero() {
   const [, setLocation] = useLocation();
   const goToContact = () => setLocation("/contacto");
 
-  // 5 logos
-  const logos = useMemo(() => [ADCB, FAB, NBD, ADCB, FAB], []);
+  // 6 logos en este orden: ADCB → FAB → NBD → DIB → MASHREQ → RAK
+  const logos = useMemo(() => [ADCB, FAB, NBD, DIB, MASHREQ, RAK], []);
 
-  // Refs y ancho del grupo A (para fijar el viewport y que solo se vean 5)
+  // Refs y ancho del grupo A (para fijar el viewport y que se vea el grupo completo de 6)
   const trackRef = useRef<HTMLDivElement>(null);
   const groupRef = useRef<HTMLDivElement>(null);
   const [groupW, setGroupW] = useState(0);
@@ -22,7 +25,7 @@ export default function Hero() {
     const update = () => {
       if (!trackRef.current || !groupRef.current) return;
 
-      // Ancho del grupo A (5 logos)
+      // Ancho del grupo A (6 logos)
       const half = groupRef.current.getBoundingClientRect().width;
       setGroupW(half); // -> el wrapper tendrá exactamente este ancho
 
@@ -46,6 +49,10 @@ export default function Hero() {
 
     return () => ro.disconnect();
   }, []);
+
+  // helpers de tamaño (indices 3,4,5 = nuevos → un poco más pequeños)
+  const sizeOld = "h-12 md:h-[3.75rem] lg:h-[4.5rem]";               // 48 / 60 / 72 px
+  const sizeNew = "h-[2.375rem] md:h-[3rem] lg:h-[3.625rem]"; // 38 / 48 / 58 px         // ~44 / 54 / 66 px
 
   return (
     <section id="inicio" className="min-h-[90svh] flex items-start justify-center pt-32 md:pt-40">
@@ -92,7 +99,7 @@ export default function Hero() {
           </div>
         </div>
 
-        {/* Carrusel (solo 5 logos visibles) */}
+        {/* Carrusel (viewport ajustado al ancho del grupo A: 6 logos) */}
         <div
           className="relative mt-14 mx-auto"
           style={{ width: groupW ? `min(100%, ${groupW}px)` : undefined }}
@@ -113,28 +120,34 @@ export default function Hero() {
                 ref={groupRef}
                 className="flex items-center gap-10 md:gap-14 shrink-0 pr-10 md:pr-14"
               >
-                {logos.map((src, i) => (
-                  <img
-                    key={`a-${i}`}
-                    src={src}
-                    alt={`logo-${i + 1}`}
-                    className="block h-12 md:h-[3.75rem] lg:h-[4.5rem] flex-none opacity-45 hover:opacity-70 transition-opacity duration-300 object-contain grayscale select-none"
-                    draggable={false}
-                  />
-                ))}
+                {logos.map((src, i) => {
+                  const isNew = i >= 3;
+                  return (
+                    <img
+                      key={`a-${i}`}
+                      src={src}
+                      alt={`logo-${i + 1}`}
+                      className={`${isNew ? sizeNew : sizeOld} block flex-none opacity-45 hover:opacity-70 transition-opacity duration-300 object-contain grayscale select-none`}
+                      draggable={false}
+                    />
+                  );
+                })}
               </div>
 
               {/* Grupo B (clon) */}
               <div className="flex items-center gap-10 md:gap-14 shrink-0" aria-hidden="true">
-                {logos.map((src, i) => (
-                  <img
-                    key={`b-${i}`}
-                    src={src}
-                    alt=""
-                    className="block h-12 md:h-[3.75rem] lg:h-[4.5rem] flex-none opacity-45 object-contain grayscale select-none"
-                    draggable={false}
-                  />
-                ))}
+                {logos.map((src, i) => {
+                  const isNew = i >= 3;
+                  return (
+                    <img
+                      key={`b-${i}`}
+                      src={src}
+                      alt=""
+                      className={`${isNew ? sizeNew : sizeOld} block flex-none opacity-45 object-contain grayscale select-none`}
+                      draggable={false}
+                    />
+                  );
+                })}
               </div>
             </div>
           </div>
