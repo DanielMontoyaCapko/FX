@@ -25,17 +25,21 @@ export default function FinalCTA() {
         </div>
         
         <div className="max-w-2xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-6">
-          <Button 
+          <Button
             onClick={scheduleCalendly}
-            className="bg-green text-black py-6 px-8 font-semibold text-lg hover:bg-green/90 h-auto flex flex-col items-center space-y-2"
+            className="bg-[#3f8358] text-white py-6 px-8 font-semibold text-lg hover:bg-[#356f4a] transition-colors h-auto flex flex-col items-center space-y-2"
           >
             <Calendar className="text-xl w-6 h-6" />
             <span>Agendar reunión privada</span>
           </Button>
-          
-          <Button 
+
+
+
+
+          {/* Botón para descargar el dossier completo */}
+          <Button
             onClick={downloadDossier}
-            className="gradient-navy text-white py-6 px-8 font-semibold text-lg hover:opacity-90 h-auto flex flex-col items-center space-y-2"
+            className="bg-[#344e41] text-white py-6 px-8 font-semibold text-lg hover:bg-[#2b3b33] h-auto flex flex-col items-center space-y-2"
           >
             <Download className="text-xl w-6 h-6" />
             <span>Descargar dossier completo</span>

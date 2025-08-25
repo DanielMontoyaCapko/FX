@@ -29,7 +29,7 @@ export default function Hero() {
       setGroupW(half);
 
       // Velocidad en px/s (ajusta a gusto)
-      const speed = 12;
+      const speed = 50;
       const dur = Math.max(half / speed, 12);
 
       trackRef.current.style.setProperty("--half", `${half}px`);
@@ -64,20 +64,23 @@ export default function Hero() {
       `}</style>
 
       <div className="container mx-auto px-6 text-center">
-        <h1 className="font-playfair text-5xl md:text-7xl font-bold text-white mb-6 text-shadow">
-          <span className="text-green">9% Fijo Anual.</span><br />
-          Capital Protegido por<br />
-          Contrato Bancario Pignorado.
+        {/* Título → Subtítulo → Descripción */}
+        <h1 className="font-playfair text-5xl md:text-7xl font-bold text-green tracking-tight mb-3 text-shadow">
+          9% Fijo Anual
         </h1>
 
-        <p className="text-xl md:text-2xl text-silver-100 mb-8 max-w-4xl mx-auto leading-relaxed">
-          Producto exclusivo para perfiles conservadores, sin exposición al mercado.
-          Gestionado con estructuras bancarias, firmado digitalmente y auditado legalmente.
+        <h2 className="text-2xl md:text-3xl text-silver-100/95 font-semibold leading-snug mb-4">
+          Capital protegido por contrato bancario pignorado
+        </h2>
+
+        <p className="text-base md:text-lg text-silver-100/90 mb-8 max-w-3xl mx-auto leading-relaxed">
+          Producto exclusivo para perfiles conservadores, sin exposición al mercado. Gestionado con estructuras
+          bancarias, firmado digitalmente y auditado legalmente.
         </p>
 
         <Button
           onClick={goToContact}
-          className="bg-green text-black px-12 py-4 text-xl font-bold hover:bg-green/90 transition-colors shadow-xl h-auto"
+          className="bg-green text-black px-12 py-4 text-xl font-bold hover:bg-green/90 transition-colors h-auto"
         >
           Quiero más información
         </Button>
