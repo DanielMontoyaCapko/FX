@@ -49,6 +49,8 @@ type Client = {
   sexo: "Hombre" | "Mujer";
 };
 
+type KycStatus = "Pendiente" | "Aprobado" | "Rechazado";
+
 export default function PartnerDashboard() {
   useScrollToTop();
   const { user, logout } = useAuth();
@@ -57,6 +59,52 @@ export default function PartnerDashboard() {
   // Foto y teléfono (como en el dashboard de clientes)
   const [profilePhoto, setProfilePhoto] = useState<string | null>(null);
   const [phoneNumber, setPhoneNumber] = useState("646 123 456");
+
+  // ===== KYC: estado y manejadores =====
+  const [kycStatus, setKycStatus] = useState<KycStatus>("Pendiente");
+  const [kycDocs, setKycDocs] = useState<File[]>([]);
+  const [kycFeedback, setKycFeedback] = useState<string>("");
+
+  const handleKycUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = Array.from(e.target.files ?? []);
+    if (!files.length) return;
+    // (Opcional) validar tamaño y tipo
+    const accepted = files.filter((f) => {
+      const okType = ["image/jpeg", "image/png", "application/pdf"].includes(f.type) || f.type === "";
+      const okSize = f.size <= 10 * 1024 * 1024;
+      return okType && okSize;
+    });
+    setKycDocs(accepted);
+    setKycStatus("Pendiente");
+    setKycFeedback("");
+  };
+
+  const handleKycRemove = (idx: number) => {
+    setKycDocs((prev) => prev.filter((_, i) => i !== idx));
+  };
+
+  const handleKycSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!kycDocs.length) return;
+    // TODO: enviar al backend. Aquí lo dejamos como "Pendiente".
+    setKycStatus("Pendiente");
+    // Cuando el backend responda:
+    // setKycStatus("Aprobado") o setKycStatus("Rechazado"); setKycFeedback("Motivo...");
+  };
+
+  const handleKycReupload = () => {
+    setKycDocs([]);
+    const input = document.getElementById("kyc-upload") as HTMLInputElement | null;
+    input?.click();
+  };
+
+  const formatBytes = (bytes: number) => {
+    if (bytes === 0) return "0 B";
+    const k = 1024;
+    const sizes = ["B", "KB", "MB", "GB"];
+    const i = Math.floor(Math.log(bytes) / Math.log(k));
+    return `${parseFloat((bytes / Math.pow(k, i)).toFixed(2))} ${sizes[i]}`;
+  };
 
   // Filtros CLIENTES
   const [showFilters, setShowFilters] = useState(false);
@@ -300,6 +348,22 @@ export default function PartnerDashboard() {
     tier: "Elite Partner",
   };
 
+  const kycBadgeClass =
+    kycStatus === "Aprobado"
+      ? "bg-emerald-500 text-black"
+      : kycStatus === "Rechazado"
+      ? "bg-red-500 text-white"
+      : "bg-amber-500 text-black";
+
+  const kycMessage =
+    kycStatus === "Aprobado"
+      ? "¡Tu cuenta está verificada! Ya puedes operar sin límites."
+      : kycStatus === "Rechazado"
+      ? kycFeedback || "Hemos detectado inconsistencias. Vuelve a subir los documentos."
+      : kycDocs.length
+      ? "Tus documentos están en revisión. Te notificaremos al finalizar."
+      : "Aún no has subido documentos. Sube tu DNI o pasaporte para iniciar la verificación.";
+
   return (
     <div
       className={[
@@ -368,7 +432,7 @@ export default function PartnerDashboard() {
 
       {/* Main */}
       <main className="flex-1 p-8 ml-64">
-        {/* ===== PERFIL (idéntico al dashboard de clientes) ===== */}
+        {/* ===== PERFIL ===== */}
         {activeTab === "perfil" && (
           <div>
             <div className="mb-8">
@@ -509,18 +573,108 @@ export default function PartnerDashboard() {
                   </TabsContent>
 
                   <TabsContent value="kyc" className="mt-6">
+                    {/* Encabezado estado KYC */}
                     <div className="bg-black/40 rounded-xl p-8 border border-emerald-500/15">
-                      <div className="flex items-center justify-center mb-6">
-                        <div className="bg-emerald-500/20 rounded-full p-3 mr-4">
+                      <div className="flex items-center gap-4 mb-6">
+                        <div className="bg-emerald-500/20 rounded-full p-3">
                           <User className="h-8 w-8 text-emerald-400" />
                         </div>
-                        <div className="text-left">
+                        <div className="flex-1">
                           <h3 className="text-2xl font-bold text-emerald-50 mb-1">Verificación KYC</h3>
-                          <p className="text-emerald-200/80">¡Tu cuenta está verificada! Ya puedes operar sin límites.</p>
+                          <p className="text-emerald-200/80">{kycMessage}</p>
                         </div>
-                        <div className="ml-auto">
-                          <Badge className="bg-emerald-500 text-black px-4 py-2 text-sm font-semibold">Approved</Badge>
-                        </div>
+                        <Badge className={`${kycBadgeClass} px-4 py-2 text-sm font-semibold`}>{kycStatus}</Badge>
+                      </div>
+
+                      {/* Subida de documentos */}
+                      <div className="mt-2 bg-black/40 rounded-xl p-6 border border-emerald-500/15">
+                        <form onSubmit={handleKycSubmit} className="space-y-4">
+                          <div className="rounded-lg border border-emerald-500/20 bg-black/30 p-4">
+                            <input
+                              id="kyc-upload"
+                              type="file"
+                              accept="image/*,application/pdf"
+                              multiple
+                              onChange={handleKycUpload}
+                              className="hidden"
+                            />
+                            <div className="flex items-center justify-between gap-3 flex-wrap">
+                              <div className="text-sm">
+                                <p className="text-emerald-200/90">
+                                  Archivos permitidos: .jpg, .png, .pdf (máx 10MB por archivo)
+                                </p>
+                              </div>
+                              <label
+                                htmlFor="kyc-upload"
+                                className="inline-flex items-center gap-2 cursor-pointer rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white px-4 py-2 text-sm"
+                              >
+                                <PlusCircle className="w-4 h-4" />
+                                Seleccionar archivos
+                              </label>
+                            </div>
+
+                            {!!kycDocs.length && (
+                              <div className="mt-4 space-y-2">
+                                {kycDocs.map((f, idx) => (
+                                  <div
+                                    key={`${f.name}-${idx}`}
+                                    className="flex items-center justify-between rounded-md bg-black/40 border border-emerald-500/10 px-3 py-2"
+                                  >
+                                    <div className="flex items-center gap-3">
+                                      <FileText className="w-4 h-4 text-emerald-400" />
+                                      <div className="text-sm">
+                                        <p className="text-emerald-50">{f.name}</p>
+                                        <p className="text-emerald-300/70 text-xs">{formatBytes(f.size)}</p>
+                                      </div>
+                                    </div>
+                                    <Button
+                                      type="button"
+                                      variant="ghost"
+                                      onClick={() => handleKycRemove(idx)}
+                                      className="text-red-300 hover:text-red-200"
+                                    >
+                                      <Trash2 className="w-4 h-4 mr-1" />
+                                      Quitar
+                                    </Button>
+                                  </div>
+                                ))}
+                              </div>
+                            )}
+                          </div>
+
+                          <div className="flex flex-wrap gap-2">
+                            <Button
+                              type="submit"
+                              disabled={!kycDocs.length}
+                              className="bg-emerald-600 hover:bg-emerald-500 disabled:opacity-50 disabled:cursor-not-allowed"
+                            >
+                              Enviar para verificación
+                            </Button>
+
+                            <Button
+                              type="button"
+                              variant="outline"
+                              onClick={handleKycReupload}
+                              className="border-emerald-500/25 text-emerald-50 hover:bg-emerald-900/10"
+                            >
+                              Volver a subir
+                            </Button>
+                          </div>
+
+                          {kycStatus === "Aprobado" && (
+                            <p className="text-emerald-200/80 text-sm">Verificación completada. ¡Gracias!</p>
+                          )}
+                          {kycStatus === "Pendiente" && kycDocs.length > 0 && (
+                            <p className="text-emerald-200/80 text-sm">
+                              Tus documentos están en revisión. Te notificaremos al finalizar.
+                            </p>
+                          )}
+                          {kycStatus === "Rechazado" && (
+                            <p className="text-amber-300 text-sm">
+                              {kycFeedback || "Revisa tus documentos y vuelve a subirlos."}
+                            </p>
+                          )}
+                        </form>
                       </div>
                     </div>
                   </TabsContent>
@@ -1551,4 +1705,3 @@ export default function PartnerDashboard() {
     </div>
   );
 }
-

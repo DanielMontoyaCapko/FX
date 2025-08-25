@@ -26,10 +26,13 @@ import {
   Wallet,
   CheckCircle2,
   AlertTriangle,
-  ClipboardList,
   Phone,
   Hash,
   QrCode,
+  // nuevos para KYC avanzado
+  FileText,
+  Trash2,
+  PlusCircle,
 } from "lucide-react";
 import logoImg from "@/assets/Logo-removeBG_1752488347081.png";
 import landscapeSvg from "@/assets/landscape.svg";
@@ -301,11 +304,11 @@ function ProductDetailView({
                       </Button>
                     </div>
                   </div>
-                  <Button disabled={!puedeIniciarAportacion} className="rounded-xl">
-                    {Copy.depositos.nueva}
+                  <Button disabled={!allPreOk} className="rounded-xl">
+                    Nueva aportación
                   </Button>
                 </div>
-                {!puedeIniciarAportacion && (
+                {!allPreOk && (
                   <p className="text-xs text-emerald-200/70 mt-3">
                     Botón deshabilitado: completa las firmas/validaciones para continuar.
                   </p>
@@ -360,7 +363,7 @@ function ProductDetailView({
                           className="border-emerald-500/30 hover:bg-emerald-900/10"
                           onClick={() => setInstruccionesGeneradas(true)}
                         >
-                          {Copy.depositos.instrucciones}
+                          Generar instrucciones
                         </Button>
                         {instruccionesGeneradas && <Badge className="bg-emerald-500 text-black">Generadas</Badge>}
                       </div>
@@ -391,10 +394,10 @@ function ProductDetailView({
 
                       <div className="flex flex-wrap gap-3">
                         <Button disabled={!depositoBancoListo} onClick={() => setBancoPaso("Pendiente")} className="rounded-xl">
-                          {Copy.depositos.confirme}
+                          He realizado la transferencia
                         </Button>
                         <Button variant="outline" className="border-emerald-500/30 hover:bg-emerald-900/10">
-                          {Copy.depositos.certificado}
+                          Descargar certificado
                         </Button>
                       </div>
 
@@ -517,7 +520,7 @@ function ProductDetailView({
                           He realizado el envío
                         </Button>
                         <Button variant="outline" className="border-emerald-500/30 hover:bg-emerald-900/10">
-                          {Copy.depositos.certificado}
+                          Descargar certificado
                         </Button>
                       </div>
 
@@ -616,7 +619,7 @@ function ProductDetailView({
                       </div>
                     </div>
                     <div className="mt-4">
-                      <Button className="rounded-xl">{Copy.retiros.solicitar}</Button>
+                      <Button className="rounded-xl">Solicitar retiro</Button>
                     </div>
                   </div>
 
@@ -641,7 +644,7 @@ function ProductDetailView({
                           </Select>
                           <div className="flex gap-2 mt-3">
                             <Button variant="outline" onClick={handleAddIban} className="border-emerald-500/30 hover:bg-emerald-900/10">
-                              {Copy.retiros.anadir}
+                              Añadir IBAN/Wallet
                             </Button>
                             {!ibanList.find((i) => i.iban === ibanSeleccionado)?.verified && (
                               <Button variant="outline" onClick={handleVerifyIban} className="border-emerald-500/30 hover:bg-emerald-900/10">
@@ -652,7 +655,7 @@ function ProductDetailView({
                         </div>
                         <div className="flex items-end">
                           <Button className="rounded-xl" onClick={() => setRetiroPasoBanco("Recibida")}>
-                            {Copy.retiros.confirmar}
+                            Confirmar retiro
                           </Button>
                         </div>
                       </div>
@@ -691,14 +694,14 @@ function ProductDetailView({
                                 Simular finalización
                               </Button>
                               <Button size="sm" variant="outline" className="border-emerald-500/30 hover:bg-emerald-900/10">
-                                {Copy.retiros.justificante}
+                                Descargar justificante
                               </Button>
                             </div>
                           )}
                           {retiroPasoBanco === "Finalizada" && (
                             <div className="flex gap-2 mt-3">
                               <Button size="sm" variant="outline" className="border-emerald-500/30 hover:bg-emerald-900/10">
-                                {Copy.retiros.justificante}
+                                Descargar justificante
                               </Button>
                             </div>
                           )}
@@ -727,7 +730,7 @@ function ProductDetailView({
                           </Select>
                           <div className="flex gap-2 mt-3">
                             <Button variant="outline" onClick={handleAddWallet} className="border-emerald-500/30 hover:bg-emerald-900/10">
-                              {Copy.retiros.anadir}
+                              Añadir IBAN/Wallet
                             </Button>
                             {!walletList.find((w) => w.address === walletSeleccionada)?.verified && (
                               <Button variant="outline" onClick={handleVerifyWallet} className="border-emerald-500/30 hover:bg-emerald-900/10">
@@ -738,7 +741,7 @@ function ProductDetailView({
                         </div>
                         <div className="flex items-end">
                           <Button className="rounded-xl" onClick={() => setRetiroPasoCrypto("Recibida")}>
-                            {Copy.retiros.confirmar}
+                            Confirmar retiro
                           </Button>
                         </div>
                       </div>
@@ -768,14 +771,14 @@ function ProductDetailView({
                                 Simular finalización
                               </Button>
                               <Button size="sm" variant="outline" className="border-emerald-500/30 hover:bg-emerald-900/10">
-                                {Copy.retiros.justificante}
+                                Descargar justificante
                               </Button>
                             </div>
                           )}
                           {retiroPasoCrypto === "Finalizada" && (
                             <div className="flex gap-2 mt-3">
                               <Button size="sm" variant="outline" className="border-emerald-500/30 hover:bg-emerald-900/10">
-                                {Copy.retiros.justificante}
+                                Descargar justificante
                               </Button>
                             </div>
                           )}
@@ -796,6 +799,9 @@ function ProductDetailView({
 /* -------------------------------------------------------------------------- */
 /*                                DASHBOARD                                   */
 /* -------------------------------------------------------------------------- */
+
+// ===== KYC avanzado (exactamente como en partner) =====
+type KycStatus = "Pendiente" | "Aprobado" | "Rechazado";
 
 export default function Dashboard() {
   useScrollToTop();
@@ -931,6 +937,65 @@ export default function Dashboard() {
     { id: "DOC-INFO-PRIV", titulo: "Política de Privacidad", descripcion: "Documento legal informado al cliente", tipo: "PDF", tamano: "0.6 MB", fecha: "2024-12-01", estado: "Disponible", categoria: "Legal" },
   ];
 
+  /* ======== KYC avanzado: estado y manejadores (exacto al partner) ======== */
+  const [kycStatus, setKycStatus] = useState<KycStatus>("Pendiente");
+  const [kycDocs, setKycDocs] = useState<File[]>([]);
+  const [kycFeedback, setKycFeedback] = useState<string>("");
+
+  const handleKycUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = Array.from(e.target.files ?? []);
+    if (!files.length) return;
+    const accepted = files.filter((f) => {
+      const okType = ["image/jpeg", "image/png", "application/pdf"].includes(f.type) || f.type === "";
+      const okSize = f.size <= 10 * 1024 * 1024;
+      return okType && okSize;
+    });
+    setKycDocs(accepted);
+    setKycStatus("Pendiente");
+    setKycFeedback("");
+  };
+
+  const handleKycRemove = (idx: number) => {
+    setKycDocs((prev) => prev.filter((_, i) => i !== idx));
+  };
+
+  const handleKycSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!kycDocs.length) return;
+    setKycStatus("Pendiente");
+    // aquí iría el envío real al backend
+  };
+
+  const handleKycReupload = () => {
+    setKycDocs([]);
+    const input = document.getElementById("kyc-upload") as HTMLInputElement | null;
+    input?.click();
+  };
+
+  const formatBytes = (bytes: number) => {
+    if (bytes === 0) return "0 B";
+    const k = 1024;
+    const sizes = ["B", "KB", "MB", "GB"];
+    const i = Math.floor(Math.log(bytes) / Math.log(k));
+    return `${parseFloat((bytes / Math.pow(k, i)).toFixed(2))} ${sizes[i]}`;
+  };
+
+  const kycBadgeClass =
+    kycStatus === "Aprobado"
+      ? "bg-emerald-500 text-black"
+      : kycStatus === "Rechazado"
+      ? "bg-red-500 text-white"
+      : "bg-amber-500 text-black";
+
+  const kycMessage =
+    kycStatus === "Aprobado"
+      ? "¡Tu cuenta está verificada! Ya puedes operar sin límites."
+      : kycStatus === "Rechazado"
+      ? kycFeedback || "Hemos detectado inconsistencias. Vuelve a subir los documentos."
+      : kycDocs.length
+      ? "Tus documentos están en revisión. Te notificaremos al finalizar."
+      : "Aún no has subido documentos. Sube tu DNI o pasaporte para iniciar la verificación.";
+
   return (
     <div
       className={[
@@ -967,7 +1032,6 @@ export default function Dashboard() {
               key={item.id}
               onClick={() => {
                 setActiveTab(item.id);
-                // Al entrar a productos, vuelve a la vista por defecto
                 if (item.id === "productos") setActiveProductsView("default");
               }}
               className={[
@@ -1136,19 +1200,109 @@ export default function Dashboard() {
                     </form>
                   </TabsContent>
 
+                  {/* ====== KYC avanzado (idéntico al partner) ====== */}
                   <TabsContent value="kyc" className="mt-6">
                     <div className="bg-black/40 rounded-xl p-8 border border-emerald-500/15">
-                      <div className="flex items-center justify-center mb-6">
-                        <div className="bg-emerald-500/20 rounded-full p-3 mr-4">
+                      <div className="flex items-center gap-4 mb-6">
+                        <div className="bg-emerald-500/20 rounded-full p-3">
                           <User className="h-8 w-8 text-emerald-400" />
                         </div>
-                        <div className="text-left">
+                        <div className="flex-1">
                           <h3 className="text-2xl font-bold text-emerald-50 mb-1">Verificación KYC</h3>
-                          <p className="text-emerald-200/80">¡Tu cuenta está verificada! Ya puedes operar sin límites.</p>
+                          <p className="text-emerald-200/80">{kycMessage}</p>
                         </div>
-                        <div className="ml-auto">
-                          <Badge className="bg-emerald-500 text-black px-4 py-2 text-sm font-semibold">Approved</Badge>
-                        </div>
+                        <Badge className={`${kycBadgeClass} px-4 py-2 text-sm font-semibold`}>{kycStatus}</Badge>
+                      </div>
+
+                      {/* Subida de documentos */}
+                      <div className="mt-2 bg-black/40 rounded-xl p-6 border border-emerald-500/15">
+                        <form onSubmit={handleKycSubmit} className="space-y-4">
+                          <div className="rounded-lg border border-emerald-500/20 bg-black/30 p-4">
+                            <input
+                              id="kyc-upload"
+                              type="file"
+                              accept="image/*,application/pdf"
+                              multiple
+                              onChange={handleKycUpload}
+                              className="hidden"
+                            />
+                            <div className="flex items-center justify-between gap-3 flex-wrap">
+                              <div className="text-sm">
+                                <p className="text-emerald-200/90">
+                                  Archivos permitidos: .jpg, .png, .pdf (máx 10MB por archivo)
+                                </p>
+                              </div>
+                              <label
+                                htmlFor="kyc-upload"
+                                className="inline-flex items-center gap-2 cursor-pointer rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white px-4 py-2 text-sm"
+                              >
+                                <PlusCircle className="w-4 h-4" />
+                                Seleccionar archivos
+                              </label>
+                            </div>
+
+                            {!!kycDocs.length && (
+                              <div className="mt-4 space-y-2">
+                                {kycDocs.map((f, idx) => (
+                                  <div
+                                    key={`${f.name}-${idx}`}
+                                    className="flex items-center justify-between rounded-md bg-black/40 border border-emerald-500/10 px-3 py-2"
+                                  >
+                                    <div className="flex items-center gap-3">
+                                      <FileText className="w-4 h-4 text-emerald-400" />
+                                      <div className="text-sm">
+                                        <p className="text-emerald-50">{f.name}</p>
+                                        <p className="text-emerald-300/70 text-xs">{formatBytes(f.size)}</p>
+                                      </div>
+                                    </div>
+                                    <Button
+                                      type="button"
+                                      variant="ghost"
+                                      onClick={() => handleKycRemove(idx)}
+                                      className="text-red-300 hover:text-red-200"
+                                    >
+                                      <Trash2 className="w-4 h-4 mr-1" />
+                                      Quitar
+                                    </Button>
+                                  </div>
+                                ))}
+                              </div>
+                            )}
+                          </div>
+
+                          <div className="flex flex-wrap gap-2">
+                            <Button
+                              type="submit"
+                              disabled={!kycDocs.length}
+                              className="bg-emerald-600 hover:bg-emerald-500 disabled:opacity-50 disabled:cursor-not-allowed"
+                            >
+                              Enviar para verificación
+                            </Button>
+
+                            <Button
+                              type="button"
+                              variant="outline"
+                              onClick={handleKycReupload}
+                              className="border-emerald-500/25 text-emerald-50 hover:bg-emerald-900/10"
+                            >
+                              Volver a subir
+                            </Button>
+                          </div>
+
+                          {kycStatus === "Aprobado" && (
+                            <p className="text-emerald-200/80 text-sm">Verificación completada. ¡Gracias!</p>
+                          )}
+                          {kycStatus === "Pendiente" && kycDocs.length > 0 && (
+                            <p className="text-emerald-200/80 text-sm">
+                              Tus documentos están en revisión. Te notificaremos al finalizar.
+                            </p>
+                          )}
+                          {kycStatus === "Rechazado" && (
+                            <p className="text-amber-300 text-sm">
+                              {kycFeedback || "Revisa tus documentos y vuelve a subirlos."}
+                            </p>
+                          )}
+                        </form>
                       </div>
                     </div>
                   </TabsContent>
@@ -1781,7 +1935,7 @@ export default function Dashboard() {
                               >
                                 <Download className="h-4 w-4 mr-2" />
                                 Descargar
-                              </Button>
+                                                              </Button>
                             </div>
                           </div>
                         </CardContent>
@@ -1789,20 +1943,21 @@ export default function Dashboard() {
                     ))}
 
                   {/* Placeholder si no hay resultados */}
-                  {contratosCliente.filter((c) => {
-                    const q = cFilters.search.toLowerCase();
-                    const matchesSearch =
-                      !q ||
-                      c.id.toLowerCase().includes(q) ||
-                      c.titulo.toLowerCase().includes(q) ||
-                      c.descripcion.toLowerCase().includes(q);
-                    const matchesEstado = !cFilters.estado || c.estado === cFilters.estado;
-                    const matchesTipo = !cFilters.tipo || c.categoria === cFilters.tipo;
-                    const t = new Date(c.fecha).getTime();
-                    const fromOk = !cFilters.dateFrom || t >= new Date(cFilters.dateFrom).getTime();
-                    const toOk = !cFilters.dateTo || t <= new Date(cFilters.dateTo).getTime();
-                    return matchesSearch && matchesEstado && matchesTipo && fromOk && toOk;
-                  }).length === 0 && (
+                  {contratosCliente
+                    .filter((c) => {
+                      const q = cFilters.search.toLowerCase();
+                      const matchesSearch =
+                        !q ||
+                        c.id.toLowerCase().includes(q) ||
+                        c.titulo.toLowerCase().includes(q) ||
+                        c.descripcion.toLowerCase().includes(q);
+                      const matchesEstado = !cFilters.estado || c.estado === cFilters.estado;
+                      const matchesTipo = !cFilters.tipo || c.categoria === cFilters.tipo;
+                      const t = new Date(c.fecha).getTime();
+                      const fromOk = !cFilters.dateFrom || t >= new Date(cFilters.dateFrom).getTime();
+                      const toOk = !cFilters.dateTo || t <= new Date(cFilters.dateTo).getTime();
+                      return matchesSearch && matchesEstado && matchesTipo && fromOk && toOk;
+                    }).length === 0 && (
                     <Card className="bg-black/30 border border-emerald-500/15 border-dashed rounded-2xl">
                       <CardContent className="p-8">
                         <div className="text-center text-emerald-200/80">
@@ -2019,149 +2174,149 @@ export default function Dashboard() {
                                         ? "bg-emerald-500 text-black"
                                         : t.estado === "Pendiente"
                                         ? "bg-amber-500 text-black"
-                                  : "bg-red-500 text-white"
-                          }
-                          >
-                            {t.estado}
-                          </Badge>
-                        </td>
-                      </tr>
-                    ))}
-                    {transacciones.filter((_) => true).length === 0 && (
-                      <tr>
-                        <td colSpan={5} className="p-8 text-center text-emerald-200/80">
-                          No hay transacciones para mostrar
-                        </td>
-                      </tr>
-                    )}
-                  </tbody>
-                </table>
+                                        : "bg-red-500 text-white"
+                                    }
+                                  >
+                                    {t.estado}
+                                  </Badge>
+                                </td>
+                              </tr>
+                            ))}
+                          {transacciones.filter((_) => true).length === 0 && (
+                            <tr>
+                              <td colSpan={5} className="p-8 text-center text-emerald-200/80">
+                                No hay transacciones para mostrar
+                              </td>
+                            </tr>
+                          )}
+                        </tbody>
+                      </table>
+                    </div>
+                  </CardContent>
+                </Card>
               </div>
-            </CardContent>
-          </Card>
-        </div>
-      ) : null}
+            ) : null}
+          </div>
+        ) : (
+          /* ------------------------------- INICIO (home) ------------------------------- */
+          <div>
+            <div className="mb-8">
+              <h1 className="text-3xl font-bold text-emerald-50">Dashboard</h1>
+              <p className="text-emerald-200/80">Vista general de tu actividad</p>
+            </div>
+
+            {/* KPIs (3 tarjetas) */}
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
+              {kpis.map((kpi, i) => (
+                <Card
+                  key={i}
+                  className="bg-black/40 border border-emerald-500/15 rounded-2xl hover:shadow-[0_16px_40px_-20px_rgba(16,185,129,0.45)] transition-all"
+                >
+                  <CardContent className="p-6">
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <p className="text-emerald-200/80 text-sm">{kpi.title}</p>
+                        <p className="text-2xl font-bold text-emerald-50">{kpi.value}</p>
+                      </div>
+                      <div className={`flex items-center space-x-1 ${kpi.trending === "up" ? "text-emerald-400" : "text-red-400"}`}>
+                        {kpi.trending === "up" ? <TrendingUp className="h-4 w-4" /> : <TrendingDown className="h-4 w-4" />}
+                        <span className="text-sm">{kpi.change}</span>
+                      </div>
+                    </div>
+
+                    {kpi.title === "Capital Invertido" && <ProgressBar percent={110} noteWhenOver100 />}
+                    {kpi.title === "Progreso en Meses" && <ProgressBar percent={25} />}
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+
+            {/* Producto destacado + gráfica (proyección a 10 años) */}
+            <Card className="bg-black/40 border border-emerald-500/15 rounded-2xl mb-8">
+              <CardContent className="p-8">
+                <div className="text-center mb-6">
+                  <h2 className="text-2xl font-bold text-emerald-50 mb-2">Un Producto Sólido, Simple y Rentable</h2>
+                  <p className="text-emerald-200/80 max-w-3xl mx-auto">
+                    Seguridad, rentabilidad y simplicidad. Ideal para hacer crecer tu capital de forma predecible.
+                  </p>
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+                  {[
+                    { icon: <TrendingUp className="h-6 w-6 text-white" />, title: "Rentabilidad Garantizada", value: "9% Anual", note: "Retorno fijo" },
+                    { icon: <TrendingUp className="h-6 w-6 text-white" />, title: "Capital Protegido", value: "100%", note: "Garantía bancaria" },
+                    { icon: <Calendar className="h-6 w-6 text-white" />, title: "Flexibilidad", value: "1-5 años", note: "Plazos adaptables" },
+                  ].map((b, idx) => (
+                    <div
+                      key={idx}
+                      className="bg-black/40 p-6 rounded-xl text-center border border-emerald-500/15 hover:border-emerald-400 hover:shadow-[0_16px_40px_-20px_rgba(16,185,129,0.45)] transition-all"
+                    >
+                      <div className="w-12 h-12 bg-emerald-700/80 rounded-full flex items-center justify-center mx-auto mb-4">
+                        {b.icon}
+                      </div>
+                      <h3 className="text-emerald-50 font-semibold mb-1">{b.title}</h3>
+                      <p className="text-emerald-400 text-xl font-bold mb-1">{b.value}</p>
+                      <p className="text-emerald-200/80 text-sm">{b.note}</p>
+                    </div>
+                  ))}
+                </div>
+
+                <div className="mb-2">
+                  <p className="text-emerald-200/80 text-sm mb-2">Proyección a 10 años</p>
+                  <CompoundInterestChart initialAmount={50000} years={10} rate={0.09} className="max-w-7xl mx-auto w-full" />
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* Actividad reciente */}
+            <Card className="bg-black/40 border border-emerald-500/15 rounded-2xl">
+              <CardHeader>
+                <CardTitle className="text-emerald-50">Actividad Reciente</CardTitle>
+                <CardDescription className="text-emerald-200/80">Últimas acciones en el sistema</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-4">
+                  {recentActivity.map((a, idx) => (
+                    <div key={idx} className="flex items-center space-x-3 p-3 bg-black/40 rounded-lg border border-emerald-500/15">
+                      <div className="w-8 h-8 bg-emerald-700/70 rounded-full flex items-center justify-center">
+                        {a.type === "simulation" && <Calculator className="h-4 w-4 text-white" />}
+                        {a.type === "download" && <Download className="h-4 w-4 text-white" />}
+                        {a.type === "lead" && <Plus className="h-4 w-4 text-white" />}
+                      </div>
+                      <div className="flex-1">
+                        <p className="text-emerald-50 text-sm">{a.message}</p>
+                        <p className="text-emerald-200/80 text-xs">{a.time}</p>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* Acciones rápidas */}
+            <div className="mt-8">
+              <h2 className="text-xl font-bold text-emerald-50 mb-4">Acciones Rápidas</h2>
+              <div className="flex flex-col sm:flex-row gap-4">
+                <Button onClick={handleDownloadStatement} className="rounded-xl bg-emerald-700 hover:bg-emerald-600 text-white">
+                  <Download className="h-4 w-4 mr-2" />
+                  Descargar Estado de Cuenta
+                </Button>
+                <Button
+                  onClick={handleCalculateInvestment}
+                  className="rounded-xl bg-gradient-to-r from-emerald-600 to-emerald-500 hover:from-emerald-500 hover:to-emerald-400 text-white"
+                >
+                  <Calculator className="h-4 w-4 mr-2" />
+                  Calcular Nueva Inversión
+                </Button>
+              </div>
+            </div>
+          </div>
+        )}
+      </main>
+
+      {/* Modales */}
+      {showCalculator && <InvestmentCalculator onClose={() => setShowCalculator(false)} />}
     </div>
-  ) : (
-    /* ------------------------------- INICIO (home) ------------------------------- */
-    <div>
-      <div className="mb-8">
-        <h1 className="text-3xl font-bold text-emerald-50">Dashboard</h1>
-        <p className="text-emerald-200/80">Vista general de tu actividad</p>
-      </div>
-
-      {/* KPIs (3 tarjetas) */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
-        {kpis.map((kpi, i) => (
-          <Card
-            key={i}
-            className="bg-black/40 border border-emerald-500/15 rounded-2xl hover:shadow-[0_16px_40px_-20px_rgba(16,185,129,0.45)] transition-all"
-          >
-            <CardContent className="p-6">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-emerald-200/80 text-sm">{kpi.title}</p>
-                  <p className="text-2xl font-bold text-emerald-50">{kpi.value}</p>
-                </div>
-                <div className={`flex items-center space-x-1 ${kpi.trending === "up" ? "text-emerald-400" : "text-red-400"}`}>
-                  {kpi.trending === "up" ? <TrendingUp className="h-4 w-4" /> : <TrendingDown className="h-4 w-4" />}
-                  <span className="text-sm">{kpi.change}</span>
-                </div>
-              </div>
-
-              {kpi.title === "Capital Invertido" && <ProgressBar percent={110} noteWhenOver100 />}
-              {kpi.title === "Progreso en Meses" && <ProgressBar percent={25} />}
-            </CardContent>
-          </Card>
-        ))}
-      </div>
-
-      {/* Producto destacado + gráfica (proyección a 10 años) */}
-      <Card className="bg-black/40 border border-emerald-500/15 rounded-2xl mb-8">
-        <CardContent className="p-8">
-          <div className="text-center mb-6">
-            <h2 className="text-2xl font-bold text-emerald-50 mb-2">Un Producto Sólido, Simple y Rentable</h2>
-            <p className="text-emerald-200/80 max-w-3xl mx-auto">
-              Seguridad, rentabilidad y simplicidad. Ideal para hacer crecer tu capital de forma predecible.
-            </p>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-            {[
-              { icon: <TrendingUp className="h-6 w-6 text-white" />, title: "Rentabilidad Garantizada", value: "9% Anual", note: "Retorno fijo" },
-              { icon: <TrendingUp className="h-6 w-6 text-white" />, title: "Capital Protegido", value: "100%", note: "Garantía bancaria" },
-              { icon: <Calendar className="h-6 w-6 text-white" />, title: "Flexibilidad", value: "1-5 años", note: "Plazos adaptables" },
-            ].map((b, idx) => (
-              <div
-                key={idx}
-                className="bg-black/40 p-6 rounded-xl text-center border border-emerald-500/15 hover:border-emerald-400 hover:shadow-[0_16px_40px_-20px_rgba(16,185,129,0.45)] transition-all"
-              >
-                <div className="w-12 h-12 bg-emerald-700/80 rounded-full flex items-center justify-center mx-auto mb-4">
-                  {b.icon}
-                </div>
-                <h3 className="text-emerald-50 font-semibold mb-1">{b.title}</h3>
-                <p className="text-emerald-400 text-xl font-bold mb-1">{b.value}</p>
-                <p className="text-emerald-200/80 text-sm">{b.note}</p>
-              </div>
-            ))}
-          </div>
-
-          <div className="mb-2">
-            <p className="text-emerald-200/80 text-sm mb-2">Proyección a 10 años</p>
-            <CompoundInterestChart initialAmount={50000} years={10} rate={0.09} className="max-w-7xl mx-auto w-full" />
-          </div>
-        </CardContent>
-      </Card>
-
-      {/* Actividad reciente */}
-      <Card className="bg-black/40 border border-emerald-500/15 rounded-2xl">
-        <CardHeader>
-          <CardTitle className="text-emerald-50">Actividad Reciente</CardTitle>
-          <CardDescription className="text-emerald-200/80">Últimas acciones en el sistema</CardDescription>
-        </CardHeader>
-        <CardContent>
-          <div className="space-y-4">
-            {recentActivity.map((a, idx) => (
-              <div key={idx} className="flex items-center space-x-3 p-3 bg-black/40 rounded-lg border border-emerald-500/15">
-                <div className="w-8 h-8 bg-emerald-700/70 rounded-full flex items-center justify-center">
-                  {a.type === "simulation" && <Calculator className="h-4 w-4 text-white" />}
-                  {a.type === "download" && <Download className="h-4 w-4 text-white" />}
-                  {a.type === "lead" && <Plus className="h-4 w-4 text-white" />}
-                </div>
-                <div className="flex-1">
-                  <p className="text-emerald-50 text-sm">{a.message}</p>
-                  <p className="text-emerald-200/80 text-xs">{a.time}</p>
-                </div>
-              </div>
-            ))}
-          </div>
-        </CardContent>
-      </Card>
-
-      {/* Acciones rápidas */}
-      <div className="mt-8">
-        <h2 className="text-xl font-bold text-emerald-50 mb-4">Acciones Rápidas</h2>
-        <div className="flex flex-col sm:flex-row gap-4">
-          <Button onClick={handleDownloadStatement} className="rounded-xl bg-emerald-700 hover:bg-emerald-600 text-white">
-            <Download className="h-4 w-4 mr-2" />
-            Descargar Estado de Cuenta
-          </Button>
-          <Button
-            onClick={handleCalculateInvestment}
-            className="rounded-xl bg-gradient-to-r from-emerald-600 to-emerald-500 hover:from-emerald-500 hover:to-emerald-400 text-white"
-          >
-            <Calculator className="h-4 w-4 mr-2" />
-            Calcular Nueva Inversión
-          </Button>
-        </div>
-      </div>
-    </div>
-  )}
-</main>
-
-  {/* Modales */}
-  {showCalculator && <InvestmentCalculator onClose={() => setShowCalculator(false)} />}
-  </div>
   );
 }
 
