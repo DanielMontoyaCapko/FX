@@ -5,8 +5,145 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { X, Calculator, TrendingUp, Download } from "lucide-react";
-import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
-import html2canvas from 'html2canvas';
+import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from "recharts";
+
+/* ------------------------------ NUEVO PDF UX ------------------------------ */
+const BRAND = {
+  name: "Nakama&Partners",
+  primary: [16, 185, 129] as [number, number, number], // #10B981
+  primary600: [5, 150, 105] as [number, number, number], // #059669
+  textDark: [15, 23, 42] as [number, number, number],
+  textMuted: [107, 114, 128] as [number, number, number],
+};
+
+function setFillRGB(doc: any, [r, g, b]: [number, number, number]) {
+  doc.setFillColor(r, g, b);
+}
+function setStrokeRGB(doc: any, [r, g, b]: [number, number, number]) {
+  doc.setDrawColor(r, g, b);
+}
+function setTextRGB(doc: any, [r, g, b]: [number, number, number]) {
+  doc.setTextColor(r, g, b);
+}
+function sectionHeading(doc: any, text: string, y: number) {
+  doc.setFontSize(13);
+  setTextRGB(doc, BRAND.primary);
+  doc.text(text.toUpperCase(), 40, y);
+  setStrokeRGB(doc, BRAND.primary);
+  doc.setLineWidth(1);
+  doc.line(40, y + 6, doc.internal.pageSize.getWidth() - 40, y + 6);
+}
+function kv(doc: any, label: string, value: string, x: number, y: number) {
+  doc.setFontSize(10);
+  setTextRGB(doc, BRAND.textMuted);
+  doc.text(label, x, y);
+  doc.setFontSize(12);
+  setTextRGB(doc, BRAND.textDark);
+  doc.text(value, x, y + 16);
+}
+async function drawBrandHeader(doc: any, title: string, subtitle?: string) {
+  const pageW = doc.internal.pageSize.getWidth();
+  const barH = 64;
+
+  setFillRGB(doc, BRAND.primary600);
+  doc.rect(0, 0, pageW, barH, "F");
+
+  doc.setFont("helvetica", "bold");
+  doc.setFontSize(12);
+  setTextRGB(doc, [255, 255, 255]);
+  doc.text(BRAND.name, 40, 24);
+
+  doc.setFontSize(18);
+  doc.text(title, 40, 44);
+
+  if (subtitle) {
+    doc.setFont("helvetica", "normal");
+    doc.setFontSize(11);
+    setTextRGB(doc, [236, 253, 245]);
+    doc.text(subtitle, 40, 58);
+  }
+
+  setStrokeRGB(doc, BRAND.primary);
+  doc.setLineWidth(2);
+  doc.line(40, barH + 6, pageW - 40, barH + 6);
+
+  return barH + 18;
+}
+function drawFooter(doc: any) {
+  const pageW = doc.internal.pageSize.getWidth();
+  const pageH = doc.internal.pageSize.getHeight();
+  setTextRGB(doc, BRAND.textMuted);
+  doc.setFontSize(9);
+  const footer = `${BRAND.name} • Documento generado automáticamente • ${new Date().toLocaleString("es-ES")}`;
+  doc.text(footer, pageW / 2, pageH - 24, { align: "center" });
+}
+function eur(n: number) {
+  return n.toLocaleString("es-ES", { style: "currency", currency: "EUR" });
+}
+function calcular(capitalInicial: number, tasaAnual: number, meses: number) {
+  const tasaMensual = tasaAnual / 12;
+  const valorFinal = capitalInicial * Math.pow(1 + tasaMensual, meses);
+  const beneficio = valorFinal - capitalInicial;
+  return { tasaMensual, valorFinal, beneficio };
+}
+async function generateSimulationPDF(params: { capitalInicial: number; tasaAnual: number; meses: number }) {
+  const { jsPDF } = await import("jspdf");
+  const doc = new jsPDF({ unit: "pt", format: "A4" });
+
+  let y = await drawBrandHeader(doc, "Simulación de Inversión", "Calculadora de interés compuesto");
+  y += 10;
+
+  // Parámetros
+  sectionHeading(doc, "Parámetros", y);
+  y += 24;
+  kv(doc, "Capital Inicial", eur(params.capitalInicial), 40, y);
+  kv(doc, "Tasa Anual", `${(params.tasaAnual * 100).toFixed(2)}%`, 220, y);
+  kv(doc, "Plazo", `${params.meses} meses`, 400, y);
+  y += 56;
+
+  // Resultados
+  const { tasaMensual, valorFinal, beneficio } = calcular(params.capitalInicial, params.tasaAnual, params.meses);
+  sectionHeading(doc, "Resultados", y);
+  y += 24;
+  kv(doc, "Tasa Mensual", `${(tasaMensual * 100).toFixed(4)}%`, 40, y);
+  kv(doc, "Beneficio Estimado", eur(beneficio), 220, y);
+  kv(doc, "Valor Final Estimado", eur(valorFinal), 400, y);
+  y += 56;
+
+  // Hitos (trimestrales + último)
+  sectionHeading(doc, "Hitos (trimestrales)", y);
+  y += 24;
+
+  doc.setFontSize(10);
+  setTextRGB(doc, [255, 255, 255]);
+  setFillRGB(doc, BRAND.primary600);
+  doc.rect(40, y - 12, 520, 24, "F");
+  doc.text("Mes", 56, y + 2);
+  doc.text("Capital Estimado", 140, y + 2);
+  doc.text("Beneficio Acumulado", 320, y + 2);
+
+  setTextRGB(doc, BRAND.textDark);
+  const rowH = 24;
+  const tramos = [3, 6, 9, 12, 18, params.meses].filter((m, i, a) => m <= params.meses && a.indexOf(m) === i);
+  tramos.forEach((mes, idx) => {
+    const v = params.capitalInicial * Math.pow(1 + tasaMensual, mes);
+    const b = v - params.capitalInicial;
+    const ry = y + rowH * (idx + 1);
+    if (idx % 2 === 0) {
+      setFillRGB(doc, [240, 253, 244]);
+      doc.rect(40, ry - 16, 520, rowH, "F");
+    }
+    doc.setFontSize(11);
+    doc.text(String(mes), 56, ry);
+    doc.text(eur(v), 140, ry);
+    doc.text(eur(b), 320, ry);
+  });
+
+  drawFooter(doc);
+  doc.save(`simulacion-nakama-${params.capitalInicial}-${params.meses}m-${new Date().toISOString().slice(0, 10)}.pdf`);
+}
+
+/* ------------------------------ CALCULADORA UI ----------------------------- */
 
 interface InvestmentCalculatorProps {
   onClose: () => void;
@@ -21,17 +158,17 @@ export default function InvestmentCalculator({ onClose }: InvestmentCalculatorPr
     const principal = parseFloat(amount);
     const months = parseInt(term);
     const monthlyRate = rate / 100 / 12;
-    
-    const data = [];
+
+    const data: Array<{ month: number; compound: number; simple: number; difference: number }> = [];
     for (let month = 0; month <= months; month++) {
       const compoundAmount = principal * Math.pow(1 + monthlyRate, month);
-      const simpleAmount = principal + (principal * (rate / 100) * (month / 12));
-      
+      const simpleAmount = principal + principal * (rate / 100) * (month / 12);
+
       data.push({
         month,
         compound: Math.round(compoundAmount),
         simple: Math.round(simpleAmount),
-        difference: Math.round(compoundAmount - simpleAmount)
+        difference: Math.round(compoundAmount - simpleAmount),
       });
     }
     return data;
@@ -42,73 +179,16 @@ export default function InvestmentCalculator({ onClose }: InvestmentCalculatorPr
   const totalGain = finalAmount - parseFloat(amount);
   const gainPercentage = ((totalGain / parseFloat(amount)) * 100).toFixed(2);
 
+  // ⬇️ Solo cambiamos esta función para usar el NUEVO PDF
   const handleDownloadSimulation = async () => {
     try {
-      // Get chart element for screenshot
-      const chartElement = document.getElementById('simulation-chart');
-      if (!chartElement) {
-        alert('Error al capturar la gráfica. Inténtalo de nuevo.');
-        return;
-      }
-
-      // Capture chart as image
-      const canvas = await html2canvas(chartElement, {
-        backgroundColor: '#040505',
-        scale: 2,
-        useCORS: true
-      });
-      
-      // Generate PDF with chart and data
-      const { jsPDF } = await import('jspdf');
-      const doc = new jsPDF();
-
-      // Header
-      doc.setFontSize(20);
-      doc.setTextColor(52, 78, 65);
-      doc.text('NAKAMA&PARTNERS', 20, 30);
-      doc.setFontSize(16);
-      doc.text('Simulación de Inversión', 20, 45);
-
-      // Simulation data
-      doc.setFontSize(12);
-      doc.setTextColor(0, 0, 0);
-      doc.text('Fecha: ' + new Date().toLocaleDateString('es-ES'), 20, 65);
-      doc.text('Simulación generada desde calculadora interactiva', 20, 75);
-
-      // Investment summary
-      doc.setFontSize(14);
-      doc.setTextColor(52, 78, 65);
-      doc.text('PARÁMETROS DE INVERSIÓN', 20, 95);
-      
-      doc.setFontSize(12);
-      doc.setTextColor(0, 0, 0);
-      doc.text(`Monto inicial: €${parseFloat(amount).toLocaleString()}`, 20, 110);
-      doc.text(`Plazo: ${term} meses`, 20, 120);
-      doc.text('Rentabilidad anual: 9.0% (Garantizada)', 20, 130);
-
-      // Results
-      doc.setFontSize(14);
-      doc.setTextColor(52, 78, 65);
-      doc.text('RESULTADOS PROYECTADOS', 20, 150);
-      
-      doc.setFontSize(12);
-      doc.setTextColor(0, 0, 0);
-      doc.text(`Ganancia total: €${totalGain.toLocaleString()}`, 20, 165);
-      doc.text(`Valor final: €${finalAmount.toLocaleString()}`, 20, 175);
-      doc.text(`Rentabilidad total: ${gainPercentage}%`, 20, 185);
-
-      // Add chart image
-      const imgData = canvas.toDataURL('image/png');
-      const imgWidth = 170;
-      const imgHeight = (canvas.height * imgWidth) / canvas.width;
-      doc.addImage(imgData, 'PNG', 20, 200, imgWidth, Math.min(imgHeight, 80));
-
-      // Save the PDF
-      doc.save(`simulacion-inversion-${parseFloat(amount).toLocaleString()}-${term}m-${new Date().toISOString().split('T')[0]}.pdf`);
-      
+      const capitalInicial = parseFloat(amount);
+      const meses = parseInt(term);
+      const tasaAnual = 0.09; // 9% fijo
+      await generateSimulationPDF({ capitalInicial, tasaAnual, meses });
     } catch (error) {
-      console.error('Error generating simulation PDF:', error);
-      alert('Error al generar la simulación. Inténtalo de nuevo.');
+      console.error("Error generating simulation PDF:", error);
+      alert("Error al generar la simulación. Inténtalo de nuevo.");
     }
   };
 
@@ -116,7 +196,7 @@ export default function InvestmentCalculator({ onClose }: InvestmentCalculatorPr
     if (active && payload && payload.length) {
       const compound = payload[0].value;
       const gain = compound - parseFloat(amount);
-      
+
       return (
         <div className="bg-black/95 p-4 rounded-lg border border-green-500/30 backdrop-blur-sm">
           <p className="text-white font-semibold mb-2">Mes {label}</p>
@@ -141,16 +221,16 @@ export default function InvestmentCalculator({ onClose }: InvestmentCalculatorPr
               <p className="text-silver-100 text-sm">Simula tu próxima inversión con rentabilidad del 9% anual</p>
             </div>
           </div>
-          <Button 
-            variant="ghost" 
-            size="sm" 
+          <Button
+            variant="ghost"
+            size="sm"
             onClick={onClose}
             className="text-silver-100 hover:text-white hover:bg-black/50"
           >
             <X className="h-4 w-4" />
           </Button>
         </CardHeader>
-        
+
         <CardContent className="p-6">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
             {/* Input Controls */}
@@ -233,36 +313,24 @@ export default function InvestmentCalculator({ onClose }: InvestmentCalculatorPr
               <h3 className="text-white font-semibold">Evolución de la Inversión</h3>
               <div id="simulation-chart" className="h-96 bg-black/70 rounded-lg p-4">
                 <ResponsiveContainer width="100%" height="100%">
-                  <LineChart data={projectionData} margin={{ top: 5, right: 30, left: 20, bottom: 5 }}>
+                  <LineChart data={calculateProjection()} margin={{ top: 5, right: 30, left: 20, bottom: 5 }}>
                     <CartesianGrid strokeDasharray="3 3" stroke="#334155" opacity={0.3} />
-                    <XAxis 
-                      dataKey="month" 
-                      stroke="#94a3b8"
-                      fontSize={12}
-                      tickFormatter={(value) => `${value}m`}
-                    />
-                    <YAxis 
-                      stroke="#94a3b8"
-                      fontSize={12}
-                      tickFormatter={(value) => `€${(value / 1000).toFixed(0)}K`}
-                    />
+                    <XAxis dataKey="month" stroke="#94a3b8" fontSize={12} tickFormatter={(value) => `${value}m`} />
+                    <YAxis stroke="#94a3b8" fontSize={12} tickFormatter={(value) => `€${(value / 1000).toFixed(0)}K`} />
                     <Tooltip content={<CustomTooltip />} />
-                    <Line 
-                      type="monotone" 
-                      dataKey="compound" 
-                      stroke="#22c55e" 
+                    <Line
+                      type="monotone"
+                      dataKey="compound"
+                      stroke="#22c55e"
                       strokeWidth={3}
-                      dot={{ fill: '#22c55e', strokeWidth: 2, r: 3 }}
+                      dot={{ fill: "#22c55e", strokeWidth: 2, r: 3 }}
                     />
                   </LineChart>
                 </ResponsiveContainer>
               </div>
-              
+
               <div className="flex justify-center">
-                <Button 
-                  onClick={handleDownloadSimulation}
-                  className="bg-green-600 hover:bg-green-700 text-white px-8"
-                >
+                <Button onClick={handleDownloadSimulation} className="bg-green-600 hover:bg-green-700 text-white px-8">
                   <Download className="h-4 w-4 mr-2" />
                   Descargar Simulación
                 </Button>

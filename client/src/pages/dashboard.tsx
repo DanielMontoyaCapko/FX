@@ -36,6 +36,7 @@ import landscapeSvg from "@/assets/landscape.svg";
 import { useScrollToTop } from "@/hooks/useScrollToTop";
 import CompoundInterestChart from "@/components/compound-interest-chart";
 import InvestmentCalculator from "@/components/investment-calculator";
+import { generateStatementPDF } from "@/utils/generateStatementPDF";
 
 /* -------------------------------------------------------------------------- */
 /*                                   UI bits                                  */
@@ -823,58 +824,23 @@ export default function Dashboard() {
 
   const handleDownloadStatement = async () => {
     try {
-      const { jsPDF } = await import("jspdf");
-      const doc = new jsPDF();
-
-      // Header
-      doc.setFontSize(20);
-      doc.setTextColor(16, 185, 129);
-      doc.text("NAKAMA&PARTNERS", 20, 30);
-      doc.setFontSize(16);
-      doc.text("Estado de Cuenta", 20, 45);
-
-      // Client info
-      doc.setFontSize(12);
-      doc.setTextColor(20, 20, 20);
-      doc.text("Cliente: Juan Cliente", 20, 70);
-      doc.text("Fecha: " + new Date().toLocaleDateString("es-ES"), 20, 80);
-      doc.text("Período: Enero 2025", 20, 90);
-
-      // Investment summary
-      doc.setFontSize(14);
-      doc.setTextColor(16, 185, 129);
-      doc.text("RESUMEN DE INVERSIÓN", 20, 110);
-
-      doc.setFontSize(12);
-      doc.setTextColor(20, 20, 20);
-      doc.text("Capital Invertido: €50.000", 20, 130);
-      doc.text("Rentabilidad Anual: 9.0%", 20, 140);
-      doc.text("Tiempo Transcurrido: 3 meses", 20, 150);
-      doc.text("Beneficio Acumulado: €1.125", 20, 160);
-      doc.text("Valor Total Actual: €51.125", 20, 170);
-
-      // Performance details
-      doc.setFontSize(14);
-      doc.setTextColor(16, 185, 129);
-      doc.text("DETALLE DE RENDIMIENTO", 20, 190);
-
-      doc.setFontSize(12);
-      doc.setTextColor(20, 20, 20);
-      doc.text("Enero 2025: +€375", 20, 210);
-      doc.text("Febrero 2025: +€375", 20, 220);
-      doc.text("Marzo 2025: +€375", 20, 230);
-
-      // Projections
-      doc.setFontSize(14);
-      doc.setTextColor(16, 185, 129);
-      doc.text("PROYECCIÓN A FIN DE AÑO", 20, 250);
-
-      doc.setFontSize(12);
-      doc.setTextColor(20, 20, 20);
-      doc.text("Beneficio Total Estimado: €4.500", 20, 270);
-      doc.text("Valor Final Estimado: €54.500", 20, 280);
-
-      doc.save("estado-cuenta-nakama-" + new Date().toISOString().split("T")[0] + ".pdf");
+      await generateStatementPDF({
+        cliente: "Juan Cliente",
+        periodo: "Enero 2025",
+        fecha: new Date().toLocaleDateString("es-ES"),
+        capitalInvertido: 50000,
+        rentabilidadAnualPct: 9.0,
+        mesesTranscurridos: 3,
+        mesesTotales: 12,
+        beneficioAcumulado: 1125,
+        valorTotalActual: 51125,
+        detalleMensual: [
+          { label: "Enero 2025", importe: 375 },
+          { label: "Febrero 2025", importe: 375 },
+          { label: "Marzo 2025", importe: 375 },
+        ],
+        proyeccion: { beneficioTotal: 4500, valorFinal: 54500 },
+      });
     } catch (error) {
       console.error("Error generating PDF:", error);
       alert("Error al generar el PDF. Inténtalo de nuevo.");
