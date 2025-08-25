@@ -24,9 +24,6 @@ import {
   Download,
   Filter,
   X,
-  ExternalLink,
-  Globe,
-  Trophy,
   Camera,
   Phone,
   Trash2,
@@ -57,16 +54,9 @@ export default function PartnerDashboard() {
   const { user, logout } = useAuth();
   const [activeTab, setActiveTab] = useState("resumen");
 
-  // Datos de perfil
-  const [profileData, setProfileData] = useState({
-    name: user?.name || "Partner Usuario",
-    email: user?.email || "",
-    phone: "+34 666 555 444",
-    birthDate: "15/03/1985",
-    registerDate: "15/01/2024",
-    address: "Calle Mayor 123, 4º B, 28001 Madrid, España",
-  });
+  // Foto y teléfono (como en el dashboard de clientes)
   const [profilePhoto, setProfilePhoto] = useState<string | null>(null);
+  const [phoneNumber, setPhoneNumber] = useState("646 123 456");
 
   // Filtros CLIENTES
   const [showFilters, setShowFilters] = useState(false);
@@ -117,15 +107,10 @@ export default function PartnerDashboard() {
 
   const handlePhotoUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
-    if (file) {
-      const reader = new FileReader();
-      reader.onload = (e) => setProfilePhoto(e.target?.result as string);
-      reader.readAsDataURL(file);
-    }
-  };
-
-  const handleProfileInputChange = (field: string, value: string) => {
-    setProfileData((prev) => ({ ...prev, [field]: value }));
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = (e) => setProfilePhoto(e.target?.result as string);
+    reader.readAsDataURL(file);
   };
 
   // ======== CLIENTES: estado, alta y eliminación ========
@@ -380,17 +365,18 @@ export default function PartnerDashboard() {
           </div>
         </div>
       </aside>
-      
 
       {/* Main */}
       <main className="flex-1 p-8 ml-64">
-        {/* ===== PERFIL ===== */}
+        {/* ===== PERFIL (idéntico al dashboard de clientes) ===== */}
         {activeTab === "perfil" && (
           <div>
-            <h1 className="text-3xl font-bold text-emerald-50 mb-2">Perfil de Partner</h1>
-            <p className="text-emerald-200/80 mb-6">Gestiona tu información personal y configuración de cuenta</p>
+            <div className="mb-8">
+              <h1 className="text-3xl font-bold text-emerald-50">Mi Perfil</h1>
+              <p className="text-emerald-200/80">Gestiona tu información personal</p>
+            </div>
 
-            <Card className="bg-black/40 backdrop-blur-sm border border-emerald-500/15 rounded-2xl">
+            <Card className="bg-black/40 border border-emerald-500/15 rounded-2xl">
               <CardContent className="p-6">
                 <Tabs defaultValue="personal" className="w-full">
                   <TabsList className="grid w-full grid-cols-2 bg-black/40 border border-emerald-500/15 rounded-xl">
@@ -410,6 +396,7 @@ export default function PartnerDashboard() {
 
                   <TabsContent value="personal" className="mt-6">
                     <form className="space-y-6">
+                      {/* Profile Photo */}
                       <div className="flex flex-col items-center mb-8">
                         <div className="relative mb-4">
                           <div className="w-32 h-32 rounded-full overflow-hidden bg-black/50 border-2 border-emerald-500/20 flex items-center justify-center">
@@ -432,81 +419,80 @@ export default function PartnerDashboard() {
 
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <div>
-                          <Label htmlFor="nombre" className="text-emerald-50">
-                            Nombre Completo
-                          </Label>
-                          <Input
-                            id="nombre"
-                            value={profileData.name}
-                            onChange={(e) => handleProfileInputChange("name", e.target.value)}
-                            className="bg-black/50 border-emerald-500/20 text-emerald-50"
-                          />
+                          <Label htmlFor="nombre" className="text-emerald-50">Nombre</Label>
+                          <Input id="nombre" defaultValue="Test" className="bg-black/50 border-emerald-500/20 text-emerald-50" />
                         </div>
                         <div>
-                          <Label htmlFor="email" className="text-emerald-50">
-                            Correo Electrónico
-                          </Label>
-                          <Input
-                            id="email"
-                            value={profileData.email}
-                            disabled
-                            className="bg-black/60 border-emerald-500/20 text-emerald-300/80 cursor-not-allowed"
-                          />
+                          <Label htmlFor="apellidos" className="text-emerald-50">Apellidos</Label>
+                          <Input id="apellidos" defaultValue="Placeholder" className="bg-black/50 border-emerald-500/20 text-emerald-50" />
                         </div>
                       </div>
 
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <div>
-                          <Label htmlFor="telefono" className="text-emerald-50">
-                            Número de Teléfono
-                          </Label>
+                          <Label htmlFor="email" className="text-emerald-50">Correo Electrónico</Label>
+                          <Input
+                            id="email"
+                            defaultValue="test@test.com"
+                            disabled
+                            className="bg-black/60 border-emerald-500/20 text-emerald-300/80 cursor-not-allowed"
+                          />
+                        </div>
+                        <div>
+                          <Label htmlFor="telefono" className="text-emerald-50">Número de Teléfono</Label>
                           <div className="relative">
                             <Phone className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-emerald-300/70" />
                             <Input
                               id="telefono"
-                              value={profileData.phone}
-                              onChange={(e) => handleProfileInputChange("phone", e.target.value)}
-                              placeholder="Ej: +34 666 555 444"
+                              value={phoneNumber}
+                              onChange={(e) => setPhoneNumber(e.target.value)}
+                              placeholder="Ej: +34 646 123 456"
                               className="bg-black/50 border-emerald-500/20 text-emerald-50 pl-10"
                             />
                           </div>
                         </div>
+                      </div>
+
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <div>
-                          <Label htmlFor="fecha-nacimiento" className="text-emerald-50">
-                            Fecha de Nacimiento
-                          </Label>
+                          <Label htmlFor="fecha-nacimiento" className="text-emerald-50">Fecha de Nacimiento</Label>
+                          <Input id="fecha-nacimiento" defaultValue="25/02/1962" className="bg-black/50 border-emerald-500/20 text-emerald-50" />
+                        </div>
+                        <div>
+                          <Label htmlFor="fecha-registro" className="text-emerald-50">Fecha de Registro</Label>
                           <Input
-                            id="fecha-nacimiento"
-                            value={profileData.birthDate}
-                            onChange={(e) => handleProfileInputChange("birthDate", e.target.value)}
-                            className="bg-black/50 border-emerald-500/20 text-emerald-50"
+                            id="fecha-registro"
+                            defaultValue="15/01/2024"
+                            disabled
+                            className="bg-black/60 border-emerald-500/20 text-emerald-300/80 cursor-not-allowed"
                           />
                         </div>
                       </div>
 
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <div>
-                          <Label htmlFor="fecha-registro" className="text-emerald-50">
-                            Fecha de Registro
-                          </Label>
-                          <Input
-                            id="fecha-registro"
-                            value={profileData.registerDate}
-                            disabled
-                            className="bg-black/60 border-emerald-500/20 text-emerald-300/80 cursor-not-allowed"
-                          />
+                          <Label htmlFor="pais" className="text-emerald-50">País</Label>
+                          <Select defaultValue="espana">
+                            <SelectTrigger className="bg-black/50 border-emerald-500/20 text-emerald-50">
+                              <SelectValue />
+                            </SelectTrigger>
+                            <SelectContent className="bg-black/40 border-emerald-500/15 text-emerald-50">
+                              <SelectItem value="espana">España</SelectItem>
+                              <SelectItem value="francia">Francia</SelectItem>
+                              <SelectItem value="portugal">Portugal</SelectItem>
+                              <SelectItem value="italia">Italia</SelectItem>
+                              <SelectItem value="alemania">Alemania</SelectItem>
+                            </SelectContent>
+                          </Select>
                         </div>
                         <div />
                       </div>
 
                       <div>
-                        <Label htmlFor="direccion" className="text-emerald-50">
-                          Dirección
-                        </Label>
+                        <Label htmlFor="direccion" className="text-emerald-50">Dirección</Label>
                         <Input
                           id="direccion"
-                          value={profileData.address}
-                          onChange={(e) => handleProfileInputChange("address", e.target.value)}
+                          defaultValue="Calle Nueva Era 45, 2ºA, 08035 Barcelona"
                           className="bg-black/50 border-emerald-500/20 text-emerald-50"
                         />
                       </div>
@@ -515,9 +501,6 @@ export default function PartnerDashboard() {
                         <Button
                           type="submit"
                           className="w-full rounded-xl bg-gradient-to-r from-emerald-600 to-emerald-500 hover:from-emerald-500 hover:to-emerald-400 text-white font-semibold"
-                          onClick={(e) => {
-                            e.preventDefault();
-                          }}
                         >
                           ACTUALIZAR INFORMACIÓN PERSONAL
                         </Button>
@@ -551,7 +534,9 @@ export default function PartnerDashboard() {
         {activeTab === "resumen" && (
           <div>
             <div className="mb-8">
-              <h1 className="text-4xl font-bold text-emerald-50 mb-2">Hola, {user?.name?.split(" ")[0]}</h1>
+              <h1 className="text-4xl font-bold text-emerald-50 mb-2">
+                Hola, {user?.name?.split(" ")[0] ?? "Partner"}
+              </h1>
               <p className="text-emerald-200/80 text-lg mb-6">Bienvenido a tu panel de control ejecutivo</p>
 
               {/* KPI grid (3 tarjetas) */}
@@ -567,7 +552,7 @@ export default function PartnerDashboard() {
                     label: "Total Año 2025",
                     value: `$${(partnerStats.ytdCommission / 1000).toFixed(0)}K`,
                     note: "Objetivo: $250K (75% completado)",
-                    icon: Trophy,
+                    icon: Star,
                   },
                   {
                     label: partnerStats.daysToCommission === 1 ? "Día para Cobro" : "Días para Cobro",
@@ -827,7 +812,7 @@ export default function PartnerDashboard() {
 
             {/* Cartera */}
             <Card className="bg-black/40 border border-emerald-500/15 rounded-2xl">
-              {/* 🔧 Encabezado a la IZQUIERDA con botón debajo (no centrado) */}
+              {/* Encabezado izquierda + botón */}
               <CardHeader className="items-start">
                 <CardTitle className="text-emerald-50">Cartera de Clientes</CardTitle>
                 <CardDescription className="text-emerald-200/80">
@@ -1011,7 +996,7 @@ export default function PartnerDashboard() {
                           isNearMaturity ? "border-amber-500/50" : isExpired ? "border-red-500/50" : "border-emerald-500/15"
                         } hover:bg-black/40 transition-all rounded-2xl`}
                       >
-                        {/* 🗑️ Botón ELIMINAR arriba a la derecha */}
+                        {/* Eliminar */}
                         <div className="absolute top-3 right-3 z-[1]">
                           <Button
                             variant="outline"
@@ -1026,7 +1011,7 @@ export default function PartnerDashboard() {
 
                         <CardContent className="p-6">
                           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                            {/* Info (izquierda) */}
+                            {/* Info */}
                             <div className="space-y-4">
                               <div className="flex items-center space-x-4">
                                 <div className="w-12 h-12 bg-gradient-to-br from-emerald-500/20 to-emerald-500/10 rounded-full flex items-center justify-center">
@@ -1073,7 +1058,7 @@ export default function PartnerDashboard() {
                               </div>
                             </div>
 
-                            {/* Detalles (centro) */}
+                            {/* Detalles */}
                             <div className="space-y-4">
                               <div>
                                 <p className="text-emerald-200/80 text-sm">Inversión Inicial</p>
@@ -1081,7 +1066,6 @@ export default function PartnerDashboard() {
                               </div>
 
                               <div className="grid grid-cols-2 gap-4 text-sm">
-                                {/* Izquierda: Depósito + Interés Compuesto */}
                                 <div className="space-y-2">
                                   <div>
                                     <p className="text-emerald-200/80">Fecha Depósito</p>
@@ -1097,7 +1081,6 @@ export default function PartnerDashboard() {
                                   </div>
                                 </div>
 
-                                {/* Derecha: Vencimiento */}
                                 <div>
                                   <p className="text-emerald-200/80">Fecha Vencimiento</p>
                                   <p className="text-emerald-50 font-medium">
@@ -1118,7 +1101,7 @@ export default function PartnerDashboard() {
                               </div>
                             </div>
 
-                            {/* Derecha: Rendimientos + botones */}
+                            {/* Rendimientos + acciones */}
                             <div className="space-y-4">
                               <div>
                                 <p className="text-emerald-200/80 text-sm">Rendimientos</p>
@@ -1231,9 +1214,9 @@ export default function PartnerDashboard() {
                             <SelectValue placeholder="Todos" />
                           </SelectTrigger>
                           <SelectContent>
-                            <SelectItem value="Partnership">Partnership</SelectItem>
                             <SelectItem value="Inversión">Inversión</SelectItem>
-                            <SelectItem value="Renovación">Renovación</SelectItem>
+                            <SelectItem value="Afiliación">Afiliación</SelectItem>
+                            <SelectItem value="NDA">NDA</SelectItem>
                           </SelectContent>
                         </Select>
                       </div>
@@ -1246,9 +1229,9 @@ export default function PartnerDashboard() {
                             <SelectValue placeholder="Todos" />
                           </SelectTrigger>
                           <SelectContent>
-                            <SelectItem value="Elite">Elite</SelectItem>
-                            <SelectItem value="Premium">Premium</SelectItem>
                             <SelectItem value="Standard">Standard</SelectItem>
+                            <SelectItem value="Premium">Premium</SelectItem>
+                            <SelectItem value="Elite">Elite</SelectItem>
                           </SelectContent>
                         </Select>
                       </div>
@@ -1270,12 +1253,11 @@ export default function PartnerDashboard() {
                             className="bg-black/50 border-emerald-500/20 text-emerald-50 placeholder:text-emerald-200/60"
                           />
                         </div>
-                        <p className="text-xs text-emerald-200/70">* Solo aplica a contratos de Inversión</p>
                       </div>
 
-                      {/* Firmado desde / hasta */}
+                      {/* Firmado entre */}
                       <div className="space-y-2">
-                        <Label className="text-emerald-50">Firmado (desde)</Label>
+                        <Label className="text-emerald-50">Firmado desde</Label>
                         <Input
                           type="date"
                           value={contractFilters.signedFrom}
@@ -1284,7 +1266,7 @@ export default function PartnerDashboard() {
                         />
                       </div>
                       <div className="space-y-2">
-                        <Label className="text-emerald-50">Firmado (hasta)</Label>
+                        <Label className="text-emerald-50">Firmado hasta</Label>
                         <Input
                           type="date"
                           value={contractFilters.signedTo}
@@ -1296,14 +1278,17 @@ export default function PartnerDashboard() {
                       {/* Vencimiento */}
                       <div className="space-y-2">
                         <Label className="text-emerald-50">Vencimiento</Label>
-                        <Select value={contractFilters.vencimiento} onValueChange={(value) => setContractFilters({ ...contractFilters, vencimiento: value })}>
+                        <Select
+                          value={contractFilters.vencimiento}
+                          onValueChange={(value) => setContractFilters({ ...contractFilters, vencimiento: value })}
+                        >
                           <SelectTrigger className="bg-black/50 border-emerald-500/20 text-emerald-50">
                             <SelectValue placeholder="Todos" />
                           </SelectTrigger>
                           <SelectContent>
-                            <SelectItem value="expiring">Por vencer (≤ 30 días)</SelectItem>
-                            <SelectItem value="expired">Vencido</SelectItem>
-                            <SelectItem value="vigente">Vigente (&gt; 30 días)</SelectItem>
+                            <SelectItem value="30">≤ 30 días</SelectItem>
+                            <SelectItem value="60">≤ 60 días</SelectItem>
+                            <SelectItem value="90">≤ 90 días</SelectItem>
                           </SelectContent>
                         </Select>
                       </div>
@@ -1311,15 +1296,15 @@ export default function PartnerDashboard() {
                       {/* Orden */}
                       <div className="space-y-2">
                         <Label className="text-emerald-50">Ordenar por</Label>
-                        <Select value={contractSort} onValueChange={(v) => setContractSort(v as any)}>
+                        <Select value={contractSort} onValueChange={(v) => setContractSort(v as typeof contractSort)}>
                           <SelectTrigger className="bg-black/50 border-emerald-500/20 text-emerald-50">
                             <SelectValue placeholder="Sin orden" />
                           </SelectTrigger>
                           <SelectContent>
-                            <SelectItem value="amountDesc">Monto (Mayor a menor)</SelectItem>
-                            <SelectItem value="amountAsc">Monto (Menor a mayor)</SelectItem>
-                            <SelectItem value="endAsc">Vencimiento (Próximos primero)</SelectItem>
-                            <SelectItem value="endDesc">Vencimiento (Lejanos primero)</SelectItem>
+                            <SelectItem value="amountDesc">Importe ↓</SelectItem>
+                            <SelectItem value="amountAsc">Importe ↑</SelectItem>
+                            <SelectItem value="endAsc">Vencimiento más cercano</SelectItem>
+                            <SelectItem value="endDesc">Vencimiento más lejano</SelectItem>
                           </SelectContent>
                         </Select>
                       </div>
@@ -1329,355 +1314,167 @@ export default function PartnerDashboard() {
               )}
             </div>
 
-            {/* Datos de contratos */}
+            {/* Lista de contratos */}
             {(() => {
+              // Datos de ejemplo
               const contractsData = [
                 {
-                  id: "CONT-2025-001",
-                  title: "Acuerdo de Partnership Elite",
-                  client: "Nakama&Partners",
-                  signedDate: "2025-01-15",
-                  endDate: "2026-01-15",
-                  type: "Partnership",
-                  status: "Activo",
-                  fileSize: "2.3 MB",
-                  tier: "Elite",
-                  investment: null as number | null,
-                },
-                {
-                  id: "CONT-2024-087",
-                  title: "Contrato de Inversión - María González",
-                  client: "María González",
+                  id: "CT-2025-001",
+                  cliente: "María González",
+                  type: "Inversión",
+                  tier: "Premium",
+                  amount: 150000,
+                  status: "Vigente",
                   signedDate: "2024-01-15",
                   endDate: "2025-01-15",
-                  type: "Inversión",
-                  status: "Vigente",
-                  fileSize: "1.8 MB",
-                  tier: "Premium",
-                  investment: 150000,
+                  fileUrl: "#",
                 },
                 {
-                  id: "CONT-2024-103",
-                  title: "Contrato de Inversión - Carlos Ruiz",
-                  client: "Carlos Ruiz",
+                  id: "CT-2025-002",
+                  cliente: "Carlos Ruiz",
+                  type: "Afiliación",
+                  tier: "Standard",
+                  amount: 25000,
+                  status: "Activo",
                   signedDate: "2024-03-10",
                   endDate: "2024-12-10",
-                  type: "Inversión",
-                  status: "Vencido",
-                  fileSize: "1.9 MB",
-                  tier: "Standard",
-                  investment: 75000,
+                  fileUrl: "#",
                 },
                 {
-                  id: "CONT-2024-156",
-                  title: "Contrato de Inversión - Ana López",
-                  client: "Ana López",
+                  id: "CT-2025-003",
+                  cliente: "Ana López",
+                  type: "Inversión",
+                  tier: "Premium",
+                  amount: 200000,
+                  status: "Vigente",
                   signedDate: "2024-08-20",
                   endDate: "2025-08-20",
-                  type: "Inversión",
-                  status: "Vigente",
-                  fileSize: "2.1 MB",
-                  tier: "Premium",
-                  investment: 200000,
+                  fileUrl: "#",
                 },
                 {
-                  id: "CONT-2023-234",
-                  title: "Contrato de Inversión - Miguel Santos",
-                  client: "Miguel Santos",
+                  id: "CT-2025-004",
+                  cliente: "Miguel Santos",
+                  type: "NDA",
+                  tier: "Premium",
+                  amount: 0,
+                  status: "Vencido",
                   signedDate: "2023-11-15",
                   endDate: "2024-11-15",
-                  type: "Inversión",
-                  status: "Vencido",
-                  fileSize: "2.0 MB",
-                  tier: "Premium",
-                  investment: 120000,
-                },
-                {
-                  id: "CONT-2025-003",
-                  title: "Renovación Partnership 2025",
-                  client: "Nakama&Partners",
-                  signedDate: "2025-01-01",
-                  endDate: "2026-01-01",
-                  type: "Renovación",
-                  status: "Activo",
-                  fileSize: "2.7 MB",
-                  tier: "Elite",
-                  investment: null as number | null,
+                  fileUrl: "#",
                 },
               ];
 
-              const filteredContracts = contractsData
+              // Filtrado
+              const q = contractFilters.search.trim().toLowerCase();
+              const min = contractFilters.amountMin ? parseFloat(contractFilters.amountMin) : -Infinity;
+              const max = contractFilters.amountMax ? parseFloat(contractFilters.amountMax) : Infinity;
+              const from = contractFilters.signedFrom ? new Date(contractFilters.signedFrom) : null;
+              const to = contractFilters.signedTo ? new Date(contractFilters.signedTo) : null;
+              const vencLimit = contractFilters.vencimiento ? parseInt(contractFilters.vencimiento, 10) : null;
+
+              const filtered = contractsData
                 .filter((c) => {
-                  const q = contractFilters.search.toLowerCase();
-                  const matchesSearch =
+                  const matchSearch =
                     !q ||
                     c.id.toLowerCase().includes(q) ||
-                    c.title.toLowerCase().includes(q) ||
-                    c.client.toLowerCase().includes(q) ||
+                    c.cliente.toLowerCase().includes(q) ||
                     c.type.toLowerCase().includes(q);
+                  const matchStatus = !contractFilters.status || c.status === contractFilters.status;
+                  const matchType = !contractFilters.type || c.type === contractFilters.type;
+                  const matchTier = !contractFilters.tier || c.tier === contractFilters.tier;
+                  const matchAmount = c.amount >= min && c.amount <= max;
 
-                  const matchesStatus = !contractFilters.status || c.status === contractFilters.status;
-                  const matchesType = !contractFilters.type || c.type === contractFilters.type;
-                  const matchesTier = !contractFilters.tier || c.tier === contractFilters.tier;
+                  const signed = new Date(c.signedDate);
+                  const matchFrom = !from || signed >= from;
+                  const matchTo = !to || signed <= to;
 
-                  const hasAmountFilter = contractFilters.amountMin !== "" || contractFilters.amountMax !== "";
-                  const minA = contractFilters.amountMin ? parseFloat(contractFilters.amountMin) : -Infinity;
-                  const maxA = contractFilters.amountMax ? parseFloat(contractFilters.amountMax) : Infinity;
-                  const matchesAmount = hasAmountFilter ? c.investment !== null && c.investment >= minA && c.investment <= maxA : true;
+                  const end = new Date(c.endDate);
+                  const daysLeft = Math.ceil((end.getTime() - Date.now()) / 86400000);
+                  const matchVenc = !vencLimit || (daysLeft > 0 && daysLeft <= vencLimit);
 
-                  const signed = new Date(c.signedDate).getTime();
-                  const fromOk = !contractFilters.signedFrom || signed >= new Date(contractFilters.signedFrom).getTime();
-                  const toOk = !contractFilters.signedTo || signed <= new Date(contractFilters.signedTo).getTime();
-
-                  const daysToEnd = Math.ceil((new Date(c.endDate).getTime() - new Date().getTime()) / (1000 * 3600 * 24));
-                  const matchesVenc =
-                    !contractFilters.vencimiento ||
-                    (contractFilters.vencimiento === "expiring" && daysToEnd <= 30 && daysToEnd > 0) ||
-                    (contractFilters.vencimiento === "expired" && daysToEnd <= 0) ||
-                    (contractFilters.vencimiento === "vigente" && daysToEnd > 30);
-
-                  return matchesSearch && matchesStatus && matchesType && matchesTier && matchesAmount && fromOk && toOk && matchesVenc;
+                  return matchSearch && matchStatus && matchType && matchTier && matchAmount && matchFrom && matchTo && matchVenc;
                 })
                 .sort((a, b) => {
-                  if (contractSort === "amountDesc") {
-                    return (b.investment ?? -1) - (a.investment ?? -1);
-                  }
-                  if (contractSort === "amountAsc") {
-                    return (a.investment ?? Number.MAX_SAFE_INTEGER) - (b.investment ?? Number.MAX_SAFE_INTEGER);
-                  }
-                  if (contractSort === "endAsc") {
-                    return new Date(a.endDate).getTime() - new Date(b.endDate).getTime();
-                  }
-                  if (contractSort === "endDesc") {
-                    return new Date(b.endDate).getTime() - new Date(a.endDate).getTime();
-                  }
+                  if (contractSort === "amountDesc") return b.amount - a.amount;
+                  if (contractSort === "amountAsc") return a.amount - b.amount;
+                  if (contractSort === "endAsc") return +new Date(a.endDate) - +new Date(b.endDate);
+                  if (contractSort === "endDesc") return +new Date(b.endDate) - +new Date(a.endDate);
                   return 0;
                 });
 
               return (
-                <>
-                  {/* Resumen filtrado */}
-                  <Card className="bg-gradient-to-r from-emerald-600/15 to-emerald-400/10 border border-emerald-500/30 rounded-2xl mb-6">
-                    <CardContent className="p-6">
-                      <div className="flex items-center justify-between mb-4">
-                        <div>
-                          <h3 className="text-emerald-50 font-bold text-xl">Tu Progreso como Asesor</h3>
-                          <p className="text-emerald-400 text-sm">¡Sigue creciendo tu cartera de clientes!</p>
-                        </div>
-                        <div className="text-right">
-                          <div className="text-3xl font-bold text-emerald-400">{filteredContracts.length}</div>
-                          <p className="text-emerald-200/80 text-sm">Contratos filtrados</p>
-                        </div>
-                      </div>
-
-                      <div className="space-y-3">
-                        <div className="flex justify-between text-sm">
-                          <span className="text-emerald-50">Contratos de Inversión</span>
-                          <span className="text-emerald-400 font-semibold">
-                            {filteredContracts.filter((c) => c.type === "Inversión").length}
-                          </span>
-                        </div>
-                        <div className="w-full bg-black/50 rounded-full h-3">
-                          <div
-                            className="bg-gradient-to-r from-emerald-500 to-emerald-400 h-3 rounded-full"
-                            style={{
-                              width: `${Math.min(
-                                100,
-                                (filteredContracts.filter((c) => c.type === "Inversión").length /
-                                  Math.max(1, filteredContracts.length)) *
-                                  100
-                              ).toFixed(0)}%`,
-                            }}
-                          />
-                        </div>
-                        <p className="text-emerald-200/80 text-xs">* Porcentaje de contratos de Inversión sobre el total filtrado.</p>
-                      </div>
-                    </CardContent>
-                  </Card>
-
-                  {/* Cards de contratos */}
-                  <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                    {filteredContracts.map((contract, index) => {
-                      const daysToEnd = Math.ceil((new Date(contract.endDate).getTime() - new Date().getTime()) / (1000 * 3600 * 24));
-                      const isExpiring = daysToEnd <= 30 && daysToEnd > 0;
-                      const isExpired = daysToEnd <= 0;
+                <Card className="bg-black/40 border border-emerald-500/15 rounded-2xl">
+                  <CardHeader className="items-start">
+                    <CardTitle className="text-emerald-50">Listado de Contratos</CardTitle>
+                    <CardDescription className="text-emerald-200/80">
+                      {filtered.length} resultado{filtered.length !== 1 ? "s" : ""}
+                    </CardDescription>
+                  </CardHeader>
+                  <CardContent className="space-y-4">
+                    {filtered.map((c) => {
+                      const end = new Date(c.endDate);
+                      const daysLeft = Math.ceil((end.getTime() - Date.now()) / 86400000);
+                      const isNear = daysLeft <= 30 && daysLeft > 0;
+                      const isExpired = daysLeft <= 0;
 
                       return (
                         <Card
-                          key={index}
-                          className={`bg-black/40 border border-emerald-500/15 hover:bg-black/50 transition-all rounded-2xl ${
-                            isExpiring ? "border-amber-500/50" : isExpired ? "border-red-500/50" : ""
-                          }`}
+                          key={c.id}
+                          className={`bg-black/30 border ${
+                            isNear ? "border-amber-500/50" : isExpired ? "border-red-500/50" : "border-emerald-500/15"
+                          } rounded-xl`}
                         >
-                          <CardContent className="p-6">
-                            <div className="flex items-start justify-between mb-4">
-                              <div className="flex items-center space-x-3">
-                                <div className="w-12 h-12 bg-emerald-500/20 rounded-lg flex items-center justify-center">
-                                  <FileText className="w-6 h-6 text-emerald-400" />
+                          <CardContent className="p-5">
+                            <div className="grid grid-cols-1 md:grid-cols-5 gap-4 items-center">
+                              <div className="flex items-center gap-3 md:col-span-2">
+                                <div className="p-2 rounded-lg bg-emerald-500/15 border border-emerald-500/25">
+                                  <FileText className="w-5 h-5 text-emerald-400" />
                                 </div>
-                                <div className="flex-1">
-                                  <h3 className="text-emerald-50 font-semibold text-lg">{contract.title}</h3>
-                                  <p className="text-emerald-200/80 text-sm">{contract.client}</p>
-
-                                  {contract.tier && (
-                                    <div className="mt-2">
-                                      <Badge variant="outline" className="text-xs border-emerald-500/25 text-emerald-200">
-                                        {contract.tier}
-                                      </Badge>
-                                    </div>
-                                  )}
-
-                                  {typeof contract.investment === "number" && (
-                                    <p className="text-emerald-400 font-semibold text-lg mt-1">
-                                      ${contract.investment.toLocaleString()}
-                                    </p>
-                                  )}
+                                <div>
+                                  <p className="text-emerald-50 font-semibold">{c.id}</p>
+                                  <p className="text-emerald-200/80 text-sm">{c.type} · {c.cliente}</p>
                                 </div>
                               </div>
-                              <div className="text-right space-y-2">
-                                <Badge
-                                  className={`${
-                                    contract.status === "Activo"
-                                      ? "bg-emerald-500 text-black"
-                                      : contract.status === "Vigente"
-                                      ? "bg-blue-500 text-white"
-                                      : contract.status === "Vencido"
-                                      ? "bg-red-500 text-white"
-                                      : "bg-amber-500 text-black"
+
+                              <div>
+                                <p className="text-emerald-200/80 text-sm">Importe</p>
+                                <p className="text-emerald-50 font-bold">{c.amount ? `€${c.amount.toLocaleString()}` : "—"}</p>
+                                <Badge variant="outline" className="mt-1 text-xs border-emerald-500/25 text-emerald-200">
+                                  {c.tier}
+                                </Badge>
+                              </div>
+
+                              <div>
+                                <p className="text-emerald-200/80 text-sm">Firmado</p>
+                                <p className="text-emerald-50 font-medium">{new Date(c.signedDate).toLocaleDateString("es-ES")}</p>
+                                <p className="text-emerald-200/80 text-sm mt-1">Vence</p>
+                                <p className="text-emerald-50 font-medium">{end.toLocaleDateString("es-ES")}</p>
+                                <p
+                                  className={`text-xs font-medium ${
+                                    isExpired ? "text-red-400" : isNear ? "text-amber-400" : "text-emerald-400"
                                   }`}
                                 >
-                                  {contract.status}
-                                </Badge>
-
-                                {isExpiring && <div className="text-amber-400 text-xs font-semibold">⚠️ Vence en {daysToEnd} días</div>}
-                                {isExpired && <div className="text-red-400 text-xs font-semibold">❌ Vencido</div>}
-                              </div>
-                            </div>
-
-                            <div className="space-y-3 mb-6">
-                              <div className="grid grid-cols-2 gap-4 text-sm">
-                                <div>
-                                  <span className="text-emerald-200/80">ID Contrato:</span>
-                                  <p className="text-emerald-50 font-mono">{contract.id}</p>
-                                </div>
-                                <div>
-                                  <span className="text-emerald-200/80">Tipo:</span>
-                                  <p className="text-emerald-50">{contract.type}</p>
-                                </div>
+                                  {isExpired ? "Vencido" : daysLeft === 1 ? "Mañana" : daysLeft <= 0 ? "—" : `En ${daysLeft} días`}
+                                </p>
                               </div>
 
-                              <div className="bg-black/30 rounded-lg p-4 border border-emerald-500/20">
-                                <h4 className="text-emerald-50 font-semibold mb-3 text-center">📅 Duración del Contrato</h4>
-                                <div className="grid grid-cols-2 gap-4">
-                                  <div className="text-center">
-                                    <span className="text-emerald-400 text-xs font-medium block">INICIO</span>
-                                    <p className="text-emerald-50 font-bold text-lg">{new Date(contract.signedDate).toLocaleDateString("es-ES")}</p>
-                                  </div>
-                                  <div className="text-center">
-                                    <span
-                                      className={`text-xs font-medium block ${
-                                        isExpired ? "text-red-400" : isExpiring ? "text-amber-400" : "text-emerald-400"
-                                      }`}
-                                    >
-                                      {isExpired ? "VENCIDO" : "VENCIMIENTO"}
-                                    </span>
-                                    <p
-                                      className={`font-bold text-lg ${
-                                        isExpired ? "text-red-400" : isExpiring ? "text-amber-400" : "text-emerald-50"
-                                      }`}
-                                    >
-                                      {new Date(contract.endDate).toLocaleDateString("es-ES")}
-                                    </p>
-                                  </div>
-                                </div>
-
-                                {!isExpired && (
-                                  <div className="mt-3">
-                                    <div className="flex justify-between text-xs mb-1">
-                                      <span className="text-emerald-200/80">Progreso del contrato</span>
-                                      <span className="text-emerald-50">
-                                        {Math.min(
-                                          100,
-                                          Math.max(
-                                            0,
-                                            Math.round(
-                                              ((new Date().getTime() - new Date(contract.signedDate).getTime()) /
-                                                (new Date(contract.endDate).getTime() - new Date(contract.signedDate).getTime())) *
-                                                100
-                                            )
-                                          )
-                                        )}
-                                        %
-                                      </span>
-                                    </div>
-                                    <div className="w-full bg-black/50 rounded-full h-2">
-                                      <div
-                                        className={`h-2 rounded-full ${
-                                          isExpiring ? "bg-gradient-to-r from-amber-400 to-amber-600" : "bg-gradient-to-r from-emerald-500 to-emerald-400"
-                                        }`}
-                                        style={{
-                                          width: `${Math.min(
-                                            100,
-                                            Math.max(
-                                              0,
-                                              ((new Date().getTime() - new Date(contract.signedDate).getTime()) /
-                                                (new Date(contract.endDate).getTime() - new Date(contract.signedDate).getTime())) *
-                                                100
-                                            )
-                                          )}%`,
-                                        }}
-                                      />
-                                    </div>
-                                  </div>
-                                )}
+                              <div className="flex md:justify-end gap-2">
+                                <Button
+                                  variant="outline"
+                                  className="border-emerald-500/25 text-emerald-50 hover:bg-emerald-900/10"
+                                  onClick={() => window.open(c.fileUrl, "_blank", "noopener,noreferrer")}
+                                >
+                                  <Download className="w-4 h-4 mr-2" />
+                                  Descargar
+                                </Button>
                               </div>
-
-                              <div className="grid grid-cols-1 gap-4 text-sm">
-                                <div>
-                                  <span className="text-emerald-200/80">Tamaño del archivo:</span>
-                                  <p className="text-emerald-50">{contract.fileSize}</p>
-                                </div>
-                              </div>
-                            </div>
-
-                            <div className="flex space-x-3">
-                              <Button className="flex-1 bg-gradient-to-r from-emerald-600 to-emerald-500 hover:from-emerald-500 hover:to-emerald-400 text-white">
-                                <Download className="w-4 h-4 mr-2" />
-                                Descargar PDF
-                              </Button>
-                              <Button variant="outline" className="border-emerald-500/20 text-emerald-50 hover:bg-emerald-900/10">
-                                Ver Detalles
-                              </Button>
-                              {isExpiring && <Button className="bg-amber-500 hover:bg-amber-600 text-black">Renovar</Button>}
                             </div>
                           </CardContent>
                         </Card>
                       );
                     })}
-                  </div>
-
-                  {/* Resumen al pie */}
-                  <Card className="bg-gradient-to-r from-emerald-600/15 to-emerald-400/10 border border-emerald-500/30 rounded-2xl mt-8">
-                    <CardContent className="p-6">
-                      <div className="flex items-center justify-between">
-                        <div className="flex items-center space-x-4">
-                          <div className="w-12 h-12 bg-emerald-500/20 rounded-full flex items-center justify-center">
-                            <FileText className="w-6 h-6 text-emerald-400" />
-                          </div>
-                          <div>
-                            <h3 className="text-emerald-50 font-semibold text-lg">Total de Contratos</h3>
-                            <p className="text-emerald-200/80">
-                              {filteredContracts.length} documento{filteredContracts.length === 1 ? "" : "s"} disponibles
-                            </p>
-                          </div>
-                        </div>
-                        <Button className="bg-gradient-to-r from-emerald-600 to-emerald-500 hover:from-emerald-500 hover:to-emerald-400 text-white">
-                          Descargar Todos
-                        </Button>
-                      </div>
-                    </CardContent>
-                  </Card>
-                </>
+                  </CardContent>
+                </Card>
               );
             })()}
           </div>
@@ -1686,113 +1483,66 @@ export default function PartnerDashboard() {
         {/* ===== HERRAMIENTAS ===== */}
         {activeTab === "herramientas" && (
           <div>
-            <h1 className="text-3xl font-bold text-emerald-50 mb-2">Herramientas de Trabajo</h1>
-            <p className="text-emerald-200/80 mb-6">Gestiona tus citas y reuniones con clientes</p>
-
-            <Card className="bg-black/40 border border-emerald-500/15 rounded-2xl max-w-2xl mx-auto mb-8">
-              <CardContent className="p-8 text-center">
-                <div className="w-20 h-20 bg-emerald-500/20 rounded-full flex items-center justify-center mx-auto mb-6">
-                  <Calendar className="w-10 h-10 text-emerald-400" />
-                </div>
-
-                <h2 className="text-2xl font-bold text-emerald-50 mb-4">Calendario de Citas</h2>
-                <p className="text-emerald-200/80 mb-6">
-                  Programa y gestiona reuniones con clientes potenciales y existentes. Sincroniza tu calendario y configura recordatorios automáticos.
-                </p>
-
-                <div className="space-y-4 mb-6">
-                  {["Sincronización con Google Calendar", "Recordatorios automáticos por email", "Enlaces de videollamada automáticos"].map(
-                    (t, i) => (
-                      <div key={i} className="flex items-center justify-center space-x-3 text-emerald-200/80">
-                        <div className="w-2 h-2 bg-emerald-400 rounded-full" />
-                        <span>{t}</span>
-                      </div>
-                    )
-                  )}
-                </div>
-
-                <Button
-                  onClick={handleOpenGoogleCalendar}
-                  className="bg-gradient-to-r from-emerald-600 to-emerald-500 hover:from-emerald-500 hover:to-emerald-400 text-white px-8 py-3 text-lg font-medium"
-                >
-                  <ExternalLink className="w-4 h-4 mr-2" />
-                  Abrir Google Calendar
-                </Button>
-              </CardContent>
-            </Card>
+            <h1 className="text-3xl font-bold text-emerald-50 mb-2">Herramientas</h1>
+            <p className="text-emerald-200/80 mb-6">Gestión de agenda y utilidades</p>
 
             <Card className="bg-black/40 border border-emerald-500/15 rounded-2xl">
-              <CardHeader className="pb-2">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <CardTitle className="text-emerald-50">Google Calendar (Demo Integrado)</CardTitle>
-                    <CardDescription className="text-emerald-200/80">Vista embebida de un calendario público de ejemplo (Festivos España).</CardDescription>
-                  </div>
-                  <div className="hidden sm:flex items-center gap-2">
-                    <Button onClick={handleOpenGoogleCalendar} variant="outline" className="border-emerald-500/20">
-                      <ExternalLink className="w-4 h-4 mr-2" />
-                      Abrir en nueva pestaña
-                    </Button>
-                  </div>
-                </div>
-              </CardHeader>
-
-              <CardContent className="pt-2">
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-3 mb-4">
-                  <div className="space-y-1">
-                    <Label className="text-emerald-50">Vista</Label>
-                    <Select value={gcalView} onValueChange={(v: any) => setGcalView(v)}>
-                      <SelectTrigger className="bg-black/50 border-emerald-500/20 text-emerald-50">
-                        <SelectValue placeholder="Mes" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="month">Mes</SelectItem>
-                        <SelectItem value="week">Semana</SelectItem>
-                        <SelectItem value="agenda">Agenda</SelectItem>
-                      </SelectContent>
-                    </Select>
+              <CardHeader className="space-y-4">
+                <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+                  <div className="flex items-center gap-3">
+                    <Briefcase className="w-5 h-5 text-emerald-400" />
+                    <div>
+                      <CardTitle className="text-emerald-50">Google Calendar</CardTitle>
+                      <CardDescription className="text-emerald-200/80">Consulta festivos y organiza tus citas</CardDescription>
+                    </div>
                   </div>
 
-                  <div className="space-y-1">
-                    <Label className="text-emerald-50 flex items-center gap-2">
-                      <Globe className="w-4 h-4" /> Zona horaria
-                    </Label>
-                    <Select value={gcalTz} onValueChange={setGcalTz}>
-                      <SelectTrigger className="bg-black/50 border-emerald-500/20 text-emerald-50">
-                        <SelectValue placeholder="Zona horaria" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="Europe/Madrid">Europe/Madrid</SelectItem>
-                        <SelectItem value="Europe/Lisbon">Europe/Lisbon</SelectItem>
-                        <SelectItem value="Europe/Paris">Europe/Paris</SelectItem>
-                        <SelectItem value="UTC">UTC</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
+                  <div className="flex gap-3">
+                    {/* Vista */}
+                    <div className="w-40">
+                      <Select value={gcalView} onValueChange={(v) => setGcalView(v as "month" | "week" | "agenda")}>
+                        <SelectTrigger className="bg-black/50 border-emerald-500/20 text-emerald-50">
+                          <SelectValue placeholder="Vista" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="month">Mes</SelectItem>
+                          <SelectItem value="week">Semana</SelectItem>
+                          <SelectItem value="agenda">Agenda</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
 
-                  <div className="flex md:justify-end items-end">
-                    <Button onClick={handleOpenGoogleCalendar} className="w-full md:w-auto">
-                      <ExternalLink className="w-4 h-4 mr-2" />
+                    {/* Zona horaria */}
+                    <div className="w-56">
+                      <Select value={gcalTz} onValueChange={(v) => setGcalTz(v)}>
+                        <SelectTrigger className="bg-black/50 border-emerald-500/20 text-emerald-50">
+                          <SelectValue placeholder="Zona horaria" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="Europe/Madrid">Europe/Madrid</SelectItem>
+                          <SelectItem value="Europe/Lisbon">Europe/Lisbon</SelectItem>
+                          <SelectItem value="Europe/Paris">Europe/Paris</SelectItem>
+                          <SelectItem value="UTC">UTC</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+
+                    <Button onClick={handleOpenGoogleCalendar} className="bg-emerald-600 hover:bg-emerald-500 text-white">
+                      <Calendar className="w-4 h-4 mr-2" />
                       Abrir Google Calendar
                     </Button>
                   </div>
                 </div>
-
-                <div className="rounded-2xl overflow-hidden border border-emerald-500/15 bg-black/50 shadow-[0_0_0_1px_rgba(16,185,129,0.08),0_20px_60px_-20px_rgba(16,185,129,0.25)]">
+              </CardHeader>
+              <CardContent>
+                <div className="rounded-xl overflow-hidden border border-emerald-500/15">
                   <iframe
-                    title="Google Calendar Demo"
+                    title="Calendario público"
                     src={gcalEmbedUrl}
+                    className="w-full h-[720px]"
                     style={{ border: 0 }}
-                    width="100%"
-                    height="720"
-                    frameBorder={0}
-                    scrolling="no"
                   />
                 </div>
-
-                <p className="text-xs text-emerald-200/70 mt-3">
-                  * Para enlazar tu propio calendario, reemplaza el parámetro <code>src</code> por tu calendario público.
-                </p>
               </CardContent>
             </Card>
           </div>
@@ -1801,3 +1551,4 @@ export default function PartnerDashboard() {
     </div>
   );
 }
+
