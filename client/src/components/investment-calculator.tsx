@@ -150,7 +150,7 @@ interface InvestmentCalculatorProps {
 }
 
 export default function InvestmentCalculator({ onClose }: InvestmentCalculatorProps) {
-  const [amount, setAmount] = useState("10000");
+  const [amount, setAmount] = useState("50000");
   const [term, setTerm] = useState("12");
   const [rate] = useState(9); // Fixed 9% rate
 
@@ -236,7 +236,7 @@ export default function InvestmentCalculator({ onClose }: InvestmentCalculatorPr
             {/* Input Controls */}
             <div className="space-y-6">
               <div className="space-y-2">
-                <Label htmlFor="amount" className="text-white">Monto a Invertir</Label>
+                <Label htmlFor="amount" className="text-white">Cantidad a Invertir</Label>
                 <div className="relative">
                   <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-silver-100">€</span>
                   <Input
@@ -245,11 +245,11 @@ export default function InvestmentCalculator({ onClose }: InvestmentCalculatorPr
                     value={amount}
                     onChange={(e) => setAmount(e.target.value)}
                     className="pl-8 bg-black/50 border-silver-500/20 text-white"
-                    min="1000"
-                    step="1000"
+                    min="50000"
+                    step="50000"
                   />
                 </div>
-                <p className="text-silver-100 text-xs">Mínimo: €1.000</p>
+                <p className="text-silver-100 text-xs">Mínimo: €50.000</p>
               </div>
 
               <div className="space-y-2">

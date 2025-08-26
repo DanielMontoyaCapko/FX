@@ -1,4 +1,4 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { useAuth } from "@/hooks/useAuth";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -7,6 +7,7 @@ import { Progress } from "@/components/ui/progress";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Label } from "@/components/ui/label";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
   Users,
@@ -28,10 +29,709 @@ import {
   Phone,
   Trash2,
   PlusCircle,
+  Banknote,
+  Wallet,
+  ShieldCheck,
+  CheckCircle2,
+  AlertTriangle,
+  QrCode,
+  Hash,
+  HelpCircle,
 } from "lucide-react";
 import logoImg from "@/assets/Logo-removeBG_1752488347081.png";
 import { useScrollToTop } from "@/hooks/useScrollToTop";
 import CompoundInterestChart from "@/components/compound-interest-chart";
+
+/* -------------------------------------------------------------------------- */
+/*                             Tipos para Depósito                            */
+/* -------------------------------------------------------------------------- */
+type Metodo = "banco" | "crypto";
+type PasoBanco = "Pendiente" | "Conciliado" | "Asignado";
+type PasoCrypto = "Detectado" | "Confirmado" | "Asignado";
+
+/* -------------------------------------------------------------------------- */
+/*                               VISTA: DEPÓSITO                              */
+/* -------------------------------------------------------------------------- */
+function DepositoView({
+  setHasActiveDeposit,
+}: {
+  setHasActiveDeposit: (v: boolean) => void;
+}) {
+  // ---- Precondiciones de firma (simuladas) ----
+  const [contratoMarco, setContratoMarco] = useState(false);
+  const [kycOk, setKycOk] = useState(true); // simulado aprobado
+  const [perfilOk, setPerfilOk] = useState(false);
+  const [docsProducto, setDocsProducto] = useState(false);
+  const allPreOk = contratoMarco && kycOk && perfilOk && docsProducto;
+
+  // ---- Depósito ----
+  const [productoElegido, setProductoElegido] = useState<"fija" | "variable" | "mixto">("fija");
+  const [metodo, setMetodo] = useState<Metodo | "">("");
+  const [montoEur, setMontoEur] = useState<number>(50000);
+  const [instruccionesGeneradas, setInstruccionesGeneradas] = useState(false);
+  const [reciboSubido, setReciboSubido] = useState(false);
+  const [bancoPaso, setBancoPaso] = useState<PasoBanco | null>(null);
+
+  // Crypto fields
+  const [tasaEurUsdt, setTasaEurUsdt] = useState<number>(1.0);
+  const [cryptoNetwork, setCryptoNetwork] = useState("USDT ERC20");
+  const [txHash, setTxHash] = useState("");
+  const [capturaCrypto, setCapturaCrypto] = useState(false);
+  const [cryptoPaso, setCryptoPaso] = useState<PasoCrypto | null>(null);
+
+  const montoToUsdt = Number.isFinite(montoEur) ? +(montoEur / (tasaEurUsdt || 1)).toFixed(2) : 0;
+
+  // Copys
+  const puedeIniciarAportacion = allPreOk;
+  const depositoBancoListo = montoEur >= 50000 && instruccionesGeneradas && reciboSubido;
+  const depositoCryptoListo = montoEur >= 50000 && !!txHash && capturaCrypto;
+
+  // Simulaciones de avance de estado
+  const simularConciliado = () => setBancoPaso("Conciliado");
+  const simularAsignado = () => {
+    setBancoPaso("Asignado");
+    setHasActiveDeposit(true);
+  };
+  const simularConfirmado = () => setCryptoPaso("Confirmado");
+  const simularAsignadoCrypto = () => {
+    setCryptoPaso("Asignado");
+    setHasActiveDeposit(true);
+  };
+
+  // UI helper: Checklist
+  const ChecklistItem = ({
+    label,
+    checked,
+    onFix,
+  }: {
+    label: string;
+    checked: boolean;
+    onFix?: () => void;
+  }) => (
+    <div className="flex items-center justify-between py-2">
+      <div className="flex items-center gap-2">
+        {checked ? <CheckCircle2 className="w-4 h-4 text-emerald-400" /> : <AlertTriangle className="w-4 h-4 text-amber-400" />}
+        <span className="text-sm">{label}</span>
+      </div>
+      {!checked && (
+        <Button size="sm" variant="outline" className="border-emerald-500/30 hover:bg-emerald-900/10" onClick={onFix}>
+          Firmar/Completar ahora
+        </Button>
+      )}
+    </div>
+  );
+
+  return (
+    <div className="space-y-6">
+      <div className="mb-2">
+        <h1 className="text-3xl font-bold text-emerald-50">Depósito</h1>
+        <p className="text-emerald-200/80">Inicia una nueva aportación por banco o cripto</p>
+      </div>
+
+      {/* Condición previa de firma */}
+      <Card className="bg-black/40 border border-emerald-500/15 rounded-2xl">
+        <CardContent className="p-6">
+          <div className="flex items-center gap-2 mb-3">
+            <ShieldCheck className="w-5 h-5 text-emerald-400" />
+            <h4 className="text-emerald-50 font-semibold">Condición previa de firma (obligatoria)</h4>
+          </div>
+          <div className="rounded-xl border border-emerald-500/15 bg-black/30 p-4">
+            <ChecklistItem label="Contrato Marco de Servicios (firmado)" checked={contratoMarco} onFix={() => setContratoMarco(true)} />
+            <ChecklistItem label="KYC/AML aprobado" checked={kycOk} onFix={() => setKycOk(true)} />
+            <ChecklistItem label="Perfil de idoneidad completado" checked={perfilOk} onFix={() => setPerfilOk(true)} />
+            <ChecklistItem
+              label="Documentación específica del producto (Depósito Pignorado / Riesgos de Mercado)"
+              checked={docsProducto}
+              onFix={() => setDocsProducto(true)}
+            />
+          </div>
+          {!allPreOk && (
+            <p className="text-xs text-emerald-200/70 mt-3">
+              Para iniciar una aportación, primero firma/activa los pasos pendientes.
+            </p>
+          )}
+        </CardContent>
+      </Card>
+
+      {/* Paso 1: Nueva aportación */}
+      <Card className="bg-black/40 border border-emerald-500/15 rounded-2xl">
+        <CardContent className="p-6 space-y-6">
+          <div className="rounded-xl border border-emerald-500/15 bg-black/30 p-5">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm text-emerald-200/80">Paso 1</p>
+                <h5 className="text-emerald-50 font-semibold mb-3">Nueva aportación</h5>
+                <div className="flex flex-wrap gap-3">
+                  <Button
+                    variant={productoElegido === "fija" ? "default" : "outline"}
+                    onClick={() => setProductoElegido("fija")}
+                    className={productoElegido === "fija" ? "bg-emerald-600 hover:bg-emerald-500" : "border-emerald-500/30 hover:bg-emerald-900/10"}
+                  >
+                    Renta Fija 9%
+                  </Button>
+                  <Button
+                    variant={productoElegido === "variable" ? "default" : "outline"}
+                    onClick={() => setProductoElegido("variable")}
+                    className={productoElegido === "variable" ? "bg-emerald-600 hover:bg-emerald-500" : "border-emerald-500/30 hover:bg-emerald-900/10"}
+                  >
+                    Variable
+                  </Button>
+                  <Button
+                    variant={productoElegido === "mixto" ? "default" : "outline"}
+                    onClick={() => setProductoElegido("mixto")}
+                    className={productoElegido === "mixto" ? "bg-emerald-600 hover:bg-emerald-500" : "border-emerald-500/30 hover:bg-emerald-900/10"}
+                  >
+                    Mixto
+                  </Button>
+                </div>
+              </div>
+              <Button disabled={!puedeIniciarAportacion} className="rounded-xl">
+                Nueva aportación
+              </Button>
+            </div>
+            {!puedeIniciarAportacion && (
+              <p className="text-xs text-emerald-200/70 mt-3">
+                Botón deshabilitado: completa las firmas/validaciones para continuar.
+              </p>
+            )}
+          </div>
+
+          {/* Paso 2: Método */}
+          <div className="rounded-xl border border-emerald-500/15 bg-black/30 p-5">
+            <p className="text-sm text-emerald-200/80">Paso 2</p>
+            <h5 className="text-emerald-50 font-semibold mb-3">Elige método de depósito</h5>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <Button
+                variant={metodo === "banco" ? "default" : "outline"}
+                onClick={() => setMetodo("banco")}
+                className={`rounded-xl justify-start ${metodo === "banco" ? "bg-emerald-600 hover:bg-emerald-500" : "border-emerald-500/30 hover:bg-emerald-900/10"}`}
+              >
+                <Banknote className="w-4 h-4 mr-2" />
+                Cuenta bancaria
+              </Button>
+              <Button
+                variant={metodo === "crypto" ? "default" : "outline"}
+                onClick={() => setMetodo("crypto")}
+                className={`rounded-xl justify-start ${metodo === "crypto" ? "bg-emerald-600 hover:bg-emerald-500" : "border-emerald-500/30 hover:bg-emerald-900/10"}`}
+              >
+                <Wallet className="w-4 h-4 mr-2" />
+                Cripto
+              </Button>
+            </div>
+          </div>
+
+          {/* Método: Banco */}
+          {metodo === "banco" && (
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+              <div className="rounded-xl border border-emerald-500/15 bg-black/30 p-5">
+                <h6 className="text-emerald-50 font-semibold mb-3">Importe y Instrucciones</h6>
+                <div className="space-y-4">
+                  <div>
+                    <Label className="text-emerald-50">Importe (€) — mínimo 50.000</Label>
+                    <Input
+                      type="number"
+                      min={0}
+                      value={montoEur}
+                      onChange={(e) => setMontoEur(parseFloat(e.target.value) || 0)}
+                      className="bg-black/50 border-emerald-500/20 text-emerald-50"
+                    />
+                    {montoEur < 50000 && <p className="text-xs text-amber-400 mt-1">El importe mínimo es 50.000 €.</p>}
+                  </div>
+
+                  <div className="flex items-center gap-3">
+                    <Button
+                      variant="outline"
+                      className="border-emerald-500/30 hover:bg-emerald-900/10"
+                      onClick={() => setInstruccionesGeneradas(true)}
+                    >
+                      Generar instrucciones
+                    </Button>
+                    {instruccionesGeneradas && <Badge className="bg-emerald-500 text-black">Generadas</Badge>}
+                  </div>
+
+                  {instruccionesGeneradas && (
+                    <div className="rounded-lg p-4 bg-black/40 border border-emerald-500/15 text-sm">
+                      <p><span className="text-emerald-300">IBAN:</span> ES11 2222 3333 4444 5555 6666</p>
+                      <p><span className="text-emerald-300">BIC:</span> ABCDESMMXXX</p>
+                      <p><span className="text-emerald-300">Referencia:</span> NAKAMA-DEP-000123</p>
+                    </div>
+                  )}
+                </div>
+              </div>
+
+              <div className="rounded-xl border border-emerald-500/15 bg-black/30 p-5">
+                <h6 className="text-emerald-50 font-semibold mb-3">Justificante y Confirmación</h6>
+                <div className="space-y-4">
+                  <div>
+                    <Label className="text-emerald-50">Subir justificante (PDF/JPG/PNG)</Label>
+                    <Input
+                      type="file"
+                      accept=".pdf,.jpg,.jpeg,.png"
+                      onChange={(e) => setReciboSubido((e.target.files?.length ?? 0) > 0)}
+                      className="bg-black/50 border-emerald-500/20 text-emerald-50"
+                    />
+                    {!reciboSubido && <p className="text-xs text-amber-400 mt-1">Obligatorio para continuar.</p>}
+                  </div>
+
+                  <div className="flex flex-wrap gap-3">
+                    <Button disabled={!depositoBancoListo} onClick={() => setBancoPaso("Pendiente")} className="rounded-xl">
+                      He realizado la transferencia
+                    </Button>
+                    <Button variant="outline" className="border-emerald-500/30 hover:bg-emerald-900/10">
+                      Descargar certificado
+                    </Button>
+                  </div>
+
+                  {/* Seguimiento */}
+                  {bancoPaso && (
+                    <div className="mt-4">
+                      <p className="text-sm text-emerald-200/80 mb-2">Seguimiento</p>
+                      <div className="flex flex-wrap items-center gap-2">
+                        <Badge className={`px-3 ${bancoPaso ? "bg-emerald-500 text-black" : "bg-emerald-900/30 text-emerald-200"}`}>Pendiente</Badge>
+                        <span>→</span>
+                        <Badge className={`${bancoPaso === "Conciliado" || bancoPaso === "Asignado" ? "bg-emerald-500 text-black" : "bg-emerald-900/30 text-emerald-200"}`}>Conciliado</Badge>
+                        <span>→</span>
+                        <Badge className={`${bancoPaso === "Asignado" ? "bg-emerald-500 text-black" : "bg-emerald-900/30 text-emerald-200"}`}>Asignado</Badge>
+                      </div>
+
+                      {bancoPaso === "Pendiente" && (
+                        <div className="flex gap-2 mt-3">
+                          <Button size="sm" variant="outline" onClick={simularConciliado} className="border-emerald-500/30 hover:bg-emerald-900/10">
+                            Simular conciliación
+                          </Button>
+                        </div>
+                      )}
+                      {bancoPaso === "Conciliado" && (
+                        <div className="flex gap-2 mt-3">
+                          <Button size="sm" variant="outline" onClick={simularAsignado} className="border-emerald-500/30 hover:bg-emerald-900/10">
+                            Simular asignación
+                          </Button>
+                        </div>
+                      )}
+                    </div>
+                  )}
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* Método: Crypto */}
+          {metodo === "crypto" && (
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+              <div className="rounded-xl border border-emerald-500/15 bg-black/30 p-5">
+                <h6 className="text-emerald-50 font-semibold mb-3">Importe, activo y red</h6>
+                <div className="space-y-4">
+                  <div>
+                    <Label className="text-emerald-50">Importe en EUR — mínimo 50.000</Label>
+                    <Input
+                      type="number"
+                      min={0}
+                      value={montoEur}
+                      onChange={(e) => setMontoEur(parseFloat(e.target.value) || 0)}
+                      className="bg-black/50 border-emerald-500/20 text-emerald-50"
+                    />
+                    {montoEur < 50000 && <p className="text-xs text-amber-400 mt-1">El importe mínimo es 50.000 €.</p>}
+                  </div>
+                  <div>
+                    <Label className="text-emerald-50">Tasa EUR → USDT (editable)</Label>
+                    <Input
+                      type="number"
+                      step="0.0001"
+                      value={tasaEurUsdt}
+                      onChange={(e) => setTasaEurUsdt(parseFloat(e.target.value) || 1)}
+                      className="bg-black/50 border-emerald-500/20 text-emerald-50"
+                    />
+                    <p className="text-xs text-emerald-200/70 mt-1">Conversión estimada: {montoToUsdt.toLocaleString("es-ES")} USDT</p>
+                  </div>
+
+                  <div>
+                    <Label className="text-emerald-50">Activo y red</Label>
+                    <Select value={cryptoNetwork} onValueChange={setCryptoNetwork}>
+                      <SelectTrigger className="bg-black/50 border-emerald-500/20 text-emerald-50">
+                        <SelectValue placeholder="Selecciona" />
+                      </SelectTrigger>
+                      <SelectContent className="bg-black/40 border-emerald-500/15 text-emerald-50">
+                        <SelectItem value="USDT ERC20">USDT (ERC20)</SelectItem>
+                        <SelectItem value="USDT TRC20">USDT (TRC20)</SelectItem>
+                        <SelectItem value="USDT BEP20">USDT (BEP20)</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+
+                  <div className="rounded-lg p-4 bg-black/40 border border-emerald-500/15 text-sm">
+                    <p className="mb-2"><span className="text-emerald-300">Dirección:</span> 0xNAKAMA...DEPOSIT</p>
+                    <p className="mb-2"><span className="text-emerald-300">Memo (si aplica):</span> —</p>
+                    <div className="flex items-center gap-3 mt-2">
+                      <div className="w-20 h-20 rounded-lg border border-emerald-500/20 bg-black/50 flex items-center justify-center">
+                        <QrCode className="w-10 h-10 text-emerald-400" />
+                      </div>
+                      <Button size="sm" variant="outline" className="border-emerald-500/30 hover:bg-emerald-900/10">
+                        Copiar dirección
+                      </Button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div className="rounded-xl border border-emerald-500/15 bg-black/30 p-5">
+                <h6 className="text-emerald-50 font-semibold mb-3">Comprobante y Confirmación</h6>
+                <div className="space-y-4">
+                  <div>
+                    <Label className="text-emerald-50 flex items-center gap-2"><Hash className="w-4 h-4" /> Hash de transacción</Label>
+                    <Input
+                      placeholder="0xabc123..."
+                      value={txHash}
+                      onChange={(e) => setTxHash(e.target.value)}
+                      className="bg-black/50 border-emerald-500/20 text-emerald-50"
+                    />
+                  </div>
+                  <div>
+                    <Label className="text-emerald-50">Subir captura/imagen del envío</Label>
+                    <Input
+                      type="file"
+                      accept=".pdf,.jpg,.jpeg,.png"
+                      onChange={(e) => setCapturaCrypto((e.target.files?.length ?? 0) > 0)}
+                      className="bg-black/50 border-emerald-500/20 text-emerald-50"
+                    />
+                    {(!txHash || !capturaCrypto) && <p className="text-xs text-amber-400 mt-1">Debes adjuntar hash + captura para continuar.</p>}
+                  </div>
+
+                  <div className="flex flex-wrap gap-3">
+                    <Button disabled={!depositoCryptoListo} onClick={() => setCryptoPaso("Detectado")} className="rounded-xl">
+                      He realizado el envío
+                    </Button>
+                    <Button variant="outline" className="border-emerald-500/30 hover:bg-emerald-900/10">
+                      Descargar certificado
+                    </Button>
+                  </div>
+
+                  {/* Seguimiento */}
+                  {cryptoPaso && (
+                    <div className="mt-4">
+                      <p className="text-sm text-emerald-200/80 mb-2">Seguimiento</p>
+                      <div className="flex flex-wrap items-center gap-2">
+                        <Badge className={`px-3 ${cryptoPaso ? "bg-emerald-500 text-black" : "bg-emerald-900/30 text-emerald-200"}`}>Detectado</Badge>
+                        <span>→</span>
+                        <Badge className={`${cryptoPaso === "Confirmado" || cryptoPaso === "Asignado" ? "bg-emerald-500 text-black" : "bg-emerald-900/30 text-emerald-200"}`}>Confirmado</Badge>
+                        <span>→</span>
+                        <Badge className={`${cryptoPaso === "Asignado" ? "bg-emerald-500 text-black" : "bg-emerald-900/30 text-emerald-200"}`}>Asignado</Badge>
+                      </div>
+
+                      {cryptoPaso === "Detectado" && (
+                        <div className="flex gap-2 mt-3">
+                          <Button size="sm" variant="outline" onClick={simularConfirmado} className="border-emerald-500/30 hover:bg-emerald-900/10">
+                            Simular confirmación
+                          </Button>
+                        </div>
+                      )}
+                      {cryptoPaso === "Confirmado" && (
+                        <div className="flex gap-2 mt-3">
+                          <Button size="sm" variant="outline" onClick={simularAsignadoCrypto} className="border-emerald-500/30 hover:bg-emerald-900/10">
+                            Simular asignación
+                          </Button>
+                        </div>
+                      )}
+                    </div>
+                  )}
+                </div>
+              </div>
+            </div>
+          )}
+        </CardContent>
+      </Card>
+    </div>
+  );
+}
+
+/* -------------------------------------------------------------------------- */
+/*                                VISTA: RETIRO                               */
+/* -------------------------------------------------------------------------- */
+function RetiroView({
+  hasActiveDeposit,
+}: {
+  hasActiveDeposit: boolean;
+}) {
+  // ---- Retiros ----
+  const [retiroProducto, setRetiroProducto] = useState("Plazo fijo 9% - 175 días");
+  const [retiroMetodo, setRetiroMetodo] = useState<Metodo | "">("");
+  const [retiroTotal, setRetiroTotal] = useState(true);
+  const [retiroImporte, setRetiroImporte] = useState<number>(1000);
+
+  const [ibanList, setIbanList] = useState<{ iban: string; verified: boolean }[]>([
+    { iban: "ES12 3456 7890 1234 5678 9012", verified: true },
+  ]);
+  const [walletList, setWalletList] = useState<{ name: string; address: string; verified: boolean }[]>([
+    { name: "Mi USDT ERC20", address: "0xABCD...1234", verified: true },
+  ]);
+  const [ibanSeleccionado, setIbanSeleccionado] = useState<string>(ibanList[0]?.iban ?? "");
+  const [walletSeleccionada, setWalletSeleccionada] = useState<string>(walletList[0]?.address ?? "");
+  const [retiroPasoBanco, setRetiroPasoBanco] = useState<"Recibida" | "Programada" | "Transferida" | "Finalizada" | null>(null);
+  const [retiroPasoCrypto, setRetiroPasoCrypto] = useState<"Recibida" | "TX enviada" | "Finalizada" | null>(null);
+
+  // Añadir/validar IBAN/Wallet
+  const handleAddIban = () => {
+    const nuevo = prompt("Introduce un IBAN nuevo (formato ejemplo ES12 3456 7890 1234 5678 9012):");
+    if (!nuevo) return;
+    setIbanList((l) => [...l, { iban: nuevo, verified: false }]);
+    setIbanSeleccionado(nuevo);
+  };
+  const handleVerifyIban = () => {
+    setIbanList((l) => l.map((i) => (i.iban === ibanSeleccionado ? { ...i, verified: true } : i)));
+  };
+
+  const handleAddWallet = () => {
+    const nombre = prompt("Nombre de la wallet (ej. 'Mi USDT TRC20'):");
+    const dir = prompt("Dirección de la wallet:");
+    if (!nombre || !dir) return;
+    setWalletList((l) => [...l, { name: nombre, address: dir, verified: false }]);
+    setWalletSeleccionada(dir);
+  };
+  const handleVerifyWallet = () => {
+    setWalletList((l) => l.map((w) => (w.address === walletSeleccionada ? { ...w, verified: true } : w)));
+  };
+
+  return (
+    <div className="space-y-6">
+      <div className="mb-2">
+        <h1 className="text-3xl font-bold text-emerald-50">Retiro</h1>
+        <p className="text-emerald-200/80">Solicita un retiro a cuenta bancaria o wallet</p>
+      </div>
+
+      <Card className="bg-black/40 border border-emerald-500/15 rounded-2xl">
+        <CardContent className="p-6 space-y-6 max-h-[72vh] overflow-y-auto">
+          {!hasActiveDeposit ? (
+            <div className="text-emerald-200/80 text-sm">
+              Aún no tienes aportaciones activas, por eso no hay retiros disponibles.
+            </div>
+          ) : (
+            <>
+              {/* Paso 1: Solicitar retiro */}
+              <div className="rounded-xl border border-emerald-500/15 bg-black/30 p-5">
+                <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
+                  <div>
+                    <Label className="text-emerald-50">Producto</Label>
+                    <Select value={retiroProducto} onValueChange={setRetiroProducto}>
+                      <SelectTrigger className="bg-black/50 border-emerald-500/20 text-emerald-50">
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent className="bg-black/40 border-emerald-500/15 text-emerald-50">
+                        <SelectItem value="Plazo fijo 9% - 175 días">Plazo fijo 9% - 175 días</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <div>
+                    <Label className="text-emerald-50">Importe</Label>
+                    <div className="flex gap-2">
+                      <Input
+                        type="number"
+                        disabled={retiroTotal}
+                        min={0}
+                        value={retiroImporte}
+                        onChange={(e) => setRetiroImporte(parseFloat(e.target.value) || 0)}
+                        className="bg-black/50 border-emerald-500/20 text-emerald-50"
+                      />
+                      <Button
+                        type="button"
+                        variant={retiroTotal ? "default" : "outline"}
+                        onClick={() => setRetiroTotal((v) => !v)}
+                        className={retiroTotal ? "bg-emerald-600 hover:bg-emerald-500" : "border-emerald-500/30 hover:bg-emerald-900/10"}
+                      >
+                        {retiroTotal ? "Total" : "Parcial"}
+                      </Button>
+                    </div>
+                  </div>
+                  <div>
+                    <Label className="text-emerald-50">Método</Label>
+                    <Select value={retiroMetodo} onValueChange={(v) => setRetiroMetodo(v as Metodo)}>
+                      <SelectTrigger className="bg-black/50 border-emerald-500/20 text-emerald-50">
+                        <SelectValue placeholder="Selecciona método" />
+                      </SelectTrigger>
+                      <SelectContent className="bg-black/40 border-emerald-500/15 text-emerald-50">
+                        <SelectItem value="banco">Cuenta bancaria</SelectItem>
+                        <SelectItem value="crypto">Cripto</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                </div>
+                <div className="mt-4">
+                  <Button className="rounded-xl">Solicitar retiro</Button>
+                </div>
+              </div>
+
+              {/* Paso 2: Según método */}
+              {retiroMetodo === "banco" && (
+                <div className="rounded-xl border border-emerald-500/15 bg-black/30 p-5">
+                  <h6 className="text-emerald-50 font-semibold mb-3">Cuenta bancaria</h6>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                      <Label className="text-emerald-50">IBAN verificado</Label>
+                      <Select value={ibanSeleccionado} onValueChange={setIbanSeleccionado}>
+                        <SelectTrigger className="bg-black/50 border-emerald-500/20 text-emerald-50">
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent className="bg-black/40 border-emerald-500/15 text-emerald-50">
+                          {ibanList.map((i) => (
+                            <SelectItem key={i.iban} value={i.iban}>
+                              {i.iban} {i.verified ? "✓" : ""}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                      <div className="flex gap-2 mt-3">
+                        <Button variant="outline" onClick={handleAddIban} className="border-emerald-500/30 hover:bg-emerald-900/10">
+                          Añadir IBAN/Wallet
+                        </Button>
+                        {!ibanList.find((i) => i.iban === ibanSeleccionado)?.verified && (
+                          <Button variant="outline" onClick={handleVerifyIban} className="border-emerald-500/30 hover:bg-emerald-900/10">
+                            Verificar IBAN
+                          </Button>
+                        )}
+                      </div>
+                    </div>
+                    <div className="flex items-end">
+                      <Button className="rounded-xl" onClick={() => setRetiroPasoBanco("Recibida")}>
+                        Confirmar retiro
+                      </Button>
+                    </div>
+                  </div>
+
+                  {/* Seguimiento */}
+                  {retiroPasoBanco && (
+                    <div className="mt-4">
+                      <p className="text-sm text-emerald-200/80 mb-2">Seguimiento</p>
+                      <div className="flex flex-wrap items-center gap-2">
+                        <Badge className={`${retiroPasoBanco ? "bg-emerald-500 text-black" : "bg-emerald-900/30 text-emerald-200"}`}>Recibida</Badge>
+                        <span>→</span>
+                        <Badge className={`${["Programada", "Transferida", "Finalizada"].includes(retiroPasoBanco) ? "bg-emerald-500 text-black" : "bg-emerald-900/30 text-emerald-200"}`}>Programada</Badge>
+                        <span>→</span>
+                        <Badge className={`${["Transferida", "Finalizada"].includes(retiroPasoBanco) ? "bg-emerald-500 text-black" : "bg-emerald-900/30 text-emerald-200"}`}>Transferida</Badge>
+                        <span>→</span>
+                        <Badge className={`${retiroPasoBanco === "Finalizada" ? "bg-emerald-500 text-black" : "bg-emerald-900/30 text-emerald-200"}`}>Finalizada</Badge>
+                      </div>
+
+                      {retiroPasoBanco === "Recibida" && (
+                        <div className="flex gap-2 mt-3">
+                          <Button size="sm" variant="outline" onClick={() => setRetiroPasoBanco("Programada")} className="border-emerald-500/30 hover:bg-emerald-900/10">
+                            Simular programación
+                          </Button>
+                        </div>
+                      )}
+                      {retiroPasoBanco === "Programada" && (
+                        <div className="flex gap-2 mt-3">
+                          <Button size="sm" variant="outline" onClick={() => setRetiroPasoBanco("Transferida")} className="border-emerald-500/30 hover:bg-emerald-900/10">
+                            Simular transferencia
+                          </Button>
+                        </div>
+                      )}
+                      {retiroPasoBanco === "Transferida" && (
+                        <div className="flex gap-2 mt-3">
+                          <Button size="sm" variant="outline" onClick={() => setRetiroPasoBanco("Finalizada")} className="border-emerald-500/30 hover:bg-emerald-900/10">
+                            Simular finalización
+                          </Button>
+                          <Button size="sm" variant="outline" className="border-emerald-500/30 hover:bg-emerald-900/10">
+                            Descargar justificante
+                          </Button>
+                        </div>
+                      )}
+                      {retiroPasoBanco === "Finalizada" && (
+                        <div className="flex gap-2 mt-3">
+                          <Button size="sm" variant="outline" className="border-emerald-500/30 hover:bg-emerald-900/10">
+                            Descargar justificante
+                          </Button>
+                        </div>
+                      )}
+                    </div>
+                  )}
+                </div>
+              )}
+
+              {retiroMetodo === "crypto" && (
+                <div className="rounded-xl border border-emerald-500/15 bg-black/30 p-5">
+                  <h6 className="text-emerald-50 font-semibold mb-3">Cripto</h6>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                      <Label className="text-emerald-50">Wallet verificada</Label>
+                      <Select value={walletSeleccionada} onValueChange={setWalletSeleccionada}>
+                        <SelectTrigger className="bg-black/50 border-emerald-500/20 text-emerald-50">
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent className="bg-black/40 border-emerald-500/15 text-emerald-50">
+                          {walletList.map((w) => (
+                            <SelectItem key={w.address} value={w.address}>
+                              {w.name} — {w.address.slice(0, 8)}... {w.verified ? "✓" : ""}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                      <div className="flex gap-2 mt-3">
+                        <Button variant="outline" onClick={handleAddWallet} className="border-emerald-500/30 hover:bg-emerald-900/10">
+                          Añadir IBAN/Wallet
+                        </Button>
+                        {!walletList.find((w) => w.address === walletSeleccionada)?.verified && (
+                          <Button variant="outline" onClick={handleVerifyWallet} className="border-emerald-500/30 hover:bg-emerald-900/10">
+                            Verificar Wallet
+                          </Button>
+                        )}
+                      </div>
+                    </div>
+                    <div className="flex items-end">
+                      <Button className="rounded-xl" onClick={() => setRetiroPasoCrypto("Recibida")}>
+                        Confirmar retiro
+                      </Button>
+                    </div>
+                  </div>
+
+                  {/* Seguimiento */}
+                  {retiroPasoCrypto && (
+                    <div className="mt-4">
+                      <p className="text-sm text-emerald-200/80 mb-2">Seguimiento</p>
+                      <div className="flex flex-wrap items-center gap-2">
+                        <Badge className={`${retiroPasoCrypto ? "bg-emerald-500 text-black" : "bg-emerald-900/30 text-emerald-200"}`}>Recibida</Badge>
+                        <span>→</span>
+                        <Badge className={`${["TX enviada", "Finalizada"].includes(retiroPasoCrypto) ? "bg-emerald-500 text-black" : "bg-emerald-900/30 text-emerald-200"}`}>TX enviada</Badge>
+                        <span>→</span>
+                        <Badge className={`${retiroPasoCrypto === "Finalizada" ? "bg-emerald-500 text-black" : "bg-emerald-900/30 text-emerald-200"}`}>Finalizada</Badge>
+                      </div>
+
+                      {retiroPasoCrypto === "Recibida" && (
+                        <div className="flex gap-2 mt-3">
+                          <Button size="sm" variant="outline" onClick={() => setRetiroPasoCrypto("TX enviada")} className="border-emerald-500/30 hover:bg-emerald-900/10">
+                            Simular TX enviada
+                          </Button>
+                        </div>
+                      )}
+                      {retiroPasoCrypto === "TX enviada" && (
+                        <div className="flex gap-2 mt-3">
+                          <Button size="sm" variant="outline" onClick={() => setRetiroPasoCrypto("Finalizada")} className="border-emerald-500/30 hover:bg-emerald-900/10">
+                            Simular finalización
+                          </Button>
+                          <Button size="sm" variant="outline" className="border-emerald-500/30 hover:bg-emerald-900/10">
+                            Descargar justificante
+                          </Button>
+                        </div>
+                      )}
+                      {retiroPasoCrypto === "Finalizada" && (
+                        <div className="flex gap-2 mt-3">
+                          <Button size="sm" variant="outline" className="border-emerald-500/30 hover:bg-emerald-900/10">
+                            Descargar justificante
+                          </Button>
+                        </div>
+                      )}
+                    </div>
+                  )}
+                </div>
+              )}
+            </>
+          )}
+        </CardContent>
+      </Card>
+    </div>
+  );
+}
+
+/* -------------------------------------------------------------------------- */
+/*                                DASHBOARD PARTNER                           */
+/* -------------------------------------------------------------------------- */
 
 type Client = {
   id: string;
@@ -60,6 +760,20 @@ export default function PartnerDashboard() {
   const [profilePhoto, setProfilePhoto] = useState<string | null>(null);
   const [phoneNumber, setPhoneNumber] = useState("646 123 456");
 
+  // Tooltip responsive: right en desktop, bottom en móvil
+  const [tooltipSide, setTooltipSide] = useState<"right" | "bottom">("bottom");
+  useEffect(() => {
+    const mq = window.matchMedia("(min-width: 768px)");
+    const update = () => setTooltipSide(mq.matches ? "right" : "bottom");
+    update();
+    mq.addEventListener?.("change", update);
+    return () => mq.removeEventListener?.("change", update);
+  }, []);
+
+
+  // 👇 Necesario para habilitar Retiro cuando el depósito queda "Asignado"
+  const [hasActiveDeposit, setHasActiveDeposit] = useState<boolean>(false);
+
   // ===== KYC: estado y manejadores =====
   const [kycStatus, setKycStatus] = useState<KycStatus>("Pendiente");
   const [kycDocs, setKycDocs] = useState<File[]>([]);
@@ -68,7 +782,6 @@ export default function PartnerDashboard() {
   const handleKycUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = Array.from(e.target.files ?? []);
     if (!files.length) return;
-    // (Opcional) validar tamaño y tipo
     const accepted = files.filter((f) => {
       const okType = ["image/jpeg", "image/png", "application/pdf"].includes(f.type) || f.type === "";
       const okSize = f.size <= 10 * 1024 * 1024;
@@ -86,10 +799,7 @@ export default function PartnerDashboard() {
   const handleKycSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!kycDocs.length) return;
-    // TODO: enviar al backend. Aquí lo dejamos como "Pendiente".
     setKycStatus("Pendiente");
-    // Cuando el backend responda:
-    // setKycStatus("Aprobado") o setKycStatus("Rechazado"); setKycFeedback("Motivo...");
   };
 
   const handleKycReupload = () => {
@@ -393,6 +1103,8 @@ export default function PartnerDashboard() {
             { key: "clientes", label: "Clientes", icon: Users },
             { key: "contratos", label: "Contratos", icon: FileText },
             { key: "herramientas", label: "Herramientas", icon: Briefcase },
+            { key: "deposito", label: "Depósito", icon: Banknote },
+            { key: "retiro", label: "Retiro", icon: Wallet },
           ].map(({ key, label, icon: Icon }) => (
             <button
               key={key}
@@ -793,7 +1505,28 @@ export default function PartnerDashboard() {
             {/* Chart */}
             <Card className="bg-black/40 border border-emerald-500/15 rounded-2xl mb-8">
               <CardHeader>
-                <CardTitle className="text-emerald-50">Comparación: Con vs Sin Interés Compuesto</CardTitle>
+                <CardTitle className="text-emerald-50">
+                  <span className="inline-flex items-center gap-4">
+                    Comparación: Con Interés vs Sin Interés Compuesto
+                    <TooltipProvider delayDuration={100}>
+                      <Tooltip>
+                        <TooltipTrigger asChild>
+                          <HelpCircle className="w-8 h-8 text-emerald-300/90 hover:text-emerald-300 cursor-help" />
+                        </TooltipTrigger>
+                        <TooltipContent
+                          side={tooltipSide}
+                          align={tooltipSide === "right" ? "start" : "center"}
+                          sideOffset={tooltipSide === "right" ? 12 : 8}
+                          avoidCollisions={tooltipSide === "right" ? false : true}
+                          className="max-w-[260px] md:max-w-[420px] lg:max-w-[440px] p-3 md:p-4 text-sm md:text-base leading-relaxed bg-black/100 text-emerald-50 border border-emerald-500/25 rounded-xl shadow-[0_10px_40px_rgba(0,0,0,0.45)]"
+                        >
+                          El interés compuesto reinvierte automáticamente los intereses generados,
+                          así cada período calculas intereses sobre el capital inicial + los intereses previos.
+                        </TooltipContent>
+                      </Tooltip>
+                    </TooltipProvider>
+                  </span>
+                </CardTitle>
                 <CardDescription className="text-emerald-200/80">
                   Visualización del crecimiento de €50,000 con 9% anual
                 </CardDescription>
@@ -1242,7 +1975,7 @@ export default function PartnerDashboard() {
                                   </p>
                                   <p
                                     className={`text-sm font-medium ${
-                                      isExpired ? "text-red-400" : isNearMaturity ? "text-amber-400" : "text-emerald-400"
+                                      isExpired ? "text-red-400" : isNearMaturity ? "text-amber-400" : "text-emerald- 400"
                                     }`}
                                   >
                                     {isExpired
@@ -1259,7 +1992,9 @@ export default function PartnerDashboard() {
                             <div className="space-y-4">
                               <div>
                                 <p className="text-emerald-200/80 text-sm">Rendimientos</p>
-                                <p className="text-emerald-400 font-extrabold text-3xl">+${client.returns.toLocaleString()}</p>
+                                <p className="text-emerald-400 font-extrabold text-3xl">
+                                  +${client.returns.toLocaleString()}
+                                </p>
                               </div>
 
                               <div className="space-y-2">
@@ -1298,7 +2033,7 @@ export default function PartnerDashboard() {
               <div className="flex items-center justify-between mb-4">
                 <Button
                   variant="outline"
-                  onClick={() => setShowContractFilters(!showContractFilters)}
+                  onClick={() => setShowContractFilters(!setShowContractFilters)}
                   className="border-emerald-500/20 text-emerald-50 hover:bg-emerald-900/10"
                 >
                   <Filter className="w-4 h-4 mr-2" />
@@ -1348,7 +2083,10 @@ export default function PartnerDashboard() {
                       {/* Estado */}
                       <div className="space-y-2">
                         <Label className="text-emerald-50">Estado</Label>
-                        <Select value={contractFilters.status} onValueChange={(value) => setContractFilters({ ...contractFilters, status: value })}>
+                        <Select
+                          value={contractFilters.status}
+                          onValueChange={(value) => setContractFilters({ ...contractFilters, status: value })}
+                        >
                           <SelectTrigger className="bg-black/50 border-emerald-500/20 text-emerald-50">
                             <SelectValue placeholder="Todos" />
                           </SelectTrigger>
@@ -1363,7 +2101,10 @@ export default function PartnerDashboard() {
                       {/* Tipo */}
                       <div className="space-y-2">
                         <Label className="text-emerald-50">Tipo</Label>
-                        <Select value={contractFilters.type} onValueChange={(value) => setContractFilters({ ...contractFilters, type: value })}>
+                        <Select
+                          value={contractFilters.type}
+                          onValueChange={(value) => setContractFilters({ ...contractFilters, type: value })}
+                        >
                           <SelectTrigger className="bg-black/50 border-emerald-500/20 text-emerald-50">
                             <SelectValue placeholder="Todos" />
                           </SelectTrigger>
@@ -1378,7 +2119,10 @@ export default function PartnerDashboard() {
                       {/* Tier */}
                       <div className="space-y-2">
                         <Label className="text-emerald-50">Tier</Label>
-                        <Select value={contractFilters.tier} onValueChange={(value) => setContractFilters({ ...contractFilters, tier: value })}>
+                        <Select
+                          value={contractFilters.tier}
+                          onValueChange={(value) => setContractFilters({ ...contractFilters, tier: value })}
+                        >
                           <SelectTrigger className="bg-black/50 border-emerald-500/20 text-emerald-50">
                             <SelectValue placeholder="Todos" />
                           </SelectTrigger>
@@ -1470,7 +2214,6 @@ export default function PartnerDashboard() {
 
             {/* Lista de contratos */}
             {(() => {
-              // Datos de ejemplo
               const contractsData = [
                 {
                   id: "CT-2025-001",
@@ -1518,7 +2261,6 @@ export default function PartnerDashboard() {
                 },
               ];
 
-              // Filtrado
               const q = contractFilters.search.trim().toLowerCase();
               const min = contractFilters.amountMin ? parseFloat(contractFilters.amountMin) : -Infinity;
               const max = contractFilters.amountMax ? parseFloat(contractFilters.amountMax) : Infinity;
@@ -1546,7 +2288,16 @@ export default function PartnerDashboard() {
                   const daysLeft = Math.ceil((end.getTime() - Date.now()) / 86400000);
                   const matchVenc = !vencLimit || (daysLeft > 0 && daysLeft <= vencLimit);
 
-                  return matchSearch && matchStatus && matchType && matchTier && matchAmount && matchFrom && matchTo && matchVenc;
+                  return (
+                    matchSearch &&
+                    matchStatus &&
+                    matchType &&
+                    matchTier &&
+                    matchAmount &&
+                    matchFrom &&
+                    matchTo &&
+                    matchVenc
+                  );
                 })
                 .sort((a, b) => {
                   if (contractSort === "amountDesc") return b.amount - a.amount;
@@ -1586,13 +2337,17 @@ export default function PartnerDashboard() {
                                 </div>
                                 <div>
                                   <p className="text-emerald-50 font-semibold">{c.id}</p>
-                                  <p className="text-emerald-200/80 text-sm">{c.type} · {c.cliente}</p>
+                                  <p className="text-emerald-200/80 text-sm">
+                                    {c.type} · {c.cliente}
+                                  </p>
                                 </div>
                               </div>
 
                               <div>
                                 <p className="text-emerald-200/80 text-sm">Importe</p>
-                                <p className="text-emerald-50 font-bold">{c.amount ? `€${c.amount.toLocaleString()}` : "—"}</p>
+                                <p className="text-emerald-50 font-bold">
+                                  {c.amount ? `€${c.amount.toLocaleString()}` : "—"}
+                                </p>
                                 <Badge variant="outline" className="mt-1 text-xs border-emerald-500/25 text-emerald-200">
                                   {c.tier}
                                 </Badge>
@@ -1600,7 +2355,9 @@ export default function PartnerDashboard() {
 
                               <div>
                                 <p className="text-emerald-200/80 text-sm">Firmado</p>
-                                <p className="text-emerald-50 font-medium">{new Date(c.signedDate).toLocaleDateString("es-ES")}</p>
+                                <p className="text-emerald-50 font-medium">
+                                  {new Date(c.signedDate).toLocaleDateString("es-ES")}
+                                </p>
                                 <p className="text-emerald-200/80 text-sm mt-1">Vence</p>
                                 <p className="text-emerald-50 font-medium">{end.toLocaleDateString("es-ES")}</p>
                                 <p
@@ -1608,7 +2365,13 @@ export default function PartnerDashboard() {
                                     isExpired ? "text-red-400" : isNear ? "text-amber-400" : "text-emerald-400"
                                   }`}
                                 >
-                                  {isExpired ? "Vencido" : daysLeft === 1 ? "Mañana" : daysLeft <= 0 ? "—" : `En ${daysLeft} días`}
+                                  {isExpired
+                                    ? "Vencido"
+                                    : daysLeft === 1
+                                    ? "Mañana"
+                                    : daysLeft <= 0
+                                    ? "—"
+                                    : `En ${daysLeft} días`}
                                 </p>
                               </div>
 
@@ -1647,7 +2410,9 @@ export default function PartnerDashboard() {
                     <Briefcase className="w-5 h-5 text-emerald-400" />
                     <div>
                       <CardTitle className="text-emerald-50">Google Calendar</CardTitle>
-                      <CardDescription className="text-emerald-200/80">Consulta festivos y organiza tus citas</CardDescription>
+                      <CardDescription className="text-emerald-200/80">
+                        Consulta festivos y organiza tus citas
+                      </CardDescription>
                     </div>
                   </div>
 
@@ -1681,7 +2446,10 @@ export default function PartnerDashboard() {
                       </Select>
                     </div>
 
-                    <Button onClick={handleOpenGoogleCalendar} className="bg-emerald-600 hover:bg-emerald-500 text-white">
+                    <Button
+                      onClick={handleOpenGoogleCalendar}
+                      className="bg-emerald-600 hover:bg-emerald-500 text-white"
+                    >
                       <Calendar className="w-4 h-4 mr-2" />
                       Abrir Google Calendar
                     </Button>
@@ -1701,7 +2469,18 @@ export default function PartnerDashboard() {
             </Card>
           </div>
         )}
+
+        {/* ===== DEPÓSITO ===== */}
+        {activeTab === "deposito" && (
+          <DepositoView setHasActiveDeposit={setHasActiveDeposit} />
+        )}
+
+        {/* ===== RETIRO ===== */}
+        {activeTab === "retiro" && (
+          <RetiroView hasActiveDeposit={hasActiveDeposit} />
+        )}
       </main>
     </div>
   );
 }
+
