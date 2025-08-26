@@ -29,7 +29,6 @@ import {
   Phone,
   Hash,
   QrCode,
-  // nuevos para KYC avanzado
   FileText,
   Trash2,
   PlusCircle,
@@ -85,20 +84,16 @@ function ProgressBar({
 }
 
 /* -------------------------------------------------------------------------- */
-/*                         Vista Detalle de Producto                           */
+/*                             VISTA: DEPÓSITO                                */
 /* -------------------------------------------------------------------------- */
 
 type Metodo = "banco" | "crypto";
 type PasoBanco = "Pendiente" | "Conciliado" | "Asignado";
 type PasoCrypto = "Detectado" | "Confirmado" | "Asignado";
 
-function ProductDetailView({
-  onBack,
-  hasActiveDeposit,
+function DepositoView({
   setHasActiveDeposit,
 }: {
-  onBack: () => void;
-  hasActiveDeposit: boolean;
   setHasActiveDeposit: (v: boolean) => void;
 }) {
   // ---- Precondiciones de firma (simuladas) ----
@@ -125,23 +120,24 @@ function ProductDetailView({
 
   const montoToUsdt = Number.isFinite(montoEur) ? +(montoEur / (tasaEurUsdt || 1)).toFixed(2) : 0;
 
-  // ---- Retiros ----
-  const [retiroProducto, setRetiroProducto] = useState("Plazo fijo 9% - 175 días");
-  const [retiroMetodo, setRetiroMetodo] = useState<Metodo | "">("");
-  const [retiroTotal, setRetiroTotal] = useState(true);
-  const [retiroImporte, setRetiroImporte] = useState<number>(1000);
-  const [ibanList, setIbanList] = useState<{ iban: string; verified: boolean }[]>([
-    { iban: "ES12 3456 7890 1234 5678 9012", verified: true },
-  ]);
-  const [walletList, setWalletList] = useState<{ name: string; address: string; verified: boolean }[]>([
-    { name: "Mi USDT ERC20", address: "0xABCD...1234", verified: true },
-  ]);
-  const [ibanSeleccionado, setIbanSeleccionado] = useState<string>(ibanList[0]?.iban ?? "");
-  const [walletSeleccionada, setWalletSeleccionada] = useState<string>(walletList[0]?.address ?? "");
-  const [retiroPasoBanco, setRetiroPasoBanco] = useState<"Recibida" | "Programada" | "Transferida" | "Finalizada" | null>(null);
-  const [retiroPasoCrypto, setRetiroPasoCrypto] = useState<"Recibida" | "TX enviada" | "Finalizada" | null>(null);
+  // Copys
+  const puedeIniciarAportacion = allPreOk;
+  const depositoBancoListo = montoEur >= 50000 && instruccionesGeneradas && reciboSubido;
+  const depositoCryptoListo = montoEur >= 50000 && !!txHash && capturaCrypto;
 
-  // Helpers para checklist
+  // Simulaciones de avance de estado
+  const simularConciliado = () => setBancoPaso("Conciliado");
+  const simularAsignado = () => {
+    setBancoPaso("Asignado");
+    setHasActiveDeposit(true);
+  };
+  const simularConfirmado = () => setCryptoPaso("Confirmado");
+  const simularAsignadoCrypto = () => {
+    setCryptoPaso("Asignado");
+    setHasActiveDeposit(true);
+  };
+
+  // UI helper: Checklist
   const ChecklistItem = ({
     label,
     checked,
@@ -164,74 +160,11 @@ function ProductDetailView({
     </div>
   );
 
-  // Copys (para usar en botones)
-  const Copy = {
-    depositos: {
-      nueva: "Nueva aportación",
-      instrucciones: "Generar instrucciones",
-      subir: "Subir justificante (obligatorio)",
-      confirme: "He realizado la transferencia",
-      certificado: "Descargar certificado",
-    },
-    retiros: {
-      solicitar: "Solicitar retiro",
-      anadir: "Añadir IBAN/Wallet",
-      confirmar: "Confirmar retiro",
-      justificante: "Descargar justificante",
-    },
-  };
-
-  // Simulaciones de avance de estado
-  const simularConciliado = () => setBancoPaso("Conciliado");
-  const simularAsignado = () => {
-    setBancoPaso("Asignado");
-    setHasActiveDeposit(true);
-  };
-  const simularDetectado = () => setCryptoPaso("Detectado");
-  const simularConfirmado = () => setCryptoPaso("Confirmado");
-  const simularAsignadoCrypto = () => {
-    setCryptoPaso("Asignado");
-    setHasActiveDeposit(true);
-  };
-
-  const puedeIniciarAportacion = allPreOk;
-  const depositoBancoListo = montoEur >= 50000 && instruccionesGeneradas && reciboSubido;
-  const depositoCryptoListo = montoEur >= 50000 && !!txHash && capturaCrypto;
-
-  // Añadir/validar IBAN/Wallet
-  const handleAddIban = () => {
-    const nuevo = prompt("Introduce un IBAN nuevo (formato ejemplo ES12 3456 7890 1234 5678 9012):");
-    if (!nuevo) return;
-    setIbanList((l) => [...l, { iban: nuevo, verified: false }]);
-    setIbanSeleccionado(nuevo);
-  };
-  const handleVerifyIban = () => {
-    setIbanList((l) => l.map((i) => (i.iban === ibanSeleccionado ? { ...i, verified: true } : i)));
-  };
-
-  const handleAddWallet = () => {
-    const nombre = prompt("Nombre de la wallet (ej. 'Mi USDT TRC20'):");
-    const dir = prompt("Dirección de la wallet:");
-    if (!nombre || !dir) return;
-    setWalletList((l) => [...l, { name: nombre, address: dir, verified: false }]);
-    setWalletSeleccionada(dir);
-  };
-  const handleVerifyWallet = () => {
-    setWalletList((l) => l.map((w) => (w.address === walletSeleccionada ? { ...w, verified: true } : w)));
-  };
-
   return (
     <div className="space-y-6">
-      {/* Header + volver */}
-      <div className="flex items-center gap-4">
-        <Button variant="outline" onClick={onBack} className="border-emerald-500/30 text-emerald-50 hover:bg-emerald-900/10">
-          <ArrowLeft className="h-4 w-4 mr-2" />
-          Volver
-        </Button>
-        <div>
-          <h2 className="text-2xl font-bold text-emerald-50">Plazo fijo 9% — 175 días</h2>
-          <p className="text-emerald-200/80 text-sm">Información, depósitos y retiros</p>
-        </div>
+      <div className="mb-2">
+        <h1 className="text-3xl font-bold text-emerald-50">Depósito</h1>
+        <p className="text-emerald-200/80">Inicia una nueva aportación por banco o cripto</p>
       </div>
 
       {/* Condición previa de firma */}
@@ -259,539 +192,634 @@ function ProductDetailView({
         </CardContent>
       </Card>
 
-      {/* Sub-pestañas: Depósito / Retiro */}
-      <Tabs defaultValue="deposito" className="w-full">
-        <TabsList className="grid w-full grid-cols-2 bg-black/40 border border-emerald-500/15 rounded-xl">
-          <TabsTrigger value="deposito" className="data-[state=active]:bg-emerald-600/20 data-[state=active]:text-emerald-50 rounded-lg">
-            Depósito
-          </TabsTrigger>
-          <TabsTrigger value="retiro" className="data-[state=active]:bg-emerald-600/20 data-[state=active]:text-emerald-50 rounded-lg">
-            Retiro
-          </TabsTrigger>
-        </TabsList>
+      {/* Paso 1: Nueva aportación */}
+      <Card className="bg-black/40 border border-emerald-500/15 rounded-2xl">
+        <CardContent className="p-6 space-y-6">
+          <div className="rounded-xl border border-emerald-500/15 bg-black/30 p-5">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm text-emerald-200/80">Paso 1</p>
+                <h5 className="text-emerald-50 font-semibold mb-3">Nueva aportación</h5>
+                <div className="flex flex-wrap gap-3">
+                  <Button
+                    variant={productoElegido === "fija" ? "default" : "outline"}
+                    onClick={() => setProductoElegido("fija")}
+                    className={productoElegido === "fija" ? "bg-emerald-600 hover:bg-emerald-500" : "border-emerald-500/30 hover:bg-emerald-900/10"}
+                  >
+                    Renta Fija 9%
+                  </Button>
+                  <Button
+                    variant={productoElegido === "variable" ? "default" : "outline"}
+                    onClick={() => setProductoElegido("variable")}
+                    className={productoElegido === "variable" ? "bg-emerald-600 hover:bg-emerald-500" : "border-emerald-500/30 hover:bg-emerald-900/10"}
+                  >
+                    Variable
+                  </Button>
+                  <Button
+                    variant={productoElegido === "mixto" ? "default" : "outline"}
+                    onClick={() => setProductoElegido("mixto")}
+                    className={productoElegido === "mixto" ? "bg-emerald-600 hover:bg-emerald-500" : "border-emerald-500/30 hover:bg-emerald-900/10"}
+                  >
+                    Mixto
+                  </Button>
+                </div>
+              </div>
+              <Button disabled={!puedeIniciarAportacion} className="rounded-xl">
+                Nueva aportación
+              </Button>
+            </div>
+            {!puedeIniciarAportacion && (
+              <p className="text-xs text-emerald-200/70 mt-3">
+                Botón deshabilitado: completa las firmas/validaciones para continuar.
+              </p>
+            )}
+          </div>
 
-        {/* ---------------------------- DEPÓSITO ---------------------------- */}
-        <TabsContent value="deposito" className="mt-6">
-          <Card className="bg-black/40 border border-emerald-500/15 rounded-2xl">
-            <CardContent className="p-6 space-y-6 max-h-[72vh] overflow-y-auto">
-              {/* Paso 1: Nueva aportación */}
+          {/* Paso 2: Método */}
+          <div className="rounded-xl border border-emerald-500/15 bg-black/30 p-5">
+            <p className="text-sm text-emerald-200/80">Paso 2</p>
+            <h5 className="text-emerald-50 font-semibold mb-3">Elige método de depósito</h5>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <Button
+                variant={metodo === "banco" ? "default" : "outline"}
+                onClick={() => setMetodo("banco")}
+                className={`rounded-xl justify-start ${metodo === "banco" ? "bg-emerald-600 hover:bg-emerald-500" : "border-emerald-500/30 hover:bg-emerald-900/10"}`}
+              >
+                <Banknote className="w-4 h-4 mr-2" />
+                Cuenta bancaria
+              </Button>
+              <Button
+                variant={metodo === "crypto" ? "default" : "outline"}
+                onClick={() => setMetodo("crypto")}
+                className={`rounded-xl justify-start ${metodo === "crypto" ? "bg-emerald-600 hover:bg-emerald-500" : "border-emerald-500/30 hover:bg-emerald-900/10"}`}
+              >
+                <Wallet className="w-4 h-4 mr-2" />
+                Cripto
+              </Button>
+            </div>
+          </div>
+
+          {/* Método: Banco */}
+          {metodo === "banco" && (
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
               <div className="rounded-xl border border-emerald-500/15 bg-black/30 p-5">
-                <div className="flex items-center justify-between">
+                <h6 className="text-emerald-50 font-semibold mb-3">Importe y Instrucciones</h6>
+                <div className="space-y-4">
                   <div>
-                    <p className="text-sm text-emerald-200/80">Paso 1</p>
-                    <h5 className="text-emerald-50 font-semibold mb-3">Nueva aportación</h5>
-                    <div className="flex flex-wrap gap-3">
-                      <Button
-                        variant={productoElegido === "fija" ? "default" : "outline"}
-                        onClick={() => setProductoElegido("fija")}
-                        className={productoElegido === "fija" ? "bg-emerald-600 hover:bg-emerald-500" : "border-emerald-500/30 hover:bg-emerald-900/10"}
-                      >
-                        Renta Fija 9%
-                      </Button>
-                      <Button
-                        variant={productoElegido === "variable" ? "default" : "outline"}
-                        onClick={() => setProductoElegido("variable")}
-                        className={productoElegido === "variable" ? "bg-emerald-600 hover:bg-emerald-500" : "border-emerald-500/30 hover:bg-emerald-900/10"}
-                      >
-                        Variable
-                      </Button>
-                      <Button
-                        variant={productoElegido === "mixto" ? "default" : "outline"}
-                        onClick={() => setProductoElegido("mixto")}
-                        className={productoElegido === "mixto" ? "bg-emerald-600 hover:bg-emerald-500" : "border-emerald-500/30 hover:bg-emerald-900/10"}
-                      >
-                        Mixto
-                      </Button>
-                    </div>
+                    <Label className="text-emerald-50">Importe (€) — mínimo 50.000</Label>
+                    <Input
+                      type="number"
+                      min={0}
+                      value={montoEur}
+                      onChange={(e) => setMontoEur(parseFloat(e.target.value) || 0)}
+                      className="bg-black/50 border-emerald-500/20 text-emerald-50"
+                    />
+                    {montoEur < 50000 && <p className="text-xs text-amber-400 mt-1">El importe mínimo es 50.000 €.</p>}
                   </div>
-                  <Button disabled={!allPreOk} className="rounded-xl">
-                    Nueva aportación
-                  </Button>
+
+                  <div className="flex items-center gap-3">
+                    <Button
+                      variant="outline"
+                      className="border-emerald-500/30 hover:bg-emerald-900/10"
+                      onClick={() => setInstruccionesGeneradas(true)}
+                    >
+                      Generar instrucciones
+                    </Button>
+                    {instruccionesGeneradas && <Badge className="bg-emerald-500 text-black">Generadas</Badge>}
+                  </div>
+
+                  {instruccionesGeneradas && (
+                    <div className="rounded-lg p-4 bg-black/40 border border-emerald-500/15 text-sm">
+                      <p><span className="text-emerald-300">IBAN:</span> ES11 2222 3333 4444 5555 6666</p>
+                      <p><span className="text-emerald-300">BIC:</span> ABCDESMMXXX</p>
+                      <p><span className="text-emerald-300">Referencia:</span> NAKAMA-DEP-000123</p>
+                    </div>
+                  )}
                 </div>
-                {!allPreOk && (
-                  <p className="text-xs text-emerald-200/70 mt-3">
-                    Botón deshabilitado: completa las firmas/validaciones para continuar.
-                  </p>
-                )}
               </div>
 
-              {/* Paso 2: Método */}
               <div className="rounded-xl border border-emerald-500/15 bg-black/30 p-5">
-                <p className="text-sm text-emerald-200/80">Paso 2</p>
-                <h5 className="text-emerald-50 font-semibold mb-3">Elige método de depósito</h5>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <Button
-                    variant={metodo === "banco" ? "default" : "outline"}
-                    onClick={() => setMetodo("banco")}
-                    className={`rounded-xl justify-start ${metodo === "banco" ? "bg-emerald-600 hover:bg-emerald-500" : "border-emerald-500/30 hover:bg-emerald-900/10"}`}
-                  >
-                    <Banknote className="w-4 h-4 mr-2" />
-                    Cuenta bancaria
-                  </Button>
-                  <Button
-                    variant={metodo === "crypto" ? "default" : "outline"}
-                    onClick={() => setMetodo("crypto")}
-                    className={`rounded-xl justify-start ${metodo === "crypto" ? "bg-emerald-600 hover:bg-emerald-500" : "border-emerald-500/30 hover:bg-emerald-900/10"}`}
-                  >
-                    <Wallet className="w-4 h-4 mr-2" />
-                    Cripto
-                  </Button>
+                <h6 className="text-emerald-50 font-semibold mb-3">Justificante y Confirmación</h6>
+                <div className="space-y-4">
+                  <div>
+                    <Label className="text-emerald-50">Subir justificante (PDF/JPG/PNG)</Label>
+                    <Input
+                      type="file"
+                      accept=".pdf,.jpg,.jpeg,.png"
+                      onChange={(e) => setReciboSubido((e.target.files?.length ?? 0) > 0)}
+                      className="bg-black/50 border-emerald-500/20 text-emerald-50"
+                    />
+                    {!reciboSubido && <p className="text-xs text-amber-400 mt-1">Obligatorio para continuar.</p>}
+                  </div>
+
+                  <div className="flex flex-wrap gap-3">
+                    <Button disabled={!depositoBancoListo} onClick={() => setBancoPaso("Pendiente")} className="rounded-xl">
+                      He realizado la transferencia
+                    </Button>
+                    <Button variant="outline" className="border-emerald-500/30 hover:bg-emerald-900/10">
+                      Descargar certificado
+                    </Button>
+                  </div>
+
+                  {/* Seguimiento */}
+                  {bancoPaso && (
+                    <div className="mt-4">
+                      <p className="text-sm text-emerald-200/80 mb-2">Seguimiento</p>
+                      <div className="flex flex-wrap items-center gap-2">
+                        <Badge className={`px-3 ${bancoPaso ? "bg-emerald-500 text-black" : "bg-emerald-900/30 text-emerald-200"}`}>Pendiente</Badge>
+                        <span>→</span>
+                        <Badge className={`${bancoPaso === "Conciliado" || bancoPaso === "Asignado" ? "bg-emerald-500 text-black" : "bg-emerald-900/30 text-emerald-200"}`}>Conciliado</Badge>
+                        <span>→</span>
+                        <Badge className={`${bancoPaso === "Asignado" ? "bg-emerald-500 text-black" : "bg-emerald-900/30 text-emerald-200"}`}>Asignado</Badge>
+                      </div>
+
+                      {bancoPaso === "Pendiente" && (
+                        <div className="flex gap-2 mt-3">
+                          <Button size="sm" variant="outline" onClick={simularConciliado} className="border-emerald-500/30 hover:bg-emerald-900/10">
+                            Simular conciliación
+                          </Button>
+                        </div>
+                      )}
+                      {bancoPaso === "Conciliado" && (
+                        <div className="flex gap-2 mt-3">
+                          <Button size="sm" variant="outline" onClick={simularAsignado} className="border-emerald-500/30 hover:bg-emerald-900/10">
+                            Simular asignación
+                          </Button>
+                        </div>
+                      )}
+                    </div>
+                  )}
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* Método: Crypto */}
+          {metodo === "crypto" && (
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+              <div className="rounded-xl border border-emerald-500/15 bg-black/30 p-5">
+                <h6 className="text-emerald-50 font-semibold mb-3">Importe, activo y red</h6>
+                <div className="space-y-4">
+                  <div>
+                    <Label className="text-emerald-50">Importe en EUR — mínimo 50.000</Label>
+                    <Input
+                      type="number"
+                      min={0}
+                      value={montoEur}
+                      onChange={(e) => setMontoEur(parseFloat(e.target.value) || 0)}
+                      className="bg-black/50 border-emerald-500/20 text-emerald-50"
+                    />
+                    {montoEur < 50000 && <p className="text-xs text-amber-400 mt-1">El importe mínimo es 50.000 €.</p>}
+                  </div>
+                  <div>
+                    <Label className="text-emerald-50">Tasa EUR → USDT (editable)</Label>
+                    <Input
+                      type="number"
+                      step="0.0001"
+                      value={tasaEurUsdt}
+                      onChange={(e) => setTasaEurUsdt(parseFloat(e.target.value) || 1)}
+                      className="bg-black/50 border-emerald-500/20 text-emerald-50"
+                    />
+                    <p className="text-xs text-emerald-200/70 mt-1">Conversión estimada: {montoToUsdt.toLocaleString("es-ES")} USDT</p>
+                  </div>
+
+                  <div>
+                    <Label className="text-emerald-50">Activo y red</Label>
+                    <Select value={cryptoNetwork} onValueChange={setCryptoNetwork}>
+                      <SelectTrigger className="bg-black/50 border-emerald-500/20 text-emerald-50">
+                        <SelectValue placeholder="Selecciona" />
+                      </SelectTrigger>
+                      <SelectContent className="bg-black/40 border-emerald-500/15 text-emerald-50">
+                        <SelectItem value="USDT ERC20">USDT (ERC20)</SelectItem>
+                        <SelectItem value="USDT TRC20">USDT (TRC20)</SelectItem>
+                        <SelectItem value="USDT BEP20">USDT (BEP20)</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+
+                  <div className="rounded-lg p-4 bg-black/40 border border-emerald-500/15 text-sm">
+                    <p className="mb-2"><span className="text-emerald-300">Dirección:</span> 0xNAKAMA...DEPOSIT</p>
+                    <p className="mb-2"><span className="text-emerald-300">Memo (si aplica):</span> —</p>
+                    <div className="flex items-center gap-3 mt-2">
+                      <div className="w-20 h-20 rounded-lg border border-emerald-500/20 bg-black/50 flex items-center justify-center">
+                        <QrCode className="w-10 h-10 text-emerald-400" />
+                      </div>
+                      <Button size="sm" variant="outline" className="border-emerald-500/30 hover:bg-emerald-900/10">
+                        Copiar dirección
+                      </Button>
+                    </div>
+                  </div>
                 </div>
               </div>
 
-              {/* Método: Banco */}
-              {metodo === "banco" && (
-                <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                  <div className="rounded-xl border border-emerald-500/15 bg-black/30 p-5">
-                    <h6 className="text-emerald-50 font-semibold mb-3">Importe y Instrucciones</h6>
-                    <div className="space-y-4">
-                      <div>
-                        <Label className="text-emerald-50">Importe (€) — mínimo 50.000</Label>
-                        <Input
-                          type="number"
-                          min={0}
-                          value={montoEur}
-                          onChange={(e) => setMontoEur(parseFloat(e.target.value) || 0)}
-                          className="bg-black/50 border-emerald-500/20 text-emerald-50"
-                        />
-                        {montoEur < 50000 && <p className="text-xs text-amber-400 mt-1">El importe mínimo es 50.000 €.</p>}
-                      </div>
-
-                      <div className="flex items-center gap-3">
-                        <Button
-                          variant="outline"
-                          className="border-emerald-500/30 hover:bg-emerald-900/10"
-                          onClick={() => setInstruccionesGeneradas(true)}
-                        >
-                          Generar instrucciones
-                        </Button>
-                        {instruccionesGeneradas && <Badge className="bg-emerald-500 text-black">Generadas</Badge>}
-                      </div>
-
-                      {instruccionesGeneradas && (
-                        <div className="rounded-lg p-4 bg-black/40 border border-emerald-500/15 text-sm">
-                          <p><span className="text-emerald-300">IBAN:</span> ES11 2222 3333 4444 5555 6666</p>
-                          <p><span className="text-emerald-300">BIC:</span> ABCDESMMXXX</p>
-                          <p><span className="text-emerald-300">Referencia:</span> NAKAMA-DEP-000123</p>
-                        </div>
-                      )}
-                    </div>
+              <div className="rounded-xl border border-emerald-500/15 bg-black/30 p-5">
+                <h6 className="text-emerald-50 font-semibold mb-3">Comprobante y Confirmación</h6>
+                <div className="space-y-4">
+                  <div>
+                    <Label className="text-emerald-50 flex items-center gap-2"><Hash className="w-4 h-4" /> Hash de transacción</Label>
+                    <Input
+                      placeholder="0xabc123..."
+                      value={txHash}
+                      onChange={(e) => setTxHash(e.target.value)}
+                      className="bg-black/50 border-emerald-500/20 text-emerald-50"
+                    />
+                  </div>
+                  <div>
+                    <Label className="text-emerald-50">Subir captura/imagen del envío</Label>
+                    <Input
+                      type="file"
+                      accept=".pdf,.jpg,.jpeg,.png"
+                      onChange={(e) => setCapturaCrypto((e.target.files?.length ?? 0) > 0)}
+                      className="bg-black/50 border-emerald-500/20 text-emerald-50"
+                    />
+                    {(!txHash || !capturaCrypto) && <p className="text-xs text-amber-400 mt-1">Debes adjuntar hash + captura para continuar.</p>}
                   </div>
 
-                  <div className="rounded-xl border border-emerald-500/15 bg-black/30 p-5">
-                    <h6 className="text-emerald-50 font-semibold mb-3">Justificante y Confirmación</h6>
-                    <div className="space-y-4">
-                      <div>
-                        <Label className="text-emerald-50">Subir justificante (PDF/JPG/PNG)</Label>
-                        <Input
-                          type="file"
-                          accept=".pdf,.jpg,.jpeg,.png"
-                          onChange={(e) => setReciboSubido((e.target.files?.length ?? 0) > 0)}
-                          className="bg-black/50 border-emerald-500/20 text-emerald-50"
-                        />
-                        {!reciboSubido && <p className="text-xs text-amber-400 mt-1">Obligatorio para continuar.</p>}
-                      </div>
-
-                      <div className="flex flex-wrap gap-3">
-                        <Button disabled={!depositoBancoListo} onClick={() => setBancoPaso("Pendiente")} className="rounded-xl">
-                          He realizado la transferencia
-                        </Button>
-                        <Button variant="outline" className="border-emerald-500/30 hover:bg-emerald-900/10">
-                          Descargar certificado
-                        </Button>
-                      </div>
-
-                      {/* Seguimiento */}
-                      {bancoPaso && (
-                        <div className="mt-4">
-                          <p className="text-sm text-emerald-200/80 mb-2">Seguimiento</p>
-                          <div className="flex flex-wrap items-center gap-2">
-                            <Badge className={`px-3 ${bancoPaso ? "bg-emerald-500 text-black" : "bg-emerald-900/30 text-emerald-200"}`}>Pendiente</Badge>
-                            <span>→</span>
-                            <Badge className={`${bancoPaso === "Conciliado" || bancoPaso === "Asignado" ? "bg-emerald-500 text-black" : "bg-emerald-900/30 text-emerald-200"}`}>Conciliado</Badge>
-                            <span>→</span>
-                            <Badge className={`${bancoPaso === "Asignado" ? "bg-emerald-500 text-black" : "bg-emerald-900/30 text-emerald-200"}`}>Asignado</Badge>
-                          </div>
-
-                          {bancoPaso === "Pendiente" && (
-                            <div className="flex gap-2 mt-3">
-                              <Button size="sm" variant="outline" onClick={simularConciliado} className="border-emerald-500/30 hover:bg-emerald-900/10">
-                                Simular conciliación
-                              </Button>
-                            </div>
-                          )}
-                          {bancoPaso === "Conciliado" && (
-                            <div className="flex gap-2 mt-3">
-                              <Button size="sm" variant="outline" onClick={simularAsignado} className="border-emerald-500/30 hover:bg-emerald-900/10">
-                                Simular asignación
-                              </Button>
-                            </div>
-                          )}
-                        </div>
-                      )}
-                    </div>
-                  </div>
-                </div>
-              )}
-
-              {/* Método: Crypto */}
-              {metodo === "crypto" && (
-                <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                  <div className="rounded-xl border border-emerald-500/15 bg-black/30 p-5">
-                    <h6 className="text-emerald-50 font-semibold mb-3">Importe, activo y red</h6>
-                    <div className="space-y-4">
-                      <div>
-                        <Label className="text-emerald-50">Importe en EUR — mínimo 50.000</Label>
-                        <Input
-                          type="number"
-                          min={0}
-                          value={montoEur}
-                          onChange={(e) => setMontoEur(parseFloat(e.target.value) || 0)}
-                          className="bg-black/50 border-emerald-500/20 text-emerald-50"
-                        />
-                        {montoEur < 50000 && <p className="text-xs text-amber-400 mt-1">El importe mínimo es 50.000 €.</p>}
-                      </div>
-                      <div>
-                        <Label className="text-emerald-50">Tasa EUR → USDT (editable)</Label>
-                        <Input
-                          type="number"
-                          step="0.0001"
-                          value={tasaEurUsdt}
-                          onChange={(e) => setTasaEurUsdt(parseFloat(e.target.value) || 1)}
-                          className="bg-black/50 border-emerald-500/20 text-emerald-50"
-                        />
-                        <p className="text-xs text-emerald-200/70 mt-1">Conversión estimada: {montoToUsdt.toLocaleString("es-ES")} USDT</p>
-                      </div>
-
-                      <div>
-                        <Label className="text-emerald-50">Activo y red</Label>
-                        <Select value={cryptoNetwork} onValueChange={setCryptoNetwork}>
-                          <SelectTrigger className="bg-black/50 border-emerald-500/20 text-emerald-50">
-                            <SelectValue placeholder="Selecciona" />
-                          </SelectTrigger>
-                          <SelectContent className="bg-black/40 border-emerald-500/15 text-emerald-50">
-                            <SelectItem value="USDT ERC20">USDT (ERC20)</SelectItem>
-                            <SelectItem value="USDT TRC20">USDT (TRC20)</SelectItem>
-                            <SelectItem value="USDT BEP20">USDT (BEP20)</SelectItem>
-                          </SelectContent>
-                        </Select>
-                      </div>
-
-                      <div className="rounded-lg p-4 bg-black/40 border border-emerald-500/15 text-sm">
-                        <p className="mb-2"><span className="text-emerald-300">Dirección:</span> 0xNAKAMA...DEPOSIT</p>
-                        <p className="mb-2"><span className="text-emerald-300">Memo (si aplica):</span> —</p>
-                        <div className="flex items-center gap-3 mt-2">
-                          <div className="w-20 h-20 rounded-lg border border-emerald-500/20 bg-black/50 flex items-center justify-center">
-                            <QrCode className="w-10 h-10 text-emerald-400" />
-                          </div>
-                          <Button size="sm" variant="outline" className="border-emerald-500/30 hover:bg-emerald-900/10">
-                            Copiar dirección
-                          </Button>
-                        </div>
-                      </div>
-                    </div>
+                  <div className="flex flex-wrap gap-3">
+                    <Button disabled={!depositoCryptoListo} onClick={() => setCryptoPaso("Detectado")} className="rounded-xl">
+                      He realizado el envío
+                    </Button>
+                    <Button variant="outline" className="border-emerald-500/30 hover:bg-emerald-900/10">
+                      Descargar certificado
+                    </Button>
                   </div>
 
-                  <div className="rounded-xl border border-emerald-500/15 bg-black/30 p-5">
-                    <h6 className="text-emerald-50 font-semibold mb-3">Comprobante y Confirmación</h6>
-                    <div className="space-y-4">
-                      <div>
-                        <Label className="text-emerald-50 flex items-center gap-2"><Hash className="w-4 h-4" /> Hash de transacción</Label>
-                        <Input
-                          placeholder="0xabc123..."
-                          value={txHash}
-                          onChange={(e) => setTxHash(e.target.value)}
-                          className="bg-black/50 border-emerald-500/20 text-emerald-50"
-                        />
-                      </div>
-                      <div>
-                        <Label className="text-emerald-50">Subir captura/imagen del envío</Label>
-                        <Input
-                          type="file"
-                          accept=".pdf,.jpg,.jpeg,.png"
-                          onChange={(e) => setCapturaCrypto((e.target.files?.length ?? 0) > 0)}
-                          className="bg-black/50 border-emerald-500/20 text-emerald-50"
-                        />
-                        {(!txHash || !capturaCrypto) && <p className="text-xs text-amber-400 mt-1">Debes adjuntar hash + captura para continuar.</p>}
-                      </div>
-
-                      <div className="flex flex-wrap gap-3">
-                        <Button disabled={!depositoCryptoListo} onClick={() => setCryptoPaso("Detectado")} className="rounded-xl">
-                          He realizado el envío
-                        </Button>
-                        <Button variant="outline" className="border-emerald-500/30 hover:bg-emerald-900/10">
-                          Descargar certificado
-                        </Button>
-                      </div>
-
-                      {/* Seguimiento */}
-                      {cryptoPaso && (
-                        <div className="mt-4">
-                          <p className="text-sm text-emerald-200/80 mb-2">Seguimiento</p>
-                          <div className="flex flex-wrap items-center gap-2">
-                            <Badge className={`px-3 ${cryptoPaso ? "bg-emerald-500 text-black" : "bg-emerald-900/30 text-emerald-200"}`}>Detectado</Badge>
-                            <span>→</span>
-                            <Badge className={`${cryptoPaso === "Confirmado" || cryptoPaso === "Asignado" ? "bg-emerald-500 text-black" : "bg-emerald-900/30 text-emerald-200"}`}>Confirmado</Badge>
-                            <span>→</span>
-                            <Badge className={`${cryptoPaso === "Asignado" ? "bg-emerald-500 text-black" : "bg-emerald-900/30 text-emerald-200"}`}>Asignado</Badge>
-                          </div>
-
-                          {cryptoPaso === "Detectado" && (
-                            <div className="flex gap-2 mt-3">
-                              <Button size="sm" variant="outline" onClick={simularConfirmado} className="border-emerald-500/30 hover:bg-emerald-900/10">
-                                Simular confirmación
-                              </Button>
-                            </div>
-                          )}
-                          {cryptoPaso === "Confirmado" && (
-                            <div className="flex gap-2 mt-3">
-                              <Button size="sm" variant="outline" onClick={simularAsignadoCrypto} className="border-emerald-500/30 hover:bg-emerald-900/10">
-                                Simular asignación
-                              </Button>
-                            </div>
-                          )}
-                        </div>
-                      )}
-                    </div>
-                  </div>
-                </div>
-              )}          
-            </CardContent>
-          </Card>
-        </TabsContent>
-
-        {/* ----------------------------- RETIRO ----------------------------- */}
-        <TabsContent value="retiro" className="mt-6">
-          <Card className="bg-black/40 border border-emerald-500/15 rounded-2xl">
-            <CardContent className="p-6 space-y-6 max-h-[72vh] overflow-y-auto">
-              {!hasActiveDeposit ? (
-                <div className="text-emerald-200/80 text-sm">
-                  Aún no tienes aportaciones activas, por eso no hay retiros disponibles.
-                </div>
-              ) : (
-                <>
-                  {/* Paso 1: Solicitar retiro */}
-                  <div className="rounded-xl border border-emerald-500/15 bg-black/30 p-5">
-                    <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
-                      <div>
-                        <Label className="text-emerald-50">Producto</Label>
-                        <Select value={retiroProducto} onValueChange={setRetiroProducto}>
-                          <SelectTrigger className="bg-black/50 border-emerald-500/20 text-emerald-50">
-                            <SelectValue />
-                          </SelectTrigger>
-                          <SelectContent className="bg-black/40 border-emerald-500/15 text-emerald-50">
-                            <SelectItem value="Plazo fijo 9% - 175 días">Plazo fijo 9% - 175 días</SelectItem>
-                          </SelectContent>
-                        </Select>
-                      </div>
-                      <div>
-                        <Label className="text-emerald-50">Importe</Label>
-                        <div className="flex gap-2">
-                          <Input
-                            type="number"
-                            disabled={retiroTotal}
-                            min={0}
-                            value={retiroImporte}
-                            onChange={(e) => setRetiroImporte(parseFloat(e.target.value) || 0)}
-                            className="bg-black/50 border-emerald-500/20 text-emerald-50"
-                          />
-                          <Button
-                            type="button"
-                            variant={retiroTotal ? "default" : "outline"}
-                            onClick={() => setRetiroTotal((v) => !v)}
-                            className={retiroTotal ? "bg-emerald-600 hover:bg-emerald-500" : "border-emerald-500/30 hover:bg-emerald-900/10"}
-                          >
-                            {retiroTotal ? "Total" : "Parcial"}
-                          </Button>
-                        </div>
-                      </div>
-                      <div>
-                        <Label className="text-emerald-50">Método</Label>
-                        <Select value={retiroMetodo} onValueChange={(v) => setRetiroMetodo(v as Metodo)}>
-                          <SelectTrigger className="bg-black/50 border-emerald-500/20 text-emerald-50">
-                            <SelectValue placeholder="Selecciona método" />
-                          </SelectTrigger>
-                          <SelectContent className="bg-black/40 border-emerald-500/15 text-emerald-50">
-                            <SelectItem value="banco">Cuenta bancaria</SelectItem>
-                            <SelectItem value="crypto">Cripto</SelectItem>
-                          </SelectContent>
-                        </Select>
-                      </div>
-                    </div>
+                  {/* Seguimiento */}
+                  {cryptoPaso && (
                     <div className="mt-4">
-                      <Button className="rounded-xl">Solicitar retiro</Button>
+                      <p className="text-sm text-emerald-200/80 mb-2">Seguimiento</p>
+                      <div className="flex flex-wrap items-center gap-2">
+                        <Badge className={`px-3 ${cryptoPaso ? "bg-emerald-500 text-black" : "bg-emerald-900/30 text-emerald-200"}`}>Detectado</Badge>
+                        <span>→</span>
+                        <Badge className={`${cryptoPaso === "Confirmado" || cryptoPaso === "Asignado" ? "bg-emerald-500 text-black" : "bg-emerald-900/30 text-emerald-200"}`}>Confirmado</Badge>
+                        <span>→</span>
+                        <Badge className={`${cryptoPaso === "Asignado" ? "bg-emerald-500 text-black" : "bg-emerald-900/30 text-emerald-200"}`}>Asignado</Badge>
+                      </div>
+
+                      {cryptoPaso === "Detectado" && (
+                        <div className="flex gap-2 mt-3">
+                          <Button size="sm" variant="outline" onClick={simularConfirmado} className="border-emerald-500/30 hover:bg-emerald-900/10">
+                            Simular confirmación
+                          </Button>
+                        </div>
+                      )}
+                      {cryptoPaso === "Confirmado" && (
+                        <div className="flex gap-2 mt-3">
+                          <Button size="sm" variant="outline" onClick={simularAsignadoCrypto} className="border-emerald-500/30 hover:bg-emerald-900/10">
+                            Simular asignación
+                          </Button>
+                        </div>
+                      )}
+                    </div>
+                  )}
+                </div>
+              </div>
+            </div>
+          )}
+        </CardContent>
+      </Card>
+    </div>
+  );
+}
+
+/* -------------------------------------------------------------------------- */
+/*                               VISTA: RETIRO                                */
+/* -------------------------------------------------------------------------- */
+
+function RetiroView({
+  hasActiveDeposit,
+}: {
+  hasActiveDeposit: boolean;
+}) {
+  // ---- Retiros ----
+  const [retiroProducto, setRetiroProducto] = useState("Plazo fijo 9% - 175 días");
+  const [retiroMetodo, setRetiroMetodo] = useState<Metodo | "">("");
+  const [retiroTotal, setRetiroTotal] = useState(true);
+  const [retiroImporte, setRetiroImporte] = useState<number>(1000);
+
+  const [ibanList, setIbanList] = useState<{ iban: string; verified: boolean }[]>([
+    { iban: "ES12 3456 7890 1234 5678 9012", verified: true },
+  ]);
+  const [walletList, setWalletList] = useState<{ name: string; address: string; verified: boolean }[]>([
+    { name: "Mi USDT ERC20", address: "0xABCD...1234", verified: true },
+  ]);
+  const [ibanSeleccionado, setIbanSeleccionado] = useState<string>(ibanList[0]?.iban ?? "");
+  const [walletSeleccionada, setWalletSeleccionada] = useState<string>(walletList[0]?.address ?? "");
+  const [retiroPasoBanco, setRetiroPasoBanco] = useState<"Recibida" | "Programada" | "Transferida" | "Finalizada" | null>(null);
+  const [retiroPasoCrypto, setRetiroPasoCrypto] = useState<"Recibida" | "TX enviada" | "Finalizada" | null>(null);
+
+  // Añadir/validar IBAN/Wallet
+  const handleAddIban = () => {
+    const nuevo = prompt("Introduce un IBAN nuevo (formato ejemplo ES12 3456 7890 1234 5678 9012):");
+    if (!nuevo) return;
+    setIbanList((l) => [...l, { iban: nuevo, verified: false }]);
+    setIbanSeleccionado(nuevo);
+  };
+  const handleVerifyIban = () => {
+    setIbanList((l) => l.map((i) => (i.iban === ibanSeleccionado ? { ...i, verified: true } : i)));
+  };
+
+  const handleAddWallet = () => {
+    const nombre = prompt("Nombre de la wallet (ej. 'Mi USDT TRC20'):");
+    const dir = prompt("Dirección de la wallet:");
+    if (!nombre || !dir) return;
+    setWalletList((l) => [...l, { name: nombre, address: dir, verified: false }]);
+    setWalletSeleccionada(dir);
+  };
+  const handleVerifyWallet = () => {
+    setWalletList((l) => l.map((w) => (w.address === walletSeleccionada ? { ...w, verified: true } : w)));
+  };
+
+  return (
+    <div className="space-y-6">
+      <div className="mb-2">
+        <h1 className="text-3xl font-bold text-emerald-50">Retiro</h1>
+        <p className="text-emerald-200/80">Solicita un retiro a cuenta bancaria o wallet</p>
+      </div>
+
+      <Card className="bg-black/40 border border-emerald-500/15 rounded-2xl">
+        <CardContent className="p-6 space-y-6 max-h-[72vh] overflow-y-auto">
+          {!hasActiveDeposit ? (
+            <div className="text-emerald-200/80 text-sm">
+              Aún no tienes aportaciones activas, por eso no hay retiros disponibles.
+            </div>
+          ) : (
+            <>
+              {/* Paso 1: Solicitar retiro */}
+              <div className="rounded-xl border border-emerald-500/15 bg-black/30 p-5">
+                <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
+                  <div>
+                    <Label className="text-emerald-50">Producto</Label>
+                    <Select value={retiroProducto} onValueChange={setRetiroProducto}>
+                      <SelectTrigger className="bg-black/50 border-emerald-500/20 text-emerald-50">
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent className="bg-black/40 border-emerald-500/15 text-emerald-50">
+                        <SelectItem value="Plazo fijo 9% - 175 días">Plazo fijo 9% - 175 días</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <div>
+                    <Label className="text-emerald-50">Importe</Label>
+                    <div className="flex gap-2">
+                      <Input
+                        type="number"
+                        disabled={retiroTotal}
+                        min={0}
+                        value={retiroImporte}
+                        onChange={(e) => setRetiroImporte(parseFloat(e.target.value) || 0)}
+                        className="bg-black/50 border-emerald-500/20 text-emerald-50"
+                      />
+                      <Button
+                        type="button"
+                        variant={retiroTotal ? "default" : "outline"}
+                        onClick={() => setRetiroTotal((v) => !v)}
+                        className={retiroTotal ? "bg-emerald-600 hover:bg-emerald-500" : "border-emerald-500/30 hover:bg-emerald-900/10"}
+                      >
+                        {retiroTotal ? "Total" : "Parcial"}
+                      </Button>
+                    </div>
+                  </div>
+                  <div>
+                    <Label className="text-emerald-50">Método</Label>
+                    <Select value={retiroMetodo} onValueChange={(v) => setRetiroMetodo(v as Metodo)}>
+                      <SelectTrigger className="bg-black/50 border-emerald-500/20 text-emerald-50">
+                        <SelectValue placeholder="Selecciona método" />
+                      </SelectTrigger>
+                      <SelectContent className="bg-black/40 border-emerald-500/15 text-emerald-50">
+                        <SelectItem value="banco">Cuenta bancaria</SelectItem>
+                        <SelectItem value="crypto">Cripto</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                </div>
+                <div className="mt-4">
+                  <Button className="rounded-xl">Solicitar retiro</Button>
+                </div>
+              </div>
+
+              {/* Paso 2: Según método */}
+              {retiroMetodo === "banco" && (
+                <div className="rounded-xl border border-emerald-500/15 bg-black/30 p-5">
+                  <h6 className="text-emerald-50 font-semibold mb-3">Cuenta bancaria</h6>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                      <Label className="text-emerald-50">IBAN verificado</Label>
+                      <Select value={ibanSeleccionado} onValueChange={setIbanSeleccionado}>
+                        <SelectTrigger className="bg-black/50 border-emerald-500/20 text-emerald-50">
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent className="bg-black/40 border-emerald-500/15 text-emerald-50">
+                          {ibanList.map((i) => (
+                            <SelectItem key={i.iban} value={i.iban}>
+                              {i.iban} {i.verified ? "✓" : ""}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                      <div className="flex gap-2 mt-3">
+                        <Button variant="outline" onClick={handleAddIban} className="border-emerald-500/30 hover:bg-emerald-900/10">
+                          Añadir IBAN/Wallet
+                        </Button>
+                        {!ibanList.find((i) => i.iban === ibanSeleccionado)?.verified && (
+                          <Button variant="outline" onClick={handleVerifyIban} className="border-emerald-500/30 hover:bg-emerald-900/10">
+                            Verificar IBAN
+                          </Button>
+                        )}
+                      </div>
+                    </div>
+                    <div className="flex items-end">
+                      <Button className="rounded-xl" onClick={() => setRetiroPasoBanco("Recibida")}>
+                        Confirmar retiro
+                      </Button>
                     </div>
                   </div>
 
-                  {/* Paso 2: Según método */}
-                  {retiroMetodo === "banco" && (
-                    <div className="rounded-xl border border-emerald-500/15 bg-black/30 p-5">
-                      <h6 className="text-emerald-50 font-semibold mb-3">Cuenta bancaria</h6>
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <div>
-                          <Label className="text-emerald-50">IBAN verificado</Label>
-                          <Select value={ibanSeleccionado} onValueChange={setIbanSeleccionado}>
-                            <SelectTrigger className="bg-black/50 border-emerald-500/20 text-emerald-50">
-                              <SelectValue />
-                            </SelectTrigger>
-                            <SelectContent className="bg-black/40 border-emerald-500/15 text-emerald-50">
-                              {ibanList.map((i) => (
-                                <SelectItem key={i.iban} value={i.iban}>
-                                  {i.iban} {i.verified ? "✓" : ""}
-                                </SelectItem>
-                              ))}
-                            </SelectContent>
-                          </Select>
-                          <div className="flex gap-2 mt-3">
-                            <Button variant="outline" onClick={handleAddIban} className="border-emerald-500/30 hover:bg-emerald-900/10">
-                              Añadir IBAN/Wallet
-                            </Button>
-                            {!ibanList.find((i) => i.iban === ibanSeleccionado)?.verified && (
-                              <Button variant="outline" onClick={handleVerifyIban} className="border-emerald-500/30 hover:bg-emerald-900/10">
-                                Verificar IBAN
-                              </Button>
-                            )}
-                          </div>
-                        </div>
-                        <div className="flex items-end">
-                          <Button className="rounded-xl" onClick={() => setRetiroPasoBanco("Recibida")}>
-                            Confirmar retiro
-                          </Button>
-                        </div>
+                  {/* Seguimiento */}
+                  {retiroPasoBanco && (
+                    <div className="mt-4">
+                      <p className="text-sm text-emerald-200/80 mb-2">Seguimiento</p>
+                      <div className="flex flex-wrap items-center gap-2">
+                        <Badge className={`${retiroPasoBanco ? "bg-emerald-500 text-black" : "bg-emerald-900/30 text-emerald-200"}`}>Recibida</Badge>
+                        <span>→</span>
+                        <Badge className={`${["Programada", "Transferida", "Finalizada"].includes(retiroPasoBanco) ? "bg-emerald-500 text-black" : "bg-emerald-900/30 text-emerald-200"}`}>Programada</Badge>
+                        <span>→</span>
+                        <Badge className={`${["Transferida", "Finalizada"].includes(retiroPasoBanco) ? "bg-emerald-500 text-black" : "bg-emerald-900/30 text-emerald-200"}`}>Transferida</Badge>
+                        <span>→</span>
+                        <Badge className={`${retiroPasoBanco === "Finalizada" ? "bg-emerald-500 text-black" : "bg-emerald-900/30 text-emerald-200"}`}>Finalizada</Badge>
                       </div>
 
-                      {/* Seguimiento */}
-                      {retiroPasoBanco && (
-                        <div className="mt-4">
-                          <p className="text-sm text-emerald-200/80 mb-2">Seguimiento</p>
-                          <div className="flex flex-wrap items-center gap-2">
-                            <Badge className={`${retiroPasoBanco ? "bg-emerald-500 text-black" : "bg-emerald-900/30 text-emerald-200"}`}>Recibida</Badge>
-                            <span>→</span>
-                            <Badge className={`${["Programada", "Transferida", "Finalizada"].includes(retiroPasoBanco) ? "bg-emerald-500 text-black" : "bg-emerald-900/30 text-emerald-200"}`}>Programada</Badge>
-                            <span>→</span>
-                            <Badge className={`${["Transferida", "Finalizada"].includes(retiroPasoBanco) ? "bg-emerald-500 text-black" : "bg-emerald-900/30 text-emerald-200"}`}>Transferida</Badge>
-                            <span>→</span>
-                            <Badge className={`${retiroPasoBanco === "Finalizada" ? "bg-emerald-500 text-black" : "bg-emerald-900/30 text-emerald-200"}`}>Finalizada</Badge>
-                          </div>
-
-                          {retiroPasoBanco === "Recibida" && (
-                            <div className="flex gap-2 mt-3">
-                              <Button size="sm" variant="outline" onClick={() => setRetiroPasoBanco("Programada")} className="border-emerald-500/30 hover:bg-emerald-900/10">
-                                Simular programación
-                              </Button>
-                            </div>
-                          )}
-                          {retiroPasoBanco === "Programada" && (
-                            <div className="flex gap-2 mt-3">
-                              <Button size="sm" variant="outline" onClick={() => setRetiroPasoBanco("Transferida")} className="border-emerald-500/30 hover:bg-emerald-900/10">
-                                Simular transferencia
-                              </Button>
-                            </div>
-                          )}
-                          {retiroPasoBanco === "Transferida" && (
-                            <div className="flex gap-2 mt-3">
-                              <Button size="sm" variant="outline" onClick={() => setRetiroPasoBanco("Finalizada")} className="border-emerald-500/30 hover:bg-emerald-900/10">
-                                Simular finalización
-                              </Button>
-                              <Button size="sm" variant="outline" className="border-emerald-500/30 hover:bg-emerald-900/10">
-                                Descargar justificante
-                              </Button>
-                            </div>
-                          )}
-                          {retiroPasoBanco === "Finalizada" && (
-                            <div className="flex gap-2 mt-3">
-                              <Button size="sm" variant="outline" className="border-emerald-500/30 hover:bg-emerald-900/10">
-                                Descargar justificante
-                              </Button>
-                            </div>
-                          )}
+                      {retiroPasoBanco === "Recibida" && (
+                        <div className="flex gap-2 mt-3">
+                          <Button size="sm" variant="outline" onClick={() => setRetiroPasoBanco("Programada")} className="border-emerald-500/30 hover:bg-emerald-900/10">
+                            Simular programación
+                          </Button>
+                        </div>
+                      )}
+                      {retiroPasoBanco === "Programada" && (
+                        <div className="flex gap-2 mt-3">
+                          <Button size="sm" variant="outline" onClick={() => setRetiroPasoBanco("Transferida")} className="border-emerald-500/30 hover:bg-emerald-900/10">
+                            Simular transferencia
+                          </Button>
+                        </div>
+                      )}
+                      {retiroPasoBanco === "Transferida" && (
+                        <div className="flex gap-2 mt-3">
+                          <Button size="sm" variant="outline" onClick={() => setRetiroPasoBanco("Finalizada")} className="border-emerald-500/30 hover:bg-emerald-900/10">
+                            Simular finalización
+                          </Button>
+                          <Button size="sm" variant="outline" className="border-emerald-500/30 hover:bg-emerald-900/10">
+                            Descargar justificante
+                          </Button>
+                        </div>
+                      )}
+                      {retiroPasoBanco === "Finalizada" && (
+                        <div className="flex gap-2 mt-3">
+                          <Button size="sm" variant="outline" className="border-emerald-500/30 hover:bg-emerald-900/10">
+                            Descargar justificante
+                          </Button>
                         </div>
                       )}
                     </div>
                   )}
-
-                  {retiroMetodo === "crypto" && (
-                    <div className="rounded-xl border border-emerald-500/15 bg-black/30 p-5">
-                      <h6 className="text-emerald-50 font-semibold mb-3">Cripto</h6>
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <div>
-                          <Label className="text-emerald-50">Wallet verificada</Label>
-                          <Select value={walletSeleccionada} onValueChange={setWalletSeleccionada}>
-                            <SelectTrigger className="bg-black/50 border-emerald-500/20 text-emerald-50">
-                              <SelectValue />
-                            </SelectTrigger>
-                            <SelectContent className="bg-black/40 border-emerald-500/15 text-emerald-50">
-                              {walletList.map((w) => (
-                                <SelectItem key={w.address} value={w.address}>
-                                  {w.name} — {w.address.slice(0, 8)}... {w.verified ? "✓" : ""}
-                                </SelectItem>
-                              ))}
-                            </SelectContent>
-                          </Select>
-                          <div className="flex gap-2 mt-3">
-                            <Button variant="outline" onClick={handleAddWallet} className="border-emerald-500/30 hover:bg-emerald-900/10">
-                              Añadir IBAN/Wallet
-                            </Button>
-                            {!walletList.find((w) => w.address === walletSeleccionada)?.verified && (
-                              <Button variant="outline" onClick={handleVerifyWallet} className="border-emerald-500/30 hover:bg-emerald-900/10">
-                                Verificar Wallet
-                              </Button>
-                            )}
-                          </div>
-                        </div>
-                        <div className="flex items-end">
-                          <Button className="rounded-xl" onClick={() => setRetiroPasoCrypto("Recibida")}>
-                            Confirmar retiro
-                          </Button>
-                        </div>
-                      </div>
-
-                      {/* Seguimiento */}
-                      {retiroPasoCrypto && (
-                        <div className="mt-4">
-                          <p className="text-sm text-emerald-200/80 mb-2">Seguimiento</p>
-                          <div className="flex flex-wrap items-center gap-2">
-                            <Badge className={`${retiroPasoCrypto ? "bg-emerald-500 text-black" : "bg-emerald-900/30 text-emerald-200"}`}>Recibida</Badge>
-                            <span>→</span>
-                            <Badge className={`${["TX enviada", "Finalizada"].includes(retiroPasoCrypto) ? "bg-emerald-500 text-black" : "bg-emerald-900/30 text-emerald-200"}`}>TX enviada</Badge>
-                            <span>→</span>
-                            <Badge className={`${retiroPasoCrypto === "Finalizada" ? "bg-emerald-500 text-black" : "bg-emerald-900/30 text-emerald-200"}`}>Finalizada</Badge>
-                          </div>
-
-                          {retiroPasoCrypto === "Recibida" && (
-                            <div className="flex gap-2 mt-3">
-                              <Button size="sm" variant="outline" onClick={() => setRetiroPasoCrypto("TX enviada")} className="border-emerald-500/30 hover:bg-emerald-900/10">
-                                Simular TX enviada
-                              </Button>
-                            </div>
-                          )}
-                          {retiroPasoCrypto === "TX enviada" && (
-                            <div className="flex gap-2 mt-3">
-                              <Button size="sm" variant="outline" onClick={() => setRetiroPasoCrypto("Finalizada")} className="border-emerald-500/30 hover:bg-emerald-900/10">
-                                Simular finalización
-                              </Button>
-                              <Button size="sm" variant="outline" className="border-emerald-500/30 hover:bg-emerald-900/10">
-                                Descargar justificante
-                              </Button>
-                            </div>
-                          )}
-                          {retiroPasoCrypto === "Finalizada" && (
-                            <div className="flex gap-2 mt-3">
-                              <Button size="sm" variant="outline" className="border-emerald-500/30 hover:bg-emerald-900/10">
-                                Descargar justificante
-                              </Button>
-                            </div>
-                          )}
-                        </div>
-                      )}
-                    </div>
-                  )}
-                </>
+                </div>
               )}
-            </CardContent>
-          </Card>
-        </TabsContent>
-      </Tabs>
+
+              {retiroMetodo === "crypto" && (
+                <div className="rounded-xl border border-emerald-500/15 bg-black/30 p-5">
+                  <h6 className="text-emerald-50 font-semibold mb-3">Cripto</h6>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                      <Label className="text-emerald-50">Wallet verificada</Label>
+                      <Select value={walletSeleccionada} onValueChange={setWalletSeleccionada}>
+                        <SelectTrigger className="bg-black/50 border-emerald-500/20 text-emerald-50">
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent className="bg-black/40 border-emerald-500/15 text-emerald-50">
+                          {walletList.map((w) => (
+                            <SelectItem key={w.address} value={w.address}>
+                              {w.name} — {w.address.slice(0, 8)}... {w.verified ? "✓" : ""}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                      <div className="flex gap-2 mt-3">
+                        <Button variant="outline" onClick={handleAddWallet} className="border-emerald-500/30 hover:bg-emerald-900/10">
+                          Añadir IBAN/Wallet
+                        </Button>
+                        {!walletList.find((w) => w.address === walletSeleccionada)?.verified && (
+                          <Button variant="outline" onClick={handleVerifyWallet} className="border-emerald-500/30 hover:bg-emerald-900/10">
+                            Verificar Wallet
+                          </Button>
+                        )}
+                      </div>
+                    </div>
+                    <div className="flex items-end">
+                      <Button className="rounded-xl" onClick={() => setRetiroPasoCrypto("Recibida")}>
+                        Confirmar retiro
+                      </Button>
+                    </div>
+                  </div>
+
+                  {/* Seguimiento */}
+                  {retiroPasoCrypto && (
+                    <div className="mt-4">
+                      <p className="text-sm text-emerald-200/80 mb-2">Seguimiento</p>
+                      <div className="flex flex-wrap items-center gap-2">
+                        <Badge className={`${retiroPasoCrypto ? "bg-emerald-500 text-black" : "bg-emerald-900/30 text-emerald-200"}`}>Recibida</Badge>
+                        <span>→</span>
+                        <Badge className={`${["TX enviada", "Finalizada"].includes(retiroPasoCrypto) ? "bg-emerald-500 text-black" : "bg-emerald-900/30 text-emerald-200"}`}>TX enviada</Badge>
+                        <span>→</span>
+                        <Badge className={`${retiroPasoCrypto === "Finalizada" ? "bg-emerald-500 text-black" : "bg-emerald-900/30 text-emerald-200"}`}>Finalizada</Badge>
+                      </div>
+
+                      {retiroPasoCrypto === "Recibida" && (
+                        <div className="flex gap-2 mt-3">
+                          <Button size="sm" variant="outline" onClick={() => setRetiroPasoCrypto("TX enviada")} className="border-emerald-500/30 hover:bg-emerald-900/10">
+                            Simular TX enviada
+                          </Button>
+                        </div>
+                      )}
+                      {retiroPasoCrypto === "TX enviada" && (
+                        <div className="flex gap-2 mt-3">
+                          <Button size="sm" variant="outline" onClick={() => setRetiroPasoCrypto("Finalizada")} className="border-emerald-500/30 hover:bg-emerald-900/10">
+                            Simular finalización
+                          </Button>
+                          <Button size="sm" variant="outline" className="border-emerald-500/30 hover:bg-emerald-900/10">
+                            Descargar justificante
+                          </Button>
+                        </div>
+                      )}
+                      {retiroPasoCrypto === "Finalizada" && (
+                        <div className="flex gap-2 mt-3">
+                          <Button size="sm" variant="outline" className="border-emerald-500/30 hover:bg-emerald-900/10">
+                            Descargar justificante
+                          </Button>
+                        </div>
+                      )}
+                    </div>
+                  )}
+                </div>
+              )}
+            </>
+          )}
+        </CardContent>
+      </Card>
+    </div>
+  );
+}
+
+/* -------------------------------------------------------------------------- */
+/*                         VISTA: INFO DE PRODUCTO                            */
+/* -------------------------------------------------------------------------- */
+
+function ProductInfoView({ onBack, goToDeposit }: { onBack: () => void; goToDeposit: () => void }) {
+  return (
+    <div className="space-y-6">
+      <div className="flex items-center gap-4">
+        <Button variant="outline" onClick={onBack} className="border-emerald-500/30 text-emerald-50 hover:bg-emerald-900/10">
+          <ArrowLeft className="h-4 w-4 mr-2" />
+          Volver
+        </Button>
+        <div>
+          <h2 className="text-2xl font-bold text-emerald-50">Plazo fijo 9% — 175 días</h2>
+          <p className="text-emerald-200/80 text-sm">Información y condiciones del producto</p>
+        </div>
+      </div>
+
+      <Card className="bg-black/40 border border-emerald-500/15 rounded-2xl">
+        <CardContent className="p-6 space-y-6">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            {[
+              { title: "Rentabilidad", value: "9.00% anual" },
+              { title: "Plazo", value: "175 días" },
+              { title: "Renovación", value: "No renovable" },
+            ].map((b) => (
+              <div key={b.title} className="bg-black/40 p-6 rounded-xl text-center border border-emerald-500/15">
+                <p className="text-emerald-200/80 text-sm">{b.title}</p>
+                <p className="text-emerald-50 font-bold text-xl">{b.value}</p>
+              </div>
+            ))}
+          </div>
+
+          <div className="text-emerald-200/80 space-y-2">
+            <p>
+              Depósito bancario con retorno fijo mediante préstamo participativo y cesión de la pignoración al cliente
+              depositante. Importe mínimo recomendado 50.000&nbsp;€.
+            </p>
+            <p>Garantía bancaria del 100% del principal.</p>
+          </div>
+
+          <div className="flex flex-wrap gap-3">
+            <Button onClick={goToDeposit} className="rounded-xl bg-gradient-to-r from-emerald-600 to-emerald-500 hover:from-emerald-500 hover:to-emerald-400 text-white">
+              Iniciar Depósito
+            </Button>
+            <Button variant="outline" className="border-emerald-500/30 hover:bg-emerald-900/10">
+              Descargar folleto
+            </Button>
+          </div>
+        </CardContent>
+      </Card>
     </div>
   );
 }
@@ -800,16 +828,19 @@ function ProductDetailView({
 /*                                DASHBOARD                                   */
 /* -------------------------------------------------------------------------- */
 
-// ===== KYC avanzado (exactamente como en partner) =====
 type KycStatus = "Pendiente" | "Aprobado" | "Rechazado";
 
 export default function Dashboard() {
   useScrollToTop();
   const [, setLocation] = useLocation();
-  const [activeTab, setActiveTab] = useState("inicio");
+
+  // ahora el menú tiene 5 entradas
+  const [activeTab, setActiveTab] = useState<"inicio" | "perfil" | "productos" | "deposito" | "retiro">("inicio");
+
   const [showCalculator, setShowCalculator] = useState(false);
   const [profilePhoto, setProfilePhoto] = useState<string | null>(null);
   const [phoneNumber, setPhoneNumber] = useState("646 123 456");
+
   const [activeProductsView, setActiveProductsView] = useState<
     "default" | "mis-productos" | "historial" | "transacciones" | "contratos" | "producto-detalle"
   >("default");
@@ -898,8 +929,7 @@ export default function Dashboard() {
   const parsePercent = (s?: string) => {
     if (!s) return 0;
     const num = s.replace(/[^\d,.-]/g, "").replace(",", ".");
-    const n = Number(num);
-    return isNaN(n) ? 0 : n;
+    return Number(num) || 0;
   };
   const parseESDate = (s: string) => {
     const [d, m, y] = s.split("/").map((p) => parseInt(p, 10));
@@ -910,10 +940,6 @@ export default function Dashboard() {
   const [showMPFilters, setShowMPFilters] = useState(false);
   const [mpSort, setMpSort] = useState<"" | "cantidadDesc" | "cantidadAsc" | "fechaAsc" | "fechaDesc" | "rentDesc" | "rentAsc">("");
   const [mpFilters, setMpFilters] = useState({ search: "", cantidadMin: "", cantidadMax: "", fechaFrom: "", fechaTo: "", rentMin: "", rentMax: "" });
-
-  // ====== FILTROS: Historial ======
-  const [showHistFilters, setShowHistFilters] = useState(false);
-  const [histFilters, setHistFilters] = useState({ search: "", dateFrom: "", dateTo: "", tipo: "" });
 
   // ====== FILTROS: Transacciones ======
   const [showTxFilters, setShowTxFilters] = useState(false);
@@ -937,7 +963,7 @@ export default function Dashboard() {
     { id: "DOC-INFO-PRIV", titulo: "Política de Privacidad", descripcion: "Documento legal informado al cliente", tipo: "PDF", tamano: "0.6 MB", fecha: "2024-12-01", estado: "Disponible", categoria: "Legal" },
   ];
 
-  /* ======== KYC avanzado: estado y manejadores (exacto al partner) ======== */
+  /* ======== KYC avanzado (perfil) ======== */
   const [kycStatus, setKycStatus] = useState<KycStatus>("Pendiente");
   const [kycDocs, setKycDocs] = useState<File[]>([]);
   const [kycFeedback, setKycFeedback] = useState<string>("");
@@ -955,17 +981,8 @@ export default function Dashboard() {
     setKycFeedback("");
   };
 
-  const handleKycRemove = (idx: number) => {
-    setKycDocs((prev) => prev.filter((_, i) => i !== idx));
-  };
-
-  const handleKycSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!kycDocs.length) return;
-    setKycStatus("Pendiente");
-    // aquí iría el envío real al backend
-  };
-
+  const handleKycRemove = (idx: number) => setKycDocs((prev) => prev.filter((_, i) => i !== idx));
+  const handleKycSubmit = (e: React.FormEvent) => { e.preventDefault(); if (!kycDocs.length) return; setKycStatus("Pendiente"); };
   const handleKycReupload = () => {
     setKycDocs([]);
     const input = document.getElementById("kyc-upload") as HTMLInputElement | null;
@@ -1024,26 +1041,26 @@ export default function Dashboard() {
 
         <nav className="space-y-2 flex-1">
           {[
-            { id: "perfil", label: "Perfil", icon: () => <span /> },
-            { id: "inicio", label: "Resumen", icon: () => <span /> },
-            { id: "productos", label: "Productos", icon: () => <span /> },
+            { id: "inicio", label: "Resumen", icon: Calendar },
+            { id: "perfil", label: "Perfil", icon: User },
+            { id: "productos", label: "Productos", icon: Package },
+            { id: "deposito", label: "Depósito", icon: Banknote },
+            { id: "retiro", label: "Retiro", icon: Wallet },
           ].map((item) => (
             <button
               key={item.id}
               onClick={() => {
-                setActiveTab(item.id);
+                setActiveTab(item.id as any);
                 if (item.id === "productos") setActiveProductsView("default");
               }}
               className={[
                 "w-full flex items-center space-x-3 px-4 py-3 rounded-lg transition-colors",
-                activeTab === item.id
+                activeTab === (item.id as any)
                   ? "bg-emerald-600/20 border border-emerald-500/30 text-emerald-50 shadow-[0_8px_24px_-12px_rgba(16,185,129,0.45)]"
                   : "text-emerald-200 hover:bg-emerald-900/10",
               ].join(" ")}
             >
-              {item.id === "inicio" && <Calendar className="h-4 w-4" />}
-              {item.id === "perfil" && <User className="h-4 w-4" />}
-              {item.id === "productos" && <Package className="h-4 w-4" />}
+              <item.icon className="h-4 w-4" />
               <span>{item.label}</span>
             </button>
           ))}
@@ -1061,6 +1078,7 @@ export default function Dashboard() {
 
       {/* Main Content */}
       <main className="flex-1 p-8 ml-64">
+        {/* ====== PERFIL ====== */}
         {activeTab === "perfil" ? (
           <div>
             <div className="mb-8">
@@ -1200,7 +1218,7 @@ export default function Dashboard() {
                     </form>
                   </TabsContent>
 
-                  {/* ====== KYC avanzado (idéntico al partner) ====== */}
+                  {/* ====== KYC ====== */}
                   <TabsContent value="kyc" className="mt-6">
                     <div className="bg-black/40 rounded-xl p-8 border border-emerald-500/15">
                       <div className="flex items-center gap-4 mb-6">
@@ -1318,12 +1336,11 @@ export default function Dashboard() {
               <p className="text-emerald-200/80">Gestiona tus productos disponibles e inversiones activas</p>
             </div>
 
-            {/* ----------- Vista DETALLE de producto (reemplaza el modal) ----------- */}
+            {/* ----------- Vista DETALLE de producto (info-only) ----------- */}
             {activeProductsView === "producto-detalle" ? (
-              <ProductDetailView
+              <ProductInfoView
                 onBack={() => setActiveProductsView("default")}
-                hasActiveDeposit={hasActiveDeposit}
-                setHasActiveDeposit={setHasActiveDeposit}
+                goToDeposit={() => setActiveTab("deposito")}
               />
             ) : null}
 
@@ -1935,7 +1952,7 @@ export default function Dashboard() {
                               >
                                 <Download className="h-4 w-4 mr-2" />
                                 Descargar
-                                                              </Button>
+                              </Button>
                             </div>
                           </div>
                         </CardContent>
@@ -2197,6 +2214,10 @@ export default function Dashboard() {
               </div>
             ) : null}
           </div>
+        ) : activeTab === "deposito" ? (
+          <DepositoView setHasActiveDeposit={setHasActiveDeposit} />
+        ) : activeTab === "retiro" ? (
+          <RetiroView hasActiveDeposit={hasActiveDeposit} />
         ) : (
           /* ------------------------------- INICIO (home) ------------------------------- */
           <div>
@@ -2249,74 +2270,80 @@ export default function Dashboard() {
                   ].map((b, idx) => (
                     <div
                       key={idx}
-                      className="bg-black/40 p-6 rounded-xl text-center border border-emerald-500/15 hover:border-emerald-400 hover:shadow-[0_16px_40px_-20px_rgba(16,185,129,0.45)] transition-all"
-                    >
-                      <div className="w-12 h-12 bg-emerald-700/80 rounded-full flex items-center justify-center mx-auto mb-4">
+                      className="bg-black/40 p-6 rounded-xl text-center border border-emerald-500/15 hover:border-emerald-400 hover:shadow-[0_16px_40px_-20px_rgba(16,185,129,0.45)] transition-all rounded-xl">
+                      <div className="mx-auto mb-3 w-10 h-10 rounded-full bg-emerald-600/20 flex items-center justify-center">
                         {b.icon}
                       </div>
-                      <h3 className="text-emerald-50 font-semibold mb-1">{b.title}</h3>
-                      <p className="text-emerald-400 text-xl font-bold mb-1">{b.value}</p>
-                      <p className="text-emerald-200/80 text-sm">{b.note}</p>
+                      <p className="text-emerald-200/80 text-sm">{b.title}</p>
+                      <p className="text-emerald-50 font-bold text-lg">{b.value}</p>
+                      <p className="text-emerald-200/70 text-xs">{b.note}</p>
                     </div>
                   ))}
                 </div>
 
-                <div className="mb-2">
-                  <p className="text-emerald-200/80 text-sm mb-2">Proyección a 10 años</p>
-                  <CompoundInterestChart initialAmount={50000} years={10} rate={0.09} className="max-w-7xl mx-auto w-full" />
+                {/* Proyección */}
+                <div className="rounded-xl border border-emerald-500/15 bg-black/30 p-4">
+                  <CompoundInterestChart />
                 </div>
-              </CardContent>
-            </Card>
+                </CardContent>
+              </Card>
 
-            {/* Actividad reciente */}
-            <Card className="bg-black/40 border border-emerald-500/15 rounded-2xl">
-              <CardHeader>
-                <CardTitle className="text-emerald-50">Actividad Reciente</CardTitle>
-                <CardDescription className="text-emerald-200/80">Últimas acciones en el sistema</CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-4">
-                  {recentActivity.map((a, idx) => (
-                    <div key={idx} className="flex items-center space-x-3 p-3 bg-black/40 rounded-lg border border-emerald-500/15">
-                      <div className="w-8 h-8 bg-emerald-700/70 rounded-full flex items-center justify-center">
-                        {a.type === "simulation" && <Calculator className="h-4 w-4 text-white" />}
-                        {a.type === "download" && <Download className="h-4 w-4 text-white" />}
-                        {a.type === "lead" && <Plus className="h-4 w-4 text-white" />}
+              {/* Actividad reciente */}
+              <Card className="bg-black/40 border border-emerald-500/15 rounded-2xl">
+                <CardHeader>
+                  <CardTitle className="text-emerald-50">Actividad reciente</CardTitle>
+                  <CardDescription className="text-emerald-200/80">
+                    Resumen de tus últimas acciones
+                  </CardDescription>
+                </CardHeader>
+                <CardContent className="p-6">
+                  <div className="space-y-4">
+                    {recentActivity.map((a, i) => (
+                      <div
+                        key={i}
+                        className="flex items-center justify-between rounded-xl border border-emerald-500/10 bg-black/30 px-4 py-3"
+                      >
+                        <div className="flex items-center gap-3">
+                          <div className="w-9 h-9 rounded-lg bg-emerald-600/20 flex items-center justify-center">
+                            {a.type === "download" ? (
+                              <Download className="w-4 h-4 text-emerald-400" />
+                            ) : (
+                              <Calculator className="w-4 h-4 text-emerald-400" />
+                            )}
+                          </div>
+                          <p className="text-sm text-emerald-50">{a.message}</p>
+                        </div>
+                        <span className="text-xs text-emerald-200/70">{a.time}</span>
                       </div>
-                      <div className="flex-1">
-                        <p className="text-emerald-50 text-sm">{a.message}</p>
-                        <p className="text-emerald-200/80 text-xs">{a.time}</p>
-                      </div>
-                    </div>
-                  ))}
+                    ))}
+                  </div>
+                </CardContent>
+                            </Card>
+
+              {/* Acciones rápidas */}
+              <div className="mt-8">
+                <h2 className="text-xl font-bold text-emerald-50 mb-4">Acciones Rápidas</h2>
+                <div className="flex flex-col sm:flex-row gap-4">
+                  <Button onClick={handleDownloadStatement} className="rounded-xl bg-emerald-700 hover:bg-emerald-600 text-white">
+                    <Download className="h-4 w-4 mr-2" />
+                    Descargar Estado de Cuenta
+                  </Button>
+                  <Button
+                    onClick={handleCalculateInvestment}
+                    className="rounded-xl bg-gradient-to-r from-emerald-600 to-emerald-500 hover:from-emerald-500 hover:to-emerald-400 text-white"
+                  >
+                    <Calculator className="h-4 w-4 mr-2" />
+                    Calcular Nueva Inversión
+                  </Button>
                 </div>
-              </CardContent>
-            </Card>
-
-            {/* Acciones rápidas */}
-            <div className="mt-8">
-              <h2 className="text-xl font-bold text-emerald-50 mb-4">Acciones Rápidas</h2>
-              <div className="flex flex-col sm:flex-row gap-4">
-                <Button onClick={handleDownloadStatement} className="rounded-xl bg-emerald-700 hover:bg-emerald-600 text-white">
-                  <Download className="h-4 w-4 mr-2" />
-                  Descargar Estado de Cuenta
-                </Button>
-                <Button
-                  onClick={handleCalculateInvestment}
-                  className="rounded-xl bg-gradient-to-r from-emerald-600 to-emerald-500 hover:from-emerald-500 hover:to-emerald-400 text-white"
-                >
-                  <Calculator className="h-4 w-4 mr-2" />
-                  Calcular Nueva Inversión
-                </Button>
               </div>
             </div>
-          </div>
-        )}
-      </main>
+          )}       
+        </main>
 
-      {/* Modales */}
-      {showCalculator && <InvestmentCalculator onClose={() => setShowCalculator(false)} />}
-    </div>
-  );
+        {/* Modales */}
+        {showCalculator && <InvestmentCalculator onClose={() => setShowCalculator(false)} />}
+      </div>
+    );
 }
 
