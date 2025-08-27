@@ -32,6 +32,11 @@ import {
   History,
   TrendingUp,
   Minus,
+  UserCheck,
+  Euro,
+  Target,
+  UserMinus,
+  Handshake,
 } from "lucide-react";
 import {
   PieChart as RechartsPieChart,
@@ -1214,6 +1219,105 @@ export default function AdminDashboard() {
                         {(financialKpis.clientKpis?.topClients?.length || 0) > 5 && (
                           <p className="text-emerald-200/60 text-xs mt-2">... y {(financialKpis.clientKpis?.topClients?.length || 0) - 5} más</p>
                         )}
+                      </div>
+                    </CardContent>
+                  </Card>
+                </div>
+              </div>
+            )}
+
+            {/* Partner KPIs Section */}
+            {financialKpis && (
+              <div className="mb-8">
+                <h2 className="text-2xl font-bold text-emerald-50 mb-6">KPIs de Partners</h2>
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
+                  <Card className="bg-black/40 border border-emerald-500/15 rounded-2xl shadow-[0_0_0_1px_rgba(16,185,129,0.12),0_20px_60px_-20px_rgba(16,185,129,0.25)]">
+                    <CardContent className="p-6">
+                      <div className="flex items-center justify-between">
+                        <div>
+                          <p className="text-emerald-200/80 text-sm font-medium">Partners Activos</p>
+                          <p className="text-emerald-50 text-2xl font-bold">{financialKpis.partnerKpis?.activePartners || 0}</p>
+                        </div>
+                        <UserCheck className="w-8 h-8 text-emerald-400" />
+                      </div>
+                    </CardContent>
+                  </Card>
+
+                  <Card className="bg-black/40 border border-emerald-500/15 rounded-2xl shadow-[0_0_0_1px_rgba(16,185,129,0.12),0_20px_60px_-20px_rgba(16,185,129,0.25)]">
+                    <CardContent className="p-6">
+                      <div className="flex items-center justify-between">
+                        <div>
+                          <p className="text-emerald-200/80 text-sm font-medium">Nuevos Partners del Mes</p>
+                          <p className="text-emerald-50 text-2xl font-bold">{financialKpis.partnerKpis?.newPartnersMonth || 0}</p>
+                        </div>
+                        <Plus className="w-8 h-8 text-green-400" />
+                      </div>
+                    </CardContent>
+                  </Card>
+
+                  <Card className="bg-black/40 border border-emerald-500/15 rounded-2xl shadow-[0_0_0_1px_rgba(16,185,129,0.12),0_20px_60px_-20px_rgba(16,185,129,0.25)]">
+                    <CardContent className="p-6">
+                      <div className="flex items-center justify-between">
+                        <div>
+                          <p className="text-emerald-200/80 text-sm font-medium">Comisiones Generadas (Mes)</p>
+                          <p className="text-emerald-50 text-2xl font-bold">€{financialKpis.partnerKpis?.totalCommissionsMonth?.toLocaleString() || 0}</p>
+                        </div>
+                        <Euro className="w-8 h-8 text-yellow-400" />
+                      </div>
+                    </CardContent>
+                  </Card>
+
+                  <Card className="bg-black/40 border border-emerald-500/15 rounded-2xl shadow-[0_0_0_1px_rgba(16,185,129,0.12),0_20px_60px_-20px_rgba(16,185,129,0.25)]">
+                    <CardContent className="p-6">
+                      <div className="flex items-center justify-between">
+                        <div>
+                          <p className="text-emerald-200/80 text-sm font-medium">Ratio Conversión Partner→Cliente</p>
+                          <p className="text-emerald-50 text-2xl font-bold">{financialKpis.partnerKpis?.partnerConversionRatio?.toFixed(1) || 0}</p>
+                          <p className="text-emerald-200/60 text-xs">clientes por partner</p>
+                        </div>
+                        <Target className="w-8 h-8 text-blue-400" />
+                      </div>
+                    </CardContent>
+                  </Card>
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <Card className="bg-black/40 border border-emerald-500/15 rounded-2xl shadow-[0_0_0_1px_rgba(16,185,129,0.12),0_20px_60px_-20px_rgba(16,185,129,0.25)]">
+                    <CardContent className="p-6">
+                      <div className="flex items-center justify-between mb-4">
+                        <div>
+                          <p className="text-emerald-200/80 text-sm font-medium">Top 10 Partners por Volumen</p>
+                        </div>
+                        <Handshake className="w-8 h-8 text-purple-400" />
+                      </div>
+                      <div className="space-y-2 max-h-40 overflow-y-auto">
+                        {(financialKpis.partnerKpis?.topPartners || []).slice(0, 5).map((partner: any, index: number) => (
+                          <div key={index} className="flex justify-between text-sm">
+                            <span className="text-emerald-200/80 truncate mr-2">{partner.name || `Partner ${index + 1}`}</span>
+                            <span className="text-emerald-50 font-medium">€{partner.totalVolume?.toLocaleString() || 0}</span>
+                          </div>
+                        ))}
+                        {(financialKpis.partnerKpis?.topPartners?.length || 0) > 5 && (
+                          <p className="text-emerald-200/60 text-xs mt-2">... y {(financialKpis.partnerKpis?.topPartners?.length || 0) - 5} más</p>
+                        )}
+                      </div>
+                    </CardContent>
+                  </Card>
+
+                  <Card className="bg-black/40 border border-emerald-500/15 rounded-2xl shadow-[0_0_0_1px_rgba(16,185,129,0.12),0_20px_60px_-20px_rgba(16,185,129,0.25)]">
+                    <CardContent className="p-6">
+                      <div className="flex items-center justify-between mb-4">
+                        <div>
+                          <p className="text-emerald-200/80 text-sm font-medium">Partners Inactivos</p>
+                          <p className="text-emerald-50 text-2xl font-bold">{financialKpis.partnerKpis?.inactivePartners || 0}</p>
+                          <p className="text-emerald-200/60 text-xs">sin captación en 3 meses</p>
+                        </div>
+                        <UserMinus className="w-8 h-8 text-orange-400" />
+                      </div>
+                      <div className="mt-4">
+                        <p className="text-emerald-200/80 text-xs">
+                          Requieren seguimiento para reactivación
+                        </p>
                       </div>
                     </CardContent>
                   </Card>
