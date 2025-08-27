@@ -2690,108 +2690,37 @@ export default function AdminDashboard() {
                         <div className="text-sm text-emerald-200/80">
                           Documento {index + 1}
                         </div>
-                        <Badge className="bg-blue-500/20 text-blue-200">
+                        <Badge className="bg-emerald-500/20 text-emerald-200">
                           {docUrl.toLowerCase().includes('.pdf') ? 'PDF' : 'Imagen'}
                         </Badge>
                       </div>
                       
-                      {docUrl.toLowerCase().includes('.pdf') ? (
-                        <div className="flex flex-col items-center space-y-3">
-                          <FileText className="w-16 h-16 text-red-400" />
-                          <p className="text-sm text-emerald-200/80 text-center">
-                            {docUrl.split('/').pop()}
+                      <div className="flex flex-col items-center space-y-3">
+                        <FileText className="w-16 h-16 text-emerald-400" />
+                        <div className="text-sm text-emerald-200/80 text-center">
+                          <p className="font-medium">{docUrl.split('/').pop()}</p>
+                          <p className="text-xs text-emerald-200/60">
+                            {docUrl.toLowerCase().includes('.pdf') ? 'Archivo PDF' : 'Imagen'}
                           </p>
-                          <Button
-                            size="sm"
-                            className="bg-gradient-to-r from-blue-600 to-blue-500 hover:from-blue-500 hover:to-blue-400 text-white"
-                            onClick={async () => {
-                              try {
-                                const token = localStorage.getItem('token');
-                                const response = await fetch(`/api/download-document?url=${encodeURIComponent(docUrl)}`, {
-                                  headers: {
-                                    'Authorization': `Bearer ${token}`
-                                  }
-                                });
-                                if (response.ok) {
-                                  const blob = await response.blob();
-                                  const downloadUrl = window.URL.createObjectURL(blob);
-                                  const link = document.createElement('a');
-                                  link.href = downloadUrl;
-                                  link.download = docUrl.split('/').pop() || 'documento.pdf';
-                                  document.body.appendChild(link);
-                                  link.click();
-                                  document.body.removeChild(link);
-                                  window.URL.revokeObjectURL(downloadUrl);
-                                } else {
-                                  alert('Error al descargar el documento');
-                                }
-                              } catch (error) {
-                                console.error('Error downloading document:', error);
-                                alert('Error al descargar el documento');
-                              }
-                            }}
-                          >
-                            <Download className="w-4 h-4 mr-2" />
-                            Descargar PDF
-                          </Button>
                         </div>
-                      ) : (
-                        <div className="flex flex-col items-center space-y-3">
-                          <div className="w-full h-40 bg-black/30 rounded-lg flex items-center justify-center border border-emerald-500/10">
-                            <img
-                              src={docUrl}
-                              alt={`Documento ${index + 1}`}
-                              className="max-w-full max-h-full object-contain rounded-lg"
-                              onError={(e) => {
-                                const target = e.target as HTMLImageElement;
-                                target.style.display = 'none';
-                                target.nextElementSibling?.classList.remove('hidden');
-                              }}
-                            />
-                            <div className="hidden text-center text-emerald-200/60">
-                              <FileText className="w-8 h-8 mx-auto mb-2" />
-                              <p className="text-sm">No se puede mostrar el documento</p>
-                            </div>
-                          </div>
-                          <p className="text-sm text-emerald-200/80 text-center">
-                            {docUrl.split('/').pop()}
-                          </p>
-                          <Button
-                            size="sm"
-                            className="bg-gradient-to-r from-emerald-600 to-emerald-500 hover:from-emerald-500 hover:to-emerald-400 text-white"
-                            onClick={async () => {
-                              try {
-                                const token = localStorage.getItem('token');
-                                // Use docUrl directly since it's already the download endpoint
-                                const response = await fetch(docUrl, {
-                                  headers: {
-                                    'Authorization': `Bearer ${token}`
-                                  }
-                                });
-                                if (response.ok) {
-                                  const blob = await response.blob();
-                                  const downloadUrl = window.URL.createObjectURL(blob);
-                                  const link = document.createElement('a');
-                                  link.href = downloadUrl;
-                                  link.download = docUrl.split('/').pop() || 'documento';
-                                  document.body.appendChild(link);
-                                  link.click();
-                                  document.body.removeChild(link);
-                                  window.URL.revokeObjectURL(downloadUrl);
-                                } else {
-                                  alert('Error al descargar el documento');
-                                }
-                              } catch (error) {
-                                console.error('Error downloading document:', error);
-                                alert('Error al descargar el documento');
-                              }
-                            }}
-                          >
-                            <Download className="w-4 h-4 mr-2" />
-                            Descargar
-                          </Button>
-                        </div>
-                      )}
+                        <Button
+                          size="sm"
+                          className="bg-gradient-to-r from-emerald-600 to-emerald-500 hover:from-emerald-500 hover:to-emerald-400 text-white"
+                          onClick={() => {
+                            // Create a temporary download link
+                            const link = document.createElement('a');
+                            link.href = docUrl;
+                            link.download = docUrl.split('/').pop() || 'documento';
+                            link.target = '_blank';
+                            document.body.appendChild(link);
+                            link.click();
+                            document.body.removeChild(link);
+                          }}
+                        >
+                          <Download className="w-4 h-4 mr-2" />
+                          Descargar
+                        </Button>
+                      </div>
                     </div>
                   ))}
                 </div>
