@@ -1035,8 +1035,24 @@ export default function Dashboard() {
   const [profileActiveTab, setProfileActiveTab] = useState("personal");
 
   const contratosCliente = [
-    { id: "DOC-PLAZO-9-175", titulo: "Contrato Plazo Fijo 9% - 175 días", descripcion: "Contrato de depósito bancario con garantía", tipo: "PDF", tamano: "2.3 MB", fecha: "2025-01-01", estado: "Disponible", categoria: "Producto" },
-    { id: "DOC-INFO-PRIV", titulo: "Política de Privacidad", descripcion: "Documento legal informado al cliente", tipo: "PDF", tamano: "0.6 MB", fecha: "2024-12-01", estado: "Disponible", categoria: "Legal" },
+    { 
+      titulo: "Depósito Bancario", 
+      descripcion: "Confirmación de depósito a plazo fijo con detalles de inversión", 
+      tipo: "PDF", 
+      fecha: "2025-01-25", 
+      estado: "Disponible", 
+      categoria: "Producto",
+      archivo: "/src/assets/contracts/deposito-bancario.pdf"
+    },
+    { 
+      titulo: "Contrato de Colaboración Partner Para Captación de Inversores", 
+      descripcion: "Acuerdo de colaboración comercial para asesores y partners", 
+      tipo: "DOCX", 
+      fecha: "2025-01-25", 
+      estado: "Disponible", 
+      categoria: "Legal",
+      archivo: "/src/assets/contracts/contrato-colaboracion-partner.docx"
+    },
   ];
 
   /* ======== KYC avanzado (perfil) ======== */
@@ -2131,7 +2147,7 @@ export default function Dashboard() {
                       <div className="space-y-2">
                         <Label className="text-emerald-50">Búsqueda</Label>
                         <Input
-                          placeholder="Buscar por ID, título o descripción…"
+                          placeholder="Buscar por título o descripción…"
                           value={cFilters.search}
                           onChange={(e) => setCFilters({ ...cFilters, search: e.target.value })}
                           className="bg-black/50 border-emerald-500/20 text-emerald-50"
@@ -2204,7 +2220,6 @@ export default function Dashboard() {
                   const q = cFilters.search.toLowerCase();
                   const matchesSearch =
                     !q ||
-                    c.id.toLowerCase().includes(q) ||
                     c.titulo.toLowerCase().includes(q) ||
                     c.descripcion.toLowerCase().includes(q);
 
@@ -2222,8 +2237,8 @@ export default function Dashboard() {
                   if (cSort === "dateAsc") return new Date(a.fecha).getTime() - new Date(b.fecha).getTime();
                   return 0;
                 })
-                .map((doc) => (
-                  <Card key={doc.id} className="bg-black/40 border border-emerald-500/15 hover:border-emerald-400 transition-all rounded-2xl">
+                .map((doc, index) => (
+                  <Card key={index} className="bg-black/40 border border-emerald-500/15 hover:border-emerald-400 transition-all rounded-2xl">
                     <CardContent className="p-6">
                       <div className="flex items-center justify-between">
                         <div className="flex-1">
@@ -2236,18 +2251,10 @@ export default function Dashboard() {
                               <p className="text-emerald-200/80 text-sm">{doc.descripcion}</p>
                             </div>
                           </div>
-                          <div className="grid grid-cols-2 md:grid-cols-5 gap-4 text-sm mt-4">
-                            <div>
-                              <p className="text-emerald-200/80">ID</p>
-                              <p className="text-emerald-50 font-medium">{doc.id}</p>
-                            </div>
+                          <div className="grid grid-cols-2 md:grid-cols-3 gap-4 text-sm mt-4">
                             <div>
                               <p className="text-emerald-200/80">Tipo</p>
                               <p className="text-emerald-50 font-medium">{doc.tipo}</p>
-                            </div>
-                            <div>
-                              <p className="text-emerald-200/80">Tamaño</p>
-                              <p className="text-emerald-50 font-medium">{doc.tamano}</p>
                             </div>
                             <div>
                               <p className="text-emerald-200/80">Fecha</p>
@@ -2264,7 +2271,17 @@ export default function Dashboard() {
                         <div className="ml-6">
                           <Button
                             className="rounded-xl bg-gradient-to-r from-emerald-600 to-emerald-500 hover:from-emerald-500 hover:to-emerald-400 text-white px-6"
-                            onClick={() => alert("Descarga pendiente de implementar")}
+                            onClick={() => {
+                              const link = document.createElement('a');
+                              link.href = doc.archivo;
+                              link.download = `${doc.titulo}.${doc.tipo.toLowerCase()}`;
+                              document.body.appendChild(link);
+                              link.click();
+                              document.body.removeChild(link);
+                              
+                              // Registrar actividad de descarga
+                              logActivity(`Contrato descargado: ${doc.titulo}`);
+                            }}
                           >
                             <Download className="h-4 w-4 mr-2" />
                             Descargar
@@ -2281,7 +2298,6 @@ export default function Dashboard() {
                   const q = cFilters.search.toLowerCase();
                   const matchesSearch =
                     !q ||
-                    c.id.toLowerCase().includes(q) ||
                     c.titulo.toLowerCase().includes(q) ||
                     c.descripcion.toLowerCase().includes(q);
                   const matchesEstado = !cFilters.estado || c.estado === cFilters.estado;

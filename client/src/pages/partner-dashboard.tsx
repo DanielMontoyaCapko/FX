@@ -987,7 +987,7 @@ export default function PartnerDashboard() {
       tier: "Premium",
       status: "Activo",
       depositDate: "2024-01-15",
-      maturityDate: "2025-01-15",
+      maturityDate: "2026-01-15",
       compoundInterest: true,
       email: "maria.gonzalez@email.com",
       phone: "+34 666 123 456",
@@ -1017,7 +1017,7 @@ export default function PartnerDashboard() {
       tier: "Premium",
       status: "Activo",
       depositDate: "2024-08-20",
-      maturityDate: "2025-08-20",
+      maturityDate: "2026-08-20",
       compoundInterest: true,
       email: "ana.lopez@email.com",
       phone: "+34 666 345 678",
@@ -1660,7 +1660,7 @@ export default function PartnerDashboard() {
                 <CardTitle className="text-emerald-50">
                   <span className="inline-flex items-center gap-4">
                     Comparación: Con Interés vs Sin Interés Compuesto
-                    <TooltipProvider delayDuration={100}>
+                    {/*<TooltipProvider delayDuration={100}>
                       <Tooltip>
                         <TooltipTrigger asChild>
                           <HelpCircle className="w-8 h-8 text-emerald-300/90 hover:text-emerald-300 cursor-help" />
@@ -1676,7 +1676,7 @@ export default function PartnerDashboard() {
                           así cada período calculas intereses sobre el capital inicial + los intereses previos.
                         </TooltipContent>
                       </Tooltip>
-                    </TooltipProvider>
+                    </TooltipProvider>*/}
                   </span>
                 </CardTitle>
                 <CardDescription className="text-emerald-200/80">
