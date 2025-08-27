@@ -132,6 +132,47 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // General download endpoint for URL parameters 
+  app.get("/api/download-document", authMiddleware, async (req: AuthRequest, res) => {
+    try {
+      const { url } = req.query;
+      
+      if (!url || typeof url !== 'string') {
+        return res.status(400).json({ error: "URL parameter is required" });
+      }
+      
+      // Extract the object path from the URL
+      // URL format: /objects/kyc/some-file.pdf or full URL
+      let objectPath = url;
+      
+      if (url.startsWith('http')) {
+        // If it's a full URL, extract the path
+        const urlObj = new URL(url);
+        objectPath = urlObj.pathname;
+      }
+      
+      if (!objectPath.startsWith('/objects/')) {
+        return res.status(400).json({ error: "Invalid document URL" });
+      }
+      
+      const { ObjectStorageService, ObjectNotFoundError } = await import("./objectStorage");
+      const objectStorageService = new ObjectStorageService();
+      
+      try {
+        const objectFile = await objectStorageService.getObjectEntityFile(objectPath);
+        await objectStorageService.downloadObject(objectFile, res);
+      } catch (error) {
+        if (error instanceof ObjectNotFoundError) {
+          return res.status(404).json({ error: "Document not found" });
+        }
+        throw error;
+      }
+    } catch (error) {
+      console.error('Error downloading document:', error);
+      res.status(500).json({ error: "Failed to download document" });
+    }
+  });
+
   // Download KYC document endpoint (deprecated - kept for backwards compatibility)
   app.get("/api/kyc/download/:objectPath", authMiddleware, async (req: AuthRequest, res) => {
     try {
