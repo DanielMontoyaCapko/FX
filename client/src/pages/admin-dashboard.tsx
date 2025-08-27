@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { useAuth } from "@/hooks/useAuth";
 import { useLocation } from "wouter";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -47,11 +48,18 @@ interface DashboardStats {
 
 interface KycData {
   id: number;
+  userId: number;
+  userName: string;
+  userEmail: string;
   fullName: string;
   documentType: string;
   documentNumber: string;
   country: string;
   status: "approved" | "pending" | "rejected";
+  documentsUrls: string[] | null;
+  rejectionReason: string | null;
+  reviewedBy: number | null;
+  reviewedAt: string | null;
   createdAt: string;
 }
 
@@ -93,20 +101,65 @@ interface ContractData {
 export default function AdminDashboard() {
   const { user, logout } = useAuth();
   const [, setLocation] = useLocation();
+  const queryClient = useQueryClient();
   const [activeTab, setActiveTab] = useState("dashboard");
-  const [stats, setStats] = useState<DashboardStats>({
-    totalUsers: 0,
-    totalProducts: 0,
-    totalContracts: 0,
-    pendingKyc: 0,
+
+  // React Query for data fetching
+  const { data: usersData } = useQuery({
+    queryKey: ["/api/admin/users"],
+    enabled: !!user && user.role === "admin",
   });
 
-  // Data states
-  const [users, setUsers] = useState<UserData[]>([]);
-  const [kyc, setKyc] = useState<KycData[]>([]);
-  const [products, setProducts] = useState<ProductData[]>([]);
-  const [contracts, setContracts] = useState<ContractData[]>([]);
-  const [loading, setLoading] = useState(true);
+  const { data: kycData } = useQuery({
+    queryKey: ["/api/admin/kyc"],
+    enabled: !!user && user.role === "admin",
+  });
+
+  const { data: productsData } = useQuery({
+    queryKey: ["/api/admin/products"],
+    enabled: !!user && user.role === "admin",
+  });
+
+  const { data: contractsData } = useQuery({
+    queryKey: ["/api/admin/contracts"],
+    enabled: !!user && user.role === "admin",
+  });
+
+  // KYC Review Mutation
+  const kycReviewMutation = useMutation({
+    mutationFn: async ({ kycId, status, rejectionReason }: { kycId: number; status: string; rejectionReason?: string }) => {
+      const response = await fetch(`/api/admin/kyc/${kycId}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${localStorage.getItem('token')}`,
+        },
+        body: JSON.stringify({ status, rejectionReason }),
+      });
+
+      if (!response.ok) {
+        throw new Error(await response.text());
+      }
+
+      return response.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/admin/kyc"] });
+    },
+  });
+
+  // Derived data
+  const users = usersData?.users || [];
+  const kyc = kycData?.kyc || [];
+  const products = productsData?.products || [];
+  const contracts = contractsData?.contracts || [];
+  
+  const stats = {
+    totalUsers: users.length,
+    totalProducts: products.length,
+    totalContracts: contracts.length,
+    pendingKyc: kyc.filter((k: KycData) => k.status === "pending").length,
+  };
 
   // ===== SEARCH & FILTER STATES =====
   // Usuarios
@@ -175,6 +228,10 @@ export default function AdminDashboard() {
   const [editingProduct, setEditingProduct] = useState<ProductData | null>(null);
   const [editingKyc, setEditingKyc] = useState<KycData | null>(null);
   const [editingContract, setEditingContract] = useState<any>(null);
+  
+  // KYC Review states
+  const [kycReviewStatus, setKycReviewStatus] = useState<"approved" | "rejected">("approved");
+  const [rejectionReason, setRejectionReason] = useState("");
 
   // NUEVO: ficha de usuario (perfil detallado)
   const [selectedUser, setSelectedUser] = useState<UserData | null>(null);
@@ -201,11 +258,10 @@ export default function AdminDashboard() {
   });
 
   useEffect(() => {
-    if (user?.role !== "admin") {
+    if (user && user.role !== "admin") {
       setLocation("/login");
       return;
     }
-    loadDashboardData();
   }, [user]);
 
   // ====== Normalización / Inferencia de género ======
@@ -704,6 +760,8 @@ export default function AdminDashboard() {
   const handleCloseKycDialog = () => {
     setShowKycDialog(false);
     setEditingKyc(null);
+    setKycReviewStatus("approved");
+    setRejectionReason("");
   };
 
   const handleUpdateKycForm = async (e: React.FormEvent) => {
@@ -2445,62 +2503,128 @@ export default function AdminDashboard() {
         )}
 
         {/* ====== DIALOGS EDIT ====== */}
-        {/* KYC Edit Dialog */}
+        {/* KYC Review Dialog */}
         <Dialog open={showKycDialog} onOpenChange={handleCloseKycDialog}>
-          <DialogContent className="bg-black/40 border border-emerald-500/15 text-emerald-50">
+          <DialogContent className="bg-black/40 border border-emerald-500/15 text-emerald-50 max-w-2xl">
             <DialogHeader>
-              <DialogTitle>Editar Estado KYC</DialogTitle>
+              <DialogTitle>Revisar Documentos KYC</DialogTitle>
               <DialogDescription className="text-emerald-200/80">
-                Modificar el estado de verificación KYC para {editingKyc?.fullName}
+                Revisar y aprobar/rechazar documentos para {editingKyc?.fullName}
               </DialogDescription>
             </DialogHeader>
             {editingKyc && (
-              <form onSubmit={handleUpdateKycForm}>
-                <div className="grid gap-4 py-4">
-                  <div className="grid grid-cols-4 items-center gap-4">
-                    <Label className="text-right">Usuario</Label>
-                    <div className="col-span-3 text-emerald-200/90">{editingKyc.fullName}</div>
+              <div className="space-y-6">
+                {/* User Information */}
+                <div className="grid grid-cols-2 gap-4 p-4 bg-black/30 rounded-lg border border-emerald-500/15">
+                  <div>
+                    <Label className="text-emerald-300 text-sm">Usuario</Label>
+                    <div className="text-emerald-50">{editingKyc.fullName}</div>
                   </div>
-                  <div className="grid grid-cols-4 items-center gap-4">
-                    <Label className="text-right">Documento</Label>
-                    <div className="col-span-3 text-emerald-200/90">
+                  <div>
+                    <Label className="text-emerald-300 text-sm">Email</Label>
+                    <div className="text-emerald-50">{editingKyc.userEmail}</div>
+                  </div>
+                  <div>
+                    <Label className="text-emerald-300 text-sm">Documento</Label>
+                    <div className="text-emerald-50">
                       {editingKyc.documentType.toUpperCase()} - {editingKyc.documentNumber}
                     </div>
                   </div>
-                  <div className="grid grid-cols-4 items-center gap-4">
-                    <Label className="text-right">País</Label>
-                    <div className="col-span-3 text-emerald-200/90">{editingKyc.country}</div>
+                  <div>
+                    <Label className="text-emerald-300 text-sm">País</Label>
+                    <div className="text-emerald-50">{editingKyc.country}</div>
                   </div>
-                  <div className="grid grid-cols-4 items-center gap-4">
-                    <Label htmlFor="kycStatus" className="text-right">
-                      Estado
-                    </Label>
+                </div>
+
+                {/* Documents */}
+                {editingKyc.documentsUrls && editingKyc.documentsUrls.length > 0 && (
+                  <div>
+                    <Label className="text-emerald-300 text-sm mb-2 block">Documentos Subidos</Label>
+                    <div className="space-y-2">
+                      {editingKyc.documentsUrls.map((url, idx) => (
+                        <div key={idx} className="flex items-center justify-between p-3 bg-black/30 rounded border border-emerald-500/15">
+                          <div className="flex items-center gap-3">
+                            <FileText className="w-4 h-4 text-emerald-400" />
+                            <span className="text-emerald-50">{url.split('/').pop()}</span>
+                          </div>
+                          <Button variant="outline" size="sm" className="border-emerald-500/20 text-emerald-50">
+                            Ver
+                          </Button>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                {/* Review Form */}
+                <div className="space-y-4">
+                  <div>
+                    <Label className="text-emerald-300 text-sm mb-2 block">Decisión</Label>
                     <Select
-                      value={editingKyc.status}
-                      onValueChange={(value: "approved" | "pending" | "rejected") =>
-                        setEditingKyc({ ...editingKyc, status: value })
-                      }
+                      value={kycReviewStatus}
+                      onValueChange={(value: "approved" | "rejected") => setKycReviewStatus(value)}
                     >
-                      <SelectTrigger className="col-span-3 bg-black/50 border-emerald-500/20 text-emerald-50">
+                      <SelectTrigger className="bg-black/50 border-emerald-500/20 text-emerald-50">
                         <SelectValue />
                       </SelectTrigger>
                       <SelectContent className="bg-black/40 border-emerald-500/15 text-emerald-50">
-                        <SelectItem value="pending">Pendiente</SelectItem>
-                        <SelectItem value="approved">Aprobado</SelectItem>
-                        <SelectItem value="rejected">Rechazado</SelectItem>
+                        <SelectItem value="approved">✅ Aprobar</SelectItem>
+                        <SelectItem value="rejected">❌ Rechazar</SelectItem>
                       </SelectContent>
                     </Select>
                   </div>
+
+                  {kycReviewStatus === "rejected" && (
+                    <div>
+                      <Label className="text-emerald-300 text-sm mb-2 block">
+                        Motivo del Rechazo <span className="text-red-400">*</span>
+                      </Label>
+                      <textarea
+                        value={rejectionReason}
+                        onChange={(e) => setRejectionReason(e.target.value)}
+                        placeholder="Describe el motivo del rechazo..."
+                        className="w-full h-24 p-3 bg-black/50 border border-emerald-500/20 rounded text-emerald-50 placeholder-emerald-400/60 resize-none"
+                        required
+                      />
+                    </div>
+                  )}
                 </div>
-                <DialogFooter>
-                  <Button type="button" variant="outline" onClick={handleCloseKycDialog} className="border-emerald-500/20">
+
+                <DialogFooter className="flex gap-2">
+                  <Button 
+                    type="button" 
+                    variant="outline" 
+                    onClick={handleCloseKycDialog} 
+                    className="border-emerald-500/20"
+                  >
                     Cancelar
                   </Button>
-                  <Button type="submit" className="bg-gradient-to-r from-emerald-600 to-emerald-500 hover:from-emerald-500 hover:to-emerald-400 text-white">
-                    Actualizar Estado
+                  <Button 
+                    onClick={async () => {
+                      if (kycReviewStatus === "rejected" && !rejectionReason.trim()) {
+                        alert("Por favor, proporciona un motivo para el rechazo");
+                        return;
+                      }
+                      
+                      try {
+                        await kycReviewMutation.mutateAsync({
+                          kycId: editingKyc.id,
+                          status: kycReviewStatus,
+                          rejectionReason: kycReviewStatus === "rejected" ? rejectionReason : undefined,
+                        });
+                        handleCloseKycDialog();
+                      } catch (error) {
+                        console.error('Error reviewing KYC:', error);
+                      }
+                    }}
+                    disabled={kycReviewMutation.isPending}
+                    className="bg-gradient-to-r from-emerald-600 to-emerald-500 hover:from-emerald-500 hover:to-emerald-400 text-white"
+                  >
+                    {kycReviewMutation.isPending ? "Procesando..." : 
+                     kycReviewStatus === "approved" ? "Aprobar Documentos" : "Rechazar Documentos"}
                   </Button>
                 </DialogFooter>
-              </form>
+              </div>
             )}
           </DialogContent>
         </Dialog>

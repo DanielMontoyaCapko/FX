@@ -25,6 +25,10 @@ export const kyc = pgTable("kyc", {
   documentNumber: varchar("document_number", { length: 100 }).notNull(),
   country: varchar("country", { length: 100 }).notNull(),
   status: varchar("status", { length: 50 }).default("pending"), // approved, pending, rejected
+  documentsUrls: text("documents_urls").array(), // URLs of uploaded documents
+  rejectionReason: text("rejection_reason"), // Admin note when rejecting
+  reviewedBy: integer("reviewed_by").references(() => users.id), // Admin who reviewed
+  reviewedAt: timestamp("reviewed_at"), // When the review was completed
   createdAt: timestamp("created_at").defaultNow().notNull(),
   updatedAt: timestamp("updated_at").defaultNow().notNull(),
 });
@@ -112,6 +116,13 @@ export const insertKycSchema = createInsertSchema(kyc).omit({
   id: true,
   createdAt: true,
   updatedAt: true,
+  reviewedAt: true,
+});
+
+export const updateKycSchema = z.object({
+  status: z.enum(["approved", "pending", "rejected"]),
+  rejectionReason: z.string().optional(),
+  reviewedBy: z.number().optional(),
 });
 
 export const insertProductSchema = createInsertSchema(products).omit({

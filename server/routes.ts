@@ -1,7 +1,7 @@
 import type { Express } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
-import { insertLeadSchema, insertCalculatorResultSchema, loginSchema, registerSchema } from "@shared/schema";
+import { insertLeadSchema, insertCalculatorResultSchema, loginSchema, registerSchema, insertKycSchema, updateKycSchema } from "@shared/schema";
 import { generateToken, authMiddleware, requireRole, type AuthRequest } from "./auth";
 import { z } from "zod";
 
@@ -80,6 +80,61 @@ export async function registerRoutes(app: Express): Promise<Server> {
       success: true,
       user: req.user,
     });
+  });
+
+  // KYC routes
+  app.post("/api/kyc", authMiddleware, async (req: AuthRequest, res) => {
+    try {
+      const kycData = insertKycSchema.parse({
+        ...req.body,
+        userId: req.user!.id,
+      });
+      
+      // Check if user already has KYC record
+      const existingKyc = await storage.getKycByUserId(req.user!.id);
+      if (existingKyc) {
+        return res.status(400).json({ error: "KYC record already exists for this user" });
+      }
+      
+      const kyc = await storage.createKyc(kycData);
+      res.json({ success: true, kyc });
+    } catch (error) {
+      console.error("Error creating KYC:", error);
+      res.status(400).json({ error: "Invalid KYC data" });
+    }
+  });
+
+  app.get("/api/kyc/me", authMiddleware, async (req: AuthRequest, res) => {
+    try {
+      const kyc = await storage.getKycByUserId(req.user!.id);
+      res.json({ success: true, kyc });
+    } catch (error) {
+      console.error("Error fetching user KYC:", error);
+      res.status(500).json({ error: "Failed to fetch KYC data" });
+    }
+  });
+
+  app.put("/api/kyc/me", authMiddleware, async (req: AuthRequest, res) => {
+    try {
+      const existingKyc = await storage.getKycByUserId(req.user!.id);
+      if (!existingKyc) {
+        return res.status(404).json({ error: "KYC record not found" });
+      }
+
+      const updates = {
+        ...req.body,
+        status: "pending", // Reset to pending when user updates
+        rejectionReason: null,
+        reviewedBy: null,
+        reviewedAt: null,
+      };
+      
+      const kyc = await storage.updateKyc(existingKyc.id, updates);
+      res.json({ success: true, kyc });
+    } catch (error) {
+      console.error("Error updating KYC:", error);
+      res.status(500).json({ error: "Failed to update KYC" });
+    }
   });
   // Lead creation endpoint
   app.post("/api/leads", async (req, res) => {
@@ -257,16 +312,25 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Update KYC status
-  app.put('/api/admin/kyc/:id', authMiddleware, requireRole('admin'), async (req, res) => {
+  // Update KYC status (admin review)
+  app.put('/api/admin/kyc/:id', authMiddleware, requireRole('admin'), async (req: AuthRequest, res) => {
     try {
       const kycId = parseInt(req.params.id);
-      const { status } = req.body;
+      const updateData = updateKycSchema.parse(req.body);
       
-      const kyc = await storage.updateKycStatus(kycId, status);
+      const updates = {
+        ...updateData,
+        reviewedBy: req.user!.id,
+        reviewedAt: new Date(),
+      };
+      
+      const kyc = await storage.updateKyc(kycId, updates);
       res.json({ success: true, kyc });
     } catch (error) {
       console.error('Error updating KYC status:', error);
+      if (error instanceof z.ZodError) {
+        return res.status(400).json({ error: "Invalid update data", details: error.errors });
+      }
       res.status(500).json({ error: 'Failed to update KYC status' });
     }
   });

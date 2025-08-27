@@ -14,12 +14,21 @@ export interface IStorage {
   getUserById(id: number): Promise<User | undefined>;
   validatePassword(plainPassword: string, hashedPassword: string): Promise<boolean>;
   
+  // KYC methods
+  createKyc(kycData: InsertKyc): Promise<Kyc>;
+  getKycByUserId(userId: number): Promise<Kyc | undefined>;
+  updateKyc(kycId: number, updates: any): Promise<Kyc>;
+  
   // Admin methods
   getAllUsers(): Promise<User[]>;
-  getAllKyc(): Promise<Kyc[]>;
+  getAllKyc(): Promise<any[]>;
   getAllProducts(): Promise<Product[]>;
   getAllContracts(): Promise<any[]>;
   createProduct(productData: InsertProduct): Promise<Product>;
+  updateUser(userId: number, updates: any): Promise<User>;
+  deleteUser(userId: number): Promise<void>;
+  updateProduct(productId: number, updates: any): Promise<Product>;
+  deleteProduct(productId: number): Promise<void>;
 }
 
 export class DatabaseStorage implements IStorage {
@@ -65,13 +74,53 @@ export class DatabaseStorage implements IStorage {
     return bcrypt.compare(plainPassword, hashedPassword);
   }
 
+  // KYC methods
+  async createKyc(kycData: InsertKyc): Promise<Kyc> {
+    const [kycRecord] = await db.insert(kyc).values(kycData).returning();
+    return kycRecord;
+  }
+
+  async getKycByUserId(userId: number): Promise<Kyc | undefined> {
+    const [kycRecord] = await db.select().from(kyc).where(eq(kyc.userId, userId));
+    return kycRecord;
+  }
+
+  async updateKyc(kycId: number, updates: any): Promise<Kyc> {
+    const [updated] = await db
+      .update(kyc)
+      .set({ ...updates, updatedAt: new Date() })
+      .where(eq(kyc.id, kycId))
+      .returning();
+    return updated;
+  }
+
   // Admin methods
   async getAllUsers(): Promise<User[]> {
     return await db.select().from(users);
   }
 
-  async getAllKyc(): Promise<Kyc[]> {
-    return await db.select().from(kyc);
+  async getAllKyc(): Promise<any[]> {
+    const result = await db
+      .select({
+        id: kyc.id,
+        userId: kyc.userId,
+        userName: users.name,
+        userEmail: users.email,
+        fullName: kyc.fullName,
+        documentType: kyc.documentType,
+        documentNumber: kyc.documentNumber,
+        country: kyc.country,
+        status: kyc.status,
+        documentsUrls: kyc.documentsUrls,
+        rejectionReason: kyc.rejectionReason,
+        reviewedBy: kyc.reviewedBy,
+        reviewedAt: kyc.reviewedAt,
+        createdAt: kyc.createdAt,
+      })
+      .from(kyc)
+      .leftJoin(users, eq(kyc.userId, users.id));
+    
+    return result;
   }
 
   async getAllProducts(): Promise<Product[]> {
