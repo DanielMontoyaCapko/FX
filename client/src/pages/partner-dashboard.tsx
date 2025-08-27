@@ -898,6 +898,10 @@ export default function PartnerDashboard() {
     estado: "",
   });
   const [sortOrder, setSortOrder] = useState<"" | "asc" | "desc">("");
+  // Filtro rápido por tarjetas
+  const [quickFilter, setQuickFilter] =
+    useState<"all" | "activos" | "compuesto" | "vencidos">("all");
+
 
   // Filtros CONTRATOS
   const [showContractFilters, setShowContractFilters] = useState(false);
@@ -1089,6 +1093,16 @@ export default function PartnerDashboard() {
         const gananciasMin = filters.gananciasMin ? parseFloat(filters.gananciasMin) : 0;
         const gananciasMax = filters.gananciasMax ? parseFloat(filters.gananciasMax) : Infinity;
 
+        // para detectar vencidos por fecha o estado
+        const daysLeft = Math.ceil((new Date(client.maturityDate).getTime() - Date.now()) / 86400000);
+        const isExpired = daysLeft <= 0 || client.status === "Vencido";
+
+        const matchQuick =
+          quickFilter === "all" ||
+          (quickFilter === "activos" && client.status === "Activo") ||
+          (quickFilter === "compuesto" && client.compoundInterest) ||
+          (quickFilter === "vencidos" && isExpired);
+
         return (
           client.investment >= inversionMin &&
           client.investment <= inversionMax &&
@@ -1096,7 +1110,8 @@ export default function PartnerDashboard() {
           client.returns <= gananciasMax &&
           (filters.pais === "" || client.pais === filters.pais) &&
           (filters.sexo === "" || client.sexo === filters.sexo) &&
-          (filters.estado === "" || client.status === filters.estado)
+          (filters.estado === "" || client.status === filters.estado) &&
+          matchQuick
         );
       })
       .sort((a, b) => {
@@ -1106,7 +1121,7 @@ export default function PartnerDashboard() {
       });
 
     return list;
-  }, [clients, filters, sortOrder]);
+  }, [clients, filters, sortOrder, quickFilter]);
 
   // días hasta comisión (para KPI de pagos)
   const calculateDaysToCommission = () => {
@@ -1677,6 +1692,7 @@ export default function PartnerDashboard() {
                         estado: "",
                       });
                       setSortOrder("");
+                      setQuickFilter("all");
                     }}
                     className="text-emerald-200 hover:text-emerald-50"
                   >
@@ -1790,18 +1806,42 @@ export default function PartnerDashboard() {
             {/* Stats rápidos (dinámicos) */}
             <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
               {[
-                { value: String(statsClients.total), label: "Total Clientes" },
-                { value: String(statsClients.activos), label: "Activos", border: "border-emerald-500/25", text: "text-emerald-400" },
-                { value: String(statsClients.comp), label: "Con Interés Compuesto", text: "text-amber-400", border: "border-amber-500/20" },
-                { value: String(statsClients.vencidos), label: "Vencidos", text: "text-red-400", border: "border-red-500/20" },
-              ].map((s, i) => (
-                <Card key={i} className={`bg-black/40 border ${s.border || "border-emerald-500/15"} rounded-2xl`}>
-                  <CardContent className="p-4 text-center">
-                    <div className={`text-2xl font-bold ${s.text || "text-emerald-50"}`}>{s.value}</div>
-                    <p className="text-emerald-200/80 text-sm">{s.label}</p>
-                  </CardContent>
-                </Card>
-              ))}
+                { key: "all",       value: String(statsClients.total),   label: "Total Clientes" },
+                { key: "activos",   value: String(statsClients.activos), label: "Activos" },
+                { key: "compuesto", value: String(statsClients.comp),    label: "Con Interés Compuesto" },
+                { key: "vencidos",  value: String(statsClients.vencidos),label: "Vencidos" },
+              ].map(({ key, value, label }) => {
+                const active = quickFilter === (key as typeof quickFilter);
+                const baseBorder =
+                  key === "activos"   ? "border-emerald-500/25" :
+                  key === "compuesto" ? "border-amber-500/20" :
+                  key === "vencidos"  ? "border-red-500/20"   :
+                                        "border-emerald-500/15";
+                const baseText =
+                  key === "activos"   ? "text-emerald-400" :
+                  key === "compuesto" ? "text-amber-400"   :
+                  key === "vencidos"  ? "text-red-400"     :
+                                        "text-emerald-50";
+
+                return (
+                  <Card
+                    key={key}
+                    role="button"
+                    onClick={() => setQuickFilter(key as typeof quickFilter)}
+                    className={[
+                      "bg-black/40 rounded-2xl cursor-pointer select-none transition-all border",
+                      baseBorder,
+                      active ? "ring-1 ring-emerald-400/60" : "",
+                      "hover:shadow-[0_0_0_1px_rgba(16,185,129,0.25),0_10px_30px_-12px_rgba(16,185,129,0.35)]",
+                    ].join(" ")}
+                  >
+                    <CardContent className="p-4 text-center">
+                      <div className={`text-2xl font-bold ${baseText}`}>{value}</div>
+                      <p className="text-emerald-200/80 text-sm">{label}</p>
+                    </CardContent>
+                  </Card>
+                );
+              })}
             </div>
 
             {/* Cartera */}
