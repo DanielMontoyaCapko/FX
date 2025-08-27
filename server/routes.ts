@@ -87,12 +87,16 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.put("/api/me/profile", authMiddleware, async (req: AuthRequest, res) => {
     try {
       const userId = req.user!.id;
-      const { name, apellidos, telefono, fechaNacimiento, pais, direccion } = req.body;
+      const { nombre, apellidos, telefono, fechaNacimiento, pais, direccion } = req.body;
       
       // Update user profile
       const updatedUser = await storage.updateUser(userId, {
-        name: name,
-        // Add other fields if needed in the future
+        name: nombre,
+        apellidos,
+        telefono,
+        fechaNacimiento,
+        pais,
+        direccion,
       });
 
       // Log activity to client_activity_logs

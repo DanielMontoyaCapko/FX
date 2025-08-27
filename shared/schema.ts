@@ -8,6 +8,11 @@ export const users = pgTable("users", {
   email: varchar("email", { length: 255 }).notNull().unique(),
   password: varchar("password", { length: 255 }).notNull(),
   name: varchar("name", { length: 255 }).notNull(),
+  apellidos: varchar("apellidos", { length: 255 }), // Last names
+  telefono: varchar("telefono", { length: 50 }), // Phone number
+  fechaNacimiento: varchar("fecha_nacimiento", { length: 20 }), // Birth date
+  pais: varchar("pais", { length: 100 }), // Country
+  direccion: text("direccion"), // Address
   role: varchar("role", { length: 50 }).notNull().default("client"), // 'client' | 'partner' | 'admin'
   sponsor: varchar("sponsor", { length: 255 }), // sponsor user for referrals
   grade: varchar("grade", { length: 50 }).default("Bronze"), // Bronze, Silver, Gold, Diamond

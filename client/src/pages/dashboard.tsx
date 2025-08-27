@@ -894,7 +894,15 @@ export default function Dashboard() {
 
   const [showCalculator, setShowCalculator] = useState(false);
   const [profilePhoto, setProfilePhoto] = useState<string | null>(null);
-  const [phoneNumber, setPhoneNumber] = useState("646 123 456");
+  // State for profile form data
+  const [profileFormData, setProfileFormData] = useState({
+    nombre: "",
+    apellidos: "",
+    telefono: "",
+    fechaNacimiento: "",
+    pais: "espana",
+    direccion: "",
+  });
 
   const [activeProductsView, setActiveProductsView] = useState<
     "default" | "mis-productos" | "historial" | "producto-detalle"
@@ -1054,6 +1062,12 @@ export default function Dashboard() {
     refetchOnWindowFocus: true, // Refetch when user focuses window
   });
 
+  // Fetch user's profile data
+  const { data: userData, isLoading: userLoading } = useQuery({
+    queryKey: ["/api/me"],
+    enabled: !!user,
+  });
+
   // Create/Update KYC mutation
   const kycMutation = useMutation({
     mutationFn: async (data: any) => {
@@ -1142,6 +1156,20 @@ export default function Dashboard() {
     }
   }, [kycData]);
 
+  // Update profile form data when user data is loaded
+  useEffect(() => {
+    if (userData?.user) {
+      setProfileFormData({
+        nombre: userData.user.name || "",
+        apellidos: "", // Will add this field to user schema later
+        telefono: userData.user.telefono || "",
+        fechaNacimiento: userData.user.fechaNacimiento || "",
+        pais: userData.user.pais || "espana",
+        direccion: userData.user.direccion || "",
+      });
+    }
+  }, [userData]);
+
   const handleKycUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = Array.from(e.target.files ?? []);
     if (!files.length) return;
@@ -1170,18 +1198,8 @@ export default function Dashboard() {
   const handleProfileSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    const formData = new FormData(e.target as HTMLFormElement);
-    const profileData = {
-      name: formData.get('nombre') as string,
-      apellidos: formData.get('apellidos') as string,
-      telefono: formData.get('telefono') as string,
-      fechaNacimiento: formData.get('fecha-nacimiento') as string,
-      pais: formData.get('pais') as string,
-      direccion: formData.get('direccion') as string,
-    };
-    
     try {
-      await profileMutation.mutateAsync(profileData);
+      await profileMutation.mutateAsync(profileFormData);
     } catch (error) {
       console.error('Error updating profile:', error);
     }
@@ -1363,11 +1381,23 @@ export default function Dashboard() {
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <div>
                           <Label htmlFor="nombre" className="text-emerald-50">Nombre</Label>
-                          <Input id="nombre" name="nombre" defaultValue="Test" className="bg-black/50 border-emerald-500/20 text-emerald-50" />
+                          <Input 
+                            id="nombre" 
+                            name="nombre" 
+                            value={profileFormData.nombre}
+                            onChange={(e) => setProfileFormData(prev => ({ ...prev, nombre: e.target.value }))}
+                            className="bg-black/50 border-emerald-500/20 text-emerald-50" 
+                          />
                         </div>
                         <div>
                           <Label htmlFor="apellidos" className="text-emerald-50">Apellidos</Label>
-                          <Input id="apellidos" name="apellidos" defaultValue="Placeholder" className="bg-black/50 border-emerald-500/20 text-emerald-50" />
+                          <Input 
+                            id="apellidos" 
+                            name="apellidos" 
+                            value={profileFormData.apellidos}
+                            onChange={(e) => setProfileFormData(prev => ({ ...prev, apellidos: e.target.value }))}
+                            className="bg-black/50 border-emerald-500/20 text-emerald-50" 
+                          />
                         </div>
                       </div>
 
@@ -1388,8 +1418,8 @@ export default function Dashboard() {
                             <Input
                               id="telefono"
                               name="telefono"
-                              value={phoneNumber}
-                              onChange={(e) => setPhoneNumber(e.target.value)}
+                              value={profileFormData.telefono}
+                              onChange={(e) => setProfileFormData(prev => ({ ...prev, telefono: e.target.value }))}
                               placeholder="Ej: +34 646 123 456"
                               className="bg-black/50 border-emerald-500/20 text-emerald-50 pl-10"
                             />
@@ -1400,7 +1430,13 @@ export default function Dashboard() {
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <div>
                           <Label htmlFor="fecha-nacimiento" className="text-emerald-50">Fecha de Nacimiento</Label>
-                          <Input id="fecha-nacimiento" name="fecha-nacimiento" defaultValue="25/02/1962" className="bg-black/50 border-emerald-500/20 text-emerald-50" />
+                          <Input 
+                            id="fecha-nacimiento" 
+                            name="fecha-nacimiento" 
+                            value={profileFormData.fechaNacimiento}
+                            onChange={(e) => setProfileFormData(prev => ({ ...prev, fechaNacimiento: e.target.value }))}
+                            className="bg-black/50 border-emerald-500/20 text-emerald-50" 
+                          />
                         </div>
                         <div>
                           <Label htmlFor="fecha-registro" className="text-emerald-50">Fecha de Registro</Label>
@@ -1416,7 +1452,12 @@ export default function Dashboard() {
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <div>
                           <Label htmlFor="pais" className="text-emerald-50">País</Label>
-                          <select name="pais" defaultValue="espana" className="flex h-10 w-full rounded-md border border-emerald-500/20 bg-black/50 px-3 py-2 text-sm text-emerald-50 ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50">
+                          <select 
+                            name="pais" 
+                            value={profileFormData.pais}
+                            onChange={(e) => setProfileFormData(prev => ({ ...prev, pais: e.target.value }))}
+                            className="flex h-10 w-full rounded-md border border-emerald-500/20 bg-black/50 px-3 py-2 text-sm text-emerald-50 ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                          >
                             <option value="espana">España</option>
                             <option value="francia">Francia</option>
                             <option value="portugal">Portugal</option>
@@ -1432,7 +1473,8 @@ export default function Dashboard() {
                         <Input
                           id="direccion"
                           name="direccion"
-                          defaultValue="Calle Nueva Era 45, 2ºA, 08035 Barcelona"
+                          value={profileFormData.direccion}
+                          onChange={(e) => setProfileFormData(prev => ({ ...prev, direccion: e.target.value }))}
                           className="bg-black/50 border-emerald-500/20 text-emerald-50"
                         />
                       </div>
@@ -1440,9 +1482,10 @@ export default function Dashboard() {
                       <div className="pt-4">
                         <Button
                           type="submit"
-                          className="w-full rounded-xl bg-gradient-to-r from-emerald-600 to-emerald-500 hover:from-emerald-500 hover:to-emerald-400 text-white font-semibold"
+                          disabled={profileMutation.isPending}
+                          className="w-full rounded-xl bg-gradient-to-r from-emerald-600 to-emerald-500 hover:from-emerald-500 hover:to-emerald-400 text-white font-semibold disabled:opacity-50"
                         >
-                          ACTUALIZAR INFORMACIÓN PERSONAL
+                          {profileMutation.isPending ? "ACTUALIZANDO..." : "ACTUALIZAR INFORMACIÓN PERSONAL"}
                         </Button>
                       </div>
                     </form>
