@@ -1180,7 +1180,7 @@ export default function Dashboard() {
     if (userData?.user) {
       setProfileFormData({
         nombre: userData.user.name || "",
-        apellidos: "", // Will add this field to user schema later
+        apellidos: userData.user.apellidos || "",
         telefono: userData.user.telefono || "",
         fechaNacimiento: userData.user.fechaNacimiento || "",
         pais: userData.user.pais || "espana",

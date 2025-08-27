@@ -89,6 +89,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const userId = req.user!.id;
       const { nombre, apellidos, telefono, fechaNacimiento, pais, direccion } = req.body;
       
+      console.log("Profile update request:", { userId, body: req.body });
+      
       // Update user profile
       const updatedUser = await storage.updateUser(userId, {
         name: nombre,
@@ -98,6 +100,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
         pais,
         direccion,
       });
+
+      console.log("Profile updated successfully:", updatedUser);
 
       // Log activity to client_activity_logs
       await storage.logClientActivity(userId, 'Perfil actualizado');
