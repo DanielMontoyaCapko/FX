@@ -2,29 +2,29 @@ import { Request, Response, NextFunction } from 'express';
 import { db } from './db';
 import { auditLogs, users } from '@shared/schema';
 import { eq } from 'drizzle-orm';
-import jwt from 'jsonwebtoken';
+import { AuthRequest } from './auth';
 
-// Helper function to extract user ID from token
-async function extractAdminFromRequest(req: Request): Promise<number | null> {
-  try {
-    const authHeader = req.headers.authorization;
-    if (!authHeader || !authHeader.startsWith('Bearer ')) {
-      return null;
+// Extend Request type to include audit context
+declare global {
+  namespace Express {
+    interface Request {
+      auditContext?: {
+        entityId: string;
+        entityType: string;
+        action: string;
+        adminId?: number;
+      };
     }
-    
-    const token = authHeader.substring(7);
-    const decoded = jwt.verify(token, process.env.JWT_SECRET || 'your-secret-key') as any;
-    
-    // Check if user is admin
-    const admin = await db.select().from(users).where(eq(users.id, decoded.userId)).limit(1);
-    if (admin.length > 0 && admin[0].role === 'admin') {
-      return admin[0].id;
-    }
-    
-    return null;
-  } catch (error) {
-    return null;
   }
+}
+
+// Helper function to extract admin ID from authenticated request
+function extractAdminFromRequest(req: AuthRequest): number | null {
+  // req.user is populated by the authMiddleware that runs before this
+  if (req.user && req.user.role === 'admin') {
+    return req.user.id;
+  }
+  return null;
 }
 
 // Helper function to format entity for audit
@@ -40,28 +40,27 @@ function formatEntityForAudit(entity: any): string {
 }
 
 // Main audit middleware function
-export function createAuditMiddleware(action: 'CREATE' | 'UPDATE' | 'DELETE', entityType: string) {
-  return async (req: Request, res: Response, next: NextFunction) => {
-    // Store original data for comparison (for UPDATE operations)
-    if (action === 'UPDATE' && req.params.id) {
-      try {
-        // Store old values in request for later use
-        req.auditContext = {
-          entityId: req.params.id,
-          entityType,
-          action
-        };
-      } catch (error) {
-        console.error('Error setting up audit context:', error);
-      }
-    }
+export function createAuditMiddleware(action: 'CREATE' | 'UPDATE' | 'DELETE' | 'REVIEW', entityType: string) {
+  return (req: AuthRequest, res: Response, next: NextFunction) => {
+    // Extract admin info early and store it in the request context
+    const adminId = extractAdminFromRequest(req);
+    
+    // Store audit context including admin info
+    req.auditContext = {
+      entityId: req.params.id || 'unknown',
+      entityType,
+      action,
+      adminId: adminId || undefined
+    };
 
     // Store original res.json to intercept response
     const originalJson = res.json;
     
     res.json = function(body: any) {
-      // Log the audit entry after successful operation
-      logAuditEntry(req, res, body, action, entityType);
+      // Call the audit logging asynchronously without blocking the response
+      logAuditEntry(req, res, body, action, entityType).catch(error => {
+        console.error('[AUDIT] Error in async audit logging:', error);
+      });
       
       // Call original res.json
       return originalJson.call(this, body);
@@ -73,10 +72,10 @@ export function createAuditMiddleware(action: 'CREATE' | 'UPDATE' | 'DELETE', en
 
 // Function to log audit entry
 async function logAuditEntry(
-  req: Request, 
+  req: AuthRequest, 
   res: Response, 
   responseBody: any, 
-  action: 'CREATE' | 'UPDATE' | 'DELETE',
+  action: 'CREATE' | 'UPDATE' | 'DELETE' | 'REVIEW',
   entityType: string
 ) {
   try {
@@ -85,7 +84,8 @@ async function logAuditEntry(
       return;
     }
 
-    const adminId = await extractAdminFromRequest(req);
+    // Get admin ID from the context set during middleware initialization
+    const adminId = req.auditContext?.adminId;
     if (!adminId) {
       return; // Not an admin or invalid token
     }
@@ -98,31 +98,41 @@ async function logAuditEntry(
     // Extract entity ID and values based on action
     if (action === 'CREATE') {
       const created = responseBody?.success ? 
-        (responseBody[entityType.toLowerCase()] || responseBody.data) : null;
+        (responseBody.product || responseBody.user || responseBody.kyc || responseBody.contract) : null;
       if (created) {
         entityId = String(created.id || created.userId || 'unknown');
         newValues = formatEntityForAudit(created);
-        description = `Created ${entityType.toLowerCase()} with ID ${entityId}`;
+        description = `Creó ${entityType} con ID ${entityId}`;
       }
-    } else if (action === 'UPDATE') {
-      entityId = req.params.id || String(responseBody?.id || 'unknown');
+    } else if (action === 'UPDATE' || action === 'REVIEW') {
+      entityId = req.params.id || 'unknown';
       
-      // Try to get old values from audit context
-      const oldData = req.auditContext?.oldValues;
-      if (oldData) {
-        oldValues = formatEntityForAudit(oldData);
+      // For KYC reviews, add specific details
+      if ((action === 'REVIEW' || entityType === 'kyc') && req.body.status) {
+        const status = req.body.status;
+        const reason = req.body.rejectionReason;
+        description = `Revisó KYC ID ${entityId} - Estado: ${status}`;
+        if (reason) {
+          description += ` - Motivo: ${reason}`;
+        }
+      } else {
+        description = `Actualizó ${entityType} con ID ${entityId}`;
       }
       
       const updated = responseBody?.success ? 
-        (responseBody[entityType.toLowerCase()] || responseBody.data) : null;
+        (responseBody.product || responseBody.user || responseBody.kyc || responseBody.contract) : null;
       if (updated) {
         newValues = formatEntityForAudit(updated);
       }
       
-      description = `Updated ${entityType.toLowerCase()} with ID ${entityId}`;
+      // For request body changes
+      if (req.body && Object.keys(req.body).length > 0) {
+        newValues = formatEntityForAudit(req.body);
+      }
+      
     } else if (action === 'DELETE') {
       entityId = req.params.id || 'unknown';
-      description = `Deleted ${entityType.toLowerCase()} with ID ${entityId}`;
+      description = `Eliminó ${entityType} con ID ${entityId}`;
     }
 
     // Get client info
@@ -140,10 +150,11 @@ async function logAuditEntry(
       description,
       ipAddress,
       userAgent
-    });
+    });;
 
   } catch (error) {
-    console.error('Error logging audit entry:', error);
+    console.error('[AUDIT] Error logging audit entry:', error);
+    console.error('[AUDIT] Error stack:', error.stack);
     // Don't throw error to avoid breaking the main operation
   }
 }
@@ -157,7 +168,7 @@ export const auditUser = {
 
 export const auditKyc = {
   create: createAuditMiddleware('CREATE', 'kyc'),
-  update: createAuditMiddleware('UPDATE', 'kyc'),
+  update: createAuditMiddleware('REVIEW', 'kyc'),
   delete: createAuditMiddleware('DELETE', 'kyc')
 };
 
