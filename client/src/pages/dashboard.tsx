@@ -889,15 +889,15 @@ export default function Dashboard() {
   useScrollToTop();
   const [, setLocation] = useLocation();
 
-  // ahora el menú tiene 5 entradas
-  const [activeTab, setActiveTab] = useState<"inicio" | "perfil" | "productos" | "deposito" | "retiro">("inicio");
+  // ahora el menú tiene 6 entradas
+  const [activeTab, setActiveTab] = useState<"inicio" | "perfil" | "productos" | "contratos" | "deposito" | "retiro">("inicio");
 
   const [showCalculator, setShowCalculator] = useState(false);
   const [profilePhoto, setProfilePhoto] = useState<string | null>(null);
   const [phoneNumber, setPhoneNumber] = useState("646 123 456");
 
   const [activeProductsView, setActiveProductsView] = useState<
-    "default" | "mis-productos" | "historial" | "transacciones" | "contratos" | "producto-detalle"
+    "default" | "mis-productos" | "historial" | "producto-detalle"
   >("default");
   const [activeProductsSubTab, setActiveProductsSubTab] = useState<"activos" | "completados" | "cancelados">("activos");
 
@@ -1210,6 +1210,7 @@ export default function Dashboard() {
             { id: "inicio", label: "Resumen", icon: Calendar },
             { id: "perfil", label: "Perfil", icon: User },
             { id: "productos", label: "Productos", icon: Package },
+            { id: "contratos", label: "Contratos", icon: FileText },
             { id: "deposito", label: "Depósito", icon: Banknote },
             { id: "retiro", label: "Retiro", icon: Wallet },
           ].map((item) => (
@@ -1581,7 +1582,7 @@ export default function Dashboard() {
                 </div>
 
                 {/* Action Buttons */}
-                <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
                   <Button
                     variant="outline"
                     className="border-emerald-500/30 text-emerald-50 hover:bg-emerald-900/10 hover:border-emerald-400 py-4 rounded-xl"
@@ -1597,22 +1598,6 @@ export default function Dashboard() {
                   >
                     <Calendar className="h-5 w-5 mr-2" />
                     Historial
-                  </Button>
-                  <Button
-                    variant="outline"
-                    className="border-emerald-500/30 text-emerald-50 hover:bg-emerald-900/10 hover:border-emerald-400 py-4 rounded-xl"
-                    onClick={() => setActiveProductsView("transacciones")}
-                  >
-                    <TrendingUp className="h-5 w-5 mr-2" />
-                    Transacciones
-                  </Button>
-                  <Button
-                    variant="outline"
-                    className="border-emerald-500/30 text-emerald-50 hover:bg-emerald-900/10 hover:border-emerald-400 py-4 rounded-xl"
-                    onClick={() => setActiveProductsView("contratos")}
-                  >
-                    <Download className="h-5 w-5 mr-2" />
-                    Contratos
                   </Button>
                 </div>
 
@@ -2013,453 +1998,222 @@ export default function Dashboard() {
               </div>
             ) : null}
 
-            {/* -------------------------------- Contratos -------------------------------- */}
-            {activeProductsView === "contratos" ? (
-              <div className="mb-8">
-                <div className="flex items-center gap-4 mb-4">
+
+
+
+          </div>
+        ) : activeTab === "contratos" ? (
+          <div>
+            <div className="mb-8">
+              <h1 className="text-3xl font-bold text-emerald-50">Contratos</h1>
+              <p className="text-emerald-200/80">Gestiona y descarga tus contratos</p>
+            </div>
+
+            {/* Filtros Contratos */}
+            <div className="mb-6">
+              <div className="flex items-center justify-between mb-4">
+                <Button
+                  variant="outline"
+                  onClick={() => setShowCFilters(!showCFilters)}
+                  className="border-emerald-500/20 text-emerald-50 hover:bg-emerald-900/10"
+                >
+                  <Filter className="w-4 h-4 mr-2" />
+                  {showCFilters ? "Ocultar Filtros" : "Mostrar Filtros"}
+                </Button>
+
+                {(Object.values(cFilters).some((v) => v !== "") || cSort !== "") && (
                   <Button
-                    variant="outline"
-                    onClick={() => setActiveProductsView("default")}
-                    className="border-emerald-500/30 text-emerald-50 hover:bg-emerald-900/10"
+                    variant="ghost"
+                    onClick={() => {
+                      setCFilters({ search: "", estado: "", dateFrom: "", dateTo: "", tipo: "" });
+                      setCSort("");
+                    }}
+                    className="text-emerald-200 hover:text-emerald-50"
                   >
-                    <ArrowLeft className="h-4 w-4 mr-2" />
-                    Volver
+                    <X className="w-4 h-4 mr-2" />
+                    Limpiar Filtros
                   </Button>
-                  <h2 className="text-2xl font-bold text-emerald-50">Contratos Disponibles</h2>
-                </div>
-
-                {/* Filtros Contratos */}
-                <div className="mb-6">
-                  <div className="flex items-center justify-between mb-4">
-                    <Button
-                      variant="outline"
-                      onClick={() => setShowCFilters(!showCFilters)}
-                      className="border-emerald-500/20 text-emerald-50 hover:bg-emerald-900/10"
-                    >
-                      <Filter className="w-4 h-4 mr-2" />
-                      {showCFilters ? "Ocultar Filtros" : "Mostrar Filtros"}
-                    </Button>
-
-                    {(Object.values(cFilters).some((v) => v !== "") || cSort !== "") && (
-                      <Button
-                        variant="ghost"
-                        onClick={() => {
-                          setCFilters({ search: "", estado: "", dateFrom: "", dateTo: "", tipo: "" });
-                          setCSort("");
-                        }}
-                        className="text-emerald-200 hover:text-emerald-50"
-                      >
-                        <X className="w-4 h-4 mr-2" />
-                        Limpiar Filtros
-                      </Button>
-                    )}
-                  </div>
-
-                  {showCFilters && (
-                    <Card className="bg-black/40 border border-emerald-500/15 rounded-2xl">
-                      <CardContent className="p-6">
-                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                          <div className="space-y-2">
-                            <Label className="text-emerald-50">Búsqueda</Label>
-                            <Input
-                              placeholder="Buscar por ID, título o descripción…"
-                              value={cFilters.search}
-                              onChange={(e) => setCFilters({ ...cFilters, search: e.target.value })}
-                              className="bg-black/50 border-emerald-500/20 text-emerald-50"
-                            />
-                          </div>
-                          <div className="space-y-2">
-                            <Label className="text-emerald-50">Estado</Label>
-                            <Select value={cFilters.estado} onValueChange={(v) => setCFilters({ ...cFilters, estado: v })}>
-                              <SelectTrigger className="bg-black/50 border-emerald-500/20 text-emerald-50">
-                                <SelectValue placeholder="Todos" />
-                              </SelectTrigger>
-                              <SelectContent>
-                                <SelectItem value="Disponible">Disponible</SelectItem>
-                                <SelectItem value="No disponible">No disponible</SelectItem>
-                              </SelectContent>
-                            </Select>
-                          </div>
-                          <div className="space-y-2">
-                            <Label className="text-emerald-50">Categoría</Label>
-                            <Select value={cFilters.tipo} onValueChange={(v) => setCFilters({ ...cFilters, tipo: v })}>
-                              <SelectTrigger className="bg-black/50 border-emerald-500/20 text-emerald-50">
-                                <SelectValue placeholder="Todas" />
-                              </SelectTrigger>
-                              <SelectContent>
-                                <SelectItem value="Producto">Producto</SelectItem>
-                                <SelectItem value="Legal">Legal</SelectItem>
-                              </SelectContent>
-                            </Select>
-                          </div>
-                          <div className="space-y-2">
-                            <Label className="text-emerald-50">Desde</Label>
-                            <Input
-                              type="date"
-                              value={cFilters.dateFrom}
-                              onChange={(e) => setCFilters({ ...cFilters, dateFrom: e.target.value })}
-                              className="bg-black/50 border-emerald-500/20 text-emerald-50"
-                            />
-                          </div>
-                          <div className="space-y-2">
-                            <Label className="text-emerald-50">Hasta</Label>
-                            <Input
-                              type="date"
-                              value={cFilters.dateTo}
-                              onChange={(e) => setCFilters({ ...cFilters, dateTo: e.target.value })}
-                              className="bg-black/50 border-emerald-500/20 text-emerald-50"
-                            />
-                          </div>
-                          <div className="space-y-2">
-                            <Label className="text-emerald-50">Ordenar por</Label>
-                            <Select value={cSort} onValueChange={(v) => setCSort(v as typeof cSort)}>
-                              <SelectTrigger className="bg-black/50 border-emerald-500/20 text-emerald-50">
-                                <SelectValue placeholder="Sin orden" />
-                              </SelectTrigger>
-                              <SelectContent>
-                                <SelectItem value="dateDesc">Fecha (Más recientes)</SelectItem>
-                                <SelectItem value="dateAsc">Fecha (Más antiguos)</SelectItem>
-                              </SelectContent>
-                            </Select>
-                          </div>
-                        </div>
-                      </CardContent>
-                    </Card>
-                  )}
-                </div>
-
-                {/* Listado de contratos filtrados */}
-                <div className="space-y-4">
-                  {contratosCliente
-                    .filter((c) => {
-                      const q = cFilters.search.toLowerCase();
-                      const matchesSearch =
-                        !q ||
-                        c.id.toLowerCase().includes(q) ||
-                        c.titulo.toLowerCase().includes(q) ||
-                        c.descripcion.toLowerCase().includes(q);
-
-                      const matchesEstado = !cFilters.estado || c.estado === cFilters.estado;
-                      const matchesTipo = !cFilters.tipo || c.categoria === cFilters.tipo;
-
-                      const t = new Date(c.fecha).getTime();
-                      const fromOk = !cFilters.dateFrom || t >= new Date(cFilters.dateFrom).getTime();
-                      const toOk = !cFilters.dateTo || t <= new Date(cFilters.dateTo).getTime();
-
-                      return matchesSearch && matchesEstado && matchesTipo && fromOk && toOk;
-                    })
-                    .sort((a, b) => {
-                      if (cSort === "dateDesc") return new Date(b.fecha).getTime() - new Date(a.fecha).getTime();
-                      if (cSort === "dateAsc") return new Date(a.fecha).getTime() - new Date(b.fecha).getTime();
-                      return 0;
-                    })
-                    .map((doc) => (
-                      <Card key={doc.id} className="bg-black/40 border border-emerald-500/15 hover:border-emerald-400 transition-all rounded-2xl">
-                        <CardContent className="p-6">
-                          <div className="flex items-center justify-between">
-                            <div className="flex-1">
-                              <div className="flex items-center gap-3 mb-2">
-                                <div className="w-10 h-10 bg-emerald-500 rounded-lg flex items-center justify-center">
-                                  <Download className="h-5 w-5 text-black" />
-                                </div>
-                                <div>
-                                  <h4 className="text-lg font-semibold text-emerald-50">{doc.titulo}</h4>
-                                  <p className="text-emerald-200/80 text-sm">{doc.descripcion}</p>
-                                </div>
-                              </div>
-                              <div className="grid grid-cols-2 md:grid-cols-5 gap-4 text-sm mt-4">
-                                <div>
-                                  <p className="text-emerald-200/80">ID</p>
-                                  <p className="text-emerald-50 font-medium">{doc.id}</p>
-                                </div>
-                                <div>
-                                  <p className="text-emerald-200/80">Tipo</p>
-                                  <p className="text-emerald-50 font-medium">{doc.tipo}</p>
-                                </div>
-                                <div>
-                                  <p className="text-emerald-200/80">Tamaño</p>
-                                  <p className="text-emerald-50 font-medium">{doc.tamano}</p>
-                                </div>
-                                <div>
-                                  <p className="text-emerald-200/80">Fecha</p>
-                                  <p className="text-emerald-50 font-medium">
-                                    {new Date(doc.fecha).toLocaleDateString("es-ES")}
-                                  </p>
-                                </div>
-                                <div>
-                                  <p className="text-emerald-200/80">Estado</p>
-                                  <Badge className="bg-emerald-500 text-black">{doc.estado}</Badge>
-                                </div>
-                              </div>
-                            </div>
-                            <div className="ml-6">
-                              <Button
-                                className="rounded-xl bg-gradient-to-r from-emerald-600 to-emerald-500 hover:from-emerald-500 hover:to-emerald-400 text-white px-6"
-                                onClick={() => alert("Descarga pendiente de implementar")}
-                              >
-                                <Download className="h-4 w-4 mr-2" />
-                                Descargar
-                              </Button>
-                            </div>
-                          </div>
-                        </CardContent>
-                      </Card>
-                    ))}
-
-                  {/* Placeholder si no hay resultados */}
-                  {contratosCliente
-                    .filter((c) => {
-                      const q = cFilters.search.toLowerCase();
-                      const matchesSearch =
-                        !q ||
-                        c.id.toLowerCase().includes(q) ||
-                        c.titulo.toLowerCase().includes(q) ||
-                        c.descripcion.toLowerCase().includes(q);
-                      const matchesEstado = !cFilters.estado || c.estado === cFilters.estado;
-                      const matchesTipo = !cFilters.tipo || c.categoria === cFilters.tipo;
-                      const t = new Date(c.fecha).getTime();
-                      const fromOk = !cFilters.dateFrom || t >= new Date(cFilters.dateFrom).getTime();
-                      const toOk = !cFilters.dateTo || t <= new Date(cFilters.dateTo).getTime();
-                      return matchesSearch && matchesEstado && matchesTipo && fromOk && toOk;
-                    }).length === 0 && (
-                    <Card className="bg-black/30 border border-emerald-500/15 border-dashed rounded-2xl">
-                      <CardContent className="p-8">
-                        <div className="text-center text-emerald-200/80">
-                          <Download className="h-12 w-12 mx-auto mb-4 text-emerald-400" />
-                          <p className="text-lg mb-2 text-emerald-50/90">No hay contratos para los filtros aplicados</p>
-                          <p className="text-sm">Ajusta los filtros para ver más resultados.</p>
-                        </div>
-                      </CardContent>
-                    </Card>
-                  )}
-                </div>
+                )}
               </div>
-            ) : null}
 
-            {/* ---------------------------- Transacciones ---------------------------- */}
-            {activeProductsView === "transacciones" ? (
-              <div className="mb-8">
-                <div className="flex items-center gap-4 mb-4">
-                  <Button
-                    variant="outline"
-                    onClick={() => setActiveProductsView("default")}
-                    className="border-emerald-500/30 text-emerald-50 hover:bg-emerald-900/10"
-                  >
-                    <ArrowLeft className="h-4 w-4 mr-2" />
-                    Volver
-                  </Button>
-                  <h2 className="text-2xl font-bold text-emerald-50">Historial de Transacciones</h2>
-                </div>
-
-                {/* Filtros Transacciones */}
-                <div className="mb-6">
-                  <div className="flex items-center justify-between mb-4">
-                    <Button
-                      variant="outline"
-                      onClick={() => setShowTxFilters(!showTxFilters)}
-                      className="border-emerald-500/20 text-emerald-50 hover:bg-emerald-900/10"
-                    >
-                      <Filter className="w-4 h-4 mr-2" />
-                      {showTxFilters ? "Ocultar Filtros" : "Mostrar Filtros"}
-                    </Button>
-
-                    {(Object.values(txFilters).some((v) => v !== "") || txSort !== "") && (
-                      <Button
-                        variant="ghost"
-                        onClick={() => {
-                          setTxFilters({
-                            search: "",
-                            tipo: "",
-                            estado: "",
-                            cantidadMin: "",
-                            cantidadMax: "",
-                            dateFrom: "",
-                            dateTo: "",
-                          });
-                          setTxSort("");
-                        }}
-                        className="text-emerald-200 hover:text-emerald-50"
-                      >
-                        <X className="w-4 h-4 mr-2" />
-                        Limpiar Filtros
-                      </Button>
-                    )}
-                  </div>
-
-                  {showTxFilters && (
-                    <Card className="bg-black/40 border border-emerald-500/15 rounded-2xl">
-                      <CardContent className="p-6">
-                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                          <div className="space-y-2">
-                            <Label className="text-emerald-50">Búsqueda</Label>
-                            <Input
-                              placeholder="Buscar por descripción…"
-                              value={txFilters.search}
-                              onChange={(e) => setTxFilters({ ...txFilters, search: e.target.value })}
-                              className="bg-black/50 border-emerald-500/20 text-emerald-50"
-                            />
-                          </div>
-                          <div className="space-y-2">
-                            <Label className="text-emerald-50">Tipo</Label>
-                            <Select value={txFilters.tipo} onValueChange={(v) => setTxFilters({ ...txFilters, tipo: v })}>
-                              <SelectTrigger className="bg-black/50 border-emerald-500/20 text-emerald-50">
-                                <SelectValue placeholder="Todos" />
-                              </SelectTrigger>
-                              <SelectContent>
-                                <SelectItem value="Depósito">Depósito</SelectItem>
-                                <SelectItem value="Retiro">Retiro</SelectItem>
-                                <SelectItem value="Intereses">Intereses</SelectItem>
-                                <SelectItem value="Renovación">Renovación</SelectItem>
-                              </SelectContent>
-                            </Select>
-                          </div>
-                          <div className="space-y-2">
-                            <Label className="text-emerald-50">Estado</Label>
-                            <Select value={txFilters.estado} onValueChange={(v) => setTxFilters({ ...txFilters, estado: v })}>
-                              <SelectTrigger className="bg-black/50 border-emerald-500/20 text-emerald-50">
-                                <SelectValue placeholder="Todos" />
-                              </SelectTrigger>
-                              <SelectContent>
-                                <SelectItem value="Completada">Completada</SelectItem>
-                                <SelectItem value="Pendiente">Pendiente</SelectItem>
-                                <SelectItem value="Rechazada">Rechazada</SelectItem>
-                              </SelectContent>
-                            </Select>
-                          </div>
-
-                          <div className="space-y-2">
-                            <Label className="text-emerald-50">Cantidad (€)</Label>
-                            <div className="flex space-x-2">
-                              <Input
-                                placeholder="Mín"
-                                value={txFilters.cantidadMin}
-                                onChange={(e) => setTxFilters({ ...txFilters, cantidadMin: e.target.value })}
-                                className="bg-black/50 border-emerald-500/20 text-emerald-50"
-                              />
-                              <Input
-                                placeholder="Máx"
-                                value={txFilters.cantidadMax}
-                                onChange={(e) => setTxFilters({ ...txFilters, cantidadMax: e.target.value })}
-                                className="bg-black/50 border-emerald-500/20 text-emerald-50"
-                              />
-                            </div>
-                          </div>
-
-                          <div className="space-y-2">
-                            <Label className="text-emerald-50">Desde</Label>
-                            <Input
-                              type="date"
-                              value={txFilters.dateFrom}
-                              onChange={(e) => setTxFilters({ ...txFilters, dateFrom: e.target.value })}
-                              className="bg-black/50 border-emerald-500/20 text-emerald-50"
-                            />
-                          </div>
-                          <div className="space-y-2">
-                            <Label className="text-emerald-50">Hasta</Label>
-                            <Input
-                              type="date"
-                              value={txFilters.dateTo}
-                              onChange={(e) => setTxFilters({ ...txFilters, dateTo: e.target.value })}
-                              className="bg-black/50 border-emerald-500/20 text-emerald-50"
-                            />
-                          </div>
-
-                          <div className="space-y-2">
-                            <Label className="text-emerald-50">Ordenar por</Label>
-                            <Select value={txSort} onValueChange={(v) => setTxSort(v as typeof txSort)}>
-                              <SelectTrigger className="bg-black/50 border-emerald-500/20 text-emerald-50">
-                                <SelectValue placeholder="Sin orden" />
-                              </SelectTrigger>
-                              <SelectContent>
-                                <SelectItem value="dateDesc">Fecha (Más recientes)</SelectItem>
-                                <SelectItem value="dateAsc">Fecha (Más antiguos)</SelectItem>
-                                <SelectItem value="cantidadDesc">Cantidad (Mayor a menor)</SelectItem>
-                                <SelectItem value="cantidadAsc">Cantidad (Menor a mayor)</SelectItem>
-                              </SelectContent>
-                            </Select>
-                          </div>
-                        </div>
-                      </CardContent>
-                    </Card>
-                  )}
-                </div>
-
-                {/* Tabla transacciones */}
+              {showCFilters && (
                 <Card className="bg-black/40 border border-emerald-500/15 rounded-2xl">
-                  <CardContent className="p-0">
-                    <div className="overflow-hidden rounded-xl">
-                      <table className="w-full">
-                        <thead className="bg-black/40 border-b border-emerald-500/15">
-                          <tr>
-                            {["FECHA", "TIPO", "DESCRIPCIÓN", "CANTIDAD", "ESTADO"].map((h) => (
-                              <th key={h} className="text-left p-4 text-emerald-200/80 font-medium">
-                                {h}
-                              </th>
-                            ))}
-                          </tr>
-                        </thead>
-                        <tbody>
-                          {transacciones
-                            .filter((t) => {
-                              const q = txFilters.search.toLowerCase();
-                              const matchesSearch = !q || t.descripcion.toLowerCase().includes(q);
-                              const matchesTipo = !txFilters.tipo || t.tipo === txFilters.tipo;
-                              const matchesEstado = !txFilters.estado || t.estado === txFilters.estado;
-
-                              const minC = txFilters.cantidadMin ? parseFloat(txFilters.cantidadMin) : -Infinity;
-                              const maxC = txFilters.cantidadMax ? parseFloat(txFilters.cantidadMax) : Infinity;
-                              const matchesCantidad = t.cantidad >= minC && t.cantidad <= maxC;
-
-                              const ts = new Date(t.fecha).getTime();
-                              const fromOk = !txFilters.dateFrom || ts >= new Date(txFilters.dateFrom).getTime();
-                              const toOk = !txFilters.dateTo || ts <= new Date(txFilters.dateTo).getTime();
-
-                              return matchesSearch && matchesTipo && matchesEstado && matchesCantidad && fromOk && toOk;
-                            })
-                            .sort((a, b) => {
-                              if (txSort === "dateDesc") return new Date(b.fecha).getTime() - new Date(a.fecha).getTime();
-                              if (txSort === "dateAsc") return new Date(a.fecha).getTime() - new Date(b.fecha).getTime();
-                              if (txSort === "cantidadDesc") return b.cantidad - a.cantidad;
-                              if (txSort === "cantidadAsc") return a.cantidad - b.cantidad;
-                              return 0;
-                            })
-                            .map((t, i) => (
-                              <tr key={i} className="border-b border-emerald-500/10">
-                                <td className="p-4 text-emerald-50">{new Date(t.fecha).toLocaleDateString("es-ES")}</td>
-                                <td className="p-4 text-emerald-50">{t.tipo}</td>
-                                <td className="p-4 text-emerald-50">{t.descripcion}</td>
-                                <td className={`p-4 ${t.cantidad >= 0 ? "text-emerald-400" : "text-red-400"} font-medium`}>
-                                  {t.cantidad.toLocaleString("es-ES", { style: "currency", currency: "EUR" })}
-                                </td>
-                                <td className="p-4">
-                                  <Badge
-                                    className={
-                                      t.estado === "Completada"
-                                        ? "bg-emerald-500 text-black"
-                                        : t.estado === "Pendiente"
-                                        ? "bg-amber-500 text-black"
-                                        : "bg-red-500 text-white"
-                                    }
-                                  >
-                                    {t.estado}
-                                  </Badge>
-                                </td>
-                              </tr>
-                            ))}
-                          {transacciones.filter((_) => true).length === 0 && (
-                            <tr>
-                              <td colSpan={5} className="p-8 text-center text-emerald-200/80">
-                                No hay transacciones para mostrar
-                              </td>
-                            </tr>
-                          )}
-                        </tbody>
-                      </table>
+                  <CardContent className="p-6">
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                      <div className="space-y-2">
+                        <Label className="text-emerald-50">Búsqueda</Label>
+                        <Input
+                          placeholder="Buscar por ID, título o descripción…"
+                          value={cFilters.search}
+                          onChange={(e) => setCFilters({ ...cFilters, search: e.target.value })}
+                          className="bg-black/50 border-emerald-500/20 text-emerald-50"
+                        />
+                      </div>
+                      <div className="space-y-2">
+                        <Label className="text-emerald-50">Estado</Label>
+                        <Select value={cFilters.estado} onValueChange={(v) => setCFilters({ ...cFilters, estado: v })}>
+                          <SelectTrigger className="bg-black/50 border-emerald-500/20 text-emerald-50">
+                            <SelectValue placeholder="Todos" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="Disponible">Disponible</SelectItem>
+                            <SelectItem value="No disponible">No disponible</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+                      <div className="space-y-2">
+                        <Label className="text-emerald-50">Categoría</Label>
+                        <Select value={cFilters.tipo} onValueChange={(v) => setCFilters({ ...cFilters, tipo: v })}>
+                          <SelectTrigger className="bg-black/50 border-emerald-500/20 text-emerald-50">
+                            <SelectValue placeholder="Todas" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="Producto">Producto</SelectItem>
+                            <SelectItem value="Legal">Legal</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+                      <div className="space-y-2">
+                        <Label className="text-emerald-50">Desde</Label>
+                        <Input
+                          type="date"
+                          value={cFilters.dateFrom}
+                          onChange={(e) => setCFilters({ ...cFilters, dateFrom: e.target.value })}
+                          className="bg-black/50 border-emerald-500/20 text-emerald-50"
+                        />
+                      </div>
+                      <div className="space-y-2">
+                        <Label className="text-emerald-50">Hasta</Label>
+                        <Input
+                          type="date"
+                          value={cFilters.dateTo}
+                          onChange={(e) => setCFilters({ ...cFilters, dateTo: e.target.value })}
+                          className="bg-black/50 border-emerald-500/20 text-emerald-50"
+                        />
+                      </div>
+                      <div className="space-y-2">
+                        <Label className="text-emerald-50">Ordenar por</Label>
+                        <Select value={cSort} onValueChange={(v) => setCSort(v as typeof cSort)}>
+                          <SelectTrigger className="bg-black/50 border-emerald-500/20 text-emerald-50">
+                            <SelectValue placeholder="Sin orden" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="dateDesc">Fecha (Más recientes)</SelectItem>
+                            <SelectItem value="dateAsc">Fecha (Más antiguos)</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
                     </div>
                   </CardContent>
                 </Card>
-              </div>
-            ) : null}
+              )}
+            </div>
+
+            {/* Listado de contratos filtrados */}
+            <div className="space-y-4">
+              {contratosCliente
+                .filter((c) => {
+                  const q = cFilters.search.toLowerCase();
+                  const matchesSearch =
+                    !q ||
+                    c.id.toLowerCase().includes(q) ||
+                    c.titulo.toLowerCase().includes(q) ||
+                    c.descripcion.toLowerCase().includes(q);
+
+                  const matchesEstado = !cFilters.estado || c.estado === cFilters.estado;
+                  const matchesTipo = !cFilters.tipo || c.categoria === cFilters.tipo;
+
+                  const t = new Date(c.fecha).getTime();
+                  const fromOk = !cFilters.dateFrom || t >= new Date(cFilters.dateFrom).getTime();
+                  const toOk = !cFilters.dateTo || t <= new Date(cFilters.dateTo).getTime();
+
+                  return matchesSearch && matchesEstado && matchesTipo && fromOk && toOk;
+                })
+                .sort((a, b) => {
+                  if (cSort === "dateDesc") return new Date(b.fecha).getTime() - new Date(a.fecha).getTime();
+                  if (cSort === "dateAsc") return new Date(a.fecha).getTime() - new Date(b.fecha).getTime();
+                  return 0;
+                })
+                .map((doc) => (
+                  <Card key={doc.id} className="bg-black/40 border border-emerald-500/15 hover:border-emerald-400 transition-all rounded-2xl">
+                    <CardContent className="p-6">
+                      <div className="flex items-center justify-between">
+                        <div className="flex-1">
+                          <div className="flex items-center gap-3 mb-2">
+                            <div className="w-10 h-10 bg-emerald-500 rounded-lg flex items-center justify-center">
+                              <Download className="h-5 w-5 text-black" />
+                            </div>
+                            <div>
+                              <h4 className="text-lg font-semibold text-emerald-50">{doc.titulo}</h4>
+                              <p className="text-emerald-200/80 text-sm">{doc.descripcion}</p>
+                            </div>
+                          </div>
+                          <div className="grid grid-cols-2 md:grid-cols-5 gap-4 text-sm mt-4">
+                            <div>
+                              <p className="text-emerald-200/80">ID</p>
+                              <p className="text-emerald-50 font-medium">{doc.id}</p>
+                            </div>
+                            <div>
+                              <p className="text-emerald-200/80">Tipo</p>
+                              <p className="text-emerald-50 font-medium">{doc.tipo}</p>
+                            </div>
+                            <div>
+                              <p className="text-emerald-200/80">Tamaño</p>
+                              <p className="text-emerald-50 font-medium">{doc.tamano}</p>
+                            </div>
+                            <div>
+                              <p className="text-emerald-200/80">Fecha</p>
+                              <p className="text-emerald-50 font-medium">
+                                {new Date(doc.fecha).toLocaleDateString("es-ES")}
+                              </p>
+                            </div>
+                            <div>
+                              <p className="text-emerald-200/80">Estado</p>
+                              <Badge className="bg-emerald-500 text-black">{doc.estado}</Badge>
+                            </div>
+                          </div>
+                        </div>
+                        <div className="ml-6">
+                          <Button
+                            className="rounded-xl bg-gradient-to-r from-emerald-600 to-emerald-500 hover:from-emerald-500 hover:to-emerald-400 text-white px-6"
+                            onClick={() => alert("Descarga pendiente de implementar")}
+                          >
+                            <Download className="h-4 w-4 mr-2" />
+                            Descargar
+                          </Button>
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
+                ))}
+
+              {/* Placeholder si no hay resultados */}
+              {contratosCliente
+                .filter((c) => {
+                  const q = cFilters.search.toLowerCase();
+                  const matchesSearch =
+                    !q ||
+                    c.id.toLowerCase().includes(q) ||
+                    c.titulo.toLowerCase().includes(q) ||
+                    c.descripcion.toLowerCase().includes(q);
+                  const matchesEstado = !cFilters.estado || c.estado === cFilters.estado;
+                  const matchesTipo = !cFilters.tipo || c.categoria === cFilters.tipo;
+                  const t = new Date(c.fecha).getTime();
+                  const fromOk = !cFilters.dateFrom || t >= new Date(cFilters.dateFrom).getTime();
+                  const toOk = !cFilters.dateTo || t <= new Date(cFilters.dateTo).getTime();
+                  return matchesSearch && matchesEstado && matchesTipo && fromOk && toOk;
+                }).length === 0 && (
+                <Card className="bg-black/30 border border-emerald-500/15 border-dashed rounded-2xl">
+                  <CardContent className="p-8">
+                    <div className="text-center text-emerald-200/80">
+                      <Download className="h-12 w-12 mx-auto mb-4 text-emerald-400" />
+                      <p className="text-lg mb-2 text-emerald-50/90">No hay contratos para los filtros aplicados</p>
+                      <p className="text-sm">Ajusta los filtros para ver más resultados.</p>
+                    </div>
+                  </CardContent>
+                </Card>
+              )}
+            </div>
           </div>
         ) : activeTab === "deposito" ? (
           <DepositoView 
