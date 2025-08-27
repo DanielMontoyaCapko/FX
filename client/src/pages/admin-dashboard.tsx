@@ -231,6 +231,8 @@ export default function AdminDashboard() {
   const [editingProduct, setEditingProduct] = useState<ProductData | null>(null);
   const [editingKyc, setEditingKyc] = useState<KycData | null>(null);
   const [editingContract, setEditingContract] = useState<any>(null);
+  const [showDocumentsDialog, setShowDocumentsDialog] = useState(false);
+  const [viewingDocuments, setViewingDocuments] = useState<string[] | null>(null);
   
   // KYC Review states
   const [kycReviewStatus, setKycReviewStatus] = useState<"approved" | "rejected">("approved");
@@ -714,6 +716,20 @@ export default function AdminDashboard() {
   const handleEditKyc = (k: KycData) => {
     setEditingKyc(k);
     setShowKycDialog(true);
+  };
+
+  const handleViewDocuments = (documentsUrls: string[] | null) => {
+    if (!documentsUrls || documentsUrls.length === 0) {
+      alert("No hay documentos disponibles para este registro KYC");
+      return;
+    }
+    setViewingDocuments(documentsUrls);
+    setShowDocumentsDialog(true);
+  };
+
+  const handleCloseDocumentsDialog = () => {
+    setShowDocumentsDialog(false);
+    setViewingDocuments(null);
   };
   const handleCloseKycDialog = () => {
     setShowKycDialog(false);
@@ -1574,6 +1590,16 @@ export default function AdminDashboard() {
                                 onClick={() => openUserProfileByName(record.fullName)}
                                 title="Ver ficha del usuario"
                               >
+                                <UserIcon className="w-4 h-4" />
+                              </Button>
+                              <Button
+                                size="sm"
+                                variant="outline"
+                                className="border-blue-500/20 text-blue-50"
+                                onClick={() => handleViewDocuments(record.documentsUrls)}
+                                title="Ver documentos subidos"
+                                disabled={!record.documentsUrls || record.documentsUrls.length === 0}
+                              >
                                 <Eye className="w-4 h-4" />
                               </Button>
                               <Button
@@ -1581,6 +1607,7 @@ export default function AdminDashboard() {
                                 variant="outline"
                                 className="border-emerald-500/20 text-emerald-50"
                                 onClick={() => handleEditKyc(record)}
+                                title="Editar estado KYC"
                               >
                                 <Edit className="w-4 h-4" />
                               </Button>
@@ -2654,6 +2681,93 @@ export default function AdminDashboard() {
                 </DialogFooter>
               </form>
             )}
+          </DialogContent>
+        </Dialog>
+
+        {/* Documents Viewer Dialog */}
+        <Dialog open={showDocumentsDialog} onOpenChange={handleCloseDocumentsDialog}>
+          <DialogContent className="bg-black/40 border border-emerald-500/15 text-emerald-50 max-w-4xl">
+            <DialogHeader>
+              <DialogTitle>Documentos KYC</DialogTitle>
+              <DialogDescription className="text-emerald-200/80">
+                Documentos subidos por el cliente
+              </DialogDescription>
+            </DialogHeader>
+            <div className="grid gap-4 py-4">
+              {viewingDocuments && viewingDocuments.length > 0 ? (
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  {viewingDocuments.map((docUrl, index) => (
+                    <div key={index} className="border border-emerald-500/20 rounded-lg p-4 bg-black/20">
+                      <div className="flex items-center justify-between mb-3">
+                        <div className="text-sm text-emerald-200/80">
+                          Documento {index + 1}
+                        </div>
+                        <Badge className="bg-blue-500/20 text-blue-200">
+                          {docUrl.toLowerCase().includes('.pdf') ? 'PDF' : 'Imagen'}
+                        </Badge>
+                      </div>
+                      
+                      {docUrl.toLowerCase().includes('.pdf') ? (
+                        <div className="flex flex-col items-center space-y-3">
+                          <FileText className="w-16 h-16 text-red-400" />
+                          <p className="text-sm text-emerald-200/80 text-center">
+                            {docUrl.split('/').pop()}
+                          </p>
+                          <Button
+                            size="sm"
+                            className="bg-gradient-to-r from-blue-600 to-blue-500 hover:from-blue-500 hover:to-blue-400 text-white"
+                            onClick={() => window.open(docUrl, '_blank')}
+                          >
+                            <Download className="w-4 h-4 mr-2" />
+                            Abrir PDF
+                          </Button>
+                        </div>
+                      ) : (
+                        <div className="flex flex-col items-center space-y-3">
+                          <div className="w-full h-40 bg-black/30 rounded-lg flex items-center justify-center border border-emerald-500/10">
+                            <img
+                              src={docUrl}
+                              alt={`Documento ${index + 1}`}
+                              className="max-w-full max-h-full object-contain rounded-lg"
+                              onError={(e) => {
+                                const target = e.target as HTMLImageElement;
+                                target.style.display = 'none';
+                                target.nextElementSibling?.classList.remove('hidden');
+                              }}
+                            />
+                            <div className="hidden text-center text-emerald-200/60">
+                              <FileText className="w-8 h-8 mx-auto mb-2" />
+                              <p className="text-sm">No se puede mostrar el documento</p>
+                            </div>
+                          </div>
+                          <p className="text-sm text-emerald-200/80 text-center">
+                            {docUrl.split('/').pop()}
+                          </p>
+                          <Button
+                            size="sm"
+                            className="bg-gradient-to-r from-emerald-600 to-emerald-500 hover:from-emerald-500 hover:to-emerald-400 text-white"
+                            onClick={() => window.open(docUrl, '_blank')}
+                          >
+                            <Eye className="w-4 h-4 mr-2" />
+                            Ver Original
+                          </Button>
+                        </div>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <div className="text-center py-8">
+                  <FileText className="w-16 h-16 text-emerald-300/50 mx-auto mb-4" />
+                  <p className="text-emerald-200/80">No hay documentos disponibles</p>
+                </div>
+              )}
+            </div>
+            <DialogFooter>
+              <Button onClick={handleCloseDocumentsDialog} className="bg-gradient-to-r from-emerald-600 to-emerald-500 hover:from-emerald-500 hover:to-emerald-400 text-white">
+                Cerrar
+              </Button>
+            </DialogFooter>
           </DialogContent>
         </Dialog>
       </main>
