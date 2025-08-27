@@ -2708,10 +2708,17 @@ export default function AdminDashboard() {
                           <Button
                             size="sm"
                             className="bg-gradient-to-r from-blue-600 to-blue-500 hover:from-blue-500 hover:to-blue-400 text-white"
-                            onClick={() => window.open(docUrl, '_blank')}
+                            onClick={() => {
+                              const link = document.createElement('a');
+                              link.href = docUrl;
+                              link.download = docUrl.split('/').pop() || 'documento.pdf';
+                              document.body.appendChild(link);
+                              link.click();
+                              document.body.removeChild(link);
+                            }}
                           >
                             <Download className="w-4 h-4 mr-2" />
-                            Abrir PDF
+                            Descargar PDF
                           </Button>
                         </div>
                       ) : (
@@ -2738,10 +2745,17 @@ export default function AdminDashboard() {
                           <Button
                             size="sm"
                             className="bg-gradient-to-r from-emerald-600 to-emerald-500 hover:from-emerald-500 hover:to-emerald-400 text-white"
-                            onClick={() => window.open(docUrl, '_blank')}
+                            onClick={() => {
+                              const link = document.createElement('a');
+                              link.href = docUrl;
+                              link.download = docUrl.split('/').pop() || 'documento';
+                              document.body.appendChild(link);
+                              link.click();
+                              document.body.removeChild(link);
+                            }}
                           >
-                            <Eye className="w-4 h-4 mr-2" />
-                            Ver Original
+                            <Download className="w-4 h-4 mr-2" />
+                            Descargar
                           </Button>
                         </div>
                       )}

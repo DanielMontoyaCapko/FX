@@ -34,7 +34,7 @@ import {
   FileText,
   Trash2,
   PlusCircle,
-  Eye,
+
 } from "lucide-react";
 import logoImg from "@/assets/Logo-removeBG_1752488347081.png";
 import landscapeSvg from "@/assets/landscape.svg";
@@ -1337,9 +1337,16 @@ export default function Dashboard() {
                                   size="sm"
                                   variant="outline"
                                   className="border-blue-500/20 text-blue-300"
-                                  onClick={() => window.open(docUrl, '_blank')}
+                                  onClick={() => {
+                                    const link = document.createElement('a');
+                                    link.href = docUrl;
+                                    link.download = docUrl.split('/').pop() || 'documento';
+                                    document.body.appendChild(link);
+                                    link.click();
+                                    document.body.removeChild(link);
+                                  }}
                                 >
-                                  <Eye className="w-4 h-4" />
+                                  <Download className="w-4 h-4" />
                                 </Button>
                               </div>
                             ))}
