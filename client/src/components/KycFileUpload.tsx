@@ -59,13 +59,18 @@ export function KycFileUpload({ onFilesUploaded, currentFiles = [], disabled = f
         }
 
         // Extract object path from upload URL to create download URL
-        // Upload URL format: https://storage.googleapis.com/bucket/path/to/file?...
+        // Upload URL format: https://storage.googleapis.com/bucket/.private/kyc/filename?...
         const url = new URL(uploadURL);
         const pathParts = url.pathname.split('/');
-        // Remove bucket name (first part after /) and get the object path
-        const objectPath = pathParts.slice(2).join('/'); // Skip empty string and bucket name
-        const downloadUrl = `/objects/${objectPath}`;
+        // Get only the kyc/filename part (skip bucket and .private)
+        const kycIndex = pathParts.findIndex(part => part === 'kyc');
+        if (kycIndex === -1) {
+          throw new Error('Invalid upload URL format');
+        }
+        const kycPath = pathParts.slice(kycIndex).join('/'); // kyc/uuid_filename
+        const downloadUrl = `/objects/${kycPath}`;
         
+        console.log('Generated download URL:', downloadUrl);
         newUploadedFiles.push(downloadUrl);
       }
 
