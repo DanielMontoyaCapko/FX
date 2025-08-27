@@ -2385,45 +2385,57 @@ export default function Dashboard() {
               </Card>
 
               {/* Actividad reciente */}
-              <Card className="bg-black/40 border border-emerald-500/15 rounded-2xl">
-                <CardHeader>
-                  <CardTitle className="text-emerald-50">Actividad reciente</CardTitle>
-                  <CardDescription className="text-emerald-200/80">
-                    Resumen de tus últimas acciones
-                  </CardDescription>
-                </CardHeader>
-                <CardContent className="p-6">
-                  <div className="space-y-4">
-                    {recentActivityLogs.length > 0 ? (
-                      recentActivityLogs.map((activity: any) => (
-                        <div
-                          key={activity.id}
-                          className="flex items-center justify-between rounded-xl border border-emerald-500/10 bg-black/30 px-4 py-3"
-                        >
-                          <div className="flex items-center gap-3">
-                            <div className="w-9 h-9 rounded-lg bg-emerald-600/20 flex items-center justify-center">
-                              <FileText className="w-4 h-4 text-emerald-400" />
-                            </div>
-                            <p className="text-sm text-emerald-50">{activity.action}</p>
+            <Card className="bg-black/40 border border-emerald-500/15 rounded-2xl">
+              <CardHeader>
+                <CardTitle className="text-emerald-50">Actividad reciente</CardTitle>
+                <CardDescription className="text-emerald-200/80">
+                  Resumen de tus últimas acciones
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="p-6">
+                <div className="space-y-4">
+                  {recentActivityLogs.length > 0 ? (
+                    recentActivityLogs.map((activity: any) => (
+                      <div
+                        key={activity.id}
+                        className="flex items-center justify-between rounded-xl border border-emerald-500/10 bg-black/30 px-4 py-3"
+                      >
+                        <div className="flex items-center gap-3">
+                          <div className="w-9 h-9 rounded-lg bg-emerald-600/20 flex items-center justify-center">
+                            <FileText className="w-4 h-4 text-emerald-400" />
                           </div>
-                          <div className="text-xs text-emerald-200/70">
-                            {new Date(activity.createdAt).toLocaleDateString("es-ES", {
-                              day: "2-digit",
-                              month: "2-digit",
-                              hour: "2-digit",
-                              minute: "2-digit"
-                            })}
+                          <p className="text-sm text-emerald-50">{activity.action}</p>
+                        </div>
+
+                        {/* Fecha y hora separados */}
+                        <div className="flex items-center gap-3 text-xs text-emerald-200/70">
+                          <div className="flex items-center gap-1">
+                            <Calendar className="h-3.5 w-3.5" />
+                            <span>
+                              {new Date(activity.createdAt).toLocaleDateString("es-ES")}
+                            </span>
+                          </div>
+                          <div className="flex items-center gap-1">
+                            <span>⏰</span>
+                            <span>
+                              {new Date(activity.createdAt).toLocaleTimeString("es-ES", {
+                                hour: "2-digit",
+                                minute: "2-digit",
+                              })}
+                            </span>
                           </div>
                         </div>
-                      ))
-                    ) : (
-                      <div className="text-center text-emerald-200/60 py-4">
-                        <p>No hay actividades recientes</p>
                       </div>
-                    )}
-                  </div>
-                </CardContent>
-                            </Card>
+                    ))
+                  ) : (
+                    <div className="text-center text-emerald-200/60 py-4">
+                      <p>No hay actividades recientes</p>
+                    </div>
+                  )}
+                </div>
+              </CardContent>
+            </Card>
+
 
               {/* Acciones rápidas */}
               <div className="mt-8">
