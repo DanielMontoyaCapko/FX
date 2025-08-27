@@ -1,6 +1,6 @@
-import { leads, calculatorResults, users, kyc, products, contracts, type Lead, type InsertLead, type CalculatorResult, type InsertCalculatorResult, type User, type InsertUser, type Kyc, type InsertKyc, type Product, type InsertProduct, type Contract, type InsertContract } from "@shared/schema";
+import { leads, calculatorResults, users, kyc, products, contracts, auditLogs, type Lead, type InsertLead, type CalculatorResult, type InsertCalculatorResult, type User, type InsertUser, type Kyc, type InsertKyc, type Product, type InsertProduct, type Contract, type InsertContract, type AuditLog } from "@shared/schema";
 import { db } from "./db";
-import { eq } from "drizzle-orm";
+import { eq, desc } from "drizzle-orm";
 import bcrypt from "bcryptjs";
 
 export interface IStorage {
@@ -29,6 +29,10 @@ export interface IStorage {
   deleteUser(userId: number): Promise<void>;
   updateProduct(productId: number, updates: any): Promise<Product>;
   deleteProduct(productId: number): Promise<void>;
+  updateContractStatus(contractId: number, status: string): Promise<Contract>;
+  
+  // Audit logs
+  getAuditLogs(): Promise<any[]>;
 }
 
 export class DatabaseStorage implements IStorage {
@@ -201,6 +205,30 @@ export class DatabaseStorage implements IStorage {
       .where(eq(contracts.id, contractId))
       .returning();
     return result[0];
+  }
+
+  async getAuditLogs(): Promise<any[]> {
+    const result = await db
+      .select({
+        id: auditLogs.id,
+        adminId: auditLogs.adminId,
+        adminName: users.name,
+        adminEmail: users.email,
+        action: auditLogs.action,
+        entityType: auditLogs.entityType,
+        entityId: auditLogs.entityId,
+        oldValues: auditLogs.oldValues,
+        newValues: auditLogs.newValues,
+        description: auditLogs.description,
+        ipAddress: auditLogs.ipAddress,
+        userAgent: auditLogs.userAgent,
+        createdAt: auditLogs.createdAt,
+      })
+      .from(auditLogs)
+      .leftJoin(users, eq(auditLogs.adminId, users.id))
+      .orderBy(desc(auditLogs.createdAt));
+    
+    return result;
   }
 }
 

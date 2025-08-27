@@ -82,6 +82,21 @@ export const calculatorResults = pgTable("calculator_results", {
   createdAt: timestamp("created_at").defaultNow().notNull(),
 });
 
+// Audit logs table for tracking admin actions
+export const auditLogs = pgTable("audit_logs", {
+  id: serial("id").primaryKey(),
+  adminId: integer("admin_id").references(() => users.id).notNull(), // Admin who performed the action
+  action: varchar("action", { length: 100 }).notNull(), // CREATE, UPDATE, DELETE
+  entityType: varchar("entity_type", { length: 50 }).notNull(), // users, kyc, products, contracts
+  entityId: varchar("entity_id", { length: 50 }).notNull(), // ID of the affected entity
+  oldValues: text("old_values"), // JSON string of old values (for updates)
+  newValues: text("new_values"), // JSON string of new values
+  description: varchar("description", { length: 500 }), // Human-readable description
+  ipAddress: varchar("ip_address", { length: 45 }), // IP address of admin
+  userAgent: text("user_agent"), // Browser/device info
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+});
+
 export const insertLeadSchema = createInsertSchema(leads).omit({
   id: true,
   createdAt: true,
@@ -136,6 +151,11 @@ export const insertContractSchema = createInsertSchema(contracts).omit({
   updatedAt: true,
 });
 
+export const insertAuditLogSchema = createInsertSchema(auditLogs).omit({
+  id: true,
+  createdAt: true,
+});
+
 export type InsertLead = z.infer<typeof insertLeadSchema>;
 export type Lead = typeof leads.$inferSelect;
 export type InsertCalculatorResult = z.infer<typeof insertCalculatorResultSchema>;
@@ -150,3 +170,5 @@ export type InsertProduct = z.infer<typeof insertProductSchema>;
 export type Product = typeof products.$inferSelect;
 export type InsertContract = z.infer<typeof insertContractSchema>;
 export type Contract = typeof contracts.$inferSelect;
+export type InsertAuditLog = z.infer<typeof insertAuditLogSchema>;
+export type AuditLog = typeof auditLogs.$inferSelect;

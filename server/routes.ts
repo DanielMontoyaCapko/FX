@@ -3,6 +3,7 @@ import { createServer, type Server } from "http";
 import { storage } from "./storage";
 import { insertLeadSchema, insertCalculatorResultSchema, loginSchema, registerSchema, insertKycSchema, updateKycSchema } from "@shared/schema";
 import { generateToken, authMiddleware, requireRole, type AuthRequest } from "./auth";
+import { auditUser, auditKyc, auditProduct, auditContract } from "./auditMiddleware";
 import { z } from "zod";
 
 export async function registerRoutes(app: Express): Promise<Server> {
@@ -371,7 +372,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.post("/api/admin/products", authMiddleware, requireRole('admin'), async (req, res) => {
+  app.post("/api/admin/products", authMiddleware, requireRole('admin'), auditProduct.create, async (req, res) => {
     try {
       const productData = req.body;
       const product = await storage.createProduct(productData);
@@ -383,7 +384,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Update user
-  app.put('/api/admin/users/:id', authMiddleware, requireRole('admin'), async (req, res) => {
+  app.put('/api/admin/users/:id', authMiddleware, requireRole('admin'), auditUser.update, async (req, res) => {
     try {
       const userId = parseInt(req.params.id);
       const updates = req.body;
@@ -400,7 +401,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Delete user
-  app.delete('/api/admin/users/:id', authMiddleware, requireRole('admin'), async (req, res) => {
+  app.delete('/api/admin/users/:id', authMiddleware, requireRole('admin'), auditUser.delete, async (req, res) => {
     try {
       const userId = parseInt(req.params.id);
       await storage.deleteUser(userId);
@@ -412,7 +413,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Update product
-  app.put('/api/admin/products/:id', authMiddleware, requireRole('admin'), async (req, res) => {
+  app.put('/api/admin/products/:id', authMiddleware, requireRole('admin'), auditProduct.update, async (req, res) => {
     try {
       const productId = parseInt(req.params.id);
       const updates = req.body;
@@ -429,7 +430,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Delete product
-  app.delete('/api/admin/products/:id', authMiddleware, requireRole('admin'), async (req, res) => {
+  app.delete('/api/admin/products/:id', authMiddleware, requireRole('admin'), auditProduct.delete, async (req, res) => {
     try {
       const productId = parseInt(req.params.id);
       await storage.deleteProduct(productId);
@@ -441,7 +442,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Update KYC status (admin review)
-  app.put('/api/admin/kyc/:id', authMiddleware, requireRole('admin'), async (req: AuthRequest, res) => {
+  app.put('/api/admin/kyc/:id', authMiddleware, requireRole('admin'), auditKyc.update, async (req: AuthRequest, res) => {
     try {
       const kycId = parseInt(req.params.id);
       const updateData = updateKycSchema.parse(req.body);
@@ -464,7 +465,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Update contract status
-  app.put('/api/admin/contracts/:id', authMiddleware, requireRole('admin'), async (req, res) => {
+  app.put('/api/admin/contracts/:id', authMiddleware, requireRole('admin'), auditContract.update, async (req, res) => {
     try {
       const contractId = parseInt(req.params.id);
       const { status } = req.body;
@@ -474,6 +475,17 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error) {
       console.error('Error updating contract status:', error);
       res.status(500).json({ error: 'Failed to update contract status' });
+    }
+  });
+
+  // Audit logs routes
+  app.get('/api/admin/audit-logs', authMiddleware, requireRole('admin'), async (req, res) => {
+    try {
+      const logs = await storage.getAuditLogs();
+      res.json({ success: true, logs });
+    } catch (error) {
+      console.error('Error fetching audit logs:', error);
+      res.status(500).json({ error: 'Failed to fetch audit logs' });
     }
   });
 

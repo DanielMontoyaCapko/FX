@@ -29,6 +29,7 @@ import {
   User as UserIcon,
   Crown,
   Calendar,
+  History,
 } from "lucide-react";
 import {
   PieChart as RechartsPieChart,
@@ -125,8 +126,13 @@ export default function AdminDashboard() {
     enabled: !!user && user.role === "admin",
   });
 
+  const { data: auditLogsData, isLoading: isLoadingAuditLogs } = useQuery({
+    queryKey: ["/api/admin/audit-logs"],
+    enabled: !!user && user.role === "admin",
+  });
+
   // Combined loading state
-  const loading = isLoadingUsers || isLoadingKyc || isLoadingProducts || isLoadingContracts;
+  const loading = isLoadingUsers || isLoadingKyc || isLoadingProducts || isLoadingContracts || isLoadingAuditLogs;
 
   // KYC Review Mutation
   const kycReviewMutation = useMutation({
@@ -158,6 +164,7 @@ export default function AdminDashboard() {
   const kyc = kycData?.kyc || [];
   const products = productsData?.products || [];
   const contracts = contractsData?.contracts || [];
+  const auditLogs = auditLogsData?.logs || [];
   
   const stats = {
     totalUsers: users.length,
@@ -877,6 +884,7 @@ export default function AdminDashboard() {
             { id: "kyc", label: "KYC", icon: FileCheck },
             { id: "productos", label: "Productos", icon: Package },
             { id: "contratos", label: "Contratos", icon: FileText },
+            { id: "auditoria", label: "Blog de Actividad", icon: History },
           ].map((item) => (
             <button
               key={item.id}
@@ -2211,6 +2219,128 @@ export default function AdminDashboard() {
                 </div>
               </CardContent>
             </Card>
+          </div>
+        )}
+
+        {/* ====== BLOG DE ACTIVIDAD (AUDITORIA) ====== */}
+        {activeTab === "auditoria" && (
+          <div>
+            <div className="flex flex-col md:flex-row md:items-center md:justify-between mb-4 gap-4">
+              <h1 className="text-3xl font-bold text-emerald-50">Blog de Actividad</h1>
+              <div className="flex items-center gap-2 text-emerald-200/80">
+                <History className="w-5 h-5" />
+                <span>Registro de todas las actividades administrativas</span>
+              </div>
+            </div>
+
+            {isLoadingAuditLogs ? (
+              <div className="flex justify-center items-center py-12">
+                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-emerald-500"></div>
+              </div>
+            ) : (
+              <Card className="bg-black/40 border border-emerald-500/15 rounded-2xl shadow-[0_0_0_1px_rgba(16,185,129,0.12),0_20px_60px_-20px_rgba(16,185,129,0.25)]">
+                <CardContent className="p-6">
+                  {auditLogs.length === 0 ? (
+                    <div className="text-center py-12">
+                      <History className="w-16 h-16 text-emerald-300/50 mx-auto mb-4" />
+                      <p className="text-emerald-200/80 text-lg mb-2">No hay actividades registradas</p>
+                      <p className="text-emerald-200/60">Las actividades administrativas aparecerán aquí</p>
+                    </div>
+                  ) : (
+                    <div className="space-y-4">
+                      {auditLogs.map((log: any) => {
+                        const actionColors = {
+                          CREATE: "bg-green-500/20 text-green-300 border-green-500/30",
+                          UPDATE: "bg-blue-500/20 text-blue-300 border-blue-500/30",
+                          DELETE: "bg-red-500/20 text-red-300 border-red-500/30",
+                          REVIEW: "bg-yellow-500/20 text-yellow-300 border-yellow-500/30",
+                        };
+                        
+                        const actionIcons = {
+                          CREATE: Plus,
+                          UPDATE: Edit,
+                          DELETE: Trash2,
+                          REVIEW: Eye,
+                        };
+                        
+                        const ActionIcon = actionIcons[log.action as keyof typeof actionIcons] || Eye;
+                        const actionColor = actionColors[log.action as keyof typeof actionColors] || "bg-gray-500/20 text-gray-300 border-gray-500/30";
+                        
+                        return (
+                          <div key={log.id} className="border border-emerald-500/15 rounded-lg p-4 bg-black/20">
+                            <div className="flex items-start justify-between">
+                              <div className="flex items-start gap-3 flex-1">
+                                <div className={`p-2 rounded-lg border ${actionColor}`}>
+                                  <ActionIcon className="w-4 h-4" />
+                                </div>
+                                <div className="flex-1">
+                                  <div className="flex items-center gap-2 mb-1">
+                                    <span className="font-medium text-emerald-50">{log.adminName || 'Administrador'}</span>
+                                    <span className="text-emerald-200/60">•</span>
+                                    <span className="text-emerald-200/80 text-sm">{log.adminEmail}</span>
+                                  </div>
+                                  <p className="text-emerald-200/90 mb-2">{log.description}</p>
+                                  <div className="flex items-center gap-4 text-sm text-emerald-200/60">
+                                    <div className="flex items-center gap-1">
+                                      <span>Entidad:</span>
+                                      <Badge variant="outline" className="border-emerald-500/30 text-emerald-300">
+                                        {log.entityType}
+                                      </Badge>
+                                    </div>
+                                    {log.entityId && (
+                                      <div className="flex items-center gap-1">
+                                        <span>ID:</span>
+                                        <code className="bg-black/50 px-2 py-1 rounded text-emerald-300">
+                                          {log.entityId}
+                                        </code>
+                                      </div>
+                                    )}
+                                  </div>
+                                  
+                                  {/* Changes Details */}
+                                  {(log.oldValues || log.newValues) && (
+                                    <details className="mt-3">
+                                      <summary className="text-emerald-300 cursor-pointer hover:text-emerald-200 text-sm">
+                                        Ver detalles de cambios
+                                      </summary>
+                                      <div className="mt-2 p-3 bg-black/30 rounded border border-emerald-500/15">
+                                        {log.oldValues && (
+                                          <div className="mb-2">
+                                            <div className="text-xs text-emerald-200/60 mb-1">Valores anteriores:</div>
+                                            <pre className="text-xs text-emerald-200/80 overflow-x-auto">
+                                              {JSON.stringify(JSON.parse(log.oldValues), null, 2)}
+                                            </pre>
+                                          </div>
+                                        )}
+                                        {log.newValues && (
+                                          <div>
+                                            <div className="text-xs text-emerald-200/60 mb-1">Valores nuevos:</div>
+                                            <pre className="text-xs text-emerald-200/80 overflow-x-auto">
+                                              {JSON.stringify(JSON.parse(log.newValues), null, 2)}
+                                            </pre>
+                                          </div>
+                                        )}
+                                      </div>
+                                    </details>
+                                  )}
+                                </div>
+                              </div>
+                              <div className="text-right text-sm text-emerald-200/60">
+                                <div>{new Date(log.createdAt).toLocaleDateString("es-ES")}</div>
+                                <div>{new Date(log.createdAt).toLocaleTimeString("es-ES", { hour: "2-digit", minute: "2-digit" })}</div>
+                                {log.ipAddress && (
+                                  <div className="text-xs mt-1">IP: {log.ipAddress}</div>
+                                )}
+                              </div>
+                            </div>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  )}
+                </CardContent>
+              </Card>
+            )}
           </div>
         )}
 
