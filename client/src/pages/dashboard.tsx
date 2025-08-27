@@ -965,13 +965,13 @@ export default function Dashboard() {
   const percentMeses = (mesesTranscurridos / Math.max(1, mesesTotales)) * 100;
   const mesesRestantes = Math.max(0, mesesTotales - mesesTranscurridos);
 
-  const recentActivity = [
-    { type: "download", message: "Estado de cuenta descargado exitosamente", time: "hace 1 hora" },
-    { type: "simulation", message: "Nueva simulación de inversión: €25.000 a 24 meses", time: "hace 2 horas" },
-    { type: "download", message: "Simulación descargada con gráfico incluido", time: "hace 3 horas" },
-    { type: "simulation", message: "Calculadora utilizada: €50.000 a 36 meses", time: "hace 5 horas" },
-    { type: "download", message: "Estado de cuenta enero 2025 generado", time: "hace 1 día" },
-  ];
+  // Hook para obtener las actividades recientes del cliente (últimos 5 registros)
+  const { data: recentActivityData } = useQuery({
+    queryKey: ['/api/client/activity-logs'],
+    enabled: true,
+  });
+
+  const recentActivityLogs = recentActivityData?.logs?.slice(0, 5) || [];
 
   // --- Mis productos (ejemplos) ---
   const productosActivos = [
@@ -2394,24 +2394,33 @@ export default function Dashboard() {
                 </CardHeader>
                 <CardContent className="p-6">
                   <div className="space-y-4">
-                    {recentActivity.map((a, i) => (
-                      <div
-                        key={i}
-                        className="flex items-center justify-between rounded-xl border border-emerald-500/10 bg-black/30 px-4 py-3"
-                      >
-                        <div className="flex items-center gap-3">
-                          <div className="w-9 h-9 rounded-lg bg-emerald-600/20 flex items-center justify-center">
-                            {a.type === "download" ? (
-                              <Download className="w-4 h-4 text-emerald-400" />
-                            ) : (
-                              <Calculator className="w-4 h-4 text-emerald-400" />
-                            )}
+                    {recentActivityLogs.length > 0 ? (
+                      recentActivityLogs.map((activity: any) => (
+                        <div
+                          key={activity.id}
+                          className="flex items-center justify-between rounded-xl border border-emerald-500/10 bg-black/30 px-4 py-3"
+                        >
+                          <div className="flex items-center gap-3">
+                            <div className="w-9 h-9 rounded-lg bg-emerald-600/20 flex items-center justify-center">
+                              <FileText className="w-4 h-4 text-emerald-400" />
+                            </div>
+                            <p className="text-sm text-emerald-50">{activity.action}</p>
                           </div>
-                          <p className="text-sm text-emerald-50">{a.message}</p>
+                          <div className="text-xs text-emerald-200/70">
+                            {new Date(activity.createdAt).toLocaleDateString("es-ES", {
+                              day: "2-digit",
+                              month: "2-digit",
+                              hour: "2-digit",
+                              minute: "2-digit"
+                            })}
+                          </div>
                         </div>
-                        <span className="text-xs text-emerald-200/70">{a.time}</span>
+                      ))
+                    ) : (
+                      <div className="text-center text-emerald-200/60 py-4">
+                        <p>No hay actividades recientes</p>
                       </div>
-                    ))}
+                    )}
                   </div>
                 </CardContent>
                             </Card>
