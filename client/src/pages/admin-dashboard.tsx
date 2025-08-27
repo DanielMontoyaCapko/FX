@@ -2766,7 +2766,8 @@ export default function AdminDashboard() {
                             onClick={async () => {
                               try {
                                 const token = localStorage.getItem('auth_token');
-                                const response = await fetch(`/api/download-document?url=${encodeURIComponent(docUrl)}`, {
+                                // Use docUrl directly since it's already the download endpoint
+                                const response = await fetch(docUrl, {
                                   headers: {
                                     'Authorization': `Bearer ${token}`
                                   }

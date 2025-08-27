@@ -9,6 +9,7 @@ import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { KycFileUpload } from "@/components/KycFileUpload";
 import {
   LogOut,
   TrendingUp,
@@ -977,6 +978,7 @@ export default function Dashboard() {
     documentType: "dni",
     documentNumber: "",
     country: "España",
+    documentsUrls: [] as string[],
   });
   const [kycDocs, setKycDocs] = useState<File[]>([]);
 
@@ -989,13 +991,9 @@ export default function Dashboard() {
   // Create/Update KYC mutation
   const kycMutation = useMutation({
     mutationFn: async (data: any) => {
-      // Convert files to base64 or upload to a file storage service
-      // For demo purposes, we'll store file names as URLs
-      const documentsUrls = kycDocs.map(file => `uploads/${Date.now()}_${file.name}`);
-      
       const kycPayload = {
         ...data,
-        documentsUrls,
+        documentsUrls: data.documentsUrls || [],
       };
 
       const method = kycData?.kyc ? 'PUT' : 'POST';
@@ -1005,7 +1003,7 @@ export default function Dashboard() {
         method,
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${localStorage.getItem('token')}`,
+          'Authorization': `Bearer ${localStorage.getItem('auth_token')}`,
         },
         body: JSON.stringify(kycPayload),
       });
@@ -1044,11 +1042,11 @@ export default function Dashboard() {
     setKycDocs(accepted);
   };
 
-  const handleKycRemove = (idx: number) => setKycDocs((prev) => prev.filter((_, i) => i !== idx));
+  // This function is no longer needed as file management is handled by KycFileUpload component
   
   const handleKycSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!kycFormData.fullName || !kycFormData.documentNumber || !kycDocs.length) return;
+    if (!kycFormData.fullName || !kycFormData.documentNumber || !kycFormData.documentsUrls.length) return;
     
     try {
       await kycMutation.mutateAsync(kycFormData);
@@ -1057,11 +1055,18 @@ export default function Dashboard() {
     }
   };
   
-  const handleKycReupload = () => {
-    setKycDocs([]);
-    const input = document.getElementById("kyc-upload") as HTMLInputElement | null;
-    input?.click();
-  };
+  // Initialize form data when KYC data is loaded
+  useEffect(() => {
+    if (kycData?.kyc) {
+      setKycFormData({
+        fullName: kycData.kyc.fullName || "",
+        documentType: kycData.kyc.documentType || "dni",
+        documentNumber: kycData.kyc.documentNumber || "",
+        country: kycData.kyc.country || "España",
+        documentsUrls: kycData.kyc.documentsUrls || [],
+      });
+    }
+  }, [kycData]);
 
   // Get KYC status and messages
   const currentKyc = kycData?.kyc;
@@ -1339,7 +1344,8 @@ export default function Dashboard() {
                                   className="border-blue-500/20 text-blue-300"
                                   onClick={async () => {
                                     try {
-                                      const token = localStorage.getItem('auth_token');
+                                      const token = localStorage.getItem('token');
+
                                       const response = await fetch(`/api/download-document?url=${encodeURIComponent(docUrl)}`, {
                                         headers: {
                                           'Authorization': `Bearer ${token}`
@@ -1426,64 +1432,17 @@ export default function Dashboard() {
                           </div>
 
                           {/* Document Upload */}
-                          <div className="rounded-lg border border-emerald-500/20 bg-black/30 p-4">
-                            <input
-                              id="kyc-upload"
-                              type="file"
-                              accept="image/*,application/pdf"
-                              multiple
-                              onChange={handleKycUpload}
-                              className="hidden"
-                            />
-                            <div className="flex items-center justify-between gap-3 flex-wrap">
-                              <div className="text-sm">
-                                <p className="text-emerald-200/90">
-                                  Archivos permitidos: .jpg, .png, .pdf (máx 10MB por archivo)
-                                </p>
-                              </div>
-                              <label
-                                htmlFor="kyc-upload"
-                                className="inline-flex items-center gap-2 cursor-pointer rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white px-4 py-2 text-sm"
-                              >
-                                <PlusCircle className="w-4 h-4" />
-                                Seleccionar archivos
-                              </label>
-                            </div>
-
-                            {!!kycDocs.length && (
-                              <div className="mt-4 space-y-2">
-                                {kycDocs.map((f, idx) => (
-                                  <div
-                                    key={`${f.name}-${idx}`}
-                                    className="flex items-center justify-between rounded-md bg-black/40 border border-emerald-500/10 px-3 py-2"
-                                  >
-                                    <div className="flex items-center gap-3">
-                                      <FileText className="w-4 h-4 text-emerald-400" />
-                                      <div className="text-sm">
-                                        <p className="text-emerald-50">{f.name}</p>
-                                        <p className="text-emerald-300/70 text-xs">{formatBytes(f.size)}</p>
-                                      </div>
-                                    </div>
-                                    <Button
-                                      type="button"
-                                      variant="ghost"
-                                      onClick={() => handleKycRemove(idx)}
-                                      className="text-red-300 hover:text-red-200"
-                                    >
-                                      <Trash2 className="w-4 h-4 mr-1" />
-                                      Quitar
-                                    </Button>
-                                  </div>
-                                ))}
-                              </div>
-                            )}
-                          </div>
+                          <KycFileUpload 
+                            onFilesUploaded={(urls) => setKycFormData({ ...kycFormData, documentsUrls: urls })}
+                            currentFiles={kycFormData.documentsUrls || []}
+                            disabled={kycStatus === "Aprobado"}
+                          />
 
                           {/* Submit Button */}
                           {kycStatus !== "Aprobado" && (
                             <Button 
                               type="submit" 
-                              disabled={kycMutation.isPending || !kycFormData.fullName || !kycFormData.documentNumber || kycDocs.length === 0}
+                              disabled={kycMutation.isPending || !kycFormData.fullName || !kycFormData.documentNumber || !kycFormData.documentsUrls?.length}
                               className="w-full bg-emerald-600 hover:bg-emerald-500 text-white disabled:opacity-50"
                             >
                               {kycMutation.isPending ? "Enviando..." : 

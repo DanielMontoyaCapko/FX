@@ -83,34 +83,43 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // KYC routes
-  // Download document endpoint
-  app.get("/api/download-document", authMiddleware, async (req, res) => {
+  // Get upload URL for KYC documents
+  app.post("/api/kyc/upload-url", authMiddleware, async (req: AuthRequest, res) => {
     try {
-      const { url } = req.query;
+      const { filename } = req.body;
       
-      if (!url || typeof url !== 'string') {
-        return res.status(400).json({ error: "URL is required" });
+      if (!filename || typeof filename !== 'string') {
+        return res.status(400).json({ error: "Filename is required" });
       }
 
-      // Fetch the document from the external URL
-      const response = await fetch(url);
+      const { ObjectStorageService } = await import("./objectStorage");
+      const objectStorageService = new ObjectStorageService();
+      const uploadURL = await objectStorageService.getObjectEntityUploadURL(filename);
       
-      if (!response.ok) {
-        return res.status(404).json({ error: "Document not found" });
+      res.json({ uploadURL });
+    } catch (error) {
+      console.error('Error getting upload URL:', error);
+      res.status(500).json({ error: "Failed to get upload URL" });
+    }
+  });
+
+  // Download KYC document endpoint
+  app.get("/api/kyc/download/:objectPath", authMiddleware, async (req: AuthRequest, res) => {
+    try {
+      const objectPath = `/objects/kyc/${req.params.objectPath}`;
+      
+      const { ObjectStorageService, ObjectNotFoundError } = await import("./objectStorage");
+      const objectStorageService = new ObjectStorageService();
+      
+      try {
+        const objectFile = await objectStorageService.getObjectEntityFile(objectPath);
+        await objectStorageService.downloadObject(objectFile, res);
+      } catch (error) {
+        if (error instanceof ObjectNotFoundError) {
+          return res.status(404).json({ error: "Document not found" });
+        }
+        throw error;
       }
-
-      // Get the content type and filename
-      const contentType = response.headers.get('content-type') || 'application/octet-stream';
-      const filename = url.split('/').pop() || 'documento';
-
-      // Set headers for download
-      res.setHeader('Content-Type', contentType);
-      res.setHeader('Content-Disposition', `attachment; filename="${filename}"`);
-      res.setHeader('Access-Control-Allow-Origin', '*');
-
-      // Pipe the response
-      const buffer = await response.arrayBuffer();
-      res.send(Buffer.from(buffer));
     } catch (error) {
       console.error('Error downloading document:', error);
       res.status(500).json({ error: "Failed to download document" });
