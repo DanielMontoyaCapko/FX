@@ -1,5 +1,6 @@
 import { useState, useMemo, useEffect } from "react";
 import { useAuth } from "@/hooks/useAuth";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -9,6 +10,8 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Label } from "@/components/ui/label";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { KycFileUpload } from "@/components/KycFileUpload";
 import {
   Users,
   TrendingUp,
@@ -775,45 +778,112 @@ export default function PartnerDashboard() {
   const [hasActiveDeposit, setHasActiveDeposit] = useState<boolean>(false);
 
   // ===== KYC: estado y manejadores =====
-  const [kycStatus, setKycStatus] = useState<KycStatus>("Pendiente");
-  const [kycDocs, setKycDocs] = useState<File[]>([]);
-  const [kycFeedback, setKycFeedback] = useState<string>("");
+  const queryClient = useQueryClient();
+  
+  // Dialog states for document viewing
+  const [showDocumentsDialog, setShowDocumentsDialog] = useState(false);
+  const [viewingDocuments, setViewingDocuments] = useState<string[] | null>(null);
 
-  const handleKycUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const files = Array.from(e.target.files ?? []);
-    if (!files.length) return;
-    const accepted = files.filter((f) => {
-      const okType = ["image/jpeg", "image/png", "application/pdf"].includes(f.type) || f.type === "";
-      const okSize = f.size <= 10 * 1024 * 1024;
-      return okType && okSize;
-    });
-    setKycDocs(accepted);
-    setKycStatus("Pendiente");
-    setKycFeedback("");
-  };
+  // KYC form data
+  const [kycFormData, setKycFormData] = useState({
+    fullName: "",
+    documentType: "dni" as "dni" | "passport",
+    documentNumber: "",
+    country: "España",
+    documentsUrls: [] as string[],
+  });
 
-  const handleKycRemove = (idx: number) => {
-    setKycDocs((prev) => prev.filter((_, i) => i !== idx));
-  };
+  // Fetch KYC data
+  const { data: kycData, isLoading: kycLoading } = useQuery({
+    queryKey: ["/api/kyc/me"],
+    enabled: !!user,
+  });
 
-  const handleKycSubmit = (e: React.FormEvent) => {
+  // KYC mutation
+  const kycMutation = useMutation({
+    mutationFn: async (formData: typeof kycFormData) => {
+      const token = localStorage.getItem("token");
+      const response = await fetch("/api/kyc/me", {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify(formData),
+      });
+
+      if (!response.ok) {
+        throw new Error("Error updating KYC");
+      }
+
+      return response.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/kyc/me"] });
+    },
+  });
+
+  // Initialize form data when KYC data is loaded
+  useEffect(() => {
+    if (kycData?.kyc) {
+      setKycFormData({
+        fullName: kycData.kyc.fullName || "",
+        documentType: kycData.kyc.documentType || "dni",
+        documentNumber: kycData.kyc.documentNumber || "",
+        country: kycData.kyc.country || "España",
+        documentsUrls: kycData.kyc.documentsUrls || [],
+      });
+    }
+  }, [kycData]);
+
+  // KYC submit handler
+  const handleKycSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!kycDocs.length) return;
-    setKycStatus("Pendiente");
+    if (!kycFormData.fullName || !kycFormData.documentNumber || !kycFormData.documentsUrls.length) return;
+    
+    try {
+      await kycMutation.mutateAsync(kycFormData);
+    } catch (error) {
+      console.error('Error submitting KYC:', error);
+    }
   };
 
-  const handleKycReupload = () => {
-    setKycDocs([]);
-    const input = document.getElementById("kyc-upload") as HTMLInputElement | null;
-    input?.click();
+  // Get KYC status and messages
+  const currentKyc = kycData?.kyc;
+  const kycStatus = currentKyc?.status === "approved" ? "Aprobado" : 
+                   currentKyc?.status === "rejected" ? "Rechazado" : "Pendiente";
+  const kycFeedback = currentKyc?.rejectionReason || "";
+  const kycDocs = kycFormData.documentsUrls;
+
+  const kycBadgeClass =
+    kycStatus === "Aprobado"
+      ? "bg-emerald-500 text-black"
+      : kycStatus === "Rechazado"
+      ? "bg-red-500 text-white"
+      : "bg-amber-500 text-black";
+
+  const kycMessage =
+    kycStatus === "Aprobado"
+      ? "¡Tu cuenta está verificada! Ya puedes operar sin límites."
+      : kycStatus === "Rechazado"
+      ? kycFeedback || "Hemos detectado inconsistencias. Vuelve a subir los documentos."
+      : kycDocs.length
+      ? "Tus documentos están en revisión. Te notificaremos al finalizar."
+      : "Aún no has subido documentos. Sube tu DNI o pasaporte para iniciar la verificación.";
+
+  // Document viewing functions
+  const handleViewDocuments = (documentsUrls: string[] | null) => {
+    if (!documentsUrls || documentsUrls.length === 0) {
+      alert("No hay documentos disponibles");
+      return;
+    }
+    setViewingDocuments(documentsUrls);
+    setShowDocumentsDialog(true);
   };
 
-  const formatBytes = (bytes: number) => {
-    if (bytes === 0) return "0 B";
-    const k = 1024;
-    const sizes = ["B", "KB", "MB", "GB"];
-    const i = Math.floor(Math.log(bytes) / Math.log(k));
-    return `${parseFloat((bytes / Math.pow(k, i)).toFixed(2))} ${sizes[i]}`;
+  const handleCloseDocumentsDialog = () => {
+    setShowDocumentsDialog(false);
+    setViewingDocuments(null);
   };
 
   // Filtros CLIENTES
@@ -1058,22 +1128,6 @@ export default function PartnerDashboard() {
     tier: "Elite Partner",
   };
 
-  const kycBadgeClass =
-    kycStatus === "Aprobado"
-      ? "bg-emerald-500 text-black"
-      : kycStatus === "Rechazado"
-      ? "bg-red-500 text-white"
-      : "bg-amber-500 text-black";
-
-  const kycMessage =
-    kycStatus === "Aprobado"
-      ? "¡Tu cuenta está verificada! Ya puedes operar sin límites."
-      : kycStatus === "Rechazado"
-      ? kycFeedback || "Hemos detectado inconsistencias. Vuelve a subir los documentos."
-      : kycDocs.length
-      ? "Tus documentos están en revisión. Te notificaremos al finalizar."
-      : "Aún no has subido documentos. Sube tu DNI o pasaporte para iniciar la verificación.";
-
   return (
     <div
       className={[
@@ -1285,110 +1339,121 @@ export default function PartnerDashboard() {
                   </TabsContent>
 
                   <TabsContent value="kyc" className="mt-6">
-                    {/* Encabezado estado KYC */}
-                    <div className="bg-black/40 rounded-xl p-8 border border-emerald-500/15">
-                      <div className="flex items-center gap-4 mb-6">
-                        <div className="bg-emerald-500/20 rounded-full p-3">
-                          <User className="h-8 w-8 text-emerald-400" />
-                        </div>
-                        <div className="flex-1">
-                          <h3 className="text-2xl font-bold text-emerald-50 mb-1">Verificación KYC</h3>
-                          <p className="text-emerald-200/80">{kycMessage}</p>
-                        </div>
-                        <Badge className={`${kycBadgeClass} px-4 py-2 text-sm font-semibold`}>{kycStatus}</Badge>
+                    {kycLoading ? (
+                      <div className="text-center py-8">
+                        <div className="text-emerald-300">Cargando información KYC...</div>
                       </div>
+                    ) : (
+                      <div className="space-y-6">
+                        {/* Estado KYC */}
+                        <div className="bg-black/40 rounded-xl p-6 border border-emerald-500/15">
+                          <div className="flex items-center gap-4 mb-6">
+                            <div className="bg-emerald-500/20 rounded-full p-3">
+                              <ShieldCheck className="h-8 w-8 text-emerald-400" />
+                            </div>
+                            <div className="flex-1">
+                              <h3 className="text-2xl font-bold text-emerald-50 mb-1">Estado KYC</h3>
+                              <p className="text-emerald-200/80">{kycMessage}</p>
+                            </div>
+                            <Badge className={`${kycBadgeClass} px-4 py-2 text-sm font-semibold`}>{kycStatus}</Badge>
+                          </div>
 
-                      {/* Subida de documentos */}
-                      <div className="mt-2 bg-black/40 rounded-xl p-6 border border-emerald-500/15">
-                        <form onSubmit={handleKycSubmit} className="space-y-4">
-                          <div className="rounded-lg border border-emerald-500/20 bg-black/30 p-4">
-                            <input
-                              id="kyc-upload"
-                              type="file"
-                              accept="image/*,application/pdf"
-                              multiple
-                              onChange={handleKycUpload}
-                              className="hidden"
-                            />
-                            <div className="flex items-center justify-between gap-3 flex-wrap">
-                              <div className="text-sm">
-                                <p className="text-emerald-200/90">
-                                  Archivos permitidos: .jpg, .png, .pdf (máx 10MB por archivo)
-                                </p>
+                          {/* Mostrar documentos subidos */}
+                          {kycDocs.length > 0 && (
+                            <div className="space-y-3">
+                              <div className="flex items-center justify-between">
+                                <h4 className="text-emerald-300 font-medium">Documentos subidos</h4>
+                                <Button
+                                  variant="outline"
+                                  size="sm"
+                                  onClick={() => handleViewDocuments(kycDocs)}
+                                  className="border-emerald-500/30 text-emerald-300 hover:bg-emerald-900/10"
+                                >
+                                  <FileText className="w-4 h-4 mr-2" />
+                                  Ver documentos ({kycDocs.length})
+                                </Button>
                               </div>
-                              <label
-                                htmlFor="kyc-upload"
-                                className="inline-flex items-center gap-2 cursor-pointer rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white px-4 py-2 text-sm"
-                              >
-                                <PlusCircle className="w-4 h-4" />
-                                Seleccionar archivos
-                              </label>
+                            </div>
+                          )}
+                        </div>
+
+                        {/* Formulario KYC */}
+                        <div className="bg-black/40 rounded-xl p-6 border border-emerald-500/15">
+                          <h3 className="text-xl font-semibold text-emerald-50 mb-6">Información Personal</h3>
+                          
+                          <form onSubmit={handleKycSubmit} className="space-y-6">
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                              <div>
+                                <Label className="text-emerald-300">Nombre completo</Label>
+                                <Input
+                                  value={kycFormData.fullName}
+                                  onChange={(e) => setKycFormData({ ...kycFormData, fullName: e.target.value })}
+                                  placeholder="Nombre y apellidos"
+                                  className="bg-black/50 border-emerald-500/20 text-emerald-50"
+                                />
+                              </div>
+
+                              <div>
+                                <Label className="text-emerald-300">Tipo de documento</Label>
+                                <Select
+                                  value={kycFormData.documentType}
+                                  onValueChange={(value: "dni" | "passport") => 
+                                    setKycFormData({ ...kycFormData, documentType: value })
+                                  }
+                                >
+                                  <SelectTrigger className="bg-black/50 border-emerald-500/20 text-emerald-50">
+                                    <SelectValue />
+                                  </SelectTrigger>
+                                  <SelectContent>
+                                    <SelectItem value="dni">DNI</SelectItem>
+                                    <SelectItem value="passport">Pasaporte</SelectItem>
+                                  </SelectContent>
+                                </Select>
+                              </div>
+
+                              <div>
+                                <Label className="text-emerald-300">Número de documento</Label>
+                                <Input
+                                  value={kycFormData.documentNumber}
+                                  onChange={(e) => setKycFormData({ ...kycFormData, documentNumber: e.target.value })}
+                                  placeholder="Número de DNI o pasaporte"
+                                  className="bg-black/50 border-emerald-500/20 text-emerald-50"
+                                />
+                              </div>
+
+                              <div>
+                                <Label className="text-emerald-300">País</Label>
+                                <Input
+                                  value={kycFormData.country}
+                                  onChange={(e) => setKycFormData({ ...kycFormData, country: e.target.value })}
+                                  placeholder="País de residencia"
+                                  className="bg-black/50 border-emerald-500/20 text-emerald-50"
+                                />
+                              </div>
                             </div>
 
-                            {!!kycDocs.length && (
-                              <div className="mt-4 space-y-2">
-                                {kycDocs.map((f, idx) => (
-                                  <div
-                                    key={`${f.name}-${idx}`}
-                                    className="flex items-center justify-between rounded-md bg-black/40 border border-emerald-500/10 px-3 py-2"
-                                  >
-                                    <div className="flex items-center gap-3">
-                                      <FileText className="w-4 h-4 text-emerald-400" />
-                                      <div className="text-sm">
-                                        <p className="text-emerald-50">{f.name}</p>
-                                        <p className="text-emerald-300/70 text-xs">{formatBytes(f.size)}</p>
-                                      </div>
-                                    </div>
-                                    <Button
-                                      type="button"
-                                      variant="ghost"
-                                      onClick={() => handleKycRemove(idx)}
-                                      className="text-red-300 hover:text-red-200"
-                                    >
-                                      <Trash2 className="w-4 h-4 mr-1" />
-                                      Quitar
-                                    </Button>
-                                  </div>
-                                ))}
-                              </div>
-                            )}
-                          </div>
+                            {/* Componente de carga de archivos */}
+                            <div className="space-y-4">
+                              <KycFileUpload
+                                onFilesUploaded={(urls) => setKycFormData({ ...kycFormData, documentsUrls: urls })}
+                                currentFiles={kycFormData.documentsUrls}
+                                disabled={kycMutation.isPending}
+                              />
+                            </div>
 
-                          <div className="flex flex-wrap gap-2">
-                            <Button
-                              type="submit"
-                              disabled={!kycDocs.length}
-                              className="bg-emerald-600 hover:bg-emerald-500 disabled:opacity-50 disabled:cursor-not-allowed"
-                            >
-                              Enviar para verificación
-                            </Button>
-
-                            <Button
-                              type="button"
-                              variant="outline"
-                              onClick={handleKycReupload}
-                              className="border-emerald-500/25 text-emerald-50 hover:bg-emerald-900/10"
-                            >
-                              Volver a subir
-                            </Button>
-                          </div>
-
-                          {kycStatus === "Aprobado" && (
-                            <p className="text-emerald-200/80 text-sm">Verificación completada. ¡Gracias!</p>
-                          )}
-                          {kycStatus === "Pendiente" && kycDocs.length > 0 && (
-                            <p className="text-emerald-200/80 text-sm">
-                              Tus documentos están en revisión. Te notificaremos al finalizar.
-                            </p>
-                          )}
-                          {kycStatus === "Rechazado" && (
-                            <p className="text-amber-300 text-sm">
-                              {kycFeedback || "Revisa tus documentos y vuelve a subirlos."}
-                            </p>
-                          )}
-                        </form>
+                            <div className="flex gap-4">
+                              <Button
+                                type="submit"
+                                disabled={!kycFormData.fullName || !kycFormData.documentNumber || !kycFormData.documentsUrls.length || kycMutation.isPending}
+                                className="bg-gradient-to-r from-emerald-600 to-emerald-500 hover:from-emerald-500 hover:to-emerald-400 text-white"
+                              >
+                                {kycMutation.isPending ? "Guardando..." : "Guardar información KYC"}
+                              </Button>
+                            </div>
+                          </form>
+                        </div>
                       </div>
-                    </div>
+                    )}
                   </TabsContent>
                 </Tabs>
               </CardContent>
@@ -2480,6 +2545,39 @@ export default function PartnerDashboard() {
           <RetiroView hasActiveDeposit={hasActiveDeposit} />
         )}
       </main>
+
+      {/* Modal para ver documentos */}
+      <Dialog open={showDocumentsDialog} onOpenChange={setShowDocumentsDialog}>
+        <DialogContent className="max-w-4xl bg-black/95 border border-emerald-500/20">
+          <DialogHeader>
+            <DialogTitle className="text-emerald-50">Documentos KYC</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4">
+            {viewingDocuments?.map((docUrl, index) => (
+              <div key={index} className="flex items-center justify-between p-4 bg-black/40 rounded-lg border border-emerald-500/15">
+                <div className="flex items-center gap-3">
+                  <FileText className="w-5 h-5 text-emerald-400" />
+                  <span className="text-emerald-50">Documento {index + 1}</span>
+                </div>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => window.open(docUrl, '_blank')}
+                  className="border-emerald-500/30 text-emerald-300 hover:bg-emerald-900/10"
+                >
+                  <Download className="w-4 h-4 mr-2" />
+                  Descargar
+                </Button>
+              </div>
+            ))}
+          </div>
+          <div className="flex justify-end">
+            <Button variant="outline" onClick={handleCloseDocumentsDialog} className="border-emerald-500/30 text-emerald-300 hover:bg-emerald-900/10">
+              Cerrar
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
