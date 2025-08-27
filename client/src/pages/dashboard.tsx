@@ -1366,7 +1366,7 @@ export default function Dashboard() {
                                   className="border-emerald-500/20 text-emerald-300 hover:bg-emerald-500/10"
                                   onClick={() => handleViewDocuments(currentKyc.documentsUrls)}
                                 >
-                                  Ver
+                                  Ver Documentos
                                 </Button>
                               </div>
                             ))}
@@ -2555,77 +2555,32 @@ export default function Dashboard() {
                         </Badge>
                       </div>
                       
-                      {docUrl.toLowerCase().includes('.pdf') ? (
-                        <div className="flex flex-col items-center space-y-3">
-                          <FileText className="w-16 h-16 text-red-400" />
-                          <p className="text-sm text-emerald-200/80 text-center">
-                            {docUrl.split('/').pop()}
+                      <div className="flex flex-col items-center space-y-3">
+                        <FileText className="w-16 h-16 text-emerald-400" />
+                        <div className="text-sm text-emerald-200/80 text-center">
+                          <p className="font-medium">{docUrl.split('/').pop()}</p>
+                          <p className="text-xs text-emerald-200/60">
+                            {docUrl.toLowerCase().includes('.pdf') ? 'Archivo PDF' : 'Imagen'}
                           </p>
-                          <Button
-                            size="sm"
-                            className="bg-gradient-to-r from-emerald-600 to-emerald-500 hover:from-emerald-500 hover:to-emerald-400 text-white"
-                            onClick={async () => {
-                              try {
-                                const token = localStorage.getItem('token');
-                                const response = await fetch(`/api/download-document?url=${encodeURIComponent(docUrl)}`, {
-                                  headers: {
-                                    'Authorization': `Bearer ${token}`
-                                  }
-                                });
-                                if (response.ok) {
-                                  const blob = await response.blob();
-                                  const downloadUrl = window.URL.createObjectURL(blob);
-                                  const link = document.createElement('a');
-                                  link.href = downloadUrl;
-                                  link.download = docUrl.split('/').pop() || 'documento';
-                                  document.body.appendChild(link);
-                                  link.click();
-                                  document.body.removeChild(link);
-                                  window.URL.revokeObjectURL(downloadUrl);
-                                } else {
-                                  window.open(docUrl, '_blank');
-                                }
-                              } catch (error) {
-                                console.error('Error opening document:', error);
-                                window.open(docUrl, '_blank');
-                              }
-                            }}
-                          >
-                            <Download className="w-4 h-4 mr-2" />
-                            Ver PDF
-                          </Button>
                         </div>
-                      ) : (
-                        <div className="flex flex-col items-center space-y-3">
-                          <img 
-                            src={docUrl} 
-                            alt={`Documento ${index + 1}`}
-                            className="max-w-full h-32 object-contain rounded border border-emerald-500/30"
-                            onError={(e) => {
-                              const target = e.target as HTMLImageElement;
-                              target.style.display = 'none';
-                              target.nextElementSibling!.classList.remove('hidden');
-                            }}
-                          />
-                          <div className="hidden flex flex-col items-center">
-                            <FileText className="w-16 h-16 text-emerald-400" />
-                            <p className="text-sm text-emerald-200/80 text-center">
-                              Error al cargar imagen
-                            </p>
-                          </div>
-                          <p className="text-sm text-emerald-200/80 text-center">
-                            {docUrl.split('/').pop()}
-                          </p>
-                          <Button
-                            size="sm"
-                            className="bg-gradient-to-r from-emerald-600 to-emerald-500 hover:from-emerald-500 hover:to-emerald-400 text-white"
-                            onClick={() => window.open(docUrl, '_blank')}
-                          >
-                            <Download className="w-4 h-4 mr-2" />
-                            Ver Completa
-                          </Button>
-                        </div>
-                      )}
+                        <Button
+                          size="sm"
+                          className="bg-gradient-to-r from-emerald-600 to-emerald-500 hover:from-emerald-500 hover:to-emerald-400 text-white"
+                          onClick={() => {
+                            // Create a temporary download link
+                            const link = document.createElement('a');
+                            link.href = docUrl;
+                            link.download = docUrl.split('/').pop() || 'documento';
+                            link.target = '_blank';
+                            document.body.appendChild(link);
+                            link.click();
+                            document.body.removeChild(link);
+                          }}
+                        >
+                          <Download className="w-4 h-4 mr-2" />
+                          Descargar
+                        </Button>
+                      </div>
                     </div>
                   ))}
                 </div>

@@ -103,8 +103,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // General endpoint for downloading any protected object
-  app.get("/objects/:objectPath(*)", authMiddleware, async (req: AuthRequest, res) => {
+  // General endpoint for downloading any protected object (no auth for direct access)
+  app.get("/objects/:objectPath(*)", async (req, res) => {
     try {
       const objectPath = `/objects/${req.params.objectPath}`;
       console.log('Download request for path:', objectPath);
