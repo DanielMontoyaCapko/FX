@@ -148,6 +148,8 @@ export default function AdminDashboard() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/admin/kyc"] });
+      // Also invalidate user-specific KYC queries in case user is viewing dashboard
+      queryClient.invalidateQueries({ queryKey: ["/api/kyc/me"] });
     },
   });
 

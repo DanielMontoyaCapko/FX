@@ -986,6 +986,8 @@ export default function Dashboard() {
   const { data: kycData, isLoading: kycLoading } = useQuery({
     queryKey: ["/api/kyc/me"],
     enabled: !!user,
+    refetchInterval: 30000, // Refetch every 30 seconds
+    refetchOnWindowFocus: true, // Refetch when user focuses window
   });
 
   // Create/Update KYC mutation
