@@ -941,6 +941,7 @@ export default function Dashboard() {
   const [mpSort, setMpSort] = useState<"" | "cantidadDesc" | "cantidadAsc" | "fechaAsc" | "fechaDesc" | "rentDesc" | "rentAsc">("");
   const [mpFilters, setMpFilters] = useState({ search: "", cantidadMin: "", cantidadMax: "", fechaFrom: "", fechaTo: "", rentMin: "", rentMax: "" });
 
+  
   // ====== FILTROS: Transacciones ======
   const [showTxFilters, setShowTxFilters] = useState(false);
   const [txSort, setTxSort] = useState<"" | "dateDesc" | "dateAsc" | "cantidadDesc" | "cantidadAsc">("");
@@ -1426,6 +1427,33 @@ export default function Dashboard() {
                 </div>
               </div>
             ) : null}
+
+            {/* ----------------------------- Historial ----------------------------- */}
+            {activeProductsView === "historial" ? (
+              <div className="mb-8">
+                <div className="flex items-center gap-4 mb-4">
+                  <Button
+                    variant="outline"
+                    onClick={() => setActiveProductsView("default")}
+                    className="border-emerald-500/30 text-emerald-50 hover:bg-emerald-900/10"
+                  >
+                    <ArrowLeft className="h-4 w-4 mr-2" />
+                    Volver
+                  </Button>
+                  <h2 className="text-2xl font-bold text-emerald-50">Historial de Productos</h2>
+                </div>
+
+                {/* Tu contenido del historial va aquí */}
+                <Card className="bg-black/40 border border-emerald-500/15 rounded-2xl">
+                  <CardContent className="p-6">
+                    <p className="text-emerald-200/80">
+                      Aquí puedes listar el historial (por ejemplo, productos vencidos, renovaciones, etc.).
+                    </p>
+                  </CardContent>
+                </Card>
+              </div>
+            ) : null}
+
 
             {/* ------------------------------ Mis productos ------------------------------ */}
             {activeProductsView === "mis-productos" ? (

@@ -16,7 +16,7 @@ export default function Header() {
   };
 
   const [, setLocation] = useLocation();
-  
+
   const goToContact = () => {
     setLocation("/contacto");
     setIsOpen(false);
@@ -31,53 +31,54 @@ export default function Header() {
             <span className="font-cormorant text-xl font-semibold text-white">Nakama&Partners</span>
           </div>
         </Link>
-        
+
         <div className="hidden md:flex items-center space-x-8">
-          <Link 
-            href="/" 
+          <Link
+            href="/"
             className={`transition-colors ${isActive("/") ? "text-green" : "text-silver-100 hover:text-green"}`}
           >
             Inicio
           </Link>
-          <Link 
-            href="/inversiones" 
+          <Link
+            href="/inversiones"
             className={`transition-colors ${isActive("/inversiones") ? "text-green" : "text-silver-100 hover:text-green"}`}
           >
             Inversiones
           </Link>
-          <Link 
-            href="/nosotros" 
+          <Link
+            href="/nosotros"
             className={`transition-colors ${isActive("/nosotros") ? "text-green" : "text-silver-100 hover:text-green"}`}
           >
             Nosotros
           </Link>
-          <Link 
-            href="/calculadora" 
+          <Link
+            href="/calculadora"
             className={`transition-colors ${isActive("/calculadora") ? "text-green" : "text-silver-100 hover:text-green"}`}
           >
             Calculadora
           </Link>
-          <Link 
-            href="/contacto" 
+          <Link
+            href="/contacto"
             className={`transition-colors ${isActive("/contacto") ? "text-green" : "text-silver-100 hover:text-green"}`}
           >
             Contacto
           </Link>
-          <Link 
-            href="/login" 
+          <Link
+            href="/login"
             className="bg-[#344e41] hover:bg-[#2d4235] text-white px-4 py-2 rounded-lg transition-colors"
           >
             Partners
           </Link>
         </div>
-        
-        <Button 
+
+        {/* Botón desktop con nuevo color */}
+        <Button
           onClick={goToContact}
-          className="hidden md:block gradient-navy px-6 py-3 text-white font-semibold hover:opacity-90"
+          className="hidden md:block bg-[#3f8358] hover:bg-[#356e4a] px-6 py-3 text-white font-semibold"
         >
           Quiero más información
         </Button>
-        
+
         <Sheet open={isOpen} onOpenChange={setIsOpen}>
           <SheetTrigger asChild>
             <Button variant="ghost" size="icon" className="md:hidden text-white">
@@ -86,51 +87,53 @@ export default function Header() {
           </SheetTrigger>
           <SheetContent side="right" className="bg-black border-silver-500/20">
             <div className="flex flex-col space-y-6 mt-8">
-              <Link 
-                href="/" 
+              <Link
+                href="/"
                 className={`text-left transition-colors ${isActive("/") ? "text-green" : "text-silver-100 hover:text-green"}`}
                 onClick={() => setIsOpen(false)}
               >
                 Inicio
               </Link>
-              <Link 
-                href="/inversiones" 
+              <Link
+                href="/inversiones"
                 className={`text-left transition-colors ${isActive("/inversiones") ? "text-green" : "text-silver-100 hover:text-green"}`}
                 onClick={() => setIsOpen(false)}
               >
                 Inversiones
               </Link>
-              <Link 
-                href="/nosotros" 
+              <Link
+                href="/nosotros"
                 className={`text-left transition-colors ${isActive("/nosotros") ? "text-green" : "text-silver-100 hover:text-green"}`}
                 onClick={() => setIsOpen(false)}
               >
                 Nosotros
               </Link>
-              <Link 
-                href="/calculadora" 
+              <Link
+                href="/calculadora"
                 className={`text-left transition-colors ${isActive("/calculadora") ? "text-green" : "text-silver-100 hover:text-green"}`}
                 onClick={() => setIsOpen(false)}
               >
                 Calculadora
               </Link>
-              <Link 
-                href="/contacto" 
+              <Link
+                href="/contacto"
                 className={`text-left transition-colors ${isActive("/contacto") ? "text-green" : "text-silver-100 hover:text-green"}`}
                 onClick={() => setIsOpen(false)}
               >
                 Contacto
               </Link>
-              <Link 
-                href="/login" 
+              <Link
+                href="/login"
                 className="bg-[#344e41] hover:bg-[#2d4235] text-white px-4 py-2 rounded-lg transition-colors text-center"
                 onClick={() => setIsOpen(false)}
               >
                 Partners
               </Link>
-              <Button 
+
+              {/* Botón móvil con nuevo color */}
+              <Button
                 onClick={goToContact}
-                className="gradient-navy text-white font-semibold hover:opacity-90"
+                className="bg-[#3f8358] hover:bg-[#356e4a] text-white font-semibold"
               >
                 Quiero más información
               </Button>
