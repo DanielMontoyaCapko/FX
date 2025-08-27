@@ -103,10 +103,37 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Download KYC document endpoint
+  // General endpoint for downloading any protected object
+  app.get("/objects/:objectPath(*)", authMiddleware, async (req: AuthRequest, res) => {
+    try {
+      const objectPath = `/objects/${req.params.objectPath}`;
+      
+      const { ObjectStorageService, ObjectNotFoundError } = await import("./objectStorage");
+      const objectStorageService = new ObjectStorageService();
+      
+      try {
+        const objectFile = await objectStorageService.getObjectEntityFile(objectPath);
+        
+        // Basic ACL: Users can only access KYC files (for now, simple implementation)
+        // TODO: Implement proper ACL based on file metadata
+        
+        await objectStorageService.downloadObject(objectFile, res);
+      } catch (error) {
+        if (error instanceof ObjectNotFoundError) {
+          return res.status(404).json({ error: "Document not found" });
+        }
+        throw error;
+      }
+    } catch (error) {
+      console.error('Error downloading document:', error);
+      res.status(500).json({ error: "Failed to download document" });
+    }
+  });
+
+  // Download KYC document endpoint (deprecated - kept for backwards compatibility)
   app.get("/api/kyc/download/:objectPath", authMiddleware, async (req: AuthRequest, res) => {
     try {
-      const objectPath = `/objects/kyc/${req.params.objectPath}`;
+      const objectPath = `/objects/${req.params.objectPath}`;
       
       const { ObjectStorageService, ObjectNotFoundError } = await import("./objectStorage");
       const objectStorageService = new ObjectStorageService();

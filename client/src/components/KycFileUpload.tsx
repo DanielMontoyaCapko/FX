@@ -35,10 +35,13 @@ export function KycFileUpload({ onFilesUploaded, currentFiles = [], disabled = f
         });
 
         if (!response.ok) {
-          throw new Error('Failed to get upload URL');
+          const errorText = await response.text();
+          console.error('Failed to get upload URL:', errorText);
+          throw new Error(`Failed to get upload URL: ${response.status}`);
         }
 
         const { uploadURL } = await response.json();
+        console.log('Got upload URL for', file.name, ':', uploadURL);
 
         // Upload file to object storage
         const uploadResponse = await fetch(uploadURL, {
@@ -50,13 +53,18 @@ export function KycFileUpload({ onFilesUploaded, currentFiles = [], disabled = f
         });
 
         if (!uploadResponse.ok) {
-          throw new Error(`Failed to upload ${file.name}`);
+          const errorText = await uploadResponse.text();
+          console.error(`Upload failed for ${file.name}:`, errorText);
+          throw new Error(`Failed to upload ${file.name}: ${uploadResponse.status}`);
         }
 
         // Extract object path from upload URL to create download URL
-        const urlParts = uploadURL.split('/');
-        const objectPath = urlParts[urlParts.length - 1].split('?')[0]; // Remove query params
-        const downloadUrl = `/api/kyc/download/${objectPath}`;
+        // Upload URL format: https://storage.googleapis.com/bucket/path/to/file?...
+        const url = new URL(uploadURL);
+        const pathParts = url.pathname.split('/');
+        // Remove bucket name (first part after /) and get the object path
+        const objectPath = pathParts.slice(2).join('/'); // Skip empty string and bucket name
+        const downloadUrl = `/objects/${objectPath}`;
         
         newUploadedFiles.push(downloadUrl);
       }
@@ -64,6 +72,7 @@ export function KycFileUpload({ onFilesUploaded, currentFiles = [], disabled = f
       const allFiles = [...uploadedFiles, ...newUploadedFiles];
       setUploadedFiles(allFiles);
       onFilesUploaded(allFiles);
+      console.log('Successfully uploaded files:', newUploadedFiles);
       
     } catch (error) {
       console.error('Error uploading files:', error);
