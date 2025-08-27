@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -981,6 +982,10 @@ export default function Dashboard() {
     documentsUrls: [] as string[],
   });
   const [kycDocs, setKycDocs] = useState<File[]>([]);
+  
+  // Document viewing states (similar to admin dashboard)
+  const [showDocumentsDialog, setShowDocumentsDialog] = useState(false);
+  const [viewingDocuments, setViewingDocuments] = useState<string[] | null>(null);
 
   // Fetch user's KYC data
   const { data: kycData, isLoading: kycLoading } = useQuery({
@@ -1082,6 +1087,21 @@ export default function Dashboard() {
     const sizes = ["B", "KB", "MB", "GB"];
     const i = Math.floor(Math.log(bytes) / Math.log(k));
     return `${parseFloat((bytes / Math.pow(k, i)).toFixed(2))} ${sizes[i]}`;
+  };
+
+  // Document viewing functions (similar to admin dashboard)
+  const handleViewDocuments = (documentsUrls: string[] | null) => {
+    if (!documentsUrls || documentsUrls.length === 0) {
+      alert("No hay documentos disponibles");
+      return;
+    }
+    setViewingDocuments(documentsUrls);
+    setShowDocumentsDialog(true);
+  };
+
+  const handleCloseDocumentsDialog = () => {
+    setShowDocumentsDialog(false);
+    setViewingDocuments(null);
   };
 
   const kycBadgeClass =
@@ -1321,61 +1341,47 @@ export default function Dashboard() {
 
                       {/* Documents Uploaded */}
                       {currentKyc?.documentsUrls && currentKyc.documentsUrls.length > 0 && (
-                        <div className="mt-4 bg-blue-500/10 border border-blue-500/20 rounded-lg p-4">
-                          <h4 className="text-blue-300 font-semibold mb-3 flex items-center gap-2">
-                            <FileText className="w-4 h-4" />
+                        <div className="mt-6 bg-emerald-500/10 border border-emerald-500/20 rounded-lg p-4">
+                          <h4 className="text-emerald-300 font-semibold mb-4 flex items-center gap-2">
+                            <FileText className="w-5 h-5" />
                             Documentos Subidos
                           </h4>
-                          <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                          <div className="grid grid-cols-1 gap-3">
                             {currentKyc.documentsUrls.map((docUrl, index) => (
-                              <div key={index} className="flex items-center justify-between bg-black/30 rounded-lg p-3 border border-blue-500/10">
+                              <div key={index} className="flex items-center justify-between bg-black/30 rounded-lg p-4 border border-emerald-500/15">
                                 <div className="flex items-center gap-3">
-                                  <FileText className="w-4 h-4 text-blue-400" />
+                                  <FileText className="w-5 h-5 text-emerald-400" />
                                   <div>
                                     <p className="text-emerald-50 text-sm font-medium">
                                       Documento {index + 1}
                                     </p>
-                                    <p className="text-blue-300/70 text-xs">
-                                      {docUrl.split('/').pop()?.substring(0, 30)}...
+                                    <p className="text-emerald-300/70 text-xs">
+                                      {docUrl.split('/').pop()?.substring(0, 40)}...
                                     </p>
                                   </div>
                                 </div>
                                 <Button
                                   size="sm"
                                   variant="outline"
-                                  className="border-blue-500/20 text-blue-300"
-                                  onClick={async () => {
-                                    try {
-                                      const token = localStorage.getItem('token');
-
-                                      const response = await fetch(`/api/download-document?url=${encodeURIComponent(docUrl)}`, {
-                                        headers: {
-                                          'Authorization': `Bearer ${token}`
-                                        }
-                                      });
-                                      if (response.ok) {
-                                        const blob = await response.blob();
-                                        const downloadUrl = window.URL.createObjectURL(blob);
-                                        const link = document.createElement('a');
-                                        link.href = downloadUrl;
-                                        link.download = docUrl.split('/').pop() || 'documento';
-                                        document.body.appendChild(link);
-                                        link.click();
-                                        document.body.removeChild(link);
-                                        window.URL.revokeObjectURL(downloadUrl);
-                                      } else {
-                                        alert('Error al descargar el documento');
-                                      }
-                                    } catch (error) {
-                                      console.error('Error downloading document:', error);
-                                      alert('Error al descargar el documento');
-                                    }
-                                  }}
+                                  className="border-emerald-500/20 text-emerald-300 hover:bg-emerald-500/10"
+                                  onClick={() => handleViewDocuments(currentKyc.documentsUrls)}
                                 >
-                                  <Download className="w-4 h-4" />
+                                  Ver
                                 </Button>
                               </div>
                             ))}
+                          </div>
+                          
+                          {/* Quick View All Button */}
+                          <div className="mt-4 pt-4 border-t border-emerald-500/20">
+                            <Button
+                              variant="outline"
+                              className="w-full border-emerald-500/20 text-emerald-300 hover:bg-emerald-500/10"
+                              onClick={() => handleViewDocuments(currentKyc.documentsUrls)}
+                            >
+                              <FileText className="w-4 h-4 mr-2" />
+                              Ver Todos los Documentos
+                            </Button>
                           </div>
                         </div>
                       )}
@@ -2525,6 +2531,110 @@ export default function Dashboard() {
 
         {/* Modales */}
         {showCalculator && <InvestmentCalculator onClose={() => setShowCalculator(false)} />}
+
+        {/* Documents Dialog */}
+        <Dialog open={showDocumentsDialog} onOpenChange={handleCloseDocumentsDialog}>
+          <DialogContent className="bg-black/40 border border-emerald-500/15 text-emerald-50 max-w-4xl">
+            <DialogHeader>
+              <DialogTitle>Mis Documentos KYC</DialogTitle>
+              <DialogDescription className="text-emerald-200/80">
+                Documentos subidos para verificación
+              </DialogDescription>
+            </DialogHeader>
+            <div className="grid gap-4 py-4">
+              {viewingDocuments && viewingDocuments.length > 0 ? (
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  {viewingDocuments.map((docUrl, index) => (
+                    <div key={index} className="border border-emerald-500/20 rounded-lg p-4 bg-black/20">
+                      <div className="flex items-center justify-between mb-3">
+                        <div className="text-sm text-emerald-200/80">
+                          Documento {index + 1}
+                        </div>
+                        <Badge className="bg-emerald-500/20 text-emerald-200">
+                          {docUrl.toLowerCase().includes('.pdf') ? 'PDF' : 'Imagen'}
+                        </Badge>
+                      </div>
+                      
+                      {docUrl.toLowerCase().includes('.pdf') ? (
+                        <div className="flex flex-col items-center space-y-3">
+                          <FileText className="w-16 h-16 text-red-400" />
+                          <p className="text-sm text-emerald-200/80 text-center">
+                            {docUrl.split('/').pop()}
+                          </p>
+                          <Button
+                            size="sm"
+                            className="bg-gradient-to-r from-emerald-600 to-emerald-500 hover:from-emerald-500 hover:to-emerald-400 text-white"
+                            onClick={async () => {
+                              try {
+                                const token = localStorage.getItem('token');
+                                const response = await fetch(`/api/download-document?url=${encodeURIComponent(docUrl)}`, {
+                                  headers: {
+                                    'Authorization': `Bearer ${token}`
+                                  }
+                                });
+                                if (response.ok) {
+                                  const blob = await response.blob();
+                                  const downloadUrl = window.URL.createObjectURL(blob);
+                                  const link = document.createElement('a');
+                                  link.href = downloadUrl;
+                                  link.download = docUrl.split('/').pop() || 'documento';
+                                  document.body.appendChild(link);
+                                  link.click();
+                                  document.body.removeChild(link);
+                                  window.URL.revokeObjectURL(downloadUrl);
+                                } else {
+                                  window.open(docUrl, '_blank');
+                                }
+                              } catch (error) {
+                                console.error('Error opening document:', error);
+                                window.open(docUrl, '_blank');
+                              }
+                            }}
+                          >
+                            <Download className="w-4 h-4 mr-2" />
+                            Ver PDF
+                          </Button>
+                        </div>
+                      ) : (
+                        <div className="flex flex-col items-center space-y-3">
+                          <img 
+                            src={docUrl} 
+                            alt={`Documento ${index + 1}`}
+                            className="max-w-full h-32 object-contain rounded border border-emerald-500/30"
+                            onError={(e) => {
+                              const target = e.target as HTMLImageElement;
+                              target.style.display = 'none';
+                              target.nextElementSibling!.classList.remove('hidden');
+                            }}
+                          />
+                          <div className="hidden flex flex-col items-center">
+                            <FileText className="w-16 h-16 text-emerald-400" />
+                            <p className="text-sm text-emerald-200/80 text-center">
+                              Error al cargar imagen
+                            </p>
+                          </div>
+                          <p className="text-sm text-emerald-200/80 text-center">
+                            {docUrl.split('/').pop()}
+                          </p>
+                          <Button
+                            size="sm"
+                            className="bg-gradient-to-r from-emerald-600 to-emerald-500 hover:from-emerald-500 hover:to-emerald-400 text-white"
+                            onClick={() => window.open(docUrl, '_blank')}
+                          >
+                            <Download className="w-4 h-4 mr-2" />
+                            Ver Completa
+                          </Button>
+                        </div>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <p className="text-center text-emerald-200/60">No hay documentos disponibles</p>
+              )}
+            </div>
+          </DialogContent>
+        </Dialog>
       </div>
     );
 }
