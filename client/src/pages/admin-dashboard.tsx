@@ -2513,7 +2513,12 @@ export default function AdminDashboard() {
                             <FileText className="w-4 h-4 text-emerald-400" />
                             <span className="text-emerald-50">{url.split('/').pop()}</span>
                           </div>
-                          <Button variant="outline" size="sm" className="border-emerald-500/20 text-emerald-50">
+                          <Button 
+                            variant="outline" 
+                            size="sm" 
+                            className="border-emerald-500/20 text-emerald-50"
+                            onClick={() => handleViewDocuments(editingKyc.documentsUrls)}
+                          >
                             Ver
                           </Button>
                         </div>
@@ -2565,17 +2570,6 @@ export default function AdminDashboard() {
                   >
                     Cancelar
                   </Button>
-                  {editingKyc?.documentsUrls && editingKyc.documentsUrls.length > 0 && (
-                    <Button 
-                      type="button" 
-                      variant="outline" 
-                      onClick={() => handleViewDocuments(editingKyc.documentsUrls)} 
-                      className="border-blue-500/20 text-blue-50"
-                    >
-                      <Eye className="w-4 h-4 mr-2" />
-                      Ver Documentos
-                    </Button>
-                  )}
                   <Button 
                     onClick={async () => {
                       if (kycReviewStatus === "rejected" && !rejectionReason.trim()) {
