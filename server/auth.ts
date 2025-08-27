@@ -52,6 +52,11 @@ export async function authMiddleware(req: AuthRequest, res: Response, next: Next
     id: user.id,
     email: user.email,
     name: user.name,
+    apellidos: user.apellidos,
+    telefono: user.telefono,
+    fechaNacimiento: user.fechaNacimiento,
+    pais: user.pais,
+    direccion: user.direccion,
     role: user.role,
   };
 
