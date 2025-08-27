@@ -301,52 +301,7 @@ export default function AdminDashboard() {
       };
     });
 
-  const loadDashboardData = async () => {
-    try {
-      setLoading(true);
 
-      const token = localStorage.getItem("token");
-      if (!token) {
-        setLocation("/login");
-        return;
-      }
-
-      const headers = {
-        Authorization: `Bearer ${token}`,
-        "Content-Type": "application/json",
-      };
-
-      const [usersRes, kycRes, productsRes, contractsRes] = await Promise.all([
-        fetch("/api/admin/users", { headers }),
-        fetch("/api/admin/kyc", { headers }),
-        fetch("/api/admin/products", { headers }),
-        fetch("/api/admin/contracts", { headers }),
-      ]);
-
-      const usersData = await usersRes.json();
-      const kycData = await kycRes.json();
-      const productsData = await productsRes.json();
-      const contractsData = await contractsRes.json();
-
-      const usersWithGender = ensureUsersHaveGender(usersData.users || []);
-
-      setUsers(usersWithGender);
-      setKyc(kycData.kyc || []);
-      setProducts(productsData.products || []);
-      setContracts(contractsData.contracts || []);
-
-      setStats({
-        totalUsers: usersWithGender.length || 0,
-        totalProducts: productsData.products?.length || 0,
-        totalContracts: contractsData.contracts?.length || 0,
-        pendingKyc: kycData.kyc?.filter((k: KycData) => k.status === "pending").length || 0,
-      });
-    } catch (error) {
-      console.error("Error loading dashboard data:", error);
-    } finally {
-      setLoading(false);
-    }
-  };
 
   const handleLogout = () => {
     logout();
@@ -551,7 +506,7 @@ export default function AdminDashboard() {
       if (response.ok) {
         alert(editingUser ? "Usuario actualizado exitosamente" : "Usuario creado exitosamente");
         handleCloseUserDialog();
-        await loadDashboardData(); // recarga y vuelve a inferir género
+        queryClient.invalidateQueries({ queryKey: ["/api/admin/users"] });
       } else {
         const errorData = await response.json();
         alert(`Error: ${errorData.error || "No se pudo procesar el usuario"}`);
@@ -597,7 +552,7 @@ export default function AdminDashboard() {
       if (response.ok) {
         alert(editingProduct ? "Producto actualizado exitosamente" : "Producto creado exitosamente");
         handleCloseProductDialog();
-        await loadDashboardData();
+        queryClient.invalidateQueries({ queryKey: ["/api/admin/products"] });
       } else {
         const errorData = await response.json();
         alert(`Error: ${errorData.error || "No se pudo procesar el producto"}`);
@@ -618,7 +573,7 @@ export default function AdminDashboard() {
       });
       if (response.ok) {
         alert("Usuario eliminado exitosamente");
-        await loadDashboardData();
+        queryClient.invalidateQueries({ queryKey: ["/api/admin/users"] });
       } else {
         const errorData = await response.json();
         alert(`Error: ${errorData.error || "No se pudo eliminar el usuario"}`);
@@ -639,7 +594,7 @@ export default function AdminDashboard() {
       });
       if (response.ok) {
         alert("Producto eliminado exitosamente");
-        await loadDashboardData();
+        queryClient.invalidateQueries({ queryKey: ["/api/admin/products"] });
       } else {
         const errorData = await response.json();
         alert(`Error: ${errorData.error || "No se pudo eliminar el producto"}`);
@@ -693,7 +648,7 @@ export default function AdminDashboard() {
             newStatus === "approved" ? "Aprobado" : newStatus === "rejected" ? "Rechazado" : "Pendiente"
           }`
         );
-        await loadDashboardData();
+        queryClient.invalidateQueries({ queryKey: ["/api/admin/kyc"] });
       } else {
         const errorData = await response.json();
         alert(`Error: ${errorData.error || "No se pudo actualizar el estado KYC"}`);
@@ -724,7 +679,7 @@ export default function AdminDashboard() {
           cancelled: "Cancelado",
         };
         alert(`Estado del contrato actualizado a ${statusText[newStatus]}`);
-        await loadDashboardData();
+        queryClient.invalidateQueries({ queryKey: ["/api/admin/contracts"] });
       } else {
         const errorData = await response.json();
         alert(`Error: ${errorData.error || "No se pudo actualizar el estado del contrato"}`);
@@ -785,7 +740,7 @@ export default function AdminDashboard() {
           }`
         );
         handleCloseKycDialog();
-        await loadDashboardData();
+        queryClient.invalidateQueries({ queryKey: ["/api/admin/kyc"] });
       } else {
         const errorData = await response.json();
         alert(`Error: ${errorData.error || "No se pudo actualizar el estado KYC"}`);
@@ -824,7 +779,7 @@ export default function AdminDashboard() {
         } as const;
         alert(`Estado del contrato actualizado a ${statusText[editingContract.status as keyof typeof statusText]}`);
         handleCloseContractDialog();
-        await loadDashboardData();
+        queryClient.invalidateQueries({ queryKey: ["/api/admin/contracts"] });
       } else {
         const errorData = await response.json();
         alert(`Error: ${errorData.error || "No se pudo actualizar el estado del contrato"}`);
