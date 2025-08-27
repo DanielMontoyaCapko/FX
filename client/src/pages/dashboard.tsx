@@ -1337,13 +1337,26 @@ export default function Dashboard() {
                                   size="sm"
                                   variant="outline"
                                   className="border-blue-500/20 text-blue-300"
-                                  onClick={() => {
-                                    const link = document.createElement('a');
-                                    link.href = docUrl;
-                                    link.download = docUrl.split('/').pop() || 'documento';
-                                    document.body.appendChild(link);
-                                    link.click();
-                                    document.body.removeChild(link);
+                                  onClick={async () => {
+                                    try {
+                                      const response = await fetch(`/api/download-document?url=${encodeURIComponent(docUrl)}`);
+                                      if (response.ok) {
+                                        const blob = await response.blob();
+                                        const downloadUrl = window.URL.createObjectURL(blob);
+                                        const link = document.createElement('a');
+                                        link.href = downloadUrl;
+                                        link.download = docUrl.split('/').pop() || 'documento';
+                                        document.body.appendChild(link);
+                                        link.click();
+                                        document.body.removeChild(link);
+                                        window.URL.revokeObjectURL(downloadUrl);
+                                      } else {
+                                        alert('Error al descargar el documento');
+                                      }
+                                    } catch (error) {
+                                      console.error('Error downloading document:', error);
+                                      alert('Error al descargar el documento');
+                                    }
                                   }}
                                 >
                                   <Download className="w-4 h-4" />

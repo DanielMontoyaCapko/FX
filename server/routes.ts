@@ -83,6 +83,40 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // KYC routes
+  // Download document endpoint
+  app.get("/api/download-document", authMiddleware, async (req, res) => {
+    try {
+      const { url } = req.query;
+      
+      if (!url || typeof url !== 'string') {
+        return res.status(400).json({ error: "URL is required" });
+      }
+
+      // Fetch the document from the external URL
+      const response = await fetch(url);
+      
+      if (!response.ok) {
+        return res.status(404).json({ error: "Document not found" });
+      }
+
+      // Get the content type and filename
+      const contentType = response.headers.get('content-type') || 'application/octet-stream';
+      const filename = url.split('/').pop() || 'documento';
+
+      // Set headers for download
+      res.setHeader('Content-Type', contentType);
+      res.setHeader('Content-Disposition', `attachment; filename="${filename}"`);
+      res.setHeader('Access-Control-Allow-Origin', '*');
+
+      // Pipe the response
+      const buffer = await response.arrayBuffer();
+      res.send(Buffer.from(buffer));
+    } catch (error) {
+      console.error('Error downloading document:', error);
+      res.status(500).json({ error: "Failed to download document" });
+    }
+  });
+
   app.post("/api/kyc", authMiddleware, async (req: AuthRequest, res) => {
     try {
       const kycData = insertKycSchema.parse({
