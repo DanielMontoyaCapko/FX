@@ -107,12 +107,14 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.get("/objects/:objectPath(*)", authMiddleware, async (req: AuthRequest, res) => {
     try {
       const objectPath = `/objects/${req.params.objectPath}`;
+      console.log('Download request for path:', objectPath);
       
       const { ObjectStorageService, ObjectNotFoundError } = await import("./objectStorage");
       const objectStorageService = new ObjectStorageService();
       
       try {
         const objectFile = await objectStorageService.getObjectEntityFile(objectPath);
+        console.log('File found, downloading:', objectFile.name);
         
         // Basic ACL: Users can only access KYC files (for now, simple implementation)
         // TODO: Implement proper ACL based on file metadata

@@ -104,12 +104,43 @@ export class ObjectStorageService {
       // Get file metadata
       const [metadata] = await file.getMetadata();
       
-      // Set appropriate headers
+      // Detect content type from file extension if metadata doesn't have it
+      const filename = metadata.name?.split('/').pop() || 'documento';
+      let contentType = metadata.contentType;
+      
+      if (!contentType || contentType === 'application/octet-stream') {
+        const ext = filename.split('.').pop()?.toLowerCase();
+        switch (ext) {
+          case 'pdf':
+            contentType = 'application/pdf';
+            break;
+          case 'jpg':
+          case 'jpeg':
+            contentType = 'image/jpeg';
+            break;
+          case 'png':
+            contentType = 'image/png';
+            break;
+          case 'gif':
+            contentType = 'image/gif';
+            break;
+          case 'txt':
+            contentType = 'text/plain';
+            break;
+          default:
+            contentType = 'application/octet-stream';
+        }
+      }
+      
+      // Set appropriate headers - use inline for images/PDFs to view in browser
+      const isViewable = contentType.startsWith('image/') || contentType === 'application/pdf';
+      const disposition = isViewable ? 'inline' : 'attachment';
+      
       res.set({
-        "Content-Type": metadata.contentType || "application/octet-stream",
+        "Content-Type": contentType,
         "Content-Length": metadata.size,
         "Cache-Control": `private, max-age=${cacheTtlSec}`,
-        "Content-Disposition": `attachment; filename="${metadata.name?.split('/').pop() || 'documento'}"`,
+        "Content-Disposition": `${disposition}; filename="${filename}"`,
       });
 
       // Stream the file to the response
