@@ -2181,7 +2181,7 @@ export default function PartnerDashboard() {
               <div className="flex items-center justify-between mb-4">
                 <Button
                   variant="outline"
-                  onClick={() => setShowContractFilters(!setShowContractFilters)}
+                  onClick={() => setShowContractFilters(!showContractFilters)}
                   className="border-emerald-500/20 text-emerald-50 hover:bg-emerald-900/10"
                 >
                   <Filter className="w-4 h-4 mr-2" />
@@ -2299,37 +2299,6 @@ export default function PartnerDashboard() {
                             className="bg-black/50 border-emerald-500/20 text-emerald-50 placeholder:text-emerald-200/60"
                           />
                         </div>
-                      </div>
-
-                      {/* Comisión Generada */}
-                      <div className="space-y-2">
-                        <Label className="text-emerald-50">Comisión Generada (€)</Label>
-                        <div className="flex space-x-2">
-                          <Input
-                            placeholder="Mínimo"
-                            className="bg-black/50 border-emerald-500/20 text-emerald-50 placeholder:text-emerald-200/60"
-                          />
-                          <Input
-                            placeholder="Máximo"
-                            className="bg-black/50 border-emerald-500/20 text-emerald-50 placeholder:text-emerald-200/60"
-                          />
-                        </div>
-                      </div>
-
-                      {/* Renovaciones */}
-                      <div className="space-y-2">
-                        <Label className="text-emerald-50">Renovaciones Realizadas</Label>
-                        <Select>
-                          <SelectTrigger className="bg-black/50 border-emerald-500/20 text-emerald-50">
-                            <SelectValue placeholder="Cualquier cantidad" />
-                          </SelectTrigger>
-                          <SelectContent>
-                            <SelectItem value="0">Sin renovaciones</SelectItem>
-                            <SelectItem value="1+">1 o más renovaciones</SelectItem>
-                            <SelectItem value="2+">2 o más renovaciones</SelectItem>
-                            <SelectItem value="3+">3 o más renovaciones</SelectItem>
-                          </SelectContent>
-                        </Select>
                       </div>
 
                       {/* Orden */}
@@ -2475,8 +2444,10 @@ export default function PartnerDashboard() {
                       return (
                         <Card
                           key={`${c.cliente}-${index}`}
-                          className={`bg-black/30 border ${
-                            isExpired ? "border-red-500/50" : isVigente ? "border-emerald-500/50" : "border-emerald-500/15"
+                          className={`bg-black/30 ${
+                            isVigente ? "border-2 border-emerald-400" : 
+                            isExpired ? "border border-red-500/50" : 
+                            "border border-emerald-500/15"
                           } rounded-xl hover:bg-black/40 transition-colors`}
                         >
                           <CardContent className="p-6">
@@ -2516,26 +2487,18 @@ export default function PartnerDashboard() {
                               </div>
 
                               {/* Información Financiera */}
-                              <div className="grid grid-cols-2 md:grid-cols-4 gap-6 flex-1">
+                              <div className="grid grid-cols-1 md:grid-cols-3 gap-6 flex-1">
                                 <div>
-                                  <p className="text-emerald-200/60 text-xs font-medium uppercase tracking-wide">Importe</p>
+                                  <p className="text-emerald-200/60 text-xs font-medium uppercase tracking-wide">Importe Invertido</p>
                                   <p className="text-emerald-50 font-bold text-lg">
                                     €{c.amount.toLocaleString()}
                                   </p>
                                 </div>
                                 
                                 <div>
-                                  <p className="text-emerald-200/60 text-xs font-medium uppercase tracking-wide">Comisión</p>
-                                  <p className="text-emerald-50 font-bold text-lg">
-                                    €{c.comision.toLocaleString()}
-                                  </p>
-                                </div>
-                                
-                                <div>
-                                  <p className="text-emerald-200/60 text-xs font-medium uppercase tracking-wide">Duración</p>
-                                  <p className="text-emerald-50 font-medium">{c.duracion}</p>
-                                  <p className="text-emerald-200/60 text-xs">
-                                    {c.renovaciones} renovación{c.renovaciones !== 1 ? "es" : ""}
+                                  <p className="text-emerald-200/60 text-xs font-medium uppercase tracking-wide">Inicio del Contrato</p>
+                                  <p className="text-emerald-50 font-medium">
+                                    {new Date(c.signedDate).toLocaleDateString("es-ES")}
                                   </p>
                                 </div>
                                 
@@ -2571,15 +2534,6 @@ export default function PartnerDashboard() {
                                   <Download className="w-4 h-4 mr-2" />
                                   Descargar
                                 </Button>
-                                {isExpired && (
-                                  <Button
-                                    size="sm"
-                                    className="bg-emerald-600 hover:bg-emerald-500 text-white"
-                                  >
-                                    <RefreshCw className="w-4 h-4 mr-2" />
-                                    Renovar
-                                  </Button>
-                                )}
                               </div>
                             </div>
                           </CardContent>
