@@ -1311,6 +1311,41 @@ export default function Dashboard() {
                         <Badge className={`${kycBadgeClass} px-4 py-2 text-sm font-semibold`}>{kycStatus}</Badge>
                       </div>
 
+                      {/* Documents Uploaded */}
+                      {currentKyc?.documentsUrls && currentKyc.documentsUrls.length > 0 && (
+                        <div className="mt-4 bg-blue-500/10 border border-blue-500/20 rounded-lg p-4">
+                          <h4 className="text-blue-300 font-semibold mb-3 flex items-center gap-2">
+                            <FileText className="w-4 h-4" />
+                            Documentos Subidos
+                          </h4>
+                          <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                            {currentKyc.documentsUrls.map((docUrl, index) => (
+                              <div key={index} className="flex items-center justify-between bg-black/30 rounded-lg p-3 border border-blue-500/10">
+                                <div className="flex items-center gap-3">
+                                  <FileText className="w-4 h-4 text-blue-400" />
+                                  <div>
+                                    <p className="text-emerald-50 text-sm font-medium">
+                                      Documento {index + 1}
+                                    </p>
+                                    <p className="text-blue-300/70 text-xs">
+                                      {docUrl.split('/').pop()?.substring(0, 30)}...
+                                    </p>
+                                  </div>
+                                </div>
+                                <Button
+                                  size="sm"
+                                  variant="outline"
+                                  className="border-blue-500/20 text-blue-300"
+                                  onClick={() => window.open(docUrl, '_blank')}
+                                >
+                                  <Eye className="w-4 h-4" />
+                                </Button>
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+                      )}
+
                       {/* KYC Form */}
                       <div className="mt-2 bg-black/40 rounded-xl p-6 border border-emerald-500/15">
                         <form onSubmit={handleKycSubmit} className="space-y-6">

@@ -1587,25 +1587,6 @@ export default function AdminDashboard() {
                                 size="sm"
                                 variant="outline"
                                 className="border-emerald-500/20 text-emerald-50"
-                                onClick={() => openUserProfileByName(record.fullName)}
-                                title="Ver ficha del usuario"
-                              >
-                                <UserIcon className="w-4 h-4" />
-                              </Button>
-                              <Button
-                                size="sm"
-                                variant="outline"
-                                className="border-blue-500/20 text-blue-50"
-                                onClick={() => handleViewDocuments(record.documentsUrls)}
-                                title="Ver documentos subidos"
-                                disabled={!record.documentsUrls || record.documentsUrls.length === 0}
-                              >
-                                <Eye className="w-4 h-4" />
-                              </Button>
-                              <Button
-                                size="sm"
-                                variant="outline"
-                                className="border-emerald-500/20 text-emerald-50"
                                 onClick={() => handleEditKyc(record)}
                                 title="Editar estado KYC"
                               >
@@ -2584,6 +2565,17 @@ export default function AdminDashboard() {
                   >
                     Cancelar
                   </Button>
+                  {editingKyc?.documentsUrls && editingKyc.documentsUrls.length > 0 && (
+                    <Button 
+                      type="button" 
+                      variant="outline" 
+                      onClick={() => handleViewDocuments(editingKyc.documentsUrls)} 
+                      className="border-blue-500/20 text-blue-50"
+                    >
+                      <Eye className="w-4 h-4 mr-2" />
+                      Ver Documentos
+                    </Button>
+                  )}
                   <Button 
                     onClick={async () => {
                       if (kycReviewStatus === "rejected" && !rejectionReason.trim()) {
