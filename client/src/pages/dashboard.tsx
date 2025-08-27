@@ -941,6 +941,9 @@ export default function Dashboard() {
         ],
         proyeccion: { beneficioTotal: 4500, valorFinal: 54500 },
       });
+      
+      // Registrar actividad de descarga de estado de cuenta
+      logActivity('Estado de cuenta descargado');
     } catch (error) {
       console.error("Error generating PDF:", error);
       alert("Error al generar el PDF. Inténtalo de nuevo.");
@@ -2435,7 +2438,7 @@ export default function Dashboard() {
         </main>
 
         {/* Modales */}
-        {showCalculator && <InvestmentCalculator onClose={() => setShowCalculator(false)} />}
+        {showCalculator && <InvestmentCalculator onClose={() => setShowCalculator(false)} onLogActivity={logActivity} />}
 
         {/* Documents Dialog */}
         <Dialog open={showDocumentsDialog} onOpenChange={handleCloseDocumentsDialog}>

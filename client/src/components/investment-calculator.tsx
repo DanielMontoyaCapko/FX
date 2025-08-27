@@ -147,9 +147,10 @@ async function generateSimulationPDF(params: { capitalInicial: number; tasaAnual
 
 interface InvestmentCalculatorProps {
   onClose: () => void;
+  onLogActivity?: (action: string) => void;
 }
 
-export default function InvestmentCalculator({ onClose }: InvestmentCalculatorProps) {
+export default function InvestmentCalculator({ onClose, onLogActivity }: InvestmentCalculatorProps) {
   const [amount, setAmount] = useState("50000");
   const [term, setTerm] = useState("12");
   const [rate] = useState(9); // Fixed 9% rate
@@ -179,6 +180,15 @@ export default function InvestmentCalculator({ onClose }: InvestmentCalculatorPr
   const totalGain = finalAmount - parseFloat(amount);
   const gainPercentage = ((totalGain / parseFloat(amount)) * 100).toFixed(2);
 
+  // Función para registrar nueva inversión calculada
+  const handleCalculationChange = () => {
+    if (onLogActivity) {
+      const capitalInicial = parseFloat(amount);
+      const meses = parseInt(term);
+      onLogActivity(`Nueva inversión calculada: €${capitalInicial.toLocaleString()} por ${meses} meses`);
+    }
+  };
+
   // ⬇️ Solo cambiamos esta función para usar el NUEVO PDF
   const handleDownloadSimulation = async () => {
     try {
@@ -186,6 +196,11 @@ export default function InvestmentCalculator({ onClose }: InvestmentCalculatorPr
       const meses = parseInt(term);
       const tasaAnual = 0.09; // 9% fijo
       await generateSimulationPDF({ capitalInicial, tasaAnual, meses });
+      
+      // Registrar descarga de simulación
+      if (onLogActivity) {
+        onLogActivity(`Simulación de inversión descargada: €${capitalInicial.toLocaleString()} por ${meses} meses`);
+      }
     } catch (error) {
       console.error("Error generating simulation PDF:", error);
       alert("Error al generar la simulación. Inténtalo de nuevo.");
@@ -243,7 +258,10 @@ export default function InvestmentCalculator({ onClose }: InvestmentCalculatorPr
                     id="amount"
                     type="number"
                     value={amount}
-                    onChange={(e) => setAmount(e.target.value)}
+                    onChange={(e) => {
+                      setAmount(e.target.value);
+                      handleCalculationChange();
+                    }}
                     className="pl-8 bg-black/50 border-silver-500/20 text-white"
                     min="50000"
                     step="50000"
@@ -254,7 +272,10 @@ export default function InvestmentCalculator({ onClose }: InvestmentCalculatorPr
 
               <div className="space-y-2">
                 <Label htmlFor="term" className="text-white">Plazo de Inversión</Label>
-                <Select value={term} onValueChange={setTerm}>
+                <Select value={term} onValueChange={(value) => {
+                  setTerm(value);
+                  handleCalculationChange();
+                }}>
                   <SelectTrigger className="bg-black/50 border-silver-500/20 text-white">
                     <SelectValue />
                   </SelectTrigger>
