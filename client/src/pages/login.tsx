@@ -112,14 +112,17 @@ export default function Login() {
         "shadow-[0_0_0_1px_rgba(16,185,129,0.12),0_24px_70px_-20px_rgba(16,185,129,0.28)]",
       ].join(" ")}
     >
-      <CardHeader className="text-center space-y-2 md:space-y-3">
-        <CardTitle className="text-2xl md:text-3xl text-emerald-50">Iniciar Sesión</CardTitle>
-        <CardDescription className="text-emerald-200/80 text-sm md:text-base">
-          Ingresa tus credenciales para continuar
-        </CardDescription>
+      {/* ⬇️ Centrado perfecto del título y descripción en X e Y */}
+      <CardHeader className="text-center">
+        <div className="flex flex-col items-center justify-center min-h-[90px] space-y-2 md:space-y-3">
+          <CardTitle className="text-2xl md:text-3xl text-emerald-50">Iniciar Sesión</CardTitle>
+          <CardDescription className="text-emerald-200/80 text-sm md:text-base">
+            Ingresa tus credenciales para continuar
+          </CardDescription>
+        </div>
       </CardHeader>
 
-      <CardContent className="p-6 md:p-8">
+      <CardContent className="p-5 md:p-8">
         <form onSubmit={handleLogin} className="space-y-5 md:space-y-6">
           {/* Email */}
           <div className="space-y-2">
@@ -322,11 +325,14 @@ export default function Login() {
         "shadow-[0_0_0_1px_rgba(16,185,129,0.12),0_24px_70px_-20px_rgba(16,185,129,0.30)]",
       ].join(" ")}
     >
-      <CardHeader className="text-center pt-6 md:pt-7 space-y-2 md:space-y-3">
-        <CardTitle className="text-2xl md:text-3xl text-emerald-50">Iniciar Sesión</CardTitle>
-        <CardDescription className="text-emerald-200/80 text-sm md:text-base">
-          Ingresa tus credenciales para continuar
-        </CardDescription>
+      {/* ⬇️ Centrado perfecto del título y descripción en X e Y */}
+      <CardHeader className="text-center">
+        <div className="flex flex-col items-center justify-center min-h-[100px] space-y-2 md:space-y-3">
+          <CardTitle className="text-2xl md:text-3xl text-emerald-50">Iniciar Sesión</CardTitle>
+          <CardDescription className="text-emerald-200/80 text-sm md:text-base">
+            Ingresa tus credenciales para continuar
+          </CardDescription>
+        </div>
       </CardHeader>
 
       <CardContent className="p-6 md:p-8">
@@ -540,10 +546,10 @@ export default function Login() {
           </p>
 
           <div className="grid sm:grid-cols-2 gap-4">
-            {ValueItem({ icon: ShieldCheck, title: "Seguridad reforzada", desc: "Cifrado y acceso por rol." })}
-            {ValueItem({ icon: Clock, title: "Eficiencia", desc: "Actualizaciones en tiempo real." })}
-            {ValueItem({ icon: Sparkles, title: "Experiencia cuidada", desc: "Interfaz clara y sin fricciones." })}
-            {ValueItem({ icon: User, title: "Soporte cercano", desc: "Equipo de ayuda especializado." })}
+            <ValueItem icon={ShieldCheck} title="Seguridad reforzada" desc="Cifrado y acceso por rol." />
+            <ValueItem icon={Clock} title="Eficiencia" desc="Actualizaciones en tiempo real." />
+            <ValueItem icon={Sparkles} title="Experiencia cuidada" desc="Interfaz clara y sin fricciones." />
+            <ValueItem icon={User} title="Soporte cercano" desc="Equipo de ayuda especializado." />
           </div>
         </div>
 
