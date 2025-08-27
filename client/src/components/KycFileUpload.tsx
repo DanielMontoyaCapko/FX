@@ -24,7 +24,7 @@ export function KycFileUpload({ onFilesUploaded, currentFiles = [], disabled = f
     try {
       for (const file of Array.from(files)) {
         // Get upload URL from backend
-        const token = localStorage.getItem('auth_token');
+        const token = localStorage.getItem('token');
         const response = await fetch('/api/kyc/upload-url', {
           method: 'POST',
           headers: {

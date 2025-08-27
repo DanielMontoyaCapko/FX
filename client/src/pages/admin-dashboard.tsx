@@ -2710,7 +2710,7 @@ export default function AdminDashboard() {
                             className="bg-gradient-to-r from-blue-600 to-blue-500 hover:from-blue-500 hover:to-blue-400 text-white"
                             onClick={async () => {
                               try {
-                                const token = localStorage.getItem('auth_token');
+                                const token = localStorage.getItem('token');
                                 const response = await fetch(`/api/download-document?url=${encodeURIComponent(docUrl)}`, {
                                   headers: {
                                     'Authorization': `Bearer ${token}`
@@ -2765,7 +2765,7 @@ export default function AdminDashboard() {
                             className="bg-gradient-to-r from-emerald-600 to-emerald-500 hover:from-emerald-500 hover:to-emerald-400 text-white"
                             onClick={async () => {
                               try {
-                                const token = localStorage.getItem('auth_token');
+                                const token = localStorage.getItem('token');
                                 // Use docUrl directly since it's already the download endpoint
                                 const response = await fetch(docUrl, {
                                   headers: {
