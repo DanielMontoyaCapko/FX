@@ -560,6 +560,17 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Financial KPIs endpoint
+  app.get('/api/admin/financial-kpis', authMiddleware, requireRole('admin'), async (req, res) => {
+    try {
+      const kpis = await storage.getFinancialKPIs();
+      res.json({ success: true, kpis });
+    } catch (error) {
+      console.error('Error fetching financial KPIs:', error);
+      res.status(500).json({ error: 'Failed to fetch financial KPIs' });
+    }
+  });
+
   // Client activity logs routes
   app.get('/api/client/activity-logs', authMiddleware, async (req: AuthRequest, res) => {
     try {

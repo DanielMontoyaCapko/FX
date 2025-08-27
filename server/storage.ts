@@ -1,6 +1,6 @@
 import { leads, calculatorResults, users, kyc, products, contracts, auditLogs, clientActivityLogs, type Lead, type InsertLead, type CalculatorResult, type InsertCalculatorResult, type User, type InsertUser, type Kyc, type InsertKyc, type Product, type InsertProduct, type Contract, type InsertContract, type AuditLog, type ClientActivityLog, type InsertClientActivityLog } from "@shared/schema";
 import { db } from "./db";
-import { eq, desc } from "drizzle-orm";
+import { eq, desc, gte, lte, and } from "drizzle-orm";
 import bcrypt from "bcryptjs";
 
 export interface IStorage {
@@ -256,6 +256,134 @@ export class DatabaseStorage implements IStorage {
       userId,
       action,
     });
+  }
+
+  // Get financial KPIs for admin dashboard
+  async getFinancialKPIs(): Promise<any> {
+    const now = new Date();
+    const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
+    const startOfPreviousMonth = new Date(now.getFullYear(), now.getMonth() - 1, 1);
+    const endOfPreviousMonth = new Date(now.getFullYear(), now.getMonth(), 0);
+
+    // Get all active contracts
+    const activeContracts = await db
+      .select()
+      .from(contracts)
+      .where(eq(contracts.status, 'active'));
+
+    // Calculate total AUM (Assets Under Management)
+    const totalAUM = activeContracts.reduce((sum, contract) => {
+      return sum + parseFloat(contract.amount);
+    }, 0);
+
+    // Get contracts created this month (new capital)
+    const newCapitalContracts = await db
+      .select()
+      .from(contracts)
+      .where(gte(contracts.createdAt, startOfMonth));
+
+    const newCapitalMonth = newCapitalContracts.reduce((sum, contract) => {
+      return sum + parseFloat(contract.amount);
+    }, 0);
+
+    // Get contracts cancelled this month (withdrawn capital)
+    const withdrawnContracts = await db
+      .select()
+      .from(contracts)
+      .where(
+        and(
+          eq(contracts.status, 'cancelled'),
+          gte(contracts.updatedAt, startOfMonth)
+        )
+      );
+
+    const withdrawnCapitalMonth = withdrawnContracts.reduce((sum, contract) => {
+      return sum + parseFloat(contract.amount);
+    }, 0);
+
+    // Calculate monthly growth ratio
+    const monthlyGrowthRatio = totalAUM > 0 ? 
+      ((newCapitalMonth - withdrawnCapitalMonth) / totalAUM) * 100 : 0;
+
+    // Get products for interest rate calculation
+    const products = await db.select().from(products);
+    
+    // Calculate average portfolio return (weighted by amount)
+    let totalWeightedReturn = 0;
+    let totalAmountForReturn = 0;
+    
+    for (const contract of activeContracts) {
+      const product = products.find(p => p.id === contract.productId);
+      if (product) {
+        const contractAmount = parseFloat(contract.amount);
+        const interestRate = parseFloat(product.interestRate);
+        totalWeightedReturn += contractAmount * interestRate;
+        totalAmountForReturn += contractAmount;
+      }
+    }
+    
+    const averagePortfolioReturn = totalAmountForReturn > 0 ? 
+      totalWeightedReturn / totalAmountForReturn : 0;
+
+    // Calculate liquidity by maturity (30, 60, 90 days)
+    const thirtyDaysFromNow = new Date();
+    thirtyDaysFromNow.setDate(thirtyDaysFromNow.getDate() + 30);
+    
+    const sixtyDaysFromNow = new Date();
+    sixtyDaysFromNow.setDate(sixtyDaysFromNow.getDate() + 60);
+    
+    const ninetyDaysFromNow = new Date();
+    ninetyDaysFromNow.setDate(ninetyDaysFromNow.getDate() + 90);
+
+    const contractsMaturing30 = await db
+      .select()
+      .from(contracts)
+      .where(
+        and(
+          eq(contracts.status, 'active'),
+          lte(contracts.endDate, thirtyDaysFromNow)
+        )
+      );
+
+    const contractsMaturing60 = await db
+      .select()
+      .from(contracts)
+      .where(
+        and(
+          eq(contracts.status, 'active'),
+          lte(contracts.endDate, sixtyDaysFromNow)
+        )
+      );
+
+    const contractsMaturing90 = await db
+      .select()
+      .from(contracts)
+      .where(
+        and(
+          eq(contracts.status, 'active'),
+          lte(contracts.endDate, ninetyDaysFromNow)
+        )
+      );
+
+    const liquidity30Days = contractsMaturing30.reduce((sum, contract) => 
+      sum + parseFloat(contract.amount), 0);
+    const liquidity60Days = contractsMaturing60.reduce((sum, contract) => 
+      sum + parseFloat(contract.amount), 0);
+    const liquidity90Days = contractsMaturing90.reduce((sum, contract) => 
+      sum + parseFloat(contract.amount), 0);
+
+    return {
+      totalAUM,
+      newCapitalMonth,
+      withdrawnCapitalMonth,
+      monthlyGrowthRatio,
+      averagePortfolioReturn,
+      liquidity30Days,
+      liquidity60Days,
+      liquidity90Days,
+      totalActiveContracts: activeContracts.length,
+      calculatedAt: now.toISOString()
+    };
   }
 }
 

@@ -30,6 +30,8 @@ import {
   Crown,
   Calendar,
   History,
+  TrendingUp,
+  Minus,
 } from "lucide-react";
 import {
   PieChart as RechartsPieChart,
@@ -131,8 +133,13 @@ export default function AdminDashboard() {
     enabled: !!user && user.role === "admin",
   });
 
+  const { data: financialKpisData, isLoading: isLoadingKpis } = useQuery({
+    queryKey: ["/api/admin/financial-kpis"],
+    enabled: !!user && user.role === "admin",
+  });
+
   // Combined loading state
-  const loading = isLoadingUsers || isLoadingKyc || isLoadingProducts || isLoadingContracts || isLoadingAuditLogs;
+  const loading = isLoadingUsers || isLoadingKyc || isLoadingProducts || isLoadingContracts || isLoadingAuditLogs || isLoadingKpis;
 
   // KYC Review Mutation
   const kycReviewMutation = useMutation({
@@ -165,6 +172,7 @@ export default function AdminDashboard() {
   const products = productsData?.products || [];
   const contracts = contractsData?.contracts || [];
   const auditLogs = auditLogsData?.logs || [];
+  const financialKpis = financialKpisData?.kpis || null;
   
   const stats = {
     totalUsers: users.length,
@@ -944,6 +952,114 @@ export default function AdminDashboard() {
                 </Card>
               ))}
             </div>
+
+            {/* Financial KPIs Section */}
+            {financialKpis && (
+              <div className="mb-8">
+                <h2 className="text-2xl font-bold text-emerald-50 mb-6">KPIs Financieros</h2>
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
+                  <Card className="bg-black/40 border border-emerald-500/15 rounded-2xl shadow-[0_0_0_1px_rgba(16,185,129,0.12),0_20px_60px_-20px_rgba(16,185,129,0.25)]">
+                    <CardContent className="p-6">
+                      <div className="flex items-center justify-between">
+                        <div>
+                          <p className="text-emerald-200/80 text-sm font-medium">Capital Total Gestionado</p>
+                          <p className="text-emerald-50 text-2xl font-bold">€{financialKpis.totalAUM.toLocaleString()}</p>
+                        </div>
+                        <TrendingUp className="w-8 h-8 text-emerald-400" />
+                      </div>
+                    </CardContent>
+                  </Card>
+
+                  <Card className="bg-black/40 border border-emerald-500/15 rounded-2xl shadow-[0_0_0_1px_rgba(16,185,129,0.12),0_20px_60px_-20px_rgba(16,185,129,0.25)]">
+                    <CardContent className="p-6">
+                      <div className="flex items-center justify-between">
+                        <div>
+                          <p className="text-emerald-200/80 text-sm font-medium">Capital Nuevo del Mes</p>
+                          <p className="text-emerald-50 text-2xl font-bold">€{financialKpis.newCapitalMonth.toLocaleString()}</p>
+                        </div>
+                        <Plus className="w-8 h-8 text-green-400" />
+                      </div>
+                    </CardContent>
+                  </Card>
+
+                  <Card className="bg-black/40 border border-emerald-500/15 rounded-2xl shadow-[0_0_0_1px_rgba(16,185,129,0.12),0_20px_60px_-20px_rgba(16,185,129,0.25)]">
+                    <CardContent className="p-6">
+                      <div className="flex items-center justify-between">
+                        <div>
+                          <p className="text-emerald-200/80 text-sm font-medium">Capital Retirado del Mes</p>
+                          <p className="text-emerald-50 text-2xl font-bold">€{financialKpis.withdrawnCapitalMonth.toLocaleString()}</p>
+                        </div>
+                        <Minus className="w-8 h-8 text-red-400" />
+                      </div>
+                    </CardContent>
+                  </Card>
+
+                  <Card className="bg-black/40 border border-emerald-500/15 rounded-2xl shadow-[0_0_0_1px_rgba(16,185,129,0.12),0_20px_60px_-20px_rgba(16,185,129,0.25)]">
+                    <CardContent className="p-6">
+                      <div className="flex items-center justify-between">
+                        <div>
+                          <p className="text-emerald-200/80 text-sm font-medium">Ratio Crecimiento Mensual</p>
+                          <p className={`text-2xl font-bold ${financialKpis.monthlyGrowthRatio >= 0 ? 'text-green-400' : 'text-red-400'}`}>
+                            {financialKpis.monthlyGrowthRatio >= 0 ? '+' : ''}{financialKpis.monthlyGrowthRatio.toFixed(2)}%
+                          </p>
+                        </div>
+                        <BarChart3 className={`w-8 h-8 ${financialKpis.monthlyGrowthRatio >= 0 ? 'text-green-400' : 'text-red-400'}`} />
+                      </div>
+                    </CardContent>
+                  </Card>
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                  <Card className="bg-black/40 border border-emerald-500/15 rounded-2xl shadow-[0_0_0_1px_rgba(16,185,129,0.12),0_20px_60px_-20px_rgba(16,185,129,0.25)]">
+                    <CardContent className="p-6">
+                      <div className="flex items-center justify-between">
+                        <div>
+                          <p className="text-emerald-200/80 text-sm font-medium">Rentabilidad Media Carteras</p>
+                          <p className="text-emerald-50 text-2xl font-bold">{financialKpis.averagePortfolioReturn.toFixed(2)}%</p>
+                        </div>
+                        <TrendingUp className="w-8 h-8 text-emerald-400" />
+                      </div>
+                    </CardContent>
+                  </Card>
+
+                  <Card className="bg-black/40 border border-emerald-500/15 rounded-2xl shadow-[0_0_0_1px_rgba(16,185,129,0.12),0_20px_60px_-20px_rgba(16,185,129,0.25)]">
+                    <CardContent className="p-6">
+                      <div className="flex items-center justify-between">
+                        <div>
+                          <p className="text-emerald-200/80 text-sm font-medium">Liquidez 30 días</p>
+                          <p className="text-emerald-50 text-2xl font-bold">€{financialKpis.liquidity30Days.toLocaleString()}</p>
+                        </div>
+                        <Calendar className="w-8 h-8 text-yellow-400" />
+                      </div>
+                    </CardContent>
+                  </Card>
+
+                  <Card className="bg-black/40 border border-emerald-500/15 rounded-2xl shadow-[0_0_0_1px_rgba(16,185,129,0.12),0_20px_60px_-20px_rgba(16,185,129,0.25)]">
+                    <CardContent className="p-6">
+                      <div className="flex items-center justify-between">
+                        <div>
+                          <p className="text-emerald-200/80 text-sm font-medium">Liquidez 60 días</p>
+                          <p className="text-emerald-50 text-2xl font-bold">€{financialKpis.liquidity60Days.toLocaleString()}</p>
+                        </div>
+                        <Calendar className="w-8 h-8 text-orange-400" />
+                      </div>
+                    </CardContent>
+                  </Card>
+
+                  <Card className="bg-black/40 border border-emerald-500/15 rounded-2xl shadow-[0_0_0_1px_rgba(16,185,129,0.12),0_20px_60px_-20px_rgba(16,185,129,0.25)]">
+                    <CardContent className="p-6">
+                      <div className="flex items-center justify-between">
+                        <div>
+                          <p className="text-emerald-200/80 text-sm font-medium">Liquidez 90 días</p>
+                          <p className="text-emerald-50 text-2xl font-bold">€{financialKpis.liquidity90Days.toLocaleString()}</p>
+                        </div>
+                        <Calendar className="w-8 h-8 text-red-400" />
+                      </div>
+                    </CardContent>
+                  </Card>
+                </div>
+              </div>
+            )}
 
             {/* Charts */}
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
