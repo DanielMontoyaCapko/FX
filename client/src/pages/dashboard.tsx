@@ -1096,8 +1096,8 @@ export default function Dashboard() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/kyc/me"] });
-      // Registrar actividad de KYC
-      logActivity('Verificación KYC completada');
+      // Registrar actividad de KYC - específico para actualización de documentos
+      logActivity('Documentos KYC actualizados');
     },
   });
 

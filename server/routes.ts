@@ -505,6 +505,22 @@ export async function registerRoutes(app: Express): Promise<Server> {
       };
       
       const kyc = await storage.updateKyc(kycId, updates);
+      
+      // Log specific activity based on status change
+      if (updateData.status) {
+        let activityMessage = '';
+        if (updateData.status === 'approved') {
+          activityMessage = 'Verificación KYC completada';
+        } else if (updateData.status === 'rejected') {
+          activityMessage = 'Verificación KYC rechazada';
+        }
+        
+        if (activityMessage) {
+          // Log activity for the client whose KYC was updated
+          await storage.logClientActivity(kyc.userId, activityMessage);
+        }
+      }
+      
       res.json({ success: true, kyc });
     } catch (error) {
       console.error('Error updating KYC status:', error);
