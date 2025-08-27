@@ -41,6 +41,7 @@ import {
   Hash,
   HelpCircle,
   RefreshCw,
+  Archive,
 } from "lucide-react";
 import logoImg from "@/assets/Logo-removeBG_1752488347081.png";
 import { useScrollToTop } from "@/hooks/useScrollToTop";
@@ -2550,27 +2551,29 @@ export default function PartnerDashboard() {
         {/* ===== HERRAMIENTAS ===== */}
         {activeTab === "herramientas" && (
           <div>
-            <h1 className="text-3xl font-bold text-emerald-50 mb-2">Herramientas</h1>
-            <p className="text-emerald-200/80 mb-6">Gestión de agenda y utilidades</p>
+            <h1 className="text-3xl font-bold text-emerald-50 mb-2">Herramientas de Partner</h1>
+            <p className="text-emerald-200/80 mb-8">Gestión de agenda, material de marketing y recursos para partners</p>
 
-            <Card className="bg-black/40 border border-emerald-500/15 rounded-2xl">
-              <CardHeader className="space-y-4">
-                <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
-                  <div className="flex items-center gap-3">
-                    <Briefcase className="w-5 h-5 text-emerald-400" />
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+              {/* Google Calendar Tool */}
+              <Card className="bg-black/40 border border-emerald-500/15 rounded-2xl">
+                <CardHeader>
+                  <div className="flex items-center gap-3 mb-4">
+                    <Calendar className="w-6 h-6 text-emerald-400" />
                     <div>
                       <CardTitle className="text-emerald-50">Google Calendar</CardTitle>
                       <CardDescription className="text-emerald-200/80">
-                        Consulta festivos y organiza tus citas
+                        Consulta festivos y organiza tus citas con clientes
                       </CardDescription>
                     </div>
                   </div>
 
-                  <div className="flex gap-3">
+                  <div className="space-y-3">
                     {/* Vista */}
-                    <div className="w-40">
+                    <div className="flex items-center gap-3">
+                      <Label className="text-emerald-50 w-20">Vista:</Label>
                       <Select value={gcalView} onValueChange={(v) => setGcalView(v as "month" | "week" | "agenda")}>
-                        <SelectTrigger className="bg-black/50 border-emerald-500/20 text-emerald-50">
+                        <SelectTrigger className="bg-black/50 border-emerald-500/20 text-emerald-50 flex-1">
                           <SelectValue placeholder="Vista" />
                         </SelectTrigger>
                         <SelectContent>
@@ -2582,9 +2585,10 @@ export default function PartnerDashboard() {
                     </div>
 
                     {/* Zona horaria */}
-                    <div className="w-56">
+                    <div className="flex items-center gap-3">
+                      <Label className="text-emerald-50 w-20">Zona:</Label>
                       <Select value={gcalTz} onValueChange={(v) => setGcalTz(v)}>
-                        <SelectTrigger className="bg-black/50 border-emerald-500/20 text-emerald-50">
+                        <SelectTrigger className="bg-black/50 border-emerald-500/20 text-emerald-50 flex-1">
                           <SelectValue placeholder="Zona horaria" />
                         </SelectTrigger>
                         <SelectContent>
@@ -2598,25 +2602,118 @@ export default function PartnerDashboard() {
 
                     <Button
                       onClick={handleOpenGoogleCalendar}
-                      className="bg-emerald-600 hover:bg-emerald-500 text-white"
+                      className="w-full bg-emerald-600 hover:bg-emerald-500 text-white"
                     >
                       <Calendar className="w-4 h-4 mr-2" />
                       Abrir Google Calendar
                     </Button>
                   </div>
-                </div>
-              </CardHeader>
-              <CardContent>
-                <div className="rounded-xl overflow-hidden border border-emerald-500/15">
-                  <iframe
-                    title="Calendario público"
-                    src={gcalEmbedUrl}
-                    className="w-full h-[720px]"
-                    style={{ border: 0 }}
-                  />
-                </div>
-              </CardContent>
-            </Card>
+                </CardHeader>
+                <CardContent>
+                  <div className="rounded-xl overflow-hidden border border-emerald-500/15">
+                    <iframe
+                      title="Calendario público"
+                      src={gcalEmbedUrl}
+                      className="w-full h-[400px]"
+                      style={{ border: 0 }}
+                    />
+                  </div>
+                </CardContent>
+              </Card>
+
+              {/* Material Descargable Tool */}
+              <Card className="bg-black/40 border border-emerald-500/15 rounded-2xl">
+                <CardHeader>
+                  <div className="flex items-center gap-3 mb-4">
+                    <Download className="w-6 h-6 text-emerald-400" />
+                    <div>
+                      <CardTitle className="text-emerald-50">Material Descargable</CardTitle>
+                      <CardDescription className="text-emerald-200/80">
+                        PDFs de marketing, presentaciones y plantillas de contratos
+                      </CardDescription>
+                    </div>
+                  </div>
+                </CardHeader>
+                <CardContent className="space-y-6">
+                  {/* Marketing Materials */}
+                  <div>
+                    <h4 className="text-emerald-50 font-semibold mb-3 flex items-center gap-2">
+                      <Briefcase className="w-4 h-4 text-emerald-400" />
+                      Material de Marketing
+                    </h4>
+                    <div className="space-y-2">
+                      {[
+                        { name: "Brochure Nakama&Partners 2025", size: "2.4 MB", type: "PDF" },
+                        { name: "Presentación Productos", size: "8.1 MB", type: "PPTX" },
+                        { name: "Infografías Rentabilidad", size: "1.2 MB", type: "PDF" },
+                        { name: "Material Redes Sociales", size: "5.7 MB", type: "ZIP" }
+                      ].map((item, index) => (
+                        <div key={index} className="flex items-center justify-between p-3 bg-black/30 rounded-lg border border-emerald-500/10 hover:bg-black/40 transition-colors">
+                          <div className="flex items-center gap-3">
+                            <FileText className="w-4 h-4 text-emerald-400" />
+                            <div>
+                              <p className="text-emerald-50 text-sm font-medium">{item.name}</p>
+                              <p className="text-emerald-200/60 text-xs">{item.type} • {item.size}</p>
+                            </div>
+                          </div>
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            className="border-emerald-500/20 text-emerald-300 hover:bg-emerald-900/10"
+                          >
+                            <Download className="w-3 h-3" />
+                          </Button>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Contract Templates */}
+                  <div>
+                    <h4 className="text-emerald-50 font-semibold mb-3 flex items-center gap-2">
+                      <FileText className="w-4 h-4 text-emerald-400" />
+                      Plantillas de Contratos
+                    </h4>
+                    <div className="space-y-2">
+                      {[
+                        { name: "Contrato Inversión Estructurada", size: "186 KB", type: "DOCX" },
+                        { name: "Plan de Ahorro Estándar", size: "142 KB", type: "DOCX" },
+                        { name: "Inversión Patrimonial Elite", size: "203 KB", type: "DOCX" },
+                        { name: "Acuerdo Marco Partner", size: "167 KB", type: "PDF" }
+                      ].map((item, index) => (
+                        <div key={index} className="flex items-center justify-between p-3 bg-black/30 rounded-lg border border-emerald-500/10 hover:bg-black/40 transition-colors">
+                          <div className="flex items-center gap-3">
+                            <FileText className="w-4 h-4 text-emerald-400" />
+                            <div>
+                              <p className="text-emerald-50 text-sm font-medium">{item.name}</p>
+                              <p className="text-emerald-200/60 text-xs">{item.type} • {item.size}</p>
+                            </div>
+                          </div>
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            className="border-emerald-500/20 text-emerald-300 hover:bg-emerald-900/10"
+                          >
+                            <Download className="w-3 h-3" />
+                          </Button>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Quick Actions */}
+                  <div className="pt-4 border-t border-emerald-500/15">
+                    <Button
+                      variant="outline"
+                      className="w-full border-emerald-500/20 text-emerald-50 hover:bg-emerald-900/10"
+                    >
+                      <Archive className="w-4 h-4 mr-2" />
+                      Descargar Todo el Material
+                    </Button>
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
           </div>
         )}
 
