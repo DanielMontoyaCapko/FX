@@ -126,11 +126,22 @@ function DepositoView({
 }: {
   setHasActiveDeposit: (v: boolean) => void;
 }) {
+  const { user } = useAuth();
+
+  // Consulta del estado KYC real (ya existe en el dashboard principal, la reutilizamos)
+  const { data: kycData } = useQuery({
+    queryKey: ["/api/kyc/me"],
+    enabled: !!user,
+  });
+
   // ---- Precondiciones de firma (simuladas) ----
   const [contratoMarco, setContratoMarco] = useState(false);
-  const [kycOk, setKycOk] = useState(true); // simulado aprobado
   const [perfilOk, setPerfilOk] = useState(false);
   const [docsProducto, setDocsProducto] = useState(false);
+  
+  // Estado KYC real basado en la consulta
+  const currentKyc = kycData?.kyc;
+  const kycOk = currentKyc?.status === "approved";
   const allPreOk = contratoMarco && kycOk && perfilOk && docsProducto;
 
   // ---- Depósito ----
@@ -206,7 +217,11 @@ function DepositoView({
           </div>
           <div className="rounded-xl border border-emerald-500/15 bg-black/30 p-4">
             <ChecklistItem label="Contrato Marco de Servicios (firmado)" checked={contratoMarco} onFix={() => setContratoMarco(true)} />
-            <ChecklistItem label="KYC/AML aprobado" checked={kycOk} onFix={() => setKycOk(true)} />
+            <ChecklistItem 
+              label={`KYC/AML ${currentKyc?.status === "approved" ? "aprobado" : currentKyc?.status === "rejected" ? "rechazado" : "pendiente"}`} 
+              checked={kycOk} 
+              onFix={() => {/* KYC no se puede "arreglar" desde aquí */}} 
+            />
             <ChecklistItem label="Perfil de idoneidad completado" checked={perfilOk} onFix={() => setPerfilOk(true)} />
             <ChecklistItem
               label="Documentación específica del producto (Depósito Pignorado / Riesgos de Mercado)"
