@@ -249,6 +249,14 @@ export class DatabaseStorage implements IStorage {
     
     return result;
   }
+
+  // Helper function to log client activity
+  async logClientActivity(userId: number, action: string): Promise<void> {
+    await this.createClientActivityLog({
+      userId,
+      action,
+    });
+  }
 }
 
 export const storage = new DatabaseStorage();

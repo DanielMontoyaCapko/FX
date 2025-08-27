@@ -1082,8 +1082,53 @@ export default function Dashboard() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/kyc/me"] });
+      // Registrar actividad de KYC
+      logActivity('Verificación KYC completada');
     },
   });
+
+  // Mutación para actualizar el perfil
+  const profileMutation = useMutation({
+    mutationFn: async (data: any) => {
+      const response = await fetch('/api/me/profile', {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${localStorage.getItem('token')}`,
+        },
+        body: JSON.stringify(data),
+      });
+
+      if (!response.ok) {
+        throw new Error(await response.text());
+      }
+
+      return response.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/me"] });
+      // Registrar actividad de perfil actualizado
+      logActivity('Perfil actualizado');
+    },
+  });
+
+  // Función para registrar actividad del cliente
+  const logActivity = async (action: string) => {
+    try {
+      await fetch('/api/client/activity-logs', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${localStorage.getItem('token')}`,
+        },
+        body: JSON.stringify({ action }),
+      });
+      // Invalidar las consultas del historial para mostrar la nueva actividad
+      queryClient.invalidateQueries({ queryKey: ['/api/client/activity-logs'] });
+    } catch (error) {
+      console.error('Error registrando actividad:', error);
+    }
+  };
 
   // Update form data when KYC data is loaded
   useEffect(() => {
@@ -1118,6 +1163,27 @@ export default function Dashboard() {
       await kycMutation.mutateAsync(kycFormData);
     } catch (error) {
       console.error('Error submitting KYC:', error);
+    }
+  };
+
+  // Función para manejar el submit del perfil
+  const handleProfileSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    
+    const formData = new FormData(e.target as HTMLFormElement);
+    const profileData = {
+      name: formData.get('nombre') as string,
+      apellidos: formData.get('apellidos') as string,
+      telefono: formData.get('telefono') as string,
+      fechaNacimiento: formData.get('fecha-nacimiento') as string,
+      pais: formData.get('pais') as string,
+      direccion: formData.get('direccion') as string,
+    };
+    
+    try {
+      await profileMutation.mutateAsync(profileData);
+    } catch (error) {
+      console.error('Error updating profile:', error);
     }
   };
   
@@ -1272,7 +1338,7 @@ export default function Dashboard() {
                   </TabsList>
 
                   <TabsContent value="personal" className="mt-6">
-                    <form className="space-y-6">
+                    <form onSubmit={handleProfileSubmit} className="space-y-6">
                       {/* Profile Photo */}
                       <div className="flex flex-col items-center mb-8">
                         <div className="relative mb-4">
@@ -1297,11 +1363,11 @@ export default function Dashboard() {
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <div>
                           <Label htmlFor="nombre" className="text-emerald-50">Nombre</Label>
-                          <Input id="nombre" defaultValue="Test" className="bg-black/50 border-emerald-500/20 text-emerald-50" />
+                          <Input id="nombre" name="nombre" defaultValue="Test" className="bg-black/50 border-emerald-500/20 text-emerald-50" />
                         </div>
                         <div>
                           <Label htmlFor="apellidos" className="text-emerald-50">Apellidos</Label>
-                          <Input id="apellidos" defaultValue="Placeholder" className="bg-black/50 border-emerald-500/20 text-emerald-50" />
+                          <Input id="apellidos" name="apellidos" defaultValue="Placeholder" className="bg-black/50 border-emerald-500/20 text-emerald-50" />
                         </div>
                       </div>
 
@@ -1321,6 +1387,7 @@ export default function Dashboard() {
                             <Phone className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-emerald-300/70" />
                             <Input
                               id="telefono"
+                              name="telefono"
                               value={phoneNumber}
                               onChange={(e) => setPhoneNumber(e.target.value)}
                               placeholder="Ej: +34 646 123 456"
@@ -1333,7 +1400,7 @@ export default function Dashboard() {
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <div>
                           <Label htmlFor="fecha-nacimiento" className="text-emerald-50">Fecha de Nacimiento</Label>
-                          <Input id="fecha-nacimiento" defaultValue="25/02/1962" className="bg-black/50 border-emerald-500/20 text-emerald-50" />
+                          <Input id="fecha-nacimiento" name="fecha-nacimiento" defaultValue="25/02/1962" className="bg-black/50 border-emerald-500/20 text-emerald-50" />
                         </div>
                         <div>
                           <Label htmlFor="fecha-registro" className="text-emerald-50">Fecha de Registro</Label>
@@ -1349,18 +1416,13 @@ export default function Dashboard() {
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <div>
                           <Label htmlFor="pais" className="text-emerald-50">País</Label>
-                          <Select defaultValue="espana">
-                            <SelectTrigger className="bg-black/50 border-emerald-500/20 text-emerald-50">
-                              <SelectValue />
-                            </SelectTrigger>
-                            <SelectContent className="bg-black/40 border-emerald-500/15 text-emerald-50">
-                              <SelectItem value="espana">España</SelectItem>
-                              <SelectItem value="francia">Francia</SelectItem>
-                              <SelectItem value="portugal">Portugal</SelectItem>
-                              <SelectItem value="italia">Italia</SelectItem>
-                              <SelectItem value="alemania">Alemania</SelectItem>
-                            </SelectContent>
-                          </Select>
+                          <select name="pais" defaultValue="espana" className="flex h-10 w-full rounded-md border border-emerald-500/20 bg-black/50 px-3 py-2 text-sm text-emerald-50 ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50">
+                            <option value="espana">España</option>
+                            <option value="francia">Francia</option>
+                            <option value="portugal">Portugal</option>
+                            <option value="italia">Italia</option>
+                            <option value="alemania">Alemania</option>
+                          </select>
                         </div>
                         <div />
                       </div>
@@ -1369,6 +1431,7 @@ export default function Dashboard() {
                         <Label htmlFor="direccion" className="text-emerald-50">Dirección</Label>
                         <Input
                           id="direccion"
+                          name="direccion"
                           defaultValue="Calle Nueva Era 45, 2ºA, 08035 Barcelona"
                           className="bg-black/50 border-emerald-500/20 text-emerald-50"
                         />

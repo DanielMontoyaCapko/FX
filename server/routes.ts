@@ -83,6 +83,31 @@ export async function registerRoutes(app: Express): Promise<Server> {
     });
   });
 
+  // Update user profile (protected route)
+  app.put("/api/me/profile", authMiddleware, async (req: AuthRequest, res) => {
+    try {
+      const userId = req.user!.id;
+      const { name, apellidos, telefono, fechaNacimiento, pais, direccion } = req.body;
+      
+      // Update user profile
+      const updatedUser = await storage.updateUser(userId, {
+        name: name,
+        // Add other fields if needed in the future
+      });
+
+      // Log activity to client_activity_logs
+      await storage.logClientActivity(userId, 'Perfil actualizado');
+
+      res.json({
+        success: true,
+        user: updatedUser,
+      });
+    } catch (error) {
+      console.error("Profile update error:", error);
+      res.status(500).json({ error: "Failed to update profile" });
+    }
+  });
+
   // KYC routes
   // Get upload URL for KYC documents
   app.post("/api/kyc/upload-url", authMiddleware, async (req: AuthRequest, res) => {
