@@ -125,6 +125,12 @@ The platform now uses email/password authentication instead of the previous Repl
 - Role: Partner
 - Name: Maria Partner
 
+**Admin Account:**
+- Email: `admin@nakama.com`
+- Password: `demo2025`
+- Role: Admin
+- Name: Administrador
+
 To test the authentication system:
 1. Visit `/login` in your browser
 2. Use the credentials above to log in

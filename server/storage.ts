@@ -306,14 +306,14 @@ export class DatabaseStorage implements IStorage {
       ((newCapitalMonth - withdrawnCapitalMonth) / totalAUM) * 100 : 0;
 
     // Get products for interest rate calculation
-    const products = await db.select().from(products);
+    const allProducts = await db.select().from(products);
     
     // Calculate average portfolio return (weighted by amount)
     let totalWeightedReturn = 0;
     let totalAmountForReturn = 0;
     
     for (const contract of activeContracts) {
-      const product = products.find(p => p.id === contract.productId);
+      const product = allProducts.find(p => p.id === contract.productId);
       if (product) {
         const contractAmount = parseFloat(contract.amount);
         const interestRate = parseFloat(product.interestRate);
