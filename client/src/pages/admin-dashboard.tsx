@@ -495,7 +495,7 @@ export default function AdminDashboard() {
       }
 
       const token = localStorage.getItem("token");
-      let url = "/api/register";
+      let url = "/api/admin/users";
       let method = "POST";
       let body: any = { ...newUser };
 

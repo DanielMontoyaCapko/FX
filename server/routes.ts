@@ -383,6 +383,28 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Create user (admin only)
+  app.post('/api/admin/users', authMiddleware, requireRole('admin'), auditUser.create, async (req, res) => {
+    try {
+      const userData = registerSchema.parse(req.body);
+      
+      // Check if user already exists
+      const existingUser = await storage.getUserByEmail(userData.email);
+      if (existingUser) {
+        return res.status(400).json({ error: "User already exists with this email" });
+      }
+
+      const user = await storage.createUser(userData);
+      res.json({ success: true, user });
+    } catch (error) {
+      console.error("Error creating user:", error);
+      if (error instanceof z.ZodError) {
+        return res.status(400).json({ error: "Invalid user data", details: error.errors });
+      }
+      res.status(500).json({ error: "Failed to create user" });
+    }
+  });
+
   // Update user
   app.put('/api/admin/users/:id', authMiddleware, requireRole('admin'), auditUser.update, async (req, res) => {
     try {
