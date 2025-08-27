@@ -1634,28 +1634,7 @@ export default function Dashboard() {
 
             {/* ----------------------------- Historial ----------------------------- */}
             {activeProductsView === "historial" ? (
-              <div className="mb-8">
-                <div className="flex items-center gap-4 mb-4">
-                  <Button
-                    variant="outline"
-                    onClick={() => setActiveProductsView("default")}
-                    className="border-emerald-500/30 text-emerald-50 hover:bg-emerald-900/10"
-                  >
-                    <ArrowLeft className="h-4 w-4 mr-2" />
-                    Volver
-                  </Button>
-                  <h2 className="text-2xl font-bold text-emerald-50">Historial de Productos</h2>
-                </div>
-
-                {/* Tu contenido del historial va aquí */}
-                <Card className="bg-black/40 border border-emerald-500/15 rounded-2xl">
-                  <CardContent className="p-6">
-                    <p className="text-emerald-200/80">
-                      Aquí puedes listar el historial (por ejemplo, productos vencidos, renovaciones, etc.).
-                    </p>
-                  </CardContent>
-                </Card>
-              </div>
+              <HistorialActivityView onBack={() => setActiveProductsView("default")} />
             ) : null}
 
 
@@ -2412,5 +2391,101 @@ export default function Dashboard() {
         </Dialog>
       </div>
     );
+}
+
+// Componente para el historial de actividad del cliente
+function HistorialActivityView({ onBack }: { onBack: () => void }) {
+  // Hook para obtener las actividades del cliente
+  const { data: activityData, isLoading } = useQuery({
+    queryKey: ['/api/client/activity-logs'],
+    enabled: true,
+  });
+
+  const activityLogs = activityData?.logs || [];
+
+  return (
+    <div className="mb-8">
+      <div className="flex items-center gap-4 mb-6">
+        <Button
+          variant="outline"
+          onClick={onBack}
+          className="border-emerald-500/30 text-emerald-50 hover:bg-emerald-900/10"
+        >
+          <ArrowLeft className="h-4 w-4 mr-2" />
+          Volver
+        </Button>
+        <h2 className="text-2xl font-bold text-emerald-50">Historial de Actividad</h2>
+      </div>
+
+      {/* Descripción */}
+      <Card className="bg-black/40 border border-emerald-500/15 rounded-2xl mb-6">
+        <CardContent className="p-6">
+          <p className="text-emerald-200/80">
+            Aquí puedes ver un registro de todas las actividades realizadas en tu cuenta.
+          </p>
+        </CardContent>
+      </Card>
+
+      {/* Lista de actividades */}
+      {isLoading ? (
+        <Card className="bg-black/40 border border-emerald-500/15 rounded-2xl">
+          <CardContent className="p-6">
+            <div className="text-center text-emerald-200/80">
+              <div className="animate-spin w-8 h-8 border-2 border-emerald-400 border-t-transparent rounded-full mx-auto mb-4"></div>
+              <p>Cargando historial de actividad...</p>
+            </div>
+          </CardContent>
+        </Card>
+      ) : activityLogs.length > 0 ? (
+        <div className="space-y-4">
+          {activityLogs.map((activity: any) => (
+            <Card key={activity.id} className="bg-black/40 border border-emerald-500/15 hover:border-emerald-400 transition-all rounded-2xl">
+              <CardContent className="p-6">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-4">
+                    <div className="w-10 h-10 bg-emerald-500/20 rounded-lg flex items-center justify-center">
+                      <FileText className="h-5 w-5 text-emerald-400" />
+                    </div>
+                    <div>
+                      <h4 className="text-lg font-semibold text-emerald-50 mb-1">
+                        {activity.action}
+                      </h4>
+                      <div className="flex items-center gap-4 text-sm text-emerald-200/80">
+                        <div className="flex items-center gap-1">
+                          <Calendar className="h-4 w-4" />
+                          <span>
+                            {new Date(activity.createdAt).toLocaleDateString("es-ES")}
+                          </span>
+                        </div>
+                        <div className="flex items-center gap-1">
+                          <span>⏰</span>
+                          <span>
+                            {new Date(activity.createdAt).toLocaleTimeString("es-ES", {
+                              hour: "2-digit",
+                              minute: "2-digit"
+                            })}
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          ))}
+        </div>
+      ) : (
+        <Card className="bg-black/30 border border-emerald-500/15 border-dashed rounded-2xl">
+          <CardContent className="p-8">
+            <div className="text-center text-emerald-200/80">
+              <FileText className="h-12 w-12 mx-auto mb-4 text-emerald-400" />
+              <p className="text-lg mb-2 text-emerald-50/90">No hay actividad registrada</p>
+              <p className="text-sm">Cuando realices acciones en tu cuenta, aparecerán aquí.</p>
+            </div>
+          </CardContent>
+        </Card>
+      )}
+    </div>
+  );
 }
 

@@ -511,6 +511,36 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Client activity logs routes
+  app.get('/api/client/activity-logs', authMiddleware, async (req: AuthRequest, res) => {
+    try {
+      const userId = req.user!.id;
+      const logs = await storage.getClientActivityLogsByUserId(userId);
+      res.json({ success: true, logs });
+    } catch (error) {
+      console.error('Error fetching client activity logs:', error);
+      res.status(500).json({ error: 'Failed to fetch client activity logs' });
+    }
+  });
+
+  app.post('/api/client/activity-logs', authMiddleware, async (req: AuthRequest, res) => {
+    try {
+      const userId = req.user!.id;
+      const { action } = req.body;
+      
+      const activityData = {
+        userId,
+        action,
+      };
+      
+      const log = await storage.createClientActivityLog(activityData);
+      res.json({ success: true, log });
+    } catch (error) {
+      console.error('Error creating client activity log:', error);
+      res.status(500).json({ error: 'Failed to create client activity log' });
+    }
+  });
+
   const httpServer = createServer(app);
   return httpServer;
 }

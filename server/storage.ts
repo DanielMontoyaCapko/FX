@@ -1,4 +1,4 @@
-import { leads, calculatorResults, users, kyc, products, contracts, auditLogs, type Lead, type InsertLead, type CalculatorResult, type InsertCalculatorResult, type User, type InsertUser, type Kyc, type InsertKyc, type Product, type InsertProduct, type Contract, type InsertContract, type AuditLog } from "@shared/schema";
+import { leads, calculatorResults, users, kyc, products, contracts, auditLogs, clientActivityLogs, type Lead, type InsertLead, type CalculatorResult, type InsertCalculatorResult, type User, type InsertUser, type Kyc, type InsertKyc, type Product, type InsertProduct, type Contract, type InsertContract, type AuditLog, type ClientActivityLog, type InsertClientActivityLog } from "@shared/schema";
 import { db } from "./db";
 import { eq, desc } from "drizzle-orm";
 import bcrypt from "bcryptjs";
@@ -33,6 +33,10 @@ export interface IStorage {
   
   // Audit logs
   getAuditLogs(): Promise<any[]>;
+  
+  // Client activity logs
+  createClientActivityLog(activityData: InsertClientActivityLog): Promise<ClientActivityLog>;
+  getClientActivityLogsByUserId(userId: number): Promise<ClientActivityLog[]>;
 }
 
 export class DatabaseStorage implements IStorage {
@@ -227,6 +231,21 @@ export class DatabaseStorage implements IStorage {
       .from(auditLogs)
       .leftJoin(users, eq(auditLogs.adminId, users.id))
       .orderBy(desc(auditLogs.createdAt));
+    
+    return result;
+  }
+
+  async createClientActivityLog(activityData: InsertClientActivityLog): Promise<ClientActivityLog> {
+    const [activity] = await db.insert(clientActivityLogs).values(activityData).returning();
+    return activity;
+  }
+
+  async getClientActivityLogsByUserId(userId: number): Promise<ClientActivityLog[]> {
+    const result = await db
+      .select()
+      .from(clientActivityLogs)
+      .where(eq(clientActivityLogs.userId, userId))
+      .orderBy(desc(clientActivityLogs.createdAt));
     
     return result;
   }

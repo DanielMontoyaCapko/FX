@@ -97,6 +97,14 @@ export const auditLogs = pgTable("audit_logs", {
   createdAt: timestamp("created_at").defaultNow().notNull(),
 });
 
+// Client activity logs table for tracking user actions (simplified for client view)
+export const clientActivityLogs = pgTable("client_activity_logs", {
+  id: serial("id").primaryKey(),
+  userId: integer("user_id").references(() => users.id).notNull(), // User who performed the action
+  action: varchar("action", { length: 200 }).notNull(), // Simple action description in Spanish
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+});
+
 export const insertLeadSchema = createInsertSchema(leads).omit({
   id: true,
   createdAt: true,
@@ -156,6 +164,11 @@ export const insertAuditLogSchema = createInsertSchema(auditLogs).omit({
   createdAt: true,
 });
 
+export const insertClientActivityLogSchema = createInsertSchema(clientActivityLogs).omit({
+  id: true,
+  createdAt: true,
+});
+
 export type InsertLead = z.infer<typeof insertLeadSchema>;
 export type Lead = typeof leads.$inferSelect;
 export type InsertCalculatorResult = z.infer<typeof insertCalculatorResultSchema>;
@@ -172,3 +185,5 @@ export type InsertContract = z.infer<typeof insertContractSchema>;
 export type Contract = typeof contracts.$inferSelect;
 export type InsertAuditLog = z.infer<typeof insertAuditLogSchema>;
 export type AuditLog = typeof auditLogs.$inferSelect;
+export type InsertClientActivityLog = z.infer<typeof insertClientActivityLogSchema>;
+export type ClientActivityLog = typeof clientActivityLogs.$inferSelect;
