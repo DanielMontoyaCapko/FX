@@ -156,7 +156,13 @@ function DepositoView({
             <ChecklistItem 
               label={`KYC/AML ${currentKyc?.status === "approved" ? "aprobado" : currentKyc?.status === "rejected" ? "rechazado" : "pendiente"}`} 
               checked={kycOk} 
-              onFix={() => {/* KYC no se puede "arreglar" desde aquí */}} 
+              onFix={() => {
+                if (!kycOk) {
+                  // Navegar a la sección Perfil > Estado KYC
+                  setActiveTab("perfil");
+                  setProfileActiveTab("kyc");
+                }
+              }} 
             />
             <ChecklistItem label="Perfil de idoneidad completado" checked={perfilOk} onFix={() => setPerfilOk(true)} />
             <ChecklistItem
@@ -1160,6 +1166,9 @@ export default function PartnerDashboard() {
     tier: "Elite Partner",
   };
 
+  // ====== CONTROL DE TABS DE PERFIL ======
+  const [profileActiveTab, setProfileActiveTab] = useState("personal");
+
   return (
     <div
       className={[
@@ -1240,7 +1249,7 @@ export default function PartnerDashboard() {
 
             <Card className="bg-black/40 border border-emerald-500/15 rounded-2xl">
               <CardContent className="p-6">
-                <Tabs defaultValue="personal" className="w-full">
+                <Tabs value={profileActiveTab} onValueChange={setProfileActiveTab} className="w-full">
                   <TabsList className="grid w-full grid-cols-2 bg-black/40 border border-emerald-500/15 rounded-xl">
                     <TabsTrigger
                       value="personal"

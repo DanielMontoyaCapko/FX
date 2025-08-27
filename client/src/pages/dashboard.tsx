@@ -220,7 +220,13 @@ function DepositoView({
             <ChecklistItem 
               label={`KYC/AML ${currentKyc?.status === "approved" ? "aprobado" : currentKyc?.status === "rejected" ? "rechazado" : "pendiente"}`} 
               checked={kycOk} 
-              onFix={() => {/* KYC no se puede "arreglar" desde aquí */}} 
+              onFix={() => {
+                if (!kycOk) {
+                  // Navegar a la sección Perfil > Estado KYC
+                  setActiveTab("perfil");
+                  setProfileActiveTab("kyc");
+                }
+              }} 
             />
             <ChecklistItem label="Perfil de idoneidad completado" checked={perfilOk} onFix={() => setPerfilOk(true)} />
             <ChecklistItem
@@ -1010,6 +1016,9 @@ export default function Dashboard() {
   const [cSort, setCSort] = useState<"" | "dateDesc" | "dateAsc">("");
   const [cFilters, setCFilters] = useState({ search: "", estado: "", dateFrom: "", dateTo: "", tipo: "" });
 
+  // ====== CONTROL DE TABS DE PERFIL ======
+  const [profileActiveTab, setProfileActiveTab] = useState("personal");
+
   const contratosCliente = [
     { id: "DOC-PLAZO-9-175", titulo: "Contrato Plazo Fijo 9% - 175 días", descripcion: "Contrato de depósito bancario con garantía", tipo: "PDF", tamano: "2.3 MB", fecha: "2025-01-01", estado: "Disponible", categoria: "Producto" },
     { id: "DOC-INFO-PRIV", titulo: "Política de Privacidad", descripcion: "Documento legal informado al cliente", tipo: "PDF", tamano: "0.6 MB", fecha: "2024-12-01", estado: "Disponible", categoria: "Legal" },
@@ -1241,7 +1250,7 @@ export default function Dashboard() {
 
             <Card className="bg-black/40 border border-emerald-500/15 rounded-2xl">
               <CardContent className="p-6">
-                <Tabs defaultValue="personal" className="w-full">
+                <Tabs value={profileActiveTab} onValueChange={setProfileActiveTab} className="w-full">
                   <TabsList className="grid w-full grid-cols-2 bg-black/40 border border-emerald-500/15 rounded-xl">
                     <TabsTrigger
                       value="personal"
