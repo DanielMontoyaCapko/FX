@@ -34,6 +34,7 @@ import {
   FileText,
   Trash2,
   PlusCircle,
+  Eye,
 } from "lucide-react";
 import logoImg from "@/assets/Logo-removeBG_1752488347081.png";
 import landscapeSvg from "@/assets/landscape.svg";
