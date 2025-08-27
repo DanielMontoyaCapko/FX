@@ -953,6 +953,61 @@ export default function AdminDashboard() {
               ))}
             </div>
 
+            {/* Charts */}
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
+              <Card className="bg-black/40 border border-emerald-500/15 rounded-2xl">
+                <CardHeader>
+                  <CardTitle className="text-emerald-50">Estado KYC</CardTitle>
+                  <CardDescription className="text-emerald-200/80">Distribución de estados</CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <ResponsiveContainer width="100%" height={300}>
+                    <RechartsPieChart>
+                      <Pie
+                        data={kycChartData}
+                        cx="50%"
+                        cy="50%"
+                        outerRadius={90}
+                        dataKey="value"
+                        label={({ name, value }) => `${name}: ${value}`}
+                      >
+                        {kycChartData.map((entry, index) => (
+                          <Cell key={`cell-kyc-${index}`} fill={entry.color} />
+                        ))}
+                      </Pie>
+                      <Tooltip />
+                    </RechartsPieChart>
+                  </ResponsiveContainer>
+                </CardContent>
+              </Card>
+
+              <Card className="bg-black/40 border border-emerald-500/15 rounded-2xl">
+                <CardHeader>
+                  <CardTitle className="text-emerald-50">Estado Contratos</CardTitle>
+                  <CardDescription className="text-emerald-200/80">Distribución de estados</CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <ResponsiveContainer width="100%" height={300}>
+                    <RechartsPieChart>
+                      <Pie
+                        data={contractsChartData}
+                        cx="50%"
+                        cy="50%"
+                        outerRadius={90}
+                        dataKey="value"
+                        label={({ name, value }) => `${name}: ${value}`}
+                      >
+                        {contractsChartData.map((entry, index) => (
+                          <Cell key={`cell-ct-${index}`} fill={entry.color} />
+                        ))}
+                      </Pie>
+                      <Tooltip />
+                    </RechartsPieChart>
+                  </ResponsiveContainer>
+                </CardContent>
+              </Card>
+            </div>
+
             {/* Financial KPIs Section */}
             {financialKpis && (
               <div className="mb-8">
@@ -1061,60 +1116,110 @@ export default function AdminDashboard() {
               </div>
             )}
 
-            {/* Charts */}
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-              <Card className="bg-black/40 border border-emerald-500/15 rounded-2xl">
-                <CardHeader>
-                  <CardTitle className="text-emerald-50">Estado KYC</CardTitle>
-                  <CardDescription className="text-emerald-200/80">Distribución de estados</CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <ResponsiveContainer width="100%" height={300}>
-                    <RechartsPieChart>
-                      <Pie
-                        data={kycChartData}
-                        cx="50%"
-                        cy="50%"
-                        outerRadius={90}
-                        dataKey="value"
-                        label={({ name, value }) => `${name}: ${value}`}
-                      >
-                        {kycChartData.map((entry, index) => (
-                          <Cell key={`cell-kyc-${index}`} fill={entry.color} />
-                        ))}
-                      </Pie>
-                      <Tooltip />
-                    </RechartsPieChart>
-                  </ResponsiveContainer>
-                </CardContent>
-              </Card>
+            {/* Client KPIs Section */}
+            {financialKpis && (
+              <div className="mb-8">
+                <h2 className="text-2xl font-bold text-emerald-50 mb-6">KPIs de Clientes</h2>
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
+                  <Card className="bg-black/40 border border-emerald-500/15 rounded-2xl shadow-[0_0_0_1px_rgba(16,185,129,0.12),0_20px_60px_-20px_rgba(16,185,129,0.25)]">
+                    <CardContent className="p-6">
+                      <div className="flex items-center justify-between">
+                        <div>
+                          <p className="text-emerald-200/80 text-sm font-medium">Clientes Activos</p>
+                          <p className="text-emerald-50 text-2xl font-bold">{financialKpis.clientKpis?.activeClients || 0}</p>
+                        </div>
+                        <Users className="w-8 h-8 text-emerald-400" />
+                      </div>
+                    </CardContent>
+                  </Card>
 
-              <Card className="bg-black/40 border border-emerald-500/15 rounded-2xl">
-                <CardHeader>
-                  <CardTitle className="text-emerald-50">Estado Contratos</CardTitle>
-                  <CardDescription className="text-emerald-200/80">Distribución de estados</CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <ResponsiveContainer width="100%" height={300}>
-                    <RechartsPieChart>
-                      <Pie
-                        data={contractsChartData}
-                        cx="50%"
-                        cy="50%"
-                        outerRadius={90}
-                        dataKey="value"
-                        label={({ name, value }) => `${name}: ${value}`}
-                      >
-                        {contractsChartData.map((entry, index) => (
-                          <Cell key={`cell-ct-${index}`} fill={entry.color} />
+                  <Card className="bg-black/40 border border-emerald-500/15 rounded-2xl shadow-[0_0_0_1px_rgba(16,185,129,0.12),0_20px_60px_-20px_rgba(16,185,129,0.25)]">
+                    <CardContent className="p-6">
+                      <div className="flex items-center justify-between">
+                        <div>
+                          <p className="text-emerald-200/80 text-sm font-medium">Altas Nuevas del Mes</p>
+                          <p className="text-emerald-50 text-2xl font-bold">{financialKpis.clientKpis?.newClientsMonth || 0}</p>
+                        </div>
+                        <Plus className="w-8 h-8 text-green-400" />
+                      </div>
+                    </CardContent>
+                  </Card>
+
+                  <Card className="bg-black/40 border border-emerald-500/15 rounded-2xl shadow-[0_0_0_1px_rgba(16,185,129,0.12),0_20px_60px_-20px_rgba(16,185,129,0.25)]">
+                    <CardContent className="p-6">
+                      <div className="flex items-center justify-between">
+                        <div>
+                          <p className="text-emerald-200/80 text-sm font-medium">Ticket Medio por Cliente</p>
+                          <p className="text-emerald-50 text-2xl font-bold">€{financialKpis.clientKpis?.averageTicketPerClient?.toLocaleString() || 0}</p>
+                        </div>
+                        <TrendingUp className="w-8 h-8 text-emerald-400" />
+                      </div>
+                    </CardContent>
+                  </Card>
+
+                  <Card className="bg-black/40 border border-emerald-500/15 rounded-2xl shadow-[0_0_0_1px_rgba(16,185,129,0.12),0_20px_60px_-20px_rgba(16,185,129,0.25)]">
+                    <CardContent className="p-6">
+                      <div className="flex items-center justify-between">
+                        <div>
+                          <p className="text-emerald-200/80 text-sm font-medium">KYC Pendientes</p>
+                          <p className="text-emerald-50 text-2xl font-bold">{financialKpis.clientKpis?.pendingKyc || 0}</p>
+                          <p className="text-emerald-200/60 text-xs">({((financialKpis.clientKpis?.pendingKycPercentage) || 0).toFixed(1)}%)</p>
+                        </div>
+                        <FileCheck className="w-8 h-8 text-amber-400" />
+                      </div>
+                    </CardContent>
+                  </Card>
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <Card className="bg-black/40 border border-emerald-500/15 rounded-2xl shadow-[0_0_0_1px_rgba(16,185,129,0.12),0_20px_60px_-20px_rgba(16,185,129,0.25)]">
+                    <CardContent className="p-6">
+                      <div className="flex items-center justify-between mb-4">
+                        <div>
+                          <p className="text-emerald-200/80 text-sm font-medium">Renovaciones vs No Renovaciones</p>
+                          <p className="text-emerald-50 text-lg font-bold">
+                            {((financialKpis.clientKpis?.renewalRate) || 0).toFixed(1)}% renovaciones
+                          </p>
+                        </div>
+                        <BarChart3 className="w-8 h-8 text-emerald-400" />
+                      </div>
+                      <div className="space-y-2">
+                        <div className="flex justify-between text-sm">
+                          <span className="text-emerald-200/80">Renovaciones:</span>
+                          <span className="text-emerald-50">{financialKpis.clientKpis?.renewals || 0}</span>
+                        </div>
+                        <div className="flex justify-between text-sm">
+                          <span className="text-emerald-200/80">No renovaciones:</span>
+                          <span className="text-emerald-50">{financialKpis.clientKpis?.nonRenewals || 0}</span>
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
+
+                  <Card className="bg-black/40 border border-emerald-500/15 rounded-2xl shadow-[0_0_0_1px_rgba(16,185,129,0.12),0_20px_60px_-20px_rgba(16,185,129,0.25)]">
+                    <CardContent className="p-6">
+                      <div className="flex items-center justify-between mb-4">
+                        <div>
+                          <p className="text-emerald-200/80 text-sm font-medium">Top 10 Clientes por Capital</p>
+                        </div>
+                        <Crown className="w-8 h-8 text-yellow-400" />
+                      </div>
+                      <div className="space-y-2 max-h-40 overflow-y-auto">
+                        {(financialKpis.clientKpis?.topClients || []).slice(0, 5).map((client: any, index: number) => (
+                          <div key={index} className="flex justify-between text-sm">
+                            <span className="text-emerald-200/80 truncate mr-2">{client.name || `Cliente ${index + 1}`}</span>
+                            <span className="text-emerald-50 font-medium">€{client.totalAmount?.toLocaleString() || 0}</span>
+                          </div>
                         ))}
-                      </Pie>
-                      <Tooltip />
-                    </RechartsPieChart>
-                  </ResponsiveContainer>
-                </CardContent>
-              </Card>
-            </div>
+                        {(financialKpis.clientKpis?.topClients?.length || 0) > 5 && (
+                          <p className="text-emerald-200/60 text-xs mt-2">... y {(financialKpis.clientKpis?.topClients?.length || 0) - 5} más</p>
+                        )}
+                      </div>
+                    </CardContent>
+                  </Card>
+                </div>
+              </div>
+            )}
           </div>
         )}
 
