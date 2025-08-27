@@ -59,8 +59,12 @@ type PasoCrypto = "Detectado" | "Confirmado" | "Asignado";
 /* -------------------------------------------------------------------------- */
 function DepositoView({
   setHasActiveDeposit,
+  setActiveTab,
+  setProfileActiveTab,
 }: {
   setHasActiveDeposit: (v: boolean) => void;
+  setActiveTab: (tab: string) => void;
+  setProfileActiveTab: (tab: string) => void;
 }) {
   const { user } = useAuth();
 
@@ -2769,7 +2773,11 @@ export default function PartnerDashboard() {
 
         {/* ===== DEPÓSITO ===== */}
         {activeTab === "deposito" && (
-          <DepositoView setHasActiveDeposit={setHasActiveDeposit} />
+          <DepositoView 
+            setHasActiveDeposit={setHasActiveDeposit} 
+            setActiveTab={setActiveTab}
+            setProfileActiveTab={setProfileActiveTab}
+          />
         )}
 
         {/* ===== RETIRO ===== */}
