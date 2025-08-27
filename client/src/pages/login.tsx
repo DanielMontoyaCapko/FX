@@ -23,7 +23,7 @@ import logoImg from "@/assets/Logo-removeBG_1752488347081.png";
 import { useScrollToTop } from "@/hooks/useScrollToTop";
 
 // Variante por defecto
-const DEFAULT_VARIANT: 1 | 2 | 3 = 2;
+const DEFAULT_VARIANT: 1 | 2 | 3 = 1;
 
 export default function Login() {
   useScrollToTop();

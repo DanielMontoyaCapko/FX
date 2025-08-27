@@ -52,26 +52,51 @@ import { generateStatementPDF } from "@/utils/generateStatementPDF";
 // --- Barra de progreso reutilizable ---
 function ProgressBar({
   percent,
+  monthsRemaining,
   noteWhenOver100 = false,
+  className = "",
 }: {
   percent: number;
+  monthsRemaining?: number; 
   noteWhenOver100?: boolean;
+  className?: string;
 }) {
-  const capped = Math.min(percent, 100);
+  const clamped = Math.max(0, Math.min(100, percent));
+
+  const barColor =
+    monthsRemaining !== undefined
+      ? monthsRemaining <= 1
+        ? "bg-red-500"
+        : monthsRemaining <= 3
+        ? "bg-amber-400"
+        : "bg-emerald-500/80"
+      : "bg-emerald-500/80";
+
+  const ringColor =
+    monthsRemaining !== undefined
+      ? monthsRemaining <= 1
+        ? "ring-2 ring-red-500/40"
+        : monthsRemaining <= 3
+        ? "ring-2 ring-amber-400/40"
+        : "ring-1 ring-emerald-400/20"
+      : "ring-1 ring-emerald-400/20";
 
   return (
-    <div className="mt-4">
+    <div className={`mt-4 ${className}`}>
       <div className="flex items-center justify-between text-sm text-emerald-200/80 mb-2">
         <span>Progreso</span>
         <span className="text-emerald-50 font-medium">{Math.round(percent)}%</span>
       </div>
 
-      <div className="relative h-2 rounded-full bg-emerald-900/30 overflow-visible">
-        <div
-          className="absolute left-0 top-0 h-2 rounded-full bg-emerald-500/80"
-          style={{ width: `${capped}%` }}
-        />
-        {percent > 100 && (
+      <div
+        className={`relative h-2 rounded-full bg-emerald-900/30 overflow-visible ${ringColor}`}
+        role="progressbar"
+        aria-valuemin={0}
+        aria-valuemax={100}
+        aria-valuenow={clamped}
+      >
+        <div className={`absolute left-0 top-0 h-2 rounded-full ${barColor}`} style={{ width: `${clamped}%` }} />
+        {noteWhenOver100 && percent > 100 && (
           <div
             className="absolute top-1/2 -translate-y-1/2 right-0 translate-x-2 h-2 w-6 rounded-full bg-emerald-400 shadow-[0_0_0_2px_rgba(16,185,129,0.25)]"
             aria-hidden
@@ -79,9 +104,9 @@ function ProgressBar({
         )}
       </div>
 
-      {noteWhenOver100 && percent > 100 && (
-        <p className="mt-2 text-xs text-emerald-200/70 italic">
-          * Progreso superior al 100% (se supera el objetivo)
+      {monthsRemaining !== undefined && (
+        <p className="mt-2 text-xs text-emerald-200/70">
+          {monthsRemaining <= 0 ? "Vencido" : monthsRemaining < 1 ? "< 1 mes" : `${monthsRemaining} meses restantes`}
         </p>
       )}
     </div>
@@ -897,6 +922,12 @@ export default function Dashboard() {
     { title: "Progreso en Meses", value: "Mes 3 de 12", change: "25% del período", trending: "up" as const },
     { title: "Beneficio Total Estimado", value: "€4.500", change: "A fin de año", trending: "up" as const },
   ] as const;
+
+  // Cálculo para el KPI "Progreso en Meses"
+  const mesesTranscurridos = 11;
+  const mesesTotales = 12;        
+  const percentMeses = (mesesTranscurridos / Math.max(1, mesesTotales)) * 100;
+  const mesesRestantes = Math.max(0, mesesTotales - mesesTranscurridos);
 
   const recentActivity = [
     { type: "download", message: "Estado de cuenta descargado exitosamente", time: "hace 1 hora" },
@@ -2434,7 +2465,10 @@ export default function Dashboard() {
                     </div>
 
                     {kpi.title === "Capital Invertido" && <ProgressBar percent={110} noteWhenOver100 />}
-                    {kpi.title === "Progreso en Meses" && <ProgressBar percent={25} />}
+                    {kpi.title === "Progreso en Meses" && (
+                      <ProgressBar percent={percentMeses} monthsRemaining={mesesRestantes} />
+                    )}
+
                   </CardContent>
                 </Card>
               ))}

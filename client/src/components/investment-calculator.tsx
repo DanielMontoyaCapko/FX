@@ -316,7 +316,13 @@ export default function InvestmentCalculator({ onClose }: InvestmentCalculatorPr
                   <LineChart data={calculateProjection()} margin={{ top: 5, right: 30, left: 20, bottom: 5 }}>
                     <CartesianGrid strokeDasharray="3 3" stroke="#334155" opacity={0.3} />
                     <XAxis dataKey="month" stroke="#94a3b8" fontSize={12} tickFormatter={(value) => `${value}m`} />
-                    <YAxis stroke="#94a3b8" fontSize={12} tickFormatter={(value) => `€${(value / 1000).toFixed(0)}K`} />
+                    <YAxis
+                      stroke="#94a3b8"
+                      fontSize={12}
+                      domain={[50000, 'dataMax']}
+                      tickFormatter={(value) => `€${(value / 1000).toFixed(0)}K`}
+                    />
+
                     <Tooltip content={<CustomTooltip />} />
                     <Line
                       type="monotone"
