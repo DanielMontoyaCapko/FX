@@ -1339,7 +1339,12 @@ export default function Dashboard() {
                                   className="border-blue-500/20 text-blue-300"
                                   onClick={async () => {
                                     try {
-                                      const response = await fetch(`/api/download-document?url=${encodeURIComponent(docUrl)}`);
+                                      const token = localStorage.getItem('auth_token');
+                                      const response = await fetch(`/api/download-document?url=${encodeURIComponent(docUrl)}`, {
+                                        headers: {
+                                          'Authorization': `Bearer ${token}`
+                                        }
+                                      });
                                       if (response.ok) {
                                         const blob = await response.blob();
                                         const downloadUrl = window.URL.createObjectURL(blob);
