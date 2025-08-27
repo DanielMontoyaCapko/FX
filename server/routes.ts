@@ -92,15 +92,30 @@ export async function registerRoutes(app: Express): Promise<Server> {
       
       // Check if user already has KYC record
       const existingKyc = await storage.getKycByUserId(req.user!.id);
-      if (existingKyc) {
-        return res.status(400).json({ error: "KYC record already exists for this user" });
-      }
       
-      const kyc = await storage.createKyc(kycData);
-      res.json({ success: true, kyc });
+      if (existingKyc) {
+        // Update existing record (reset review status)
+        const updates = {
+          ...kycData,
+          status: "pending",
+          rejectionReason: null,
+          reviewedBy: null,
+          reviewedAt: null,
+        };
+        
+        const kyc = await storage.updateKyc(existingKyc.id, updates);
+        res.json({ success: true, kyc });
+      } else {
+        // Create new record
+        const kyc = await storage.createKyc(kycData);
+        res.json({ success: true, kyc });
+      }
     } catch (error) {
-      console.error("Error creating KYC:", error);
-      res.status(400).json({ error: "Invalid KYC data" });
+      console.error("Error creating/updating KYC:", error);
+      if (error instanceof z.ZodError) {
+        return res.status(400).json({ error: "Invalid KYC data", details: error.errors });
+      }
+      res.status(500).json({ error: "Failed to process KYC data" });
     }
   });
 
