@@ -105,25 +105,28 @@ export default function AdminDashboard() {
   const [activeTab, setActiveTab] = useState("dashboard");
 
   // React Query for data fetching
-  const { data: usersData } = useQuery({
+  const { data: usersData, isLoading: isLoadingUsers } = useQuery({
     queryKey: ["/api/admin/users"],
     enabled: !!user && user.role === "admin",
   });
 
-  const { data: kycData } = useQuery({
+  const { data: kycData, isLoading: isLoadingKyc } = useQuery({
     queryKey: ["/api/admin/kyc"],
     enabled: !!user && user.role === "admin",
   });
 
-  const { data: productsData } = useQuery({
+  const { data: productsData, isLoading: isLoadingProducts } = useQuery({
     queryKey: ["/api/admin/products"],
     enabled: !!user && user.role === "admin",
   });
 
-  const { data: contractsData } = useQuery({
+  const { data: contractsData, isLoading: isLoadingContracts } = useQuery({
     queryKey: ["/api/admin/contracts"],
     enabled: !!user && user.role === "admin",
   });
+
+  // Combined loading state
+  const loading = isLoadingUsers || isLoadingKyc || isLoadingProducts || isLoadingContracts;
 
   // KYC Review Mutation
   const kycReviewMutation = useMutation({
