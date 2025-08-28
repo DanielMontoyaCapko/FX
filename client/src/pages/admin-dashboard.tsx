@@ -61,6 +61,7 @@ import {
   Legend
 } from "recharts";
 import logoImg from "@/assets/Logo-removeBG_1753542032142.png";
+import { generateAdminStatementPDF } from "@/utils/generateAdminStatementPDF";
 
 interface DashboardStats {
   totalUsers: number;
@@ -384,6 +385,34 @@ export default function AdminDashboard() {
   const handleLogout = () => {
     logout();
     setLocation("/login");
+  };
+
+  const handleDownloadAdminPDF = async () => {
+    const currentDate = new Date();
+    const currentMonth = currentDate.toLocaleDateString('es-ES', { month: 'long', year: 'numeric' });
+    
+    const adminData = {
+      fecha: currentDate.toLocaleDateString('es-ES'),
+      periodo: currentMonth,
+      totalUsers: stats.totalUsers,
+      totalProducts: stats.totalProducts,
+      totalContracts: stats.totalContracts,
+      pendingKyc: stats.pendingKyc,
+      financialKpis: financialKpis ? {
+        totalAUM: financialKpis.totalAUM,
+        newCapitalMonth: financialKpis.newCapitalMonth,
+        withdrawnCapitalMonth: financialKpis.withdrawnCapitalMonth,
+        netCapitalGrowth: financialKpis.netCapitalGrowth,
+        averageInvestment: financialKpis.averageInvestment,
+        activeClients: financialKpis.activeClients,
+        clientRetention: financialKpis.clientRetention,
+        monthlyEvolution: financialKpis.monthlyEvolution
+      } : undefined,
+      kycStats: kycChartData,
+      contractsStats: contractsChartData
+    };
+
+    await generateAdminStatementPDF(adminData);
   };
 
   // Chart data
@@ -1001,7 +1030,16 @@ export default function AdminDashboard() {
       <main className="ml-64 p-8">
         {activeTab === "dashboard" && (
           <div>
-            <h1 className="text-3xl font-bold text-emerald-50 mb-8">Panel de Administración</h1>
+            <div className="flex items-center justify-between mb-8">
+              <h1 className="text-3xl font-bold text-emerald-50">Panel de Administración</h1>
+              <Button
+                onClick={handleDownloadAdminPDF}
+                className="bg-emerald-600 hover:bg-emerald-500 text-white"
+              >
+                <Download className="w-4 h-4 mr-2" />
+                Descargar Estado de Cuenta PDF
+              </Button>
+            </div>
 
             {/* Stats Cards */}
             <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
