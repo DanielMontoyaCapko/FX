@@ -2577,9 +2577,6 @@ export default function AdminDashboard() {
                           </td>
                           <td className="p-4">
                             <div className="flex space-x-2">
-                              <Button size="sm" variant="outline" className="border-emerald-500/20 text-emerald-50">
-                                <Eye className="w-4 h-4" />
-                              </Button>
                               <Button
                                 size="sm"
                                 variant="outline"
