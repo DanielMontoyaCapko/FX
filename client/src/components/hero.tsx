@@ -28,8 +28,8 @@ export default function Hero() {
       const half = groupRef.current.getBoundingClientRect().width; // ancho del grupo A
       setGroupW(half);
 
-      // Velocidad en px/s (ajusta a gusto)
-      const speed = 50;
+      // Velocidad aumentada un 25%: de 50 px/s a 62.5 px/s
+      const speed = 62.5;
       const dur = Math.max(half / speed, 12);
 
       trackRef.current.style.setProperty("--half", `${half}px`);

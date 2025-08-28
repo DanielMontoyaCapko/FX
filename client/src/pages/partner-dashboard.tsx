@@ -1631,21 +1631,30 @@ export default function PartnerDashboard() {
             {/* Métricas superiores DINÁMICAS basadas en clientes */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
               {[
-                { label: "Clientes Activos", value: resumenStats.activeClients, icon: Users },
+                { label: "Clientes Activos", value: resumenStats.activeClients, icon: Users, clickable: true },
                 {
                   label: "Volumen Activo",
                   value: `$${resumenStats.activeVolume.toLocaleString()}`,
                   icon: TrendingUp,
+                  clickable: false,
                 },
-                { label: "Por vencer (≤30 días)", value: resumenStats.expiringSoon, icon: UserPlus },
-              ].map(({ label, value, icon: Icon }, i) => (
-                <Card key={i} className="bg-black/40 border border-emerald-500/15 rounded-2xl">
+                { label: "Por vencer (≤30 días)", value: resumenStats.expiringSoon, icon: UserPlus, clickable: false },
+              ].map(({ label, value, icon: Icon, clickable }, i) => (
+                <Card 
+                  key={i} 
+                  className={`bg-black/40 border border-emerald-500/15 rounded-2xl ${
+                    clickable ? 'cursor-pointer hover:bg-black/50 hover:border-emerald-500/25 transition-all duration-200 hover:shadow-[0_0_0_1px_rgba(16,185,129,0.2)]' : ''
+                  }`}
+                  onClick={clickable ? () => setActiveTab("clientes") : undefined}
+                >
                   <CardContent className="p-6">
                     <div className="flex items-center justify-between">
                       <div>
                         <p className="text-emerald-200/80 text-sm font-medium">{label}</p>
                         <p className="text-emerald-50 text-3xl font-bold">{value}</p>
-                        <p className="text-emerald-400 text-xs">Actualizado</p>
+                        <p className="text-emerald-400 text-xs">
+                          {clickable ? "Click para ver detalles" : "Actualizado"}
+                        </p>
                       </div>
                       <Icon className="w-8 h-8 text-emerald-400" />
                     </div>
