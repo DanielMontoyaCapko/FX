@@ -1044,20 +1044,22 @@ export default function AdminDashboard() {
             {/* Stats Cards */}
             <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
               {[
-                { label: "Usuarios Totales", value: stats.totalUsers, icon: Users },
-                { label: "Productos Totales", value: stats.totalProducts, icon: Package },
-                { label: "Contratos Totales", value: stats.totalContracts, icon: FileText },
-                { label: "KYC Pendientes", value: stats.pendingKyc, icon: FileCheck, warn: true },
-              ].map(({ label, value, icon: Icon, warn }, i) => (
+                { label: "Usuarios Totales", value: stats.totalUsers, icon: Users, targetTab: "users" },
+                { label: "Productos Totales", value: stats.totalProducts, icon: Package, targetTab: "products" },
+                { label: "Contratos Totales", value: stats.totalContracts, icon: FileText, targetTab: "contracts" },
+                { label: "KYC Pendientes", value: stats.pendingKyc, icon: FileCheck, warn: true, targetTab: "kyc" },
+              ].map(({ label, value, icon: Icon, warn, targetTab }, i) => (
                 <Card
                   key={i}
-                  className="bg-black/40 border border-emerald-500/15 rounded-2xl shadow-[0_0_0_1px_rgba(16,185,129,0.12),0_20px_60px_-20px_rgba(16,185,129,0.25)]"
+                  className="bg-black/40 border border-emerald-500/15 rounded-2xl shadow-[0_0_0_1px_rgba(16,185,129,0.12),0_20px_60px_-20px_rgba(16,185,129,0.25)] cursor-pointer hover:bg-black/50 hover:border-emerald-500/25 transition-all duration-200 hover:shadow-[0_0_0_1px_rgba(16,185,129,0.2)]"
+                  onClick={() => setActiveTab(targetTab)}
                 >
                   <CardContent className="p-6">
                     <div className="flex items-center justify-between">
                       <div>
                         <p className="text-emerald-200/80 text-sm font-medium">{label}</p>
                         <p className="text-emerald-50 text-3xl font-bold">{value}</p>
+                        <p className="text-emerald-400 text-xs">Click para ver detalles</p>
                       </div>
                       <Icon className={`w-8 h-8 ${warn ? "text-amber-400" : "text-emerald-400"}`} />
                     </div>
