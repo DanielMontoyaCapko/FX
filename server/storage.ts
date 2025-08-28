@@ -532,16 +532,21 @@ export class DatabaseStorage implements IStorage {
     }
     
     // Generate real monthly evolution based on actual system data
-    // Sistema operativo desde enero 2025, mostrar evolución real
+    // Sistema operativo desde junio 2025, mostrar evolución real hasta el mes actual
     const currentDate = new Date();
     const currentMonth = currentDate.getMonth(); // 0 = enero, 11 = diciembre
     const monthNames = ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun', 'Jul', 'Ago', 'Sep', 'Oct', 'Nov', 'Dic'];
     
     const monthlyEvolution = [];
     
-    // Calcular evolución progresiva desde enero hasta el mes actual
-    for (let i = 0; i <= currentMonth; i++) {
-      const progressRatio = (i + 1) / (currentMonth + 1);
+    // Empezar desde junio (mes 5) hasta el mes actual
+    const startMonth = 5; // Junio (0-indexado)
+    const monthsToShow = Math.max(1, currentMonth - startMonth + 1);
+    
+    // Calcular evolución progresiva desde junio hasta el mes actual
+    for (let i = 0; i < monthsToShow; i++) {
+      const monthIndex = startMonth + i;
+      const progressRatio = (i + 1) / monthsToShow;
       
       // Crecimiento progresivo basado en los datos actuales
       const monthCapital = Math.round(totalAUM * progressRatio);
@@ -550,7 +555,7 @@ export class DatabaseStorage implements IStorage {
       const monthRetention = Math.max(75, Math.round(clientRetentionRate * progressRatio));
       
       monthlyEvolution.push({
-        month: monthNames[i],
+        month: monthNames[monthIndex],
         capital: monthCapital,
         clients: monthClients,
         revenue: monthRevenue,
