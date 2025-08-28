@@ -36,6 +36,8 @@ import {
   FileText,
   Trash2,
   PlusCircle,
+  Building2,
+  Handshake,
 
 } from "lucide-react";
 import logoImg from "@/assets/Logo-removeBG_1752488347081.png";
@@ -1060,18 +1062,14 @@ export default function Dashboard() {
     { 
       titulo: "Depósito Bancario", 
       descripcion: "Confirmación de depósito a plazo fijo con detalles de inversión", 
-      tipo: "PDF", 
       fecha: "2025-01-25", 
-      estado: "Disponible", 
       categoria: "Producto",
       archivo: "/attached_assets/07. Depósito Bancario_1756335354455.pdf"
     },
     { 
       titulo: "Contrato de Colaboración Partner Para Captación de Inversores", 
       descripcion: "Acuerdo de colaboración comercial para asesores y partners", 
-      tipo: "DOCX", 
       fecha: "2025-01-25", 
-      estado: "Disponible", 
       categoria: "Legal",
       archivo: "/attached_assets/08. CONTRATO DE COLABORACIÓN PARTNER PARA CAPTACIÓN DE INVERSORES_1756335354457.docx"
     },
@@ -2245,7 +2243,7 @@ export default function Dashboard() {
                     c.titulo.toLowerCase().includes(q) ||
                     c.descripcion.toLowerCase().includes(q);
 
-                  const matchesEstado = !cFilters.estado || c.estado === cFilters.estado;
+                  const matchesEstado = true; // Ya no hay estado
                   const matchesTipo = !cFilters.tipo || c.categoria === cFilters.tipo;
 
                   const t = new Date(c.fecha).getTime();
@@ -2266,27 +2264,23 @@ export default function Dashboard() {
                         <div className="flex-1">
                           <div className="flex items-center gap-3 mb-2">
                             <div className="w-10 h-10 bg-emerald-500 rounded-lg flex items-center justify-center">
-                              <Download className="h-5 w-5 text-black" />
+                              {doc.categoria === "Producto" ? (
+                                <Building2 className="h-5 w-5 text-black" />
+                              ) : (
+                                <Handshake className="h-5 w-5 text-black" />
+                              )}
                             </div>
                             <div>
                               <h4 className="text-lg font-semibold text-emerald-50">{doc.titulo}</h4>
                               <p className="text-emerald-200/80 text-sm">{doc.descripcion}</p>
                             </div>
                           </div>
-                          <div className="grid grid-cols-2 md:grid-cols-3 gap-4 text-sm mt-4">
-                            <div>
-                              <p className="text-emerald-200/80">Tipo</p>
-                              <p className="text-emerald-50 font-medium">{doc.tipo}</p>
-                            </div>
+                          <div className="text-sm mt-4">
                             <div>
                               <p className="text-emerald-200/80">Fecha</p>
                               <p className="text-emerald-50 font-medium">
                                 {new Date(doc.fecha).toLocaleDateString("es-ES")}
                               </p>
-                            </div>
-                            <div>
-                              <p className="text-emerald-200/80">Estado</p>
-                              <Badge className="bg-emerald-500 text-black">{doc.estado}</Badge>
                             </div>
                           </div>
                         </div>
@@ -2296,7 +2290,9 @@ export default function Dashboard() {
                             onClick={() => {
                               const link = document.createElement('a');
                               link.href = doc.archivo;
-                              link.download = `${doc.titulo}.${doc.tipo.toLowerCase()}`;
+                              // Extraer la extensión del archivo del path
+                              const extension = doc.archivo.split('.').pop() || 'pdf';
+                              link.download = `${doc.titulo}.${extension}`;
                               document.body.appendChild(link);
                               link.click();
                               document.body.removeChild(link);
@@ -2322,7 +2318,7 @@ export default function Dashboard() {
                     !q ||
                     c.titulo.toLowerCase().includes(q) ||
                     c.descripcion.toLowerCase().includes(q);
-                  const matchesEstado = !cFilters.estado || c.estado === cFilters.estado;
+                  const matchesEstado = true; // Ya no hay estado
                   const matchesTipo = !cFilters.tipo || c.categoria === cFilters.tipo;
                   const t = new Date(c.fecha).getTime();
                   const fromOk = !cFilters.dateFrom || t >= new Date(cFilters.dateFrom).getTime();
@@ -2352,9 +2348,18 @@ export default function Dashboard() {
         ) : (
           /* ------------------------------- INICIO (home) ------------------------------- */
           <div>
-            <div className="mb-8">
-              <h1 className="text-3xl font-bold text-emerald-50">Dashboard</h1>
-              <p className="text-emerald-200/80">Vista general de tu actividad</p>
+            <div className="mb-8 flex justify-between items-start">
+              <div>
+                <h1 className="text-3xl font-bold text-emerald-50">Dashboard</h1>
+                <p className="text-emerald-200/80">Vista general de tu actividad</p>
+              </div>
+              <Button 
+                onClick={handleDownloadStatement} 
+                className="rounded-xl bg-emerald-700 hover:bg-emerald-600 text-white px-6 py-2"
+              >
+                <Download className="h-4 w-4 mr-2" />
+                Descargar Estado de Cuenta
+              </Button>
             </div>
 
             {/* KPIs (3 tarjetas) */}
@@ -2427,6 +2432,17 @@ export default function Dashboard() {
                 </CardContent>
               </Card>
 
+              {/* Botón Calcular Nueva Inversión */}
+              <div className="mt-8 mb-6 flex justify-center">
+                <Button
+                  onClick={handleCalculateInvestment}
+                  className="rounded-xl bg-gradient-to-r from-emerald-600 to-emerald-500 hover:from-emerald-500 hover:to-emerald-400 text-white px-8 py-3 text-lg"
+                >
+                  <Calculator className="h-5 w-5 mr-3" />
+                  Calcular Nueva Inversión
+                </Button>
+              </div>
+
               {/* Actividad reciente */}
             <Card className="bg-black/40 border border-emerald-500/15 rounded-2xl transition-all duration-300 hover:border-emerald-500/25 hover:bg-black/50 hover:shadow-lg hover:shadow-emerald-500/20">
               <CardHeader>
@@ -2480,22 +2496,9 @@ export default function Dashboard() {
             </Card>
 
 
-              {/* Acciones rápidas */}
+              {/* Espacio para futuras acciones */}
               <div className="mt-8">
-                <h2 className="text-xl font-bold text-emerald-50 mb-4">Acciones Rápidas</h2>
-                <div className="flex flex-col sm:flex-row gap-4">
-                  <Button onClick={handleDownloadStatement} className="rounded-xl bg-emerald-700 hover:bg-emerald-600 text-white">
-                    <Download className="h-4 w-4 mr-2" />
-                    Descargar Estado de Cuenta
-                  </Button>
-                  <Button
-                    onClick={handleCalculateInvestment}
-                    className="rounded-xl bg-gradient-to-r from-emerald-600 to-emerald-500 hover:from-emerald-500 hover:to-emerald-400 text-white"
-                  >
-                    <Calculator className="h-4 w-4 mr-2" />
-                    Calcular Nueva Inversión
-                  </Button>
-                </div>
+                {/* El botón de descargar estado de cuenta ahora está en la esquina superior derecha */}
               </div>
             </div>
           )}       

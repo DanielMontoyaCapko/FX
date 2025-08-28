@@ -933,6 +933,7 @@ export default function PartnerDashboard() {
   // Filtros CONTRATOS
   const [showContractFilters, setShowContractFilters] = useState(false);
   const [contractSort, setContractSort] = useState<"" | "amountDesc" | "amountAsc" | "endAsc" | "endDesc">("");
+  const [contractQuickFilter, setContractQuickFilter] = useState<"all" | "vigentes" | "vencidos">("all");
   const [contractFilters, setContractFilters] = useState({
     search: "",
     status: "",
@@ -1602,30 +1603,7 @@ export default function PartnerDashboard() {
                 ))}
               </div>
 
-              {/* Progreso hacia tier */}
-              <Card className="bg-black/40 border border-emerald-500/15 rounded-2xl transition-all duration-300 hover:border-emerald-500/25 hover:bg-black/50 hover:shadow-lg hover:shadow-emerald-500/20 shadow-[0_0_0_1px_rgba(16,185,129,0.12),0_20px_60px_-20px_rgba(16,185,129,0.25)] mb-8">
-                <CardContent className="p-6">
-                  <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-6">
-                    <div>
-                      <p className="text-emerald-200/80 text-sm font-medium">Progreso hacia Diamond Partner</p>
-                      <div className="flex items-center gap-3">
-                        <span className="text-emerald-50 text-4xl md:text-5xl font-extrabold">
-                          {partnerStats.nextTierProgress}%
-                        </span>
-                        <Crown className="w-8 h-8 text-emerald-400" />
-                      </div>
-                      <p className="text-emerald-400 text-sm">Faltan $820K en volumen</p>
-                    </div>
 
-                    <div className="w-full md:max-w-xl">
-                      <Progress
-                        value={partnerStats.nextTierProgress}
-                        className="h-4 bg-emerald-900/30 rounded-full [&>div]:bg-gradient-to-r [&>div]:from-emerald-500 [&>div]:to-emerald-400"
-                      />
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
             </div>
 
             {/* Métricas superiores DINÁMICAS basadas en clientes */}
@@ -2464,6 +2442,44 @@ export default function PartnerDashboard() {
 
               return (
                 <div className="space-y-4">
+                  {/* Tarjetas de filtro rápido */}
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+                    {[
+                      { key: "all", value: String(filtered.length), label: "Total Contratos" },
+                      { key: "vigentes", value: String(filtered.filter(c => c.status === "Vigente").length), label: "Vigentes" },
+                      { key: "vencidos", value: String(filtered.filter(c => c.status === "Vencido").length), label: "Vencidos" },
+                    ].map(({ key, value, label }) => {
+                      const active = contractQuickFilter === (key as typeof contractQuickFilter);
+                      const baseBorder =
+                        key === "vigentes" ? "border-emerald-500/25" :
+                        key === "vencidos" ? "border-red-500/20" :
+                                            "border-emerald-500/15";
+                      const baseText =
+                        key === "vigentes" ? "text-emerald-400" :
+                        key === "vencidos" ? "text-red-400" :
+                                            "text-emerald-50";
+
+                      return (
+                        <Card
+                          key={key}
+                          role="button"
+                          onClick={() => setContractQuickFilter(key as typeof contractQuickFilter)}
+                          className={[
+                            "bg-black/40 rounded-2xl cursor-pointer select-none transition-all border",
+                            baseBorder,
+                            active ? "ring-1 ring-emerald-400/60" : "",
+                            "hover:shadow-[0_0_0_1px_rgba(16,185,129,0.25),0_10px_30px_-12px_rgba(16,185,129,0.35)]",
+                          ].join(" ")}
+                        >
+                          <CardContent className="p-4 text-center">
+                            <div className={`text-2xl font-bold ${baseText}`}>{value}</div>
+                            <p className="text-emerald-200/80 text-sm">{label}</p>
+                          </CardContent>
+                        </Card>
+                      );
+                    })}
+                  </div>
+
                   <div className="flex items-center justify-between">
                     <h3 className="text-xl font-semibold text-emerald-50">Listado de Contratos</h3>
                     <p className="text-emerald-200/80">

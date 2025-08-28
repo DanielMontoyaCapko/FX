@@ -1,34 +1,33 @@
-import { Shield, Percent, File, University, FileSignature, Search } from "lucide-react";
+import percentLogo from "../../../attached_assets/logo porcentaje.png";
+import securityLogo from "../../../attached_assets/logo seguridad.png";
+import documentoLogo from "../../../attached_assets/documento.png";
+import bancoLogo from "../../../attached_assets/banco.png";
+import firmaLogo from "../../../attached_assets/firma.png";
+import lupaLogo from "../../../attached_assets/lupa.png";
 
 export default function Security() {
   const features = [
     {
-      icon: Percent,
       title: "Rentabilidad Fija del 9%",
       description: "Sin volatilidad, sin sorpresas. Un 9% anual garantizado por contrato."
     },
     {
-      icon: Shield,
       title: "Capital Bloqueado como Garantía",
       description: "Sin gestión directa del cliente. Su capital está protegido por estructura bancaria."
     },
     {
-      icon: File,
       title: "Contrato Bancario Pignorado",
       description: "Revisado jurídicamente y avalado por estructuras bancarias de primer nivel."
     },
     {
-      icon: University,
       title: "Custodia en Bancos de Primer Nivel",
       description: "Emirates NBD, WIO Bank. Instituciones financieras sólidas y reguladas."
     },
     {
-      icon: FileSignature,
       title: "Firma Digital Jurídicamente Válida",
       description: "Validez jurídica internacional vía DocuSign® con trazabilidad completa."
     },
     {
-      icon: Search,
       title: "Auditoría Externa y Trazabilidad",
       description: "Control total del proceso con auditoría externa y transparencia absoluta."
     }
@@ -64,11 +63,47 @@ export default function Security() {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 max-w-6xl mx-auto">
           {features.map((feature, index) => (
             <div key={index} className="bg-black/70 p-8 rounded-xl border border-silver-500/20 hover:border-[#344e41] transition-all duration-300 transform hover:scale-105 hover:shadow-lg hover:shadow-[#344e41]/20 cursor-pointer">
-              <div className="w-16 h-16 bg-green/20 rounded-lg flex items-center justify-center mb-6 transition-all duration-300 group-hover:bg-[#344e41]/30">
-                <feature.icon className="text-2xl text-green w-8 h-8 transition-colors duration-300" />
+              <div className="w-16 h-16 bg-green/20 rounded-lg flex items-center justify-center mb-6 transition-all duration-300 group-hover:bg-[#344e41]/30 mx-auto">
+                {index === 0 ? (
+                  <img 
+                    src={percentLogo} 
+                    alt="Porcentaje" 
+                    className="w-8 h-8 drop-shadow-[0_0_8px_rgba(34,197,94,0.6)]"
+                  />
+                ) : index === 1 ? (
+                  <img 
+                    src={securityLogo} 
+                    alt="Seguridad" 
+                    className="w-8 h-8 drop-shadow-[0_0_8px_rgba(34,197,94,0.6)]"
+                  />
+                ) : index === 2 ? (
+                  <img 
+                    src={documentoLogo} 
+                    alt="Documento" 
+                    className="w-8 h-8 drop-shadow-[0_0_8px_rgba(34,197,94,0.6)]"
+                  />
+                ) : index === 3 ? (
+                  <img 
+                    src={bancoLogo} 
+                    alt="Banco" 
+                    className="w-8 h-8 drop-shadow-[0_0_8px_rgba(34,197,94,0.6)]"
+                  />
+                ) : index === 4 ? (
+                  <img 
+                    src={firmaLogo} 
+                    alt="Firma" 
+                    className="w-8 h-8 drop-shadow-[0_0_8px_rgba(34,197,94,0.6)]"
+                  />
+                ) : index === 5 ? (
+                  <img 
+                    src={lupaLogo} 
+                    alt="Lupa" 
+                    className="w-8 h-8 drop-shadow-[0_0_8px_rgba(34,197,94,0.6)]"
+                  />
+                ) : null}
               </div>
-              <h3 className="font-georgia text-xl font-semibold text-white mb-4 transition-colors duration-300">{feature.title}</h3>
-              <p className={`${index < 3 ? 'text-white' : 'text-silver-100'} transition-colors duration-300`}>{feature.description}</p>
+              <h3 className="font-georgia text-2xl font-semibold text-white mb-4 transition-colors duration-300 text-center">{feature.title}</h3>
+              <p className={`${index < 3 ? 'text-white' : 'text-silver-100'} transition-colors duration-300 text-center`}>{feature.description}</p>
             </div>
           ))}
         </div>
