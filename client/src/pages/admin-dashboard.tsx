@@ -312,8 +312,10 @@ export default function AdminDashboard() {
   const [kycReviewStatus, setKycReviewStatus] = useState<"approved" | "rejected">("approved");
   const [rejectionReason, setRejectionReason] = useState("");
 
-  // NUEVO: ficha de usuario (perfil detallado)
-  const [selectedUser, setSelectedUser] = useState<UserData | null>(null);
+  // User Profile Modal states
+  const [showUserProfileDialog, setShowUserProfileDialog] = useState(false);
+  const [selectedUserProfile, setSelectedUserProfile] = useState<any>(null);
+  const [loadingUserProfile, setLoadingUserProfile] = useState(false);
 
   // Form states
   const [newUser, setNewUser] = useState({
@@ -881,15 +883,31 @@ export default function AdminDashboard() {
   };
 
   // ===== Navegación a FICHA de usuario (mejora botón "ver") =====
-  const openUserProfileById = (id: number) => {
-    const u = users.find((x) => x.id === id);
-    if (!u) {
-      alert("Usuario no encontrado.");
-      return;
+  const openUserProfileById = async (id: number) => {
+    try {
+      setLoadingUserProfile(true);
+      const token = localStorage.getItem('token');
+      const response = await fetch(`/api/admin/user-profile/${id}`, {
+        headers: {
+          'Authorization': `Bearer ${token}`,
+        },
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        alert(`Error: ${errorData.error}`);
+        return;
+      }
+
+      const data = await response.json();
+      setSelectedUserProfile(data.profile);
+      setShowUserProfileDialog(true);
+    } catch (error) {
+      console.error('Error fetching user profile:', error);
+      alert('Error al obtener el perfil del usuario');
+    } finally {
+      setLoadingUserProfile(false);
     }
-    setSelectedUser(u);
-    setActiveTab("usuario_ficha");
-    setLocation(`/admin/usuarios/${id}`);
   };
 
   const openUserProfileByName = (fullName: string) => {
@@ -1963,9 +1981,10 @@ export default function AdminDashboard() {
                               <Button
                                 size="sm"
                                 variant="outline"
-                                className="border-emerald-500/20 text-emerald-50"
-                                onClick={() => openUserProfileById(u.id)}
-                                title="Ver ficha del usuario"
+                                disabled={u.role === "admin"}
+                                className={`border-emerald-500/20 ${u.role === "admin" ? "text-gray-500 cursor-not-allowed opacity-50" : "text-emerald-50"}`}
+                                onClick={() => u.role !== "admin" && openUserProfileById(u.id)}
+                                title={u.role === "admin" ? "No disponible para administradores" : "Ver ficha del usuario"}
                               >
                                 <Eye className="w-4 h-4" />
                               </Button>
@@ -3557,6 +3576,177 @@ export default function AdminDashboard() {
             </div>
             <DialogFooter>
               <Button onClick={handleCloseDocumentsDialog} className="bg-gradient-to-r from-emerald-600 to-emerald-500 hover:from-emerald-500 hover:to-emerald-400 text-white">
+                Cerrar
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
+
+        {/* User Profile Modal */}
+        <Dialog open={showUserProfileDialog} onOpenChange={setShowUserProfileDialog}>
+          <DialogContent className="bg-black/90 border-emerald-500/20 text-emerald-50 max-w-2xl">
+            <DialogHeader>
+              <DialogTitle className="text-emerald-200 text-xl">
+                Perfil de Usuario
+              </DialogTitle>
+              <DialogDescription className="text-emerald-200/60">
+                Información detallada del usuario
+              </DialogDescription>
+            </DialogHeader>
+            
+            {loadingUserProfile ? (
+              <div className="flex items-center justify-center py-8">
+                <div className="text-emerald-200">Cargando perfil...</div>
+              </div>
+            ) : selectedUserProfile ? (
+              <div className="space-y-6">
+                {/* Basic Information */}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <Label className="text-emerald-200 font-medium">ID Usuario</Label>
+                    <div className="p-3 bg-black/40 border border-emerald-500/20 rounded-lg text-emerald-50">
+                      {selectedUserProfile.id}
+                    </div>
+                  </div>
+                  <div className="space-y-2">
+                    <Label className="text-emerald-200 font-medium">Nombre</Label>
+                    <div className="p-3 bg-black/40 border border-emerald-500/20 rounded-lg text-emerald-50">
+                      {selectedUserProfile.name}
+                    </div>
+                  </div>
+                  <div className="space-y-2">
+                    <Label className="text-emerald-200 font-medium">Email</Label>
+                    <div className="p-3 bg-black/40 border border-emerald-500/20 rounded-lg text-emerald-50">
+                      {selectedUserProfile.email}
+                    </div>
+                  </div>
+                  <div className="space-y-2">
+                    <Label className="text-emerald-200 font-medium">Rol</Label>
+                    <div className="p-3 bg-black/40 border border-emerald-500/20 rounded-lg">
+                      <Badge className={
+                        selectedUserProfile.role === "admin" 
+                          ? "bg-red-500/20 text-red-200"
+                          : selectedUserProfile.role === "partner"
+                          ? "bg-blue-500/20 text-blue-200"
+                          : "bg-emerald-500/20 text-emerald-200"
+                      }>
+                        {selectedUserProfile.role === "admin" ? "Administrador" :
+                         selectedUserProfile.role === "partner" ? "Partner" : "Cliente"}
+                      </Badge>
+                    </div>
+                  </div>
+                  <div className="space-y-2">
+                    <Label className="text-emerald-200 font-medium">Grado</Label>
+                    <div className="p-3 bg-black/40 border border-emerald-500/20 rounded-lg text-emerald-50">
+                      {selectedUserProfile.grade || "No asignado"}
+                    </div>
+                  </div>
+                  <div className="space-y-2">
+                    <Label className="text-emerald-200 font-medium">Sponsor</Label>
+                    <div className="p-3 bg-black/40 border border-emerald-500/20 rounded-lg text-emerald-50">
+                      {selectedUserProfile.sponsor || "No asignado"}
+                    </div>
+                  </div>
+                  <div className="space-y-2">
+                    <Label className="text-emerald-200 font-medium">Estado de Verificación</Label>
+                    <div className="p-3 bg-black/40 border border-emerald-500/20 rounded-lg">
+                      <Badge className={
+                        selectedUserProfile.verificationStatus === "verified"
+                          ? "bg-emerald-500/20 text-emerald-200"
+                          : selectedUserProfile.verificationStatus === "pending"
+                          ? "bg-amber-500/20 text-amber-200"
+                          : "bg-red-500/20 text-red-200"
+                      }>
+                        {selectedUserProfile.verificationStatus === "verified" ? "Verificado" :
+                         selectedUserProfile.verificationStatus === "pending" ? "Pendiente" : "No verificado"}
+                      </Badge>
+                    </div>
+                  </div>
+                  <div className="space-y-2">
+                    <Label className="text-emerald-200 font-medium">Fecha de Registro</Label>
+                    <div className="p-3 bg-black/40 border border-emerald-500/20 rounded-lg text-emerald-50">
+                      {new Date(selectedUserProfile.createdAt).toLocaleDateString("es-ES")}
+                    </div>
+                  </div>
+                </div>
+
+                {/* KYC Information if available */}
+                {(selectedUserProfile.fullName || selectedUserProfile.documentType) && (
+                  <div className="border-t border-emerald-500/20 pt-6">
+                    <h4 className="text-emerald-200 font-medium mb-4">Información KYC</h4>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      {selectedUserProfile.fullName && (
+                        <div className="space-y-2">
+                          <Label className="text-emerald-200 font-medium">Nombre Completo</Label>
+                          <div className="p-3 bg-black/40 border border-emerald-500/20 rounded-lg text-emerald-50">
+                            {selectedUserProfile.fullName}
+                          </div>
+                        </div>
+                      )}
+                      {selectedUserProfile.documentType && (
+                        <div className="space-y-2">
+                          <Label className="text-emerald-200 font-medium">Tipo de Documento</Label>
+                          <div className="p-3 bg-black/40 border border-emerald-500/20 rounded-lg text-emerald-50">
+                            {selectedUserProfile.documentType}
+                          </div>
+                        </div>
+                      )}
+                      {selectedUserProfile.documentNumber && (
+                        <div className="space-y-2">
+                          <Label className="text-emerald-200 font-medium">Número de Documento</Label>
+                          <div className="p-3 bg-black/40 border border-emerald-500/20 rounded-lg text-emerald-50">
+                            {selectedUserProfile.documentNumber}
+                          </div>
+                        </div>
+                      )}
+                      {selectedUserProfile.country && (
+                        <div className="space-y-2">
+                          <Label className="text-emerald-200 font-medium">País</Label>
+                          <div className="p-3 bg-black/40 border border-emerald-500/20 rounded-lg text-emerald-50">
+                            {selectedUserProfile.country}
+                          </div>
+                        </div>
+                      )}
+                      {selectedUserProfile.kycStatus && (
+                        <div className="space-y-2">
+                          <Label className="text-emerald-200 font-medium">Estado KYC</Label>
+                          <div className="p-3 bg-black/40 border border-emerald-500/20 rounded-lg">
+                            <Badge className={
+                              selectedUserProfile.kycStatus === "approved"
+                                ? "bg-emerald-500/20 text-emerald-200"
+                                : selectedUserProfile.kycStatus === "pending"
+                                ? "bg-amber-500/20 text-amber-200"
+                                : "bg-red-500/20 text-red-200"
+                            }>
+                              {selectedUserProfile.kycStatus === "approved" ? "Aprobado" :
+                               selectedUserProfile.kycStatus === "pending" ? "Pendiente" : "Rechazado"}
+                            </Badge>
+                          </div>
+                        </div>
+                      )}
+                      {selectedUserProfile.kycCreatedAt && (
+                        <div className="space-y-2">
+                          <Label className="text-emerald-200 font-medium">Fecha KYC</Label>
+                          <div className="p-3 bg-black/40 border border-emerald-500/20 rounded-lg text-emerald-50">
+                            {new Date(selectedUserProfile.kycCreatedAt).toLocaleDateString("es-ES")}
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                )}
+              </div>
+            ) : (
+              <div className="text-center py-8 text-emerald-200/60">
+                No se pudo cargar el perfil del usuario
+              </div>
+            )}
+            
+            <DialogFooter>
+              <Button 
+                onClick={() => setShowUserProfileDialog(false)}
+                className="bg-gradient-to-r from-emerald-600 to-emerald-500 hover:from-emerald-500 hover:to-emerald-400 text-white"
+              >
                 Cerrar
               </Button>
             </DialogFooter>

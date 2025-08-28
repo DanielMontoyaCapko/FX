@@ -571,6 +571,59 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Get user profile data endpoint (for admin viewing client/partner profiles)
+  app.get('/api/admin/user-profile/:userId', authMiddleware, requireRole('admin'), async (req, res) => {
+    try {
+      const userId = parseInt(req.params.userId);
+      const user = await storage.getUserById(userId);
+      
+      if (!user) {
+        return res.status(404).json({ error: 'User not found' });
+      }
+
+      // For admin users, return limited info
+      if (user.role === 'admin') {
+        return res.status(403).json({ error: 'Cannot view admin profiles' });
+      }
+
+      // Get additional profile data based on user role
+      let profileData = {
+        id: user.id,
+        name: user.name,
+        email: user.email,
+        role: user.role,
+        grade: user.grade,
+        sponsor: user.sponsor,
+        verificationStatus: user.verificationStatus,
+        createdAt: user.createdAt,
+      };
+
+      // Add KYC data if available
+      try {
+        const kyc = await storage.getKycByUserId(userId);
+        if (kyc) {
+          profileData = {
+            ...profileData,
+            fullName: kyc.fullName,
+            documentType: kyc.documentType,
+            documentNumber: kyc.documentNumber,
+            country: kyc.country,
+            kycStatus: kyc.status,
+            kycCreatedAt: kyc.createdAt,
+          };
+        }
+      } catch (kycError) {
+        // KYC data is optional
+        console.log('KYC data not found for user:', userId);
+      }
+
+      res.json({ success: true, profile: profileData });
+    } catch (error) {
+      console.error('Error fetching user profile:', error);
+      res.status(500).json({ error: 'Failed to fetch user profile' });
+    }
+  });
+
   // Client activity logs routes
   app.get('/api/client/activity-logs', authMiddleware, async (req: AuthRequest, res) => {
     try {
