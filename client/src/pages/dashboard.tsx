@@ -1042,7 +1042,7 @@ export default function Dashboard() {
       fecha: "2025-01-25", 
       estado: "Disponible", 
       categoria: "Producto",
-      archivo: "/src/assets/contracts/deposito-bancario.pdf"
+      archivo: "/attached_assets/07. Depósito Bancario_1756335354455.pdf"
     },
     { 
       titulo: "Contrato de Colaboración Partner Para Captación de Inversores", 
@@ -1051,7 +1051,7 @@ export default function Dashboard() {
       fecha: "2025-01-25", 
       estado: "Disponible", 
       categoria: "Legal",
-      archivo: "/src/assets/contracts/contrato-colaboracion-partner.docx"
+      archivo: "/attached_assets/08. CONTRATO DE COLABORACIÓN PARTNER PARA CAPTACIÓN DE INVERSORES_1756335354457.docx"
     },
   ];
 

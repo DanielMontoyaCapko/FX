@@ -5,6 +5,8 @@ import { insertLeadSchema, insertCalculatorResultSchema, loginSchema, registerSc
 import { generateToken, authMiddleware, requireRole, type AuthRequest } from "./auth";
 import { auditUser, auditKyc, auditProduct, auditContract } from "./auditMiddleware";
 import { z } from "zod";
+import express from "express";
+import path from "path";
 
 export async function registerRoutes(app: Express): Promise<Server> {
   // Authentication routes
@@ -653,6 +655,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.status(500).json({ error: 'Failed to create client activity log' });
     }
   });
+
+  // Serve static files from attached_assets
+  app.use('/attached_assets', express.static(path.join(process.cwd(), 'attached_assets')));
 
   const httpServer = createServer(app);
   return httpServer;

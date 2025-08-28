@@ -4,39 +4,6 @@
 @tailwind utilities;
 
 :root {
-  /* Light theme variables */
-  --background: hsl(0, 0%, 100%);
-  --foreground: hsl(0, 0%, 3.9%);
-  --muted: hsl(0, 0%, 96.1%);
-  --muted-foreground: hsl(0, 0%, 45.1%);
-  --popover: hsl(0, 0%, 100%);
-  --popover-foreground: hsl(0, 0%, 3.9%);
-  --card: hsl(0, 0%, 100%);
-  --card-foreground: hsl(0, 0%, 3.9%);
-  --border: hsl(0, 0%, 89.8%);
-  --input: hsl(0, 0%, 89.8%);
-  --primary: hsl(140, 36%, 38%);
-  --primary-foreground: hsl(0, 0%, 98%);
-  --secondary: hsl(0, 0%, 96.1%);
-  --secondary-foreground: hsl(0, 0%, 9%);
-  --accent: hsl(140, 36%, 38%);
-  --accent-foreground: hsl(0, 0%, 9%);
-  --destructive: hsl(0, 84%, 60%);
-  --destructive-foreground: hsl(0, 0%, 98%);
-  --ring: hsl(140, 36%, 38%);
-  --radius: 0.5rem;
-
-  /* Custom colors */
-  --navy: #3f8358;
-  --green: #3f8358;
-  --silver-100: hsl(0, 0%, 90%);
-  --silver-300: hsl(0, 0%, 75%);
-  --silver-500: hsl(0, 0%, 50%);
-  --charcoal: hsl(210, 12%, 75%);
-}
-
-.dark {
-  /* Dark theme variables */
   --background: hsl(0, 0%, 0%);
   --foreground: hsl(0, 0%, 100%);
   --muted: hsl(0, 0%, 10%);
@@ -56,12 +23,15 @@
   --destructive: hsl(0, 84%, 60%);
   --destructive-foreground: hsl(60, 9%, 98%);
   --ring: hsl(140, 36%, 38%);
+  --radius: 0.5rem;
 
-  /* Custom dark colors */
+  /* Custom colors */
+  /* Antes azul; ahora verde */
   --navy: #3f8358;
+  /* Verde unificado al mismo tono */
   --green: #3f8358;
-  --silver-100: hsl(0, 0%, 10%);
-  --silver-300: hsl(0, 0%, 25%);
+  --silver-100: hsl(0, 0%, 90%);
+  --silver-300: hsl(0, 0%, 75%);
   --silver-500: hsl(0, 0%, 50%);
   --charcoal: hsl(210, 12%, 25%);
 }
