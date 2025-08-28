@@ -513,6 +513,34 @@ export class DatabaseStorage implements IStorage {
     const managementFees = totalAUM * 0.015; // 1.5% annual management fee
     const totalRevenueYTD = totalCommissionsMonth + managementFees;
 
+    // Calculate Business Health Traffic Light
+    const contractsAtRisk = contractsExpiring30Days + contractsExpiring60Days + contractsExpiring90Days;
+    const contractsAtRiskPercentage = totalAUM > 0 ? (contractsAtRisk / totalAUM) * 100 : 0;
+    
+    let businessHealthStatus = 'green'; // Default: stable growth
+    let businessHealthPercentage = 95; // Default compliance percentage
+    
+    // Red: High risk (low renewals, high withdrawals)
+    if (renewalRate < 50 || withdrawnCapitalMonth > newCapitalMonth) {
+      businessHealthStatus = 'red';
+      businessHealthPercentage = 45; // Below 69%
+    }
+    // Yellow: Medium risk (contracts at risk > 10% of capital)
+    else if (contractsAtRiskPercentage > 10 || renewalRate < 80) {
+      businessHealthStatus = 'yellow';
+      businessHealthPercentage = 85; // 70-99%
+    }
+    
+    // Generate mock monthly evolution data (last 6 months)
+    const monthlyEvolution = [
+      { month: 'Jul', capital: 120000, clients: 8, revenue: 3200, retention: 88 },
+      { month: 'Ago', capital: 135000, clients: 9, revenue: 3650, retention: 92 },
+      { month: 'Sep', capital: 150000, clients: 10, revenue: 4100, retention: 89 },
+      { month: 'Oct', capital: 160000, clients: 11, revenue: 4300, retention: 94 },
+      { month: 'Nov', capital: 170000, clients: 12, revenue: 4500, retention: 91 },
+      { month: 'Dic', capital: totalAUM, clients: activeClients, revenue: Math.round(totalRevenueYTD), retention: Math.round(clientRetentionRate) }
+    ];
+
     const result = {
       totalAUM,
       newCapitalMonth,
@@ -556,6 +584,12 @@ export class DatabaseStorage implements IStorage {
         clientGrowthRate: clientGrowthRate,
         totalRevenueYTD: totalRevenueYTD
       },
+      businessHealth: {
+        status: businessHealthStatus,
+        percentage: businessHealthPercentage,
+        contractsAtRiskPercentage: contractsAtRiskPercentage
+      },
+      monthlyEvolution: monthlyEvolution,
       calculatedAt: now.toISOString()
     };
     

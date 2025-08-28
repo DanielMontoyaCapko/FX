@@ -42,7 +42,10 @@ import {
   CheckCircle,
   Shield,
   Timer,
-  DollarSign
+  DollarSign,
+  Activity,
+  Users2,
+  TrendingDown
 } from "lucide-react";
 import {
   PieChart as RechartsPieChart,
@@ -50,6 +53,12 @@ import {
   Cell,
   ResponsiveContainer,
   Tooltip,
+  LineChart,
+  Line,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Legend
 } from "recharts";
 import logoImg from "@/assets/Logo-removeBG_1753542032142.png";
 
@@ -112,6 +121,20 @@ interface ContractData {
   createdAt: string;
 }
 
+interface MonthlyEvolutionData {
+  month: string;
+  capital: number;
+  clients: number;
+  revenue: number;
+  retention: number;
+}
+
+interface BusinessHealth {
+  status: 'green' | 'yellow' | 'red';
+  percentage: number;
+  contractsAtRiskPercentage: number;
+}
+
 export default function AdminDashboard() {
   const { user, logout } = useAuth();
   const [, setLocation] = useLocation();
@@ -151,6 +174,29 @@ export default function AdminDashboard() {
 
   // Combined loading state
   const loading = isLoadingUsers || isLoadingKyc || isLoadingProducts || isLoadingContracts || isLoadingAuditLogs || isLoadingKpis;
+
+  // Business Health Helper Functions
+  const getHealthColor = (status: string) => {
+    switch (status) {
+      case 'green': return 'text-green-400';
+      case 'yellow': return 'text-yellow-400';
+      case 'red': return 'text-red-400';
+      default: return 'text-gray-400';
+    }
+  };
+
+  const getHealthMessage = (status: string, percentage: number) => {
+    switch (status) {
+      case 'green': 
+        return `Crecimiento estable (${percentage}% cumplimiento objetivos)`;
+      case 'yellow': 
+        return `Riesgo medio (${percentage}% cumplimiento objetivos)`;
+      case 'red': 
+        return `Riesgo alto (${percentage}% cumplimiento objetivos)`;
+      default: 
+        return 'Estado desconocido';
+    }
+  };
 
   // KYC Review Mutation
   const kycReviewMutation = useMutation({
@@ -1343,7 +1389,7 @@ export default function AdminDashboard() {
                           <p className="text-emerald-200/80 text-sm font-medium">Contratos Vencen 30 días</p>
                           <p className="text-emerald-50 text-2xl font-bold">{financialKpis.operationalKpis?.contractsExpiring30Days || 0}</p>
                         </div>
-                        <AlertTriangle className="w-8 h-8 text-emerald-400" />
+                        <AlertTriangle className="w-8 h-8 text-amber-400" />
                       </div>
                     </CardContent>
                   </Card>
@@ -1355,7 +1401,7 @@ export default function AdminDashboard() {
                           <p className="text-emerald-200/80 text-sm font-medium">Contratos Vencen 60 días</p>
                           <p className="text-emerald-50 text-2xl font-bold">{financialKpis.operationalKpis?.contractsExpiring60Days || 0}</p>
                         </div>
-                        <Clock className="w-8 h-8 text-emerald-400" />
+                        <Clock className="w-8 h-8 text-orange-400" />
                       </div>
                     </CardContent>
                   </Card>
@@ -1367,7 +1413,7 @@ export default function AdminDashboard() {
                           <p className="text-emerald-200/80 text-sm font-medium">Contratos Vencen 90 días</p>
                           <p className="text-emerald-50 text-2xl font-bold">{financialKpis.operationalKpis?.contractsExpiring90Days || 0}</p>
                         </div>
-                        <Calendar className="w-8 h-8 text-emerald-400" />
+                        <Calendar className="w-8 h-8 text-red-400" />
                       </div>
                     </CardContent>
                   </Card>
@@ -1379,7 +1425,7 @@ export default function AdminDashboard() {
                           <p className="text-emerald-200/80 text-sm font-medium">Incidencias Abiertas</p>
                           <p className="text-emerald-50 text-2xl font-bold">{financialKpis.operationalKpis?.openIncidents || 0}</p>
                         </div>
-                        <FileCheck className="w-8 h-8 text-emerald-400" />
+                        <FileCheck className="w-8 h-8 text-blue-400" />
                       </div>
                     </CardContent>
                   </Card>
@@ -1394,7 +1440,7 @@ export default function AdminDashboard() {
                           <p className="text-emerald-50 text-2xl font-bold">{financialKpis.operationalKpis?.avgResolutionTimeHours || 0}h</p>
                           <p className="text-emerald-200/60 text-xs">promedio por incidencia</p>
                         </div>
-                        <Timer className="w-8 h-8 text-emerald-400" />
+                        <Timer className="w-8 h-8 text-purple-400" />
                       </div>
                     </CardContent>
                   </Card>
@@ -1407,7 +1453,7 @@ export default function AdminDashboard() {
                           <p className="text-emerald-50 text-2xl font-bold">{(financialKpis.operationalKpis?.kycCompletionRate || 0).toFixed(1)}%</p>
                           <p className="text-emerald-200/60 text-xs">clientes verificados</p>
                         </div>
-                        <CheckCircle className="w-8 h-8 text-emerald-400" />
+                        <CheckCircle className="w-8 h-8 text-green-400" />
                       </div>
                     </CardContent>
                   </Card>
@@ -1476,6 +1522,175 @@ export default function AdminDashboard() {
                     </CardContent>
                   </Card>
                 </div>
+              </div>
+            )}
+
+            {/* Business Health Traffic Light */}
+            {financialKpis?.businessHealth && (
+              <div className="mb-8">
+                <h2 className="text-2xl font-bold text-emerald-50 mb-6">Semáforo de Salud del Negocio</h2>
+                <Card className="bg-black/40 border border-emerald-500/15 rounded-2xl shadow-[0_0_0_1px_rgba(16,185,129,0.12),0_20px_60px_-20px_rgba(16,185,129,0.25)]">
+                  <CardContent className="p-8">
+                    <div className="flex items-center justify-center">
+                      <div className="flex flex-col items-center space-y-4">
+                        <div className={`w-24 h-24 rounded-full border-4 flex items-center justify-center ${
+                          financialKpis.businessHealth.status === 'green' ? 'border-green-400 bg-green-400/20' :
+                          financialKpis.businessHealth.status === 'yellow' ? 'border-yellow-400 bg-yellow-400/20' :
+                          'border-red-400 bg-red-400/20'
+                        }`}>
+                          <div className={`w-12 h-12 rounded-full ${
+                            financialKpis.businessHealth.status === 'green' ? 'bg-green-400' :
+                            financialKpis.businessHealth.status === 'yellow' ? 'bg-yellow-400' :
+                            'bg-red-400'
+                          }`}></div>
+                        </div>
+                        <div className="text-center">
+                          <p className={`text-lg font-bold ${getHealthColor(financialKpis.businessHealth.status)}`}>
+                            {financialKpis.businessHealth.status.toUpperCase()}
+                          </p>
+                          <p className="text-emerald-200/80 text-sm">
+                            {getHealthMessage(financialKpis.businessHealth.status, financialKpis.businessHealth.percentage)}
+                          </p>
+                          {financialKpis.businessHealth.contractsAtRiskPercentage > 0 && (
+                            <p className="text-emerald-200/60 text-xs mt-1">
+                              {financialKpis.businessHealth.contractsAtRiskPercentage.toFixed(1)}% del capital en contratos próximos a vencer
+                            </p>
+                          )}
+                        </div>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              </div>
+            )}
+
+            {/* Monthly Evolution Charts */}
+            {financialKpis?.monthlyEvolution && (
+              <div className="mb-8">
+                <h2 className="text-2xl font-bold text-emerald-50 mb-6">Evolución Mensual</h2>
+                <Card className="bg-black/40 border border-emerald-500/15 rounded-2xl shadow-[0_0_0_1px_rgba(16,185,129,0.12),0_20px_60px_-20px_rgba(16,185,129,0.25)]">
+                  <CardContent className="p-8 space-y-8">
+                    {/* Capital Evolution */}
+                    <div>
+                      <h4 className="text-emerald-50 text-lg font-semibold mb-4 flex items-center gap-2">
+                        <DollarSign className="w-5 h-5 text-green-400" />
+                        Capital Gestionado
+                      </h4>
+                      <ResponsiveContainer width="100%" height={200}>
+                        <LineChart data={financialKpis.monthlyEvolution}>
+                          <CartesianGrid strokeDasharray="3 3" stroke="#374151" />
+                          <XAxis dataKey="month" stroke="#9CA3AF" />
+                          <YAxis stroke="#9CA3AF" tickFormatter={(value) => `€${(value / 1000).toFixed(0)}K`} />
+                          <Tooltip 
+                            contentStyle={{ 
+                              backgroundColor: '#1F2937', 
+                              border: '1px solid #374151',
+                              borderRadius: '8px'
+                            }}
+                            formatter={(value: number) => [`€${value.toLocaleString()}`, 'Capital']}
+                          />
+                          <Line 
+                            type="monotone" 
+                            dataKey="capital" 
+                            stroke="#10B981" 
+                            strokeWidth={3}
+                            dot={{ fill: '#10B981', strokeWidth: 2, r: 4 }}
+                          />
+                        </LineChart>
+                      </ResponsiveContainer>
+                    </div>
+
+                    {/* Clients Evolution */}
+                    <div>
+                      <h4 className="text-emerald-50 text-lg font-semibold mb-4 flex items-center gap-2">
+                        <Users2 className="w-5 h-5 text-blue-400" />
+                        Número de Clientes
+                      </h4>
+                      <ResponsiveContainer width="100%" height={200}>
+                        <LineChart data={financialKpis.monthlyEvolution}>
+                          <CartesianGrid strokeDasharray="3 3" stroke="#374151" />
+                          <XAxis dataKey="month" stroke="#9CA3AF" />
+                          <YAxis stroke="#9CA3AF" />
+                          <Tooltip 
+                            contentStyle={{ 
+                              backgroundColor: '#1F2937', 
+                              border: '1px solid #374151',
+                              borderRadius: '8px'
+                            }}
+                            formatter={(value: number) => [value, 'Clientes']}
+                          />
+                          <Line 
+                            type="monotone" 
+                            dataKey="clients" 
+                            stroke="#3B82F6" 
+                            strokeWidth={3}
+                            dot={{ fill: '#3B82F6', strokeWidth: 2, r: 4 }}
+                          />
+                        </LineChart>
+                      </ResponsiveContainer>
+                    </div>
+
+                    {/* Revenue Evolution */}
+                    <div>
+                      <h4 className="text-emerald-50 text-lg font-semibold mb-4 flex items-center gap-2">
+                        <Euro className="w-5 h-5 text-yellow-400" />
+                        Ingresos Mensuales
+                      </h4>
+                      <ResponsiveContainer width="100%" height={200}>
+                        <LineChart data={financialKpis.monthlyEvolution}>
+                          <CartesianGrid strokeDasharray="3 3" stroke="#374151" />
+                          <XAxis dataKey="month" stroke="#9CA3AF" />
+                          <YAxis stroke="#9CA3AF" tickFormatter={(value) => `€${value.toLocaleString()}`} />
+                          <Tooltip 
+                            contentStyle={{ 
+                              backgroundColor: '#1F2937', 
+                              border: '1px solid #374151',
+                              borderRadius: '8px'
+                            }}
+                            formatter={(value: number) => [`€${value.toLocaleString()}`, 'Ingresos']}
+                          />
+                          <Line 
+                            type="monotone" 
+                            dataKey="revenue" 
+                            stroke="#F59E0B" 
+                            strokeWidth={3}
+                            dot={{ fill: '#F59E0B', strokeWidth: 2, r: 4 }}
+                          />
+                        </LineChart>
+                      </ResponsiveContainer>
+                    </div>
+
+                    {/* Retention Evolution */}
+                    <div>
+                      <h4 className="text-emerald-50 text-lg font-semibold mb-4 flex items-center gap-2">
+                        <Target className="w-5 h-5 text-purple-400" />
+                        Tasa de Retención
+                      </h4>
+                      <ResponsiveContainer width="100%" height={200}>
+                        <LineChart data={financialKpis.monthlyEvolution}>
+                          <CartesianGrid strokeDasharray="3 3" stroke="#374151" />
+                          <XAxis dataKey="month" stroke="#9CA3AF" />
+                          <YAxis stroke="#9CA3AF" domain={[0, 100]} tickFormatter={(value) => `${value}%`} />
+                          <Tooltip 
+                            contentStyle={{ 
+                              backgroundColor: '#1F2937', 
+                              border: '1px solid #374151',
+                              borderRadius: '8px'
+                            }}
+                            formatter={(value: number) => [`${value}%`, 'Retención']}
+                          />
+                          <Line 
+                            type="monotone" 
+                            dataKey="retention" 
+                            stroke="#8B5CF6" 
+                            strokeWidth={3}
+                            dot={{ fill: '#8B5CF6', strokeWidth: 2, r: 4 }}
+                          />
+                        </LineChart>
+                      </ResponsiveContainer>
+                    </div>
+                  </CardContent>
+                </Card>
               </div>
             )}
           </div>
