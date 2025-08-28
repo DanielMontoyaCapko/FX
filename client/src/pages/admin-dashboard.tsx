@@ -1500,20 +1500,7 @@ export default function AdminDashboard() {
                   </Card>
                 </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                  <Card className="bg-black/40 border border-emerald-500/15 rounded-2xl shadow-[0_0_0_1px_rgba(16,185,129,0.12),0_20px_60px_-20px_rgba(16,185,129,0.25)]">
-                    <CardContent className="p-6">
-                      <div className="flex items-center justify-between mb-4">
-                        <div>
-                          <p className="text-emerald-200/80 text-sm font-medium">Tiempo Medio Resolución</p>
-                          <p className="text-emerald-50 text-2xl font-bold">{financialKpis.operationalKpis?.avgResolutionTimeHours || 0}h</p>
-                          <p className="text-emerald-200/60 text-xs">promedio por incidencia</p>
-                        </div>
-                        <Timer className="w-8 h-8 text-purple-400" />
-                      </div>
-                    </CardContent>
-                  </Card>
-
+                <div className="grid grid-cols-1 md:grid-cols-1 gap-6">
                   <Card className="bg-black/40 border border-emerald-500/15 rounded-2xl shadow-[0_0_0_1px_rgba(16,185,129,0.12),0_20px_60px_-20px_rgba(16,185,129,0.25)]">
                     <CardContent className="p-6">
                       <div className="flex items-center justify-between mb-4">
@@ -1523,21 +1510,6 @@ export default function AdminDashboard() {
                           <p className="text-emerald-200/60 text-xs">clientes verificados</p>
                         </div>
                         <CheckCircle className="w-8 h-8 text-green-400" />
-                      </div>
-                    </CardContent>
-                  </Card>
-
-                  <Card className="bg-black/40 border border-emerald-500/15 rounded-2xl shadow-[0_0_0_1px_rgba(16,185,129,0.12),0_20px_60px_-20px_rgba(16,185,129,0.25)]">
-                    <CardContent className="p-6">
-                      <div className="flex items-center justify-between mb-4">
-                        <div>
-                          <p className="text-emerald-200/80 text-sm font-medium">Incidencias Compliance</p>
-                          <p className={`text-2xl font-bold ${(financialKpis.operationalKpis?.complianceIssues || 0) === 0 ? 'text-emerald-50' : 'text-red-50'}`}>
-                            {financialKpis.operationalKpis?.complianceIssues || 0}
-                          </p>
-                          <p className="text-emerald-200/60 text-xs">auditoría normativas</p>
-                        </div>
-                        <Shield className={`w-8 h-8 ${(financialKpis.operationalKpis?.complianceIssues || 0) === 0 ? 'text-emerald-400' : 'text-red-400'}`} />
                       </div>
                     </CardContent>
                   </Card>
