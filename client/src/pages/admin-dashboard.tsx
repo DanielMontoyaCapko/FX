@@ -68,6 +68,7 @@ interface DashboardStats {
   totalProducts: number;
   totalContracts: number;
   pendingKyc: number;
+  rejectedKyc: number;
 }
 
 interface KycData {
@@ -237,6 +238,7 @@ export default function AdminDashboard() {
     totalProducts: products.length,
     totalContracts: contracts.length,
     pendingKyc: kyc.filter((k: KycData) => k.status === "pending").length,
+    rejectedKyc: kyc.filter((k: KycData) => k.status === "rejected").length,
   };
 
   // ===== SEARCH & FILTER STATES =====
@@ -1053,12 +1055,13 @@ export default function AdminDashboard() {
             </div>
 
             {/* Stats Cards */}
-            <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+            <div className="grid grid-cols-1 md:grid-cols-5 gap-6 mb-8">
               {[
                 { label: "Usuarios Totales", value: stats.totalUsers, icon: Users, targetTab: "usuarios" },
                 { label: "Productos Totales", value: stats.totalProducts, icon: Package, targetTab: "productos" },
                 { label: "Contratos Totales", value: stats.totalContracts, icon: FileText, targetTab: "contratos" },
                 { label: "KYC Pendientes", value: stats.pendingKyc, icon: FileCheck, warn: true, targetTab: "kyc" },
+                { label: "KYC Rechazados", value: stats.rejectedKyc, icon: AlertTriangle, warn: true, targetTab: "kyc" },
               ].map(({ label, value, icon: Icon, warn, targetTab }, i) => (
                 <Card
                   key={i}
@@ -1138,7 +1141,7 @@ export default function AdminDashboard() {
             {financialKpis && (
               <div className="mb-8">
                 <h2 className="text-2xl font-bold text-emerald-50 mb-6">KPIs Financieros</h2>
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6 mb-6">
                   <Card className="bg-black/40 border border-emerald-500/15 rounded-2xl transition-all duration-300 hover:border-emerald-500/25 hover:bg-black/50 hover:shadow-lg hover:shadow-emerald-500/20 shadow-[0_0_0_1px_rgba(16,185,129,0.12),0_20px_60px_-20px_rgba(16,185,129,0.25)]">
                     <CardContent className="p-6">
                       <div className="flex items-center justify-between">
@@ -1292,6 +1295,19 @@ export default function AdminDashboard() {
                           <p className="text-emerald-200/60 text-xs">({((financialKpis.clientKpis?.pendingKycPercentage) || 0).toFixed(1)}%)</p>
                         </div>
                         <FileCheck className="w-8 h-8 text-amber-400" />
+                      </div>
+                    </CardContent>
+                  </Card>
+
+                  <Card className="bg-black/40 border border-emerald-500/15 rounded-2xl transition-all duration-300 hover:border-emerald-500/25 hover:bg-black/50 hover:shadow-lg hover:shadow-emerald-500/20 shadow-[0_0_0_1px_rgba(16,185,129,0.12),0_20px_60px_-20px_rgba(16,185,129,0.25)]">
+                    <CardContent className="p-6">
+                      <div className="flex items-center justify-between">
+                        <div>
+                          <p className="text-emerald-200/80 text-sm font-medium">KYC Rechazados</p>
+                          <p className="text-emerald-50 text-2xl font-bold">{stats.rejectedKyc}</p>
+                          <p className="text-emerald-200/60 text-xs">({((stats.rejectedKyc / (stats.pendingKyc + stats.rejectedKyc)) * 100 || 0).toFixed(1)}%)</p>
+                        </div>
+                        <AlertTriangle className="w-8 h-8 text-red-400" />
                       </div>
                     </CardContent>
                   </Card>

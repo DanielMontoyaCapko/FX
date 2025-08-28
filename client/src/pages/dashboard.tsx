@@ -1713,21 +1713,8 @@ export default function Dashboard() {
             {/* -------------------------- Vista por defecto -------------------------- */}
             {activeProductsView === "default" ? (
               <div className="mb-8">
-                {/* Hero */}
-                <div
-                  className="relative h-80 rounded-2xl overflow-hidden mb-8 border border-emerald-500/15"
-                  style={{ backgroundImage: `url(${landscapeSvg})`, backgroundSize: "cover", backgroundPosition: "center" }}
-                >
-                  <div className="absolute inset-0 bg-gradient-to-b from-black/70 via-[#0A1713]/80 to-[#0E2A1F]/80 flex items-center justify-center">
-                    <div className="text-center">
-                      <h1 className="text-4xl font-bold text-emerald-50 mb-2">Productos Disponibles</h1>
-                      <p className="text-emerald-200/80 text-lg">Descubre nuestras opciones de inversión</p>
-                    </div>
-                  </div>
-                </div>
-
                 {/* Action Buttons */}
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8 max-w-md mx-auto">
                   <Button
                     variant="outline"
                     className="border-emerald-500/30 text-emerald-50 hover:bg-emerald-900/10 hover:border-emerald-400 py-4 rounded-xl"
@@ -1746,27 +1733,27 @@ export default function Dashboard() {
                   </Button>
                 </div>
 
-                {/* Products Grid (producto 9%) */}
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
-                  <Card className="bg-black/40 border border-emerald-500/15 hover:border-emerald-400 hover:shadow-[0_16px_40px_-20px_rgba(16,185,129,0.45)] transition-all rounded-2xl">
-                    <CardContent className="p-6">
-                      <div className="flex items-center gap-3 mb-4">
-                        <h2 className="text-xl font-bold text-emerald-50">Plazo fijo 9% 175 días</h2>
-                        <Badge className="bg-emerald-500 text-black">175 días</Badge>
+                {/* Producto destacado centrado */}
+                <div className="flex justify-center mb-8">
+                  <Card className="bg-black/40 border border-emerald-500/15 hover:border-emerald-400 hover:shadow-[0_16px_40px_-20px_rgba(16,185,129,0.45)] transition-all rounded-2xl max-w-md w-full">
+                    <CardContent className="p-8">
+                      <div className="flex items-center gap-3 mb-6">
+                        <h2 className="text-2xl font-bold text-emerald-50">Plazo fijo 9% 175 días</h2>
+                        <Badge className="bg-emerald-500 text-black text-sm px-3 py-1">175 días</Badge>
                       </div>
-                      <p className="text-emerald-200/80 mb-6 leading-relaxed text-sm">
+                      <p className="text-emerald-200/80 mb-8 leading-relaxed">
                         Depósito bancario con un 9% de rentabilidad anual, mediante préstamo participativo y
                         cesión de la pignoración al cliente depositante.
                       </p>
-                      <div className="flex items-center justify-between mb-6">
+                      <div className="flex items-center justify-between mb-8">
                         <div>
-                          <p className="text-3xl font-bold text-emerald-400">9.00%</p>
-                          <p className="text-emerald-200/80 text-xs">Rentabilidad anual</p>
+                          <p className="text-4xl font-bold text-emerald-400">9.00%</p>
+                          <p className="text-emerald-200/80 text-sm">Rentabilidad anual</p>
                         </div>
                         <Badge className="bg-emerald-900/30 text-emerald-200 border border-emerald-500/20">No renovable</Badge>
                       </div>
                       <Button
-                        className="w-full rounded-xl bg-gradient-to-r from-emerald-600 to-emerald-500 hover:from-emerald-500 hover:to-emerald-400 text-white"
+                        className="w-full rounded-xl bg-gradient-to-r from-emerald-600 to-emerald-500 hover:from-emerald-500 hover:to-emerald-400 text-white py-3 text-lg"
                         onClick={() => setActiveProductsView("producto-detalle")}
                       >
                         VER DETALLES
