@@ -76,13 +76,13 @@ export default function Login() {
       <img
         src={logoImg}
         alt="Logo"
-        className="w-16 h-16 md:w-40 md:h-40 mb-3 drop-shadow-[0_0_18px_rgba(16,185,129,0.35)]"
+        className="w-14 h-14 md:w-36 md:h-36 mb-3 drop-shadow-[0_0_18px_rgba(16,185,129,0.35)]"
       />
       <div className="space-y-0.5">
-        <h1 className="font-cormorant text-3xl md:text-4xl font-bold text-emerald-50 leading-tight">
+        <h1 className="font-cormorant text-2xl md:text-3xl font-bold text-emerald-50 leading-tight">
           Nakama Partner
         </h1>
-        <p className="text-emerald-300 text-base md:text-lg tracking-wide">Portal de Asesores</p>
+        <p className="text-emerald-300 text-sm md:text-base tracking-wide">Portal de Asesores</p>
       </div>
     </div>
   );
@@ -114,16 +114,16 @@ export default function Login() {
     >
       {/* ⬇️ Centrado perfecto del título y descripción en X e Y */}
       <CardHeader className="text-center">
-        <div className="flex flex-col items-center justify-center min-h-[90px] space-y-2 md:space-y-3">
-          <CardTitle className="text-2xl md:text-3xl text-emerald-50">Iniciar Sesión</CardTitle>
-          <CardDescription className="text-emerald-200/80 text-sm md:text-base">
+        <div className="flex flex-col items-center justify-center min-h-[80px] space-y-2 md:space-y-3">
+          <CardTitle className="text-xl md:text-2xl text-emerald-50">Iniciar Sesión</CardTitle>
+          <CardDescription className="text-emerald-200/80 text-xs md:text-sm">
             Ingresa tus credenciales para continuar
           </CardDescription>
         </div>
       </CardHeader>
 
-      <CardContent className="p-5 md:p-8">
-        <form onSubmit={handleLogin} className="space-y-5 md:space-y-6">
+      <CardContent className="p-4 md:p-6">
+        <form onSubmit={handleLogin} className="space-y-4 md:space-y-5">
           {/* Email */}
           <div className="space-y-2">
             <Label htmlFor="email" className="text-emerald-100 text-sm md:text-base">
@@ -498,7 +498,7 @@ export default function Login() {
       ].join(" ")}
     >
       {BackButton()}
-      <div className="w-full max-w-md md:max-w-lg space-y-8 md:space-y-10">
+      <div className="w-full max-w-sm md:max-w-md space-y-7 md:space-y-9">
         {BrandHeader()}
         {LoginFormCard()}
       </div>
