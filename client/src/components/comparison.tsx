@@ -37,7 +37,7 @@ export default function Comparison() {
     <section className="py-10 bg-transparent">
       <div className="container mx-auto px-6">
         <div className="text-center mb-12">
-          <h2 className="font-playfair text-4xl md:text-5xl font-bold text-white mb-6">
+          <h2 className="font-georgia text-4xl md:text-5xl font-bold text-white mb-6">
             <span className="text-green">Comparativa</span> con Otras Opciones de Inversión
           </h2>
         </div>
@@ -46,11 +46,11 @@ export default function Comparison() {
           <table className="w-full bg-black/70 rounded-xl border border-silver-500/20">
             <thead>
               <tr className="border-b border-silver-500/30">
-                <th className="text-left p-6 text-white font-playfair text-xl">Producto</th>
-                <th className="text-center p-6 text-white font-playfair text-xl">Rentabilidad</th>
-                <th className="text-center p-6 text-white font-playfair text-xl">Riesgo</th>
-                <th className="text-center p-6 text-white font-playfair text-xl">Liquidez</th>
-                <th className="text-center p-6 text-white font-playfair text-xl">Garantía Jurídica</th>
+                <th className="text-left p-6 text-white font-georgia text-xl">Producto</th>
+                <th className="text-center p-6 text-white font-georgia text-xl">Rentabilidad</th>
+                <th className="text-center p-6 text-white font-georgia text-xl">Riesgo</th>
+                <th className="text-center p-6 text-white font-georgia text-xl">Liquidez</th>
+                <th className="text-center p-6 text-white font-georgia text-xl">Garantía Jurídica</th>
               </tr>
             </thead>
             <tbody>

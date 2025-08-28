@@ -21,7 +21,7 @@ export default function Contacto() {
         <section className="py-6 bg-transparent">
           <div className="container mx-auto px-6">
             <div className="text-center mb-8">
-              <h1 className="font-playfair text-5xl md:text-6xl font-bold text-white mb-6">
+              <h1 className="font-georgia text-5xl md:text-6xl font-bold text-white mb-6">
                 <span className="text-green">Contacto</span>
               </h1>
               <p className="text-xl text-silver-100 max-w-3xl mx-auto">
@@ -36,7 +36,7 @@ export default function Contacto() {
             <div className="max-w-4xl mx-auto">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
                 <div className="contact-info-card bg-black/70 p-8 rounded-xl border border-silver-500/20 transition-all duration-500 hover:border-green/40 cursor-pointer">
-                  <h2 className="font-playfair text-3xl font-bold text-white mb-6">Información de Contacto</h2>
+                  <h2 className="font-georgia text-3xl font-bold text-white mb-6">Información de Contacto</h2>
                   
                   <div className="space-y-4">
                     <div>
@@ -62,7 +62,7 @@ export default function Contacto() {
                 </div>
                 
                 <div className="contact-offices-card bg-black/70 p-8 rounded-xl border border-silver-500/20 transition-all duration-500 hover:border-green/40 cursor-pointer">
-                  <h2 className="font-playfair text-3xl font-bold text-white mb-6">Oficinas</h2>
+                  <h2 className="font-georgia text-3xl font-bold text-white mb-6">Oficinas</h2>
                   
                   <div className="space-y-6">
                     <div>

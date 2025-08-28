@@ -11,7 +11,7 @@ Nakama&Partners is a financial investment platform offering a 9% fixed annual re
 - **Build Tool**: Vite for fast development and optimized production builds
 - **UI Library**: Radix UI components with shadcn/ui styling system
 - **Styling**: Tailwind CSS with custom design system
-- **Typography**: Playfair Display for headings, Cormorant Garamond for branding, Inter for body text
+- **Typography**: Georgia for headings, Cormorant Garamond for branding, Inter for body text
 - **Color Scheme**: Navy blue (#001F3F), warm white backgrounds, gold accents (#DAA520)
 - **State Management**: TanStack Query for server state, React hooks for local state
 - **Routing**: Wouter for lightweight client-side routing
@@ -140,6 +140,7 @@ To test the authentication system:
 ## Changelog
 
 Changelog:
+- August 28, 2025. Changed typography system: Replaced Playfair Display with Georgia for all headings and titles throughout the platform
 - July 16, 2025. Changed navigation button text from "Asesores" to "Partners" for brand consistency
 - July 15, 2025. Implemented automatic scroll to top when navigating between sections via menu
 - July 15, 2025. Updated comparison table to show "Nakama&Partners" instead of "FundedXam Capital"

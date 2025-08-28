@@ -18,7 +18,7 @@ export default function FinalCTA() {
     <section id="contacto" className="py-10 bg-transparent">
       <div className="container mx-auto px-6">
         <div className="text-center mb-12">
-          <h2 className="font-playfair text-4xl md:text-5xl font-bold text-white mb-6">
+          <h2 className="font-georgia text-4xl md:text-5xl font-bold text-white mb-6">
             <span className="block md:hidden">
               <span className="block max-w-[300px] mx-auto">¿Quieres Formar Parte de una</span>
               <span className="block max-w-[220px] mx-auto"><span className="text-green">Solución</span> que Realmente</span>

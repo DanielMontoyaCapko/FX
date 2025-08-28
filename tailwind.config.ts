@@ -5,6 +5,11 @@ export default {
   content: ["./client/index.html", "./client/src/**/*.{js,jsx,ts,tsx}"],
   theme: {
     extend: {
+      fontFamily: {
+        'georgia': ['Georgia', 'Times New Roman', 'Times', 'serif'],
+        'inter': ['Inter', 'sans-serif'],
+        'cormorant': ['Cormorant Garamond', 'serif'],
+      },
       borderRadius: {
         lg: "var(--radius)",
         md: "calc(var(--radius) - 2px)",

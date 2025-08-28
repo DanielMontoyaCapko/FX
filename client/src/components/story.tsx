@@ -14,7 +14,7 @@ export default function Story() {
       <div className="container mx-auto px-6">
         <div className="max-w-4xl mx-auto">
           <div className="text-center mb-12">
-            <h2 className="font-playfair text-4xl md:text-5xl font-bold text-white mb-6">
+            <h2 className="font-georgia text-4xl md:text-5xl font-bold text-white mb-6">
               Nuestra Historia, Nuestro <span className="text-green">Compromiso</span>:<br />
               Proteger Tu Patrimonio
             </h2>
@@ -23,7 +23,7 @@ export default function Story() {
           <div className="bg-black/70 rounded-2xl border border-silver-500/20 p-8 mb-8">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
               <div>
-                <h3 className="font-playfair text-2xl font-bold text-white mb-4">
+                <h3 className="font-georgia text-2xl font-bold text-white mb-4">
                   "Esto nació para proteger nuestro propio patrimonio familiar."
                 </h3>
                 <p className="text-silver-100 mb-6 leading-relaxed">

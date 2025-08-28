@@ -38,7 +38,7 @@ export default function Security() {
     <section id="seguridad" className="py-10 bg-transparent">
       <div className="container mx-auto px-6">
         <div className="text-center mb-16">
-          <h2 className="font-playfair text-4xl md:text-5xl font-bold text-white mb-6">
+          <h2 className="font-georgia text-4xl md:text-5xl font-bold text-white mb-6">
             <span className="block md:hidden">
               <span className="block max-w-[320px] mx-auto">Un Producto Diseñado para</span>
               <span className="block max-w-[280px] mx-auto"><span className="text-green">Proteger el Capital</span>,</span>
@@ -67,7 +67,7 @@ export default function Security() {
               <div className="w-16 h-16 bg-green/20 rounded-lg flex items-center justify-center mb-6 transition-all duration-300 group-hover:bg-[#344e41]/30">
                 <feature.icon className="text-2xl text-green w-8 h-8 transition-colors duration-300" />
               </div>
-              <h3 className="font-playfair text-xl font-semibold text-white mb-4 transition-colors duration-300">{feature.title}</h3>
+              <h3 className="font-georgia text-xl font-semibold text-white mb-4 transition-colors duration-300">{feature.title}</h3>
               <p className={`${index < 3 ? 'text-white' : 'text-silver-100'} transition-colors duration-300`}>{feature.description}</p>
             </div>
           ))}

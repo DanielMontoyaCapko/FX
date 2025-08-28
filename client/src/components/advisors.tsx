@@ -36,7 +36,7 @@ export default function Advisors() {
     <section id="asesores" className="py-10 bg-transparent">
       <div className="container mx-auto px-6">
         <div className="text-center mb-16">
-          <h2 className="font-playfair text-4xl md:text-5xl font-bold text-white mb-6">
+          <h2 className="font-georgia text-4xl md:text-5xl font-bold text-white mb-6">
             Asesor Financiero: <span className="text-green">Un Producto Sólido</span>,<br />
             Fácil de Explicar, Imposible de Ignorar
           </h2>

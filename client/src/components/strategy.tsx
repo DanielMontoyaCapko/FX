@@ -35,7 +35,7 @@ export default function Strategy() {
     <section id="producto" className="py-10 bg-transparent">
       <div className="container mx-auto px-6">
         <div className="text-center mb-16">
-          <h2 className="font-playfair text-4xl md:text-5xl font-bold text-white mb-6">
+          <h2 className="font-georgia text-4xl md:text-5xl font-bold text-white mb-6">
             Cómo Conseguimos el <span className="text-green">9% Fijo Anual</span>
           </h2>
           <p className="text-xl text-silver-100 max-w-3xl mx-auto">
@@ -56,7 +56,7 @@ export default function Strategy() {
                   <strategy.icon className="text-green w-6 h-6 transition-all duration-300" />
                 </div>
                 <div>
-                  <h3 className="font-playfair text-xl font-semibold text-green mb-3 transition-all duration-300">{strategy.title}</h3>
+                  <h3 className="font-georgia text-xl font-semibold text-green mb-3 transition-all duration-300">{strategy.title}</h3>
                   <p className="text-silver-100 transition-all duration-300">{strategy.description}</p>
                 </div>
               </div>

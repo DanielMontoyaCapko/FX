@@ -62,7 +62,7 @@ export default function Process() {
     <section className="py-10 bg-transparent">
       <div className="container mx-auto px-6">
         <div className="text-center mb-16">
-          <h2 className="font-playfair text-4xl md:text-5xl font-bold text-white mb-6">
+          <h2 className="font-georgia text-4xl md:text-5xl font-bold text-white mb-6">
             Proceso <span className="text-green">Transparente</span>, Paso a Paso
           </h2>
         </div>
@@ -70,7 +70,7 @@ export default function Process() {
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 max-w-6xl mx-auto">
           {/* Direct Process */}
           <div className="process-card bg-black/70 p-8 rounded-xl border border-silver-500/20 transition-all duration-500 hover:border-green/30 cursor-pointer">
-            <h3 className="font-playfair text-2xl font-bold text-white mb-8 text-center">Si llegas directamente</h3>
+            <h3 className="font-georgia text-2xl font-bold text-white mb-8 text-center">Si llegas directamente</h3>
             
             <div className="space-y-6">
               {directProcess.map((step) => (
@@ -97,7 +97,7 @@ export default function Process() {
           
           {/* Advisor Process */}
           <div className="process-card bg-black/70 p-8 rounded-xl border border-silver-500/20 transition-all duration-500 hover:border-green/30 cursor-pointer">
-            <h3 className="font-playfair text-2xl font-bold text-white mb-8 text-center">Si vienes recomendado por un asesor</h3>
+            <h3 className="font-georgia text-2xl font-bold text-white mb-8 text-center">Si vienes recomendado por un asesor</h3>
             
             <div className="space-y-6">
               {advisorProcess.map((step) => (

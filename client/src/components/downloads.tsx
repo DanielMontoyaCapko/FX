@@ -95,7 +95,7 @@ export default function Downloads() {
     <section className="py-10 bg-transparent">
       <div className="container mx-auto px-6">
         <div className="text-center mb-12">
-          <h2 className="font-playfair text-4xl md:text-5xl font-bold text-white mb-6">
+          <h2 className="font-georgia text-4xl md:text-5xl font-bold text-white mb-6">
             <span className="block md:hidden">
               <span className="block max-w-[280px] mx-auto">Información Completa</span>
               <span className="block max-w-[200px] mx-auto"><span className="text-green">a Tu Alcance</span></span>

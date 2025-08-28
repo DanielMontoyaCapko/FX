@@ -65,7 +65,7 @@ export default function Hero() {
 
       <div className="container mx-auto px-6 text-center">
         {/* Título → Subtítulo → Descripción */}
-        <h1 className="font-playfair text-5xl md:text-7xl font-bold text-green tracking-tight mb-3 text-shadow">
+        <h1 className="font-georgia text-5xl md:text-7xl font-bold text-green tracking-tight mb-3 text-shadow">
           <span className="block md:hidden">
             <span className="block text-center">9% Fijo Anual</span>
           </span>
