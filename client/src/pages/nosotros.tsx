@@ -33,7 +33,7 @@ export default function Nosotros() {
           <div className="container mx-auto px-6">
             <div className="max-w-4xl mx-auto">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-12 mb-16">
-                <div className="bg-black/70 p-8 rounded-xl border border-silver-500/20">
+                <div className="bg-black/70 p-8 rounded-xl border border-transparent transition-all duration-300 hover:border-green-500 hover:bg-black/50 hover:shadow-lg hover:shadow-green-500/20 cursor-pointer">
                   <h2 className="font-playfair text-3xl font-bold text-white mb-6">Nuestra Misión</h2>
                   <p className="text-silver-100 leading-relaxed">
                     Proteger y hacer crecer el patrimonio de nuestros clientes mediante estructuras 
@@ -42,7 +42,7 @@ export default function Nosotros() {
                   </p>
                 </div>
                 
-                <div className="bg-black/70 p-8 rounded-xl border border-silver-500/20">
+                <div className="bg-black/70 p-8 rounded-xl border border-transparent transition-all duration-300 hover:border-green-500 hover:bg-black/50 hover:shadow-lg hover:shadow-green-500/20 cursor-pointer">
                   <h2 className="font-playfair text-3xl font-bold text-white mb-6">Nuestra Visión</h2>
                   <p className="text-silver-100 leading-relaxed">
                     Ser la referencia en inversiones conservadoras, donde la seguridad del capital 
