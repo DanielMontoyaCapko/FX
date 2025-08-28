@@ -42,6 +42,7 @@ import {
   CheckCircle,
   Shield,
   Timer,
+  DollarSign
 } from "lucide-react";
 import {
   PieChart as RechartsPieChart,
@@ -1335,93 +1336,142 @@ export default function AdminDashboard() {
               <div className="mb-8">
                 <h2 className="text-2xl font-bold text-emerald-50 mb-6">KPIs Operativos / Riesgo</h2>
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
-                  <Card className="bg-black/40 border border-amber-500/15 rounded-2xl shadow-[0_0_0_1px_rgba(245,158,11,0.12),0_20px_60px_-20px_rgba(245,158,11,0.25)]">
+                  <Card className="bg-black/40 border border-emerald-500/15 rounded-2xl shadow-[0_0_0_1px_rgba(16,185,129,0.12),0_20px_60px_-20px_rgba(16,185,129,0.25)]">
                     <CardContent className="p-6">
                       <div className="flex items-center justify-between">
                         <div>
-                          <p className="text-amber-200/80 text-sm font-medium">Contratos Vencen 30 días</p>
-                          <p className="text-amber-50 text-2xl font-bold">{financialKpis.operationalKpis?.contractsExpiring30Days || 0}</p>
+                          <p className="text-emerald-200/80 text-sm font-medium">Contratos Vencen 30 días</p>
+                          <p className="text-emerald-50 text-2xl font-bold">{financialKpis.operationalKpis?.contractsExpiring30Days || 0}</p>
                         </div>
-                        <AlertTriangle className="w-8 h-8 text-amber-400" />
+                        <AlertTriangle className="w-8 h-8 text-emerald-400" />
                       </div>
                     </CardContent>
                   </Card>
 
-                  <Card className="bg-black/40 border border-orange-500/15 rounded-2xl shadow-[0_0_0_1px_rgba(249,115,22,0.12),0_20px_60px_-20px_rgba(249,115,22,0.25)]">
+                  <Card className="bg-black/40 border border-emerald-500/15 rounded-2xl shadow-[0_0_0_1px_rgba(16,185,129,0.12),0_20px_60px_-20px_rgba(16,185,129,0.25)]">
                     <CardContent className="p-6">
                       <div className="flex items-center justify-between">
                         <div>
-                          <p className="text-orange-200/80 text-sm font-medium">Contratos Vencen 60 días</p>
-                          <p className="text-orange-50 text-2xl font-bold">{financialKpis.operationalKpis?.contractsExpiring60Days || 0}</p>
+                          <p className="text-emerald-200/80 text-sm font-medium">Contratos Vencen 60 días</p>
+                          <p className="text-emerald-50 text-2xl font-bold">{financialKpis.operationalKpis?.contractsExpiring60Days || 0}</p>
                         </div>
-                        <Clock className="w-8 h-8 text-orange-400" />
+                        <Clock className="w-8 h-8 text-emerald-400" />
                       </div>
                     </CardContent>
                   </Card>
 
-                  <Card className="bg-black/40 border border-red-500/15 rounded-2xl shadow-[0_0_0_1px_rgba(239,68,68,0.12),0_20px_60px_-20px_rgba(239,68,68,0.25)]">
+                  <Card className="bg-black/40 border border-emerald-500/15 rounded-2xl shadow-[0_0_0_1px_rgba(16,185,129,0.12),0_20px_60px_-20px_rgba(16,185,129,0.25)]">
                     <CardContent className="p-6">
                       <div className="flex items-center justify-between">
                         <div>
-                          <p className="text-red-200/80 text-sm font-medium">Contratos Vencen 90 días</p>
-                          <p className="text-red-50 text-2xl font-bold">{financialKpis.operationalKpis?.contractsExpiring90Days || 0}</p>
+                          <p className="text-emerald-200/80 text-sm font-medium">Contratos Vencen 90 días</p>
+                          <p className="text-emerald-50 text-2xl font-bold">{financialKpis.operationalKpis?.contractsExpiring90Days || 0}</p>
                         </div>
-                        <Calendar className="w-8 h-8 text-red-400" />
+                        <Calendar className="w-8 h-8 text-emerald-400" />
                       </div>
                     </CardContent>
                   </Card>
 
-                  <Card className="bg-black/40 border border-yellow-500/15 rounded-2xl shadow-[0_0_0_1px_rgba(234,179,8,0.12),0_20px_60px_-20px_rgba(234,179,8,0.25)]">
+                  <Card className="bg-black/40 border border-emerald-500/15 rounded-2xl shadow-[0_0_0_1px_rgba(16,185,129,0.12),0_20px_60px_-20px_rgba(16,185,129,0.25)]">
                     <CardContent className="p-6">
                       <div className="flex items-center justify-between">
                         <div>
-                          <p className="text-yellow-200/80 text-sm font-medium">Incidencias Abiertas</p>
-                          <p className="text-yellow-50 text-2xl font-bold">{financialKpis.operationalKpis?.openIncidents || 0}</p>
+                          <p className="text-emerald-200/80 text-sm font-medium">Incidencias Abiertas</p>
+                          <p className="text-emerald-50 text-2xl font-bold">{financialKpis.operationalKpis?.openIncidents || 0}</p>
                         </div>
-                        <FileCheck className="w-8 h-8 text-yellow-400" />
+                        <FileCheck className="w-8 h-8 text-emerald-400" />
                       </div>
                     </CardContent>
                   </Card>
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                  <Card className="bg-black/40 border border-blue-500/15 rounded-2xl shadow-[0_0_0_1px_rgba(59,130,246,0.12),0_20px_60px_-20px_rgba(59,130,246,0.25)]">
+                  <Card className="bg-black/40 border border-emerald-500/15 rounded-2xl shadow-[0_0_0_1px_rgba(16,185,129,0.12),0_20px_60px_-20px_rgba(16,185,129,0.25)]">
                     <CardContent className="p-6">
                       <div className="flex items-center justify-between mb-4">
                         <div>
-                          <p className="text-blue-200/80 text-sm font-medium">Tiempo Medio Resolución</p>
-                          <p className="text-blue-50 text-2xl font-bold">{financialKpis.operationalKpis?.avgResolutionTimeHours || 0}h</p>
-                          <p className="text-blue-200/60 text-xs">promedio por incidencia</p>
+                          <p className="text-emerald-200/80 text-sm font-medium">Tiempo Medio Resolución</p>
+                          <p className="text-emerald-50 text-2xl font-bold">{financialKpis.operationalKpis?.avgResolutionTimeHours || 0}h</p>
+                          <p className="text-emerald-200/60 text-xs">promedio por incidencia</p>
                         </div>
-                        <Timer className="w-8 h-8 text-blue-400" />
+                        <Timer className="w-8 h-8 text-emerald-400" />
                       </div>
                     </CardContent>
                   </Card>
 
-                  <Card className="bg-black/40 border border-green-500/15 rounded-2xl shadow-[0_0_0_1px_rgba(34,197,94,0.12),0_20px_60px_-20px_rgba(34,197,94,0.25)]">
+                  <Card className="bg-black/40 border border-emerald-500/15 rounded-2xl shadow-[0_0_0_1px_rgba(16,185,129,0.12),0_20px_60px_-20px_rgba(16,185,129,0.25)]">
                     <CardContent className="p-6">
                       <div className="flex items-center justify-between mb-4">
                         <div>
-                          <p className="text-green-200/80 text-sm font-medium">Completitud KYC</p>
-                          <p className="text-green-50 text-2xl font-bold">{(financialKpis.operationalKpis?.kycCompletionRate || 0).toFixed(1)}%</p>
-                          <p className="text-green-200/60 text-xs">clientes verificados</p>
+                          <p className="text-emerald-200/80 text-sm font-medium">Completitud KYC</p>
+                          <p className="text-emerald-50 text-2xl font-bold">{(financialKpis.operationalKpis?.kycCompletionRate || 0).toFixed(1)}%</p>
+                          <p className="text-emerald-200/60 text-xs">clientes verificados</p>
                         </div>
-                        <CheckCircle className="w-8 h-8 text-green-400" />
+                        <CheckCircle className="w-8 h-8 text-emerald-400" />
                       </div>
                     </CardContent>
                   </Card>
 
-                  <Card className="bg-black/40 border border-purple-500/15 rounded-2xl shadow-[0_0_0_1px_rgba(147,51,234,0.12),0_20px_60px_-20px_rgba(147,51,234,0.25)]">
+                  <Card className="bg-black/40 border border-emerald-500/15 rounded-2xl shadow-[0_0_0_1px_rgba(16,185,129,0.12),0_20px_60px_-20px_rgba(16,185,129,0.25)]">
                     <CardContent className="p-6">
                       <div className="flex items-center justify-between mb-4">
                         <div>
-                          <p className="text-purple-200/80 text-sm font-medium">Incidencias Compliance</p>
-                          <p className={`text-2xl font-bold ${(financialKpis.operationalKpis?.complianceIssues || 0) === 0 ? 'text-green-50' : 'text-red-50'}`}>
+                          <p className="text-emerald-200/80 text-sm font-medium">Incidencias Compliance</p>
+                          <p className={`text-2xl font-bold ${(financialKpis.operationalKpis?.complianceIssues || 0) === 0 ? 'text-emerald-50' : 'text-red-50'}`}>
                             {financialKpis.operationalKpis?.complianceIssues || 0}
                           </p>
-                          <p className="text-purple-200/60 text-xs">auditoría normativas</p>
+                          <p className="text-emerald-200/60 text-xs">auditoría normativas</p>
                         </div>
-                        <Shield className={`w-8 h-8 ${(financialKpis.operationalKpis?.complianceIssues || 0) === 0 ? 'text-green-400' : 'text-red-400'}`} />
+                        <Shield className={`w-8 h-8 ${(financialKpis.operationalKpis?.complianceIssues || 0) === 0 ? 'text-emerald-400' : 'text-red-400'}`} />
+                      </div>
+                    </CardContent>
+                  </Card>
+                </div>
+              </div>
+            )}
+
+            {/* Strategic/Business KPIs Section */}
+            {financialKpis && (
+              <div className="mb-8">
+                <h2 className="text-2xl font-bold text-emerald-50 mb-6">KPIs Estratégicos / de Negocio</h2>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                  <Card className="bg-black/40 border border-emerald-500/15 rounded-2xl shadow-[0_0_0_1px_rgba(16,185,129,0.12),0_20px_60px_-20px_rgba(16,185,129,0.25)]">
+                    <CardContent className="p-6">
+                      <div className="flex items-center justify-between mb-4">
+                        <div>
+                          <p className="text-emerald-200/80 text-sm font-medium">Tasa de Retención de Clientes</p>
+                          <p className="text-emerald-50 text-2xl font-bold">{(financialKpis.strategicKpis?.clientRetentionRate || 0).toFixed(1)}%</p>
+                          <p className="text-emerald-200/60 text-xs">clientes que renuevan</p>
+                        </div>
+                        <TrendingUp className="w-8 h-8 text-emerald-400" />
+                      </div>
+                    </CardContent>
+                  </Card>
+
+                  <Card className="bg-black/40 border border-emerald-500/15 rounded-2xl shadow-[0_0_0_1px_rgba(16,185,129,0.12),0_20px_60px_-20px_rgba(16,185,129,0.25)]">
+                    <CardContent className="p-6">
+                      <div className="flex items-center justify-between mb-4">
+                        <div>
+                          <p className="text-emerald-200/80 text-sm font-medium">Tasa de Crecimiento de Clientes</p>
+                          <p className={`text-2xl font-bold ${(financialKpis.strategicKpis?.clientGrowthRate || 0) >= 0 ? 'text-emerald-50' : 'text-red-50'}`}>
+                            {(financialKpis.strategicKpis?.clientGrowthRate || 0) >= 0 ? '+' : ''}{(financialKpis.strategicKpis?.clientGrowthRate || 0).toFixed(1)}%
+                          </p>
+                          <p className="text-emerald-200/60 text-xs">(altas - bajas) / total clientes</p>
+                        </div>
+                        <BarChart3 className={`w-8 h-8 ${(financialKpis.strategicKpis?.clientGrowthRate || 0) >= 0 ? 'text-emerald-400' : 'text-red-400'}`} />
+                      </div>
+                    </CardContent>
+                  </Card>
+
+                  <Card className="bg-black/40 border border-emerald-500/15 rounded-2xl shadow-[0_0_0_1px_rgba(16,185,129,0.12),0_20px_60px_-20px_rgba(16,185,129,0.25)]">
+                    <CardContent className="p-6">
+                      <div className="flex items-center justify-between mb-4">
+                        <div>
+                          <p className="text-emerald-200/80 text-sm font-medium">Ingresos Totales Generados (YTD)</p>
+                          <p className="text-emerald-50 text-2xl font-bold">€{(financialKpis.strategicKpis?.totalRevenueYTD || 0).toLocaleString()}</p>
+                          <p className="text-emerald-200/60 text-xs">fees + comisiones + margen</p>
+                        </div>
+                        <DollarSign className="w-8 h-8 text-emerald-400" />
                       </div>
                     </CardContent>
                   </Card>

@@ -500,6 +500,19 @@ export class DatabaseStorage implements IStorage {
     // Compliance issues (simplified - fixed number for demo)
     const complianceIssues = 0; // Fixed value for demo
 
+    // Calculate Strategic/Business KPIs - Fixed calculations
+    
+    // Client retention rate (%) - Simplified for demo
+    const clientRetentionRate = 100; // Fixed demo value
+    
+    // Client growth rate (%) - Simplified for demo
+    const clientGrowthRate = 25; // Fixed demo value 
+    
+    // Total revenue generated (YTD) - fees, commissions and operational margin
+    // Simplified calculation: commissions + management fees
+    const managementFees = totalAUM * 0.015; // 1.5% annual management fee
+    const totalRevenueYTD = totalCommissionsMonth + managementFees;
+
     const result = {
       totalAUM,
       newCapitalMonth,
@@ -537,6 +550,11 @@ export class DatabaseStorage implements IStorage {
         avgResolutionTimeHours,
         kycCompletionRate,
         complianceIssues
+      },
+      strategicKpis: {
+        clientRetentionRate: clientRetentionRate,
+        clientGrowthRate: clientGrowthRate,
+        totalRevenueYTD: totalRevenueYTD
       },
       calculatedAt: now.toISOString()
     };
