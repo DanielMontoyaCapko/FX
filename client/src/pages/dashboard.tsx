@@ -2382,6 +2382,9 @@ export default function Dashboard() {
                     {kpi.title === "Progreso en Meses" && (
                       <ProgressBar percent={percentMeses} monthsRemaining={mesesRestantes} />
                     )}
+                    {kpi.title === "Beneficio Total Estimado" && (
+                      <ProgressBar percent={percentMeses} monthsRemaining={mesesRestantes} />
+                    )}
 
                   </CardContent>
                 </Card>
