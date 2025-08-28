@@ -35,7 +35,7 @@ export default function Contacto() {
           <div className="container mx-auto px-6">
             <div className="max-w-4xl mx-auto">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
-                <div className="contact-info-card bg-black/70 p-8 rounded-xl border border-silver-500/20 transition-all duration-500 hover:border-green/40 cursor-pointer">
+                <div className="contact-info-card bg-black/70 p-8 rounded-xl border border-emerald-500/15 transition-all duration-300 hover:border-emerald-500/25 hover:bg-black/50 hover:shadow-lg hover:shadow-emerald-500/20 cursor-pointer">
                   <h2 className="font-georgia text-3xl font-bold text-white mb-6">Información de Contacto</h2>
                   
                   <div className="space-y-4">
@@ -61,7 +61,7 @@ export default function Contacto() {
                   </div>
                 </div>
                 
-                <div className="contact-offices-card bg-black/70 p-8 rounded-xl border border-silver-500/20 transition-all duration-500 hover:border-green/40 cursor-pointer">
+                <div className="contact-offices-card bg-black/70 p-8 rounded-xl border border-emerald-500/15 transition-all duration-300 hover:border-emerald-500/25 hover:bg-black/50 hover:shadow-lg hover:shadow-emerald-500/20 cursor-pointer">
                   <h2 className="font-georgia text-3xl font-bold text-white mb-6">Oficinas</h2>
                   
                   <div className="space-y-6">
