@@ -952,17 +952,39 @@ export default function Dashboard() {
 
   const handleCalculateInvestment = () => setShowCalculator(true);
 
-  // Cálculo para el KPI "Progreso en Meses"
+  // Datos de la inversión (esto debería venir de la base de datos)
+  const capitalInvertido = 50000;
   const mesesTranscurridos = 7;
-  const mesesTotales = 12;        
+  const mesesTotales = 24; // Ejemplo: contrato de 24 meses        
+  
+  // Cálculos de progreso
   const percentMeses = (mesesTranscurridos / Math.max(1, mesesTotales)) * 100;
   const mesesRestantes = Math.max(0, mesesTotales - mesesTranscurridos);
-
-  // ===== KPIs (sin "Rentabilidad Anual") =====
+  
+  // Para Capital Invertido: porcentaje de tiempo transcurrido del contrato
+  const percentCapital = percentMeses; // Mismo cálculo basado en tiempo
+  const beneficioEstimadoTotal = (capitalInvertido * 0.09 * mesesTotales) / 12; // 9% anual prorrateado
+  
+  // ===== KPIs =====
   const kpis = [
-    { title: "Capital Invertido", value: "€50.000", change: "110% del objetivo", trending: "up" as const },
-    { title: "Progreso en Meses", value: `Mes ${mesesTranscurridos} de ${mesesTotales}`, change: `${Math.round(percentMeses)}% del período`, trending: "up" as const },
-    { title: "Beneficio Total Estimado", value: "€4.500", change: "A fin de año", trending: "up" as const },
+    { 
+      title: "Capital Invertido", 
+      value: `€${capitalInvertido.toLocaleString()}`, 
+      change: `${Math.round(percentCapital)}% del período completado`, 
+      trending: "up" as const 
+    },
+    { 
+      title: "Progreso en Meses", 
+      value: `Mes ${mesesTranscurridos} de ${mesesTotales}`, 
+      change: `${Math.round(percentMeses)}% del período`, 
+      trending: "up" as const 
+    },
+    { 
+      title: "Beneficio Total Estimado", 
+      value: `€${Math.round(beneficioEstimadoTotal).toLocaleString()}`, 
+      change: "Al final del período", 
+      trending: "up" as const 
+    },
   ] as const;
 
   // Hook para obtener las actividades recientes del cliente (últimos 5 registros)
@@ -2354,7 +2376,9 @@ export default function Dashboard() {
                       </div>
                     </div>
 
-                    {kpi.title === "Capital Invertido" && <ProgressBar percent={110} noteWhenOver100 />}
+                    {kpi.title === "Capital Invertido" && (
+                      <ProgressBar percent={percentCapital} monthsRemaining={mesesRestantes} />
+                    )}
                     {kpi.title === "Progreso en Meses" && (
                       <ProgressBar percent={percentMeses} monthsRemaining={mesesRestantes} />
                     )}
