@@ -65,11 +65,11 @@ function ProgressBar({
 
   const barColor =
     monthsRemaining !== undefined
-      ? monthsRemaining <= 1
-        ? "bg-red-500"
-        : monthsRemaining <= 3
-        ? "bg-amber-400"
-        : "bg-emerald-500/80"
+      ? percent > 75
+        ? "bg-red-500" // Meses 10-12 (75.1-100%)
+        : percent > 50
+        ? "bg-amber-400" // Meses 7-9 (50.1-75%)
+        : "bg-emerald-500/80" // Meses 1-6 (0-50%)
       : "bg-emerald-500/80";
 
   const ringColor =
@@ -952,18 +952,18 @@ export default function Dashboard() {
 
   const handleCalculateInvestment = () => setShowCalculator(true);
 
-  // ===== KPIs (sin "Rentabilidad Anual") =====
-  const kpis = [
-    { title: "Capital Invertido", value: "€50.000", change: "110% del objetivo", trending: "up" as const },
-    { title: "Progreso en Meses", value: "Mes 3 de 12", change: "25% del período", trending: "up" as const },
-    { title: "Beneficio Total Estimado", value: "€4.500", change: "A fin de año", trending: "up" as const },
-  ] as const;
-
   // Cálculo para el KPI "Progreso en Meses"
-  const mesesTranscurridos = 11;
+  const mesesTranscurridos = 7;
   const mesesTotales = 12;        
   const percentMeses = (mesesTranscurridos / Math.max(1, mesesTotales)) * 100;
   const mesesRestantes = Math.max(0, mesesTotales - mesesTranscurridos);
+
+  // ===== KPIs (sin "Rentabilidad Anual") =====
+  const kpis = [
+    { title: "Capital Invertido", value: "€50.000", change: "110% del objetivo", trending: "up" as const },
+    { title: "Progreso en Meses", value: `Mes ${mesesTranscurridos} de ${mesesTotales}`, change: `${Math.round(percentMeses)}% del período`, trending: "up" as const },
+    { title: "Beneficio Total Estimado", value: "€4.500", change: "A fin de año", trending: "up" as const },
+  ] as const;
 
   // Hook para obtener las actividades recientes del cliente (últimos 5 registros)
   const { data: recentActivityData } = useQuery({
