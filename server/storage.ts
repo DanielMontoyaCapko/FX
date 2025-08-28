@@ -489,7 +489,7 @@ export class DatabaseStorage implements IStorage {
     const contractsExpiring90Days = contractsMaturing90.length;
     
     // Open incidents (simplified - using a base number for demo)
-    const openIncidents = 3; // Fixed value for demo
+    const openIncidents = 0; // Fixed value for demo
     
     // Average resolution time in hours (simplified)
     const avgResolutionTimeHours = 48; // Fixed value for demo
