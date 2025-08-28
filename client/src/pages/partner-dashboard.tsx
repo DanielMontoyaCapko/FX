@@ -2204,7 +2204,7 @@ export default function PartnerDashboard() {
                   {showContractFilters ? "Ocultar Filtros" : "Mostrar Filtros"}
                 </Button>
 
-                {(Object.values(contractFilters).some((v) => v !== "") || contractSort !== "") && (
+                {(Object.values(contractFilters).some((v) => v !== "") || contractSort !== "" || contractQuickFilter !== "all") && (
                   <Button
                     variant="ghost"
                     onClick={() => {
@@ -2220,6 +2220,7 @@ export default function PartnerDashboard() {
                         vencimiento: "",
                       });
                       setContractSort("");
+                      setContractQuickFilter("all");
                     }}
                     className="text-emerald-200 hover:text-emerald-50"
                   >
@@ -2421,6 +2422,12 @@ export default function PartnerDashboard() {
                   const daysLeft = Math.ceil((end.getTime() - Date.now()) / 86400000);
                   const matchVenc = !vencLimit || (daysLeft > 0 && daysLeft <= vencLimit);
 
+                  // Aplicar filtro rápido
+                  const matchQuickFilter =
+                    contractQuickFilter === "all" ||
+                    (contractQuickFilter === "vigentes" && c.status === "Vigente") ||
+                    (contractQuickFilter === "vencidos" && c.status === "Vencido");
+
                   return (
                     matchSearch &&
                     matchStatus &&
@@ -2429,7 +2436,8 @@ export default function PartnerDashboard() {
                     matchAmount &&
                     matchFrom &&
                     matchTo &&
-                    matchVenc
+                    matchVenc &&
+                    matchQuickFilter
                   );
                 })
                 .sort((a, b) => {
