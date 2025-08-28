@@ -26,9 +26,9 @@ export default function Header() {
     <header className="fixed top-0 left-0 right-0 z-50 bg-black/80 backdrop-blur-md border-b border-silver-500/20">
       <nav className="container mx-auto px-6 py-4 flex items-center justify-between">
         <Link href="/">
-          <div className="flex items-center space-x-2 cursor-pointer">
-            <img src={logoImg} alt="Nakama&Partners" className="w-10 h-10" />
-            <span className="font-cormorant text-xl font-semibold text-white">Nakama&Partners</span>
+          <div className="flex items-center space-x-3 cursor-pointer">
+            <img src={logoImg} alt="Nakama&Partners" className="w-14 h-14" />
+            <span className="font-cormorant text-2xl font-semibold text-white">Nakama&Partners</span>
           </div>
         </Link>
 
