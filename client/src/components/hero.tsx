@@ -74,8 +74,9 @@ export default function Hero() {
 
         <h2 className="text-2xl md:text-3xl text-silver-100/95 font-semibold leading-snug mb-4">
           <span className="block md:hidden">
-            <span className="block max-w-[280px] mx-auto">Capital protegido por contrato</span>
-            <span className="block max-w-[200px] mx-auto">bancario pignorado</span>
+            <span className="block max-w-[300px] mx-auto">Capital protegido por</span>
+            <span className="block max-w-[240px] mx-auto">contrato bancario</span>
+            <span className="block max-w-[160px] mx-auto">pignorado</span>
           </span>
           <span className="hidden md:block">Capital protegido por contrato bancario pignorado</span>
         </h2>
