@@ -39,11 +39,25 @@ export default function Security() {
       <div className="container mx-auto px-6">
         <div className="text-center mb-16">
           <h2 className="font-playfair text-4xl md:text-5xl font-bold text-white mb-6">
-            Un Producto Diseñado para <span className="text-green">Proteger el Capital</span>,<br />
-            No Para Arriesgarlo.
+            <span className="block md:hidden">
+              <span className="block max-w-[320px] mx-auto">Un Producto Diseñado para</span>
+              <span className="block max-w-[280px] mx-auto"><span className="text-green">Proteger el Capital</span>,</span>
+              <span className="block max-w-[200px] mx-auto">No Para Arriesgarlo.</span>
+            </span>
+            <span className="hidden md:block">
+              Un Producto Diseñado para <span className="text-green">Proteger el Capital</span>,<br />
+              No Para Arriesgarlo.
+            </span>
           </h2>
           <p className="text-xl text-silver-100 max-w-3xl mx-auto">
-            Desde el primer contacto, mostramos que esto no es una promesa, es una estructura.
+            <span className="block md:hidden max-w-[300px] mx-auto">
+              <span className="block">Desde el primer contacto, mostramos</span>
+              <span className="block">que esto no es una promesa,</span>
+              <span className="block">es una estructura.</span>
+            </span>
+            <span className="hidden md:block">
+              Desde el primer contacto, mostramos que esto no es una promesa, es una estructura.
+            </span>
           </p>
         </div>
         

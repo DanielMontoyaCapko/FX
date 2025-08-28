@@ -66,11 +66,18 @@ export default function Hero() {
       <div className="container mx-auto px-6 text-center">
         {/* Título → Subtítulo → Descripción */}
         <h1 className="font-playfair text-5xl md:text-7xl font-bold text-green tracking-tight mb-3 text-shadow">
-          9% Fijo Anual
+          <span className="block md:hidden">
+            <span className="block text-center">9% Fijo Anual</span>
+          </span>
+          <span className="hidden md:block">9% Fijo Anual</span>
         </h1>
 
         <h2 className="text-2xl md:text-3xl text-silver-100/95 font-semibold leading-snug mb-4">
-          Capital protegido por contrato bancario pignorado
+          <span className="block md:hidden">
+            <span className="block max-w-[280px] mx-auto">Capital protegido por contrato</span>
+            <span className="block max-w-[200px] mx-auto">bancario pignorado</span>
+          </span>
+          <span className="hidden md:block">Capital protegido por contrato bancario pignorado</span>
         </h2>
 
         <p className="text-base md:text-lg text-silver-100/90 mb-8 max-w-3xl mx-auto leading-relaxed">

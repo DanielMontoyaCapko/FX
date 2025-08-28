@@ -19,8 +19,15 @@ export default function FinalCTA() {
       <div className="container mx-auto px-6">
         <div className="text-center mb-12">
           <h2 className="font-playfair text-4xl md:text-5xl font-bold text-white mb-6">
-            ¿Quieres Formar Parte de una <span className="text-green">Solución</span><br />
-            que Realmente Protege?
+            <span className="block md:hidden">
+              <span className="block max-w-[300px] mx-auto">¿Quieres Formar Parte de una</span>
+              <span className="block max-w-[220px] mx-auto"><span className="text-green">Solución</span> que Realmente</span>
+              <span className="block max-w-[120px] mx-auto">Protege?</span>
+            </span>
+            <span className="hidden md:block">
+              ¿Quieres Formar Parte de una <span className="text-green">Solución</span><br />
+              que Realmente Protege?
+            </span>
           </h2>
         </div>
         

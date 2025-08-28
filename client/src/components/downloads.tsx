@@ -96,10 +96,23 @@ export default function Downloads() {
       <div className="container mx-auto px-6">
         <div className="text-center mb-12">
           <h2 className="font-playfair text-4xl md:text-5xl font-bold text-white mb-6">
-            Información Completa <span className="text-green">a Tu Alcance</span>
+            <span className="block md:hidden">
+              <span className="block max-w-[280px] mx-auto">Información Completa</span>
+              <span className="block max-w-[200px] mx-auto"><span className="text-green">a Tu Alcance</span></span>
+            </span>
+            <span className="hidden md:block">
+              Información Completa <span className="text-green">a Tu Alcance</span>
+            </span>
           </h2>
           <p className="text-xl text-silver-100 max-w-3xl mx-auto">
-            Accede a la documentación clave para entender la solidez y transparencia de FundedXam Capital.
+            <span className="block md:hidden max-w-[300px] mx-auto">
+              <span className="block">Accede a la documentación clave para</span>
+              <span className="block">entender la solidez y transparencia</span>
+              <span className="block">de Nakama&Partners.</span>
+            </span>
+            <span className="hidden md:block">
+              Accede a la documentación clave para entender la solidez y transparencia de Nakama&Partners.
+            </span>
           </p>
         </div>
         
