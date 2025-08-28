@@ -1044,9 +1044,9 @@ export default function AdminDashboard() {
             {/* Stats Cards */}
             <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
               {[
-                { label: "Usuarios Totales", value: stats.totalUsers, icon: Users, targetTab: "users" },
-                { label: "Productos Totales", value: stats.totalProducts, icon: Package, targetTab: "products" },
-                { label: "Contratos Totales", value: stats.totalContracts, icon: FileText, targetTab: "contracts" },
+                { label: "Usuarios Totales", value: stats.totalUsers, icon: Users, targetTab: "usuarios" },
+                { label: "Productos Totales", value: stats.totalProducts, icon: Package, targetTab: "productos" },
+                { label: "Contratos Totales", value: stats.totalContracts, icon: FileText, targetTab: "contratos" },
                 { label: "KYC Pendientes", value: stats.pendingKyc, icon: FileCheck, warn: true, targetTab: "kyc" },
               ].map(({ label, value, icon: Icon, warn, targetTab }, i) => (
                 <Card
