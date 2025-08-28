@@ -82,7 +82,7 @@ export default function Login() {
         <h1 className="font-cormorant text-2xl md:text-3xl font-bold text-emerald-50 leading-tight">
           Nakama Partner
         </h1>
-        <p className="text-emerald-300 text-sm md:text-base tracking-wide">Portal de Asesores</p>
+        <p className="text-emerald-300 text-sm md:text-base tracking-wide">Acceso Corporativo</p>
       </div>
     </div>
   );
@@ -529,7 +529,7 @@ export default function Login() {
               <h1 className="font-cormorant text-3xl lg:text-4xl font-bold text-emerald-50 leading-tight">
                 Nakama Partner
               </h1>
-              <p className="text-emerald-300 text-base">Portal de Asesores</p>
+              <p className="text-emerald-300 text-base">Acceso Corporativo</p>
             </div>
           </div>
 
