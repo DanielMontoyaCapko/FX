@@ -388,31 +388,42 @@ export default function AdminDashboard() {
   };
 
   const handleDownloadAdminPDF = async () => {
-    const currentDate = new Date();
-    const currentMonth = currentDate.toLocaleDateString('es-ES', { month: 'long', year: 'numeric' });
-    
-    const adminData = {
-      fecha: currentDate.toLocaleDateString('es-ES'),
-      periodo: currentMonth,
-      totalUsers: stats.totalUsers,
-      totalProducts: stats.totalProducts,
-      totalContracts: stats.totalContracts,
-      pendingKyc: stats.pendingKyc,
-      financialKpis: financialKpis ? {
-        totalAUM: financialKpis.totalAUM,
-        newCapitalMonth: financialKpis.newCapitalMonth,
-        withdrawnCapitalMonth: financialKpis.withdrawnCapitalMonth,
-        netCapitalGrowth: financialKpis.netCapitalGrowth,
-        averageInvestment: financialKpis.averageInvestment,
-        activeClients: financialKpis.activeClients,
-        clientRetention: financialKpis.clientRetention,
-        monthlyEvolution: financialKpis.monthlyEvolution
-      } : undefined,
-      kycStats: kycChartData,
-      contractsStats: contractsChartData
-    };
+    try {
+      console.log('Iniciando descarga de PDF admin...');
+      
+      const currentDate = new Date();
+      const currentMonth = currentDate.toLocaleDateString('es-ES', { month: 'long', year: 'numeric' });
+      
+      const adminData = {
+        fecha: currentDate.toLocaleDateString('es-ES'),
+        periodo: currentMonth,
+        totalUsers: stats.totalUsers,
+        totalProducts: stats.totalProducts,
+        totalContracts: stats.totalContracts,
+        pendingKyc: stats.pendingKyc,
+        financialKpis: financialKpis ? {
+          totalAUM: financialKpis.totalAUM,
+          newCapitalMonth: financialKpis.newCapitalMonth,
+          withdrawnCapitalMonth: financialKpis.withdrawnCapitalMonth,
+          netCapitalGrowth: financialKpis.netCapitalGrowth,
+          averageInvestment: financialKpis.averageInvestment,
+          activeClients: financialKpis.activeClients,
+          clientRetention: financialKpis.clientRetention,
+          monthlyEvolution: financialKpis.monthlyEvolution
+        } : undefined,
+        kycStats: kycChartData,
+        contractsStats: contractsChartData
+      };
 
-    await generateAdminStatementPDF(adminData);
+      console.log('Datos del admin para PDF:', adminData);
+      
+      await generateAdminStatementPDF(adminData);
+      
+      console.log('PDF admin descargado exitosamente');
+    } catch (error) {
+      console.error('Error al generar PDF admin:', error);
+      alert('Error al generar el PDF. Por favor revisa la consola para más detalles.');
+    }
   };
 
   // Chart data
