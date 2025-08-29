@@ -1,7 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 
 export default function Downloads() {
-  const [scrollProgress, setScrollProgress] = useState(0);
   const [isVisible, setIsVisible] = useState(false);
   const sectionRef = useRef<HTMLDivElement>(null);
 
@@ -12,29 +11,6 @@ export default function Downloads() {
         const sectionTop = rect.top;
         const sectionHeight = rect.height;
         const windowHeight = window.innerHeight;
-        
-        // Calcular el progreso del scroll de manera más precisa
-        let progress = 0;
-        
-        if (sectionTop <= 0) {
-          // La sección está completamente visible o por encima
-          if (Math.abs(sectionTop) >= sectionHeight) {
-            progress = 100; // Completamente visible
-          } else {
-            // Calcular progreso basado en cuánto de la sección ha pasado
-            progress = Math.min(100, Math.max(0, (Math.abs(sectionTop) / sectionHeight) * 100));
-          }
-        } else if (sectionTop <= windowHeight) {
-          // La sección está entrando en la ventana
-          progress = Math.min(100, Math.max(0, ((windowHeight - sectionTop) / sectionHeight) * 100));
-        }
-        
-        // Aplicar suavizado para evitar saltos bruscos
-        setScrollProgress(prevProgress => {
-          const diff = progress - prevProgress;
-          if (Math.abs(diff) < 1) return progress; // Evitar cambios mínimos
-          return prevProgress + (diff * 0.15); // Suavizado gradual mejorado
-        });
         
         // Detectar si la sección es visible
         if (sectionTop < windowHeight && sectionTop > -sectionHeight) {
@@ -102,29 +78,28 @@ export default function Downloads() {
         </div>
         
         {/* Proceso paso a paso - 9 tarjetas alternadas con línea conectora */}
-        <div ref={sectionRef} className="relative max-w-6xl mx-auto mb-12">
-          {/* Línea conectora vertical con efecto neón animado */}
-          <div className="absolute left-1/2 top-0 bottom-0 w-0.5 transform -translate-x-1/2 hidden lg:block">
-            {/* Línea base estática */}
-            <div className="w-full h-full bg-gradient-to-b from-green/20 via-green/10 to-transparent"></div>
-            
-            {/* Línea neón animada con transición suave */}
+        <div 
+          ref={sectionRef} 
+          className={`relative max-w-6xl mx-auto mb-12 transition-all duration-700 ease-out ${
+            isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'
+          }`}
+        >
+          {/* Línea conectora vertical fija con efecto neón */}
+          <div className={`absolute left-1/2 top-0 bottom-0 w-0.5 transform -translate-x-1/2 hidden lg:block transition-opacity duration-500 ${isVisible ? 'opacity-100' : 'opacity-0'}`}>
+            {/* Línea neón fija y completa */}
             <div 
-              className="absolute top-0 left-0 w-full bg-gradient-to-b from-green-400 via-green-300 to-green-500"
+              className="w-full h-full bg-gradient-to-b from-green-400 via-green-300 to-green-500"
               style={{ 
-                height: `${scrollProgress}%`,
-                transition: 'height 0.1s ease-out',
-                boxShadow: `0 0 20px rgba(34, 197, 94, 0.6), 0 0 40px rgba(34, 197, 94, 0.3), 0 0 60px rgba(34, 197, 94, 0.1)`
+                boxShadow: `0 0 20px rgba(34, 197, 94, 0.6), 0 0 40px rgba(34, 197, 94, 0.3), 0 0 60px rgba(34, 197, 94, 0.1)`,
+                filter: 'brightness(1.2) saturate(1.2)'
               }}
             ></div>
             
-            {/* Punto de progreso con efecto de pulso */}
+            {/* Efecto de brillo adicional en la línea */}
             <div 
-              className="absolute w-3 h-3 bg-green-400 rounded-full transform -translate-x-1/2 transition-all duration-300 ease-out"
+              className="absolute top-0 left-0 w-full h-full bg-gradient-to-b from-green-300 via-green-400 to-green-300 opacity-60"
               style={{ 
-                top: `${scrollProgress}%`,
-                boxShadow: `0 0 15px rgba(34, 197, 94, 0.8), 0 0 30px rgba(34, 197, 94, 0.4)`,
-                opacity: scrollProgress > 0 ? 1 : 0
+                filter: 'blur(1px)'
               }}
             ></div>
           </div>

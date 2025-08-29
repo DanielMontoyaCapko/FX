@@ -174,3 +174,4 @@ createDefaultUsers().then(() => {
   console.error('❌ Error durante la inicialización:', error);
   db.close();
 });
+
