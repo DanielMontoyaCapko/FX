@@ -12,8 +12,8 @@ export default function Security() {
       description: "Sin volatilidad, sin sorpresas. Un 9% anual garantizado por contrato."
     },
     {
-      title: "Capital Bloqueado como Garantía",
-      description: "Sin gestión directa del cliente. Su capital está protegido por estructura bancaria."
+      title: "Capital depositado en Banco",
+      description: "Capital depositado en cuenta bancaria, sin riesgos de mercado."
     },
     {
       title: "Contrato Bancario Pignorado",
@@ -21,7 +21,7 @@ export default function Security() {
     },
     {
       title: "Custodia en Bancos de Primer Nivel",
-      description: "Emirates NBD, WIO Bank. Instituciones financieras sólidas y reguladas."
+      description: "Emirates NBD, WIO Bank, ADCB Abu Dhabi Bank. Instituciones financieras sólidas y reguladas."
     },
     {
       title: "Firma Digital Jurídicamente Válida",
@@ -39,13 +39,13 @@ export default function Security() {
         <div className="text-center mb-16">
           <h2 className="font-georgia text-4xl md:text-5xl font-bold text-white mb-6">
             <span className="block md:hidden">
-              <span className="block max-w-[320px] mx-auto">Un Producto Diseñado para</span>
-              <span className="block max-w-[280px] mx-auto"><span className="text-green">Proteger el Capital</span>,</span>
-              <span className="block max-w-[200px] mx-auto">No Para Arriesgarlo.</span>
+              <span className="block max-w-[320px] mx-auto">Porque invertir en Renta fija</span>
+              <span className="block max-w-[280px] mx-auto">nunca ha sido tan</span>
+              <span className="block max-w-[200px] mx-auto"><span className="text-green">rentable y seguro</span></span>
             </span>
             <span className="hidden md:block">
-              Un Producto Diseñado para <span className="text-green">Proteger el Capital</span>,<br />
-              No Para Arriesgarlo.
+              Porque invertir en Renta fija nunca ha sido tan<br />
+              <span className="text-green">rentable y seguro</span>
             </span>
           </h2>
           <p className="text-xl text-silver-100 max-w-3xl mx-auto">

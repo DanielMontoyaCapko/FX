@@ -1,5 +1,5 @@
 import { Button } from "@/components/ui/button";
-import { Calendar, FileText } from "lucide-react";
+import { Calendar } from "lucide-react";
 
 export default function Process() {
   const directProcess = [
@@ -53,10 +53,7 @@ export default function Process() {
     console.log("Opening Calendly for scheduling");
   };
 
-  const downloadContract = () => {
-    // In a real implementation, this would download the contract example
-    console.log("Downloading contract example");
-  };
+
 
   return (
     <section className="py-10 bg-transparent">
@@ -114,11 +111,11 @@ export default function Process() {
             </div>
             
             <Button 
-              onClick={downloadContract}
-              className="w-full mt-8 bg-emerald-600 text-white hover:bg-emerald-500"
+              onClick={scheduleCalendly}
+              className="w-full mt-8 gradient-navy text-white hover:opacity-90"
             >
-              <FileText className="mr-2 h-4 w-4" />
-              Ver ejemplo de contrato
+              <Calendar className="mr-2 h-4 w-4" />
+              Agendar reunión
             </Button>
           </div>
         </div>

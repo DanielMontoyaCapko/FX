@@ -4,6 +4,7 @@ import dubaiImage from "../../../attached_assets/dubai.webp";
 import etfsImage from "../../../attached_assets/etfs.jpg";
 import materiasPrimasImage from "../../../attached_assets/materias primas.webp";
 import activosDigitalesImage from "../../../attached_assets/activos digitales.webp";
+import tradingImage from "../../../attached_assets/trading.jpg";
 
 export default function Strategy() {
   const strategies = [
@@ -80,16 +81,22 @@ export default function Strategy() {
                   style={{ backgroundImage: `url(${activosDigitalesImage})` }}
                 />
               )}
+              {index === 4 && (
+                <div 
+                  className="absolute inset-0 bg-cover bg-center opacity-15"
+                  style={{ backgroundImage: `url(${tradingImage})` }}
+                />
+              )}
               {/* Contenido de la tarjeta */}
               <div className="relative z-10">
-                {index <= 3 ? (
-                  // Estilo especial para tarjetas con imagen de fondo (índices 0, 1, 2, 3)
+                {index <= 4 ? (
+                  // Estilo especial para tarjetas con imagen de fondo (índices 0, 1, 2, 3, 4)
                   <div className="text-center">
                     <h3 className="font-georgia text-2xl font-semibold text-white mb-4">{strategy.title}</h3>
                     <p className="text-silver-100 text-lg leading-relaxed">{strategy.description}</p>
                   </div>
                 ) : (
-                  // Estilo normal para las otras tarjetas (índice 4 - Trading Algorítmico)
+                  // Estilo normal para las otras tarjetas (si las hubiera)
                   <div className="flex items-start space-x-4">
                     <div className="w-12 h-12 bg-green/20 rounded-lg flex items-center justify-center flex-shrink-0 transition-all duration-300 group-hover:bg-[#344e41]/30">
                       <strategy.icon className="text-green w-6 h-6 drop-shadow-[0_0_8px_rgba(34,197,94,0.6)]" />

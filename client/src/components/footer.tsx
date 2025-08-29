@@ -38,7 +38,8 @@ export default function Footer() {
 
           <div>
             <h3 className="font-semibold text-white mb-4">Contacto</h3>
-            <p className="text-silver-100 text-sm mb-4">dpo@nakamapartners.com</p>
+            <p className="text-silver-100 text-sm mb-2">info@nakamapartners.com</p>
+            <p className="text-silver-100 text-sm mb-4">+34 675 558 429</p>
 
             <div className="flex space-x-4">
               <a href="#" className="text-silver-100 hover:text-green transition-colors">
