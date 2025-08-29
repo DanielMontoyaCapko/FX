@@ -106,7 +106,7 @@ export default function Hero() {
       </section>
 
       {/* Métricas - Fuera del contenedor principal */}
-      <section className="py-16 bg-transparent">
+      <section className="pt-16 pb-8 bg-transparent">
         <div className="container mx-auto px-6">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-4xl mx-auto">
             <div className="text-center p-6 rounded-xl bg-black/30 border border-transparent transition-all duration-300 hover:border-green-500 hover:bg-black/50 hover:shadow-lg hover:shadow-green-500/20 cursor-pointer">
@@ -126,7 +126,7 @@ export default function Hero() {
       </section>
 
       {/* Carrusel con máscara (fades que respetan el fondo) */}
-      <section className="py-16 bg-transparent">
+      <section className="pt-8 pb-12 bg-transparent">
         <div className="container mx-auto px-6">
           <div
             className="relative mt-14 mx-auto"

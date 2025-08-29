@@ -52,7 +52,7 @@ export default function Downloads() {
   }, []);
 
   return (
-    <section className="py-10 bg-transparent">
+    <section className="pt-6 pb-10 bg-transparent">
       <div className="container mx-auto px-6">
         <div className="text-center mb-12">
           <h2 className="font-georgia text-4xl md:text-5xl font-bold text-white mb-6">
@@ -107,7 +107,7 @@ export default function Downloads() {
           {/* Tarjeta 1 - Izquierda */}
           <div className="relative mb-16 lg:mb-20">
             <div className="lg:w-5/12 lg:mr-auto">
-              <div className="bg-black/70 p-8 rounded-2xl border border-silver-500/20 hover:border-green/40 transition-all duration-500 transform hover:scale-105 hover:shadow-lg hover:shadow-green/20 cursor-pointer">
+              <div className="bg-black/70 p-8 rounded-2xl border border-silver-500/20 hover:border-green-500 hover:bg-black/50 hover:shadow-lg hover:shadow-green-500/20 transition-all duration-300 transform hover:scale-105 cursor-pointer">
                 <div className="absolute -top-4 -left-4 w-12 h-12 bg-green rounded-full flex items-center justify-center shadow-lg">
                   <span className="text-white font-bold text-lg">01</span>
                 </div>
@@ -120,7 +120,7 @@ export default function Downloads() {
           {/* Tarjeta 2 - Derecha */}
           <div className="relative mb-16 lg:mb-20">
             <div className="lg:w-5/12 lg:ml-auto">
-              <div className="bg-black/70 p-8 rounded-2xl border border-silver-500/20 hover:border-green/40 transition-all duration-500 transform hover:scale-105 hover:shadow-lg hover:shadow-green/20 cursor-pointer">
+              <div className="bg-black/70 p-8 rounded-2xl border border-silver-500/20 hover:border-green-500 hover:bg-black/50 hover:shadow-lg hover:shadow-green-500/20 transition-all duration-300 transform hover:scale-105 cursor-pointer">
                 <div className="absolute -top-4 -right-4 w-12 h-12 bg-green rounded-full flex items-center justify-center shadow-lg">
                   <span className="text-white font-bold text-lg">02</span>
                 </div>
@@ -133,7 +133,7 @@ export default function Downloads() {
           {/* Tarjeta 3 - Izquierda */}
           <div className="relative mb-16 lg:mb-20">
             <div className="lg:w-5/12 lg:mr-auto">
-              <div className="bg-black/70 p-8 rounded-2xl border border-silver-500/20 hover:border-green/40 transition-all duration-500 transform hover:scale-105 hover:shadow-lg hover:shadow-green/20 cursor-pointer">
+              <div className="bg-black/70 p-8 rounded-2xl border border-silver-500/20 hover:border-green-500 hover:bg-black/50 hover:shadow-lg hover:shadow-green-500/20 transition-all duration-300 transform hover:scale-105 cursor-pointer">
                 <div className="absolute -top-4 -left-4 w-12 h-12 bg-green rounded-full flex items-center justify-center shadow-lg">
                   <span className="text-white font-bold text-lg">03</span>
                 </div>
@@ -146,7 +146,7 @@ export default function Downloads() {
           {/* Tarjeta 4 - Derecha */}
           <div className="relative mb-16 lg:mb-20">
             <div className="lg:w-5/12 lg:ml-auto">
-              <div className="bg-black/70 p-8 rounded-2xl border border-silver-500/20 hover:border-green/40 transition-all duration-500 transform hover:scale-105 hover:shadow-lg hover:shadow-green/20 cursor-pointer">
+              <div className="bg-black/70 p-8 rounded-2xl border border-silver-500/20 hover:border-green-500 hover:bg-black/50 hover:shadow-lg hover:shadow-green-500/20 transition-all duration-300 transform hover:scale-105 cursor-pointer">
                 <div className="absolute -top-4 -right-4 w-12 h-12 bg-green rounded-full flex items-center justify-center shadow-lg">
                   <span className="text-white font-bold text-lg">04</span>
                 </div>
@@ -159,7 +159,7 @@ export default function Downloads() {
           {/* Tarjeta 5 - Izquierda */}
           <div className="relative mb-16 lg:mb-20">
             <div className="lg:w-5/12 lg:mr-auto">
-              <div className="bg-black/70 p-8 rounded-2xl border border-silver-500/20 hover:border-green/40 transition-all duration-500 transform hover:scale-105 hover:shadow-lg hover:shadow-green/20 cursor-pointer">
+              <div className="bg-black/70 p-8 rounded-2xl border border-silver-500/20 hover:border-green-500 hover:bg-black/50 hover:shadow-lg hover:shadow-green-500/20 transition-all duration-300 transform hover:scale-105 cursor-pointer">
                 <div className="absolute -top-4 -left-4 w-12 h-12 bg-green rounded-full flex items-center justify-center shadow-lg">
                   <span className="text-white font-bold text-lg">05</span>
                 </div>
@@ -168,11 +168,11 @@ export default function Downloads() {
               </div>
             </div>
           </div>
-
+          
           {/* Tarjeta 6 - Derecha */}
           <div className="relative mb-16 lg:mb-20">
             <div className="lg:w-5/12 lg:ml-auto">
-              <div className="bg-black/70 p-8 rounded-2xl border border-silver-500/20 hover:border-green/40 transition-all duration-500 transform hover:scale-105 hover:shadow-lg hover:shadow-green/20 cursor-pointer">
+              <div className="bg-black/70 p-8 rounded-2xl border border-silver-500/20 hover:border-green-500 hover:bg-black/50 hover:shadow-lg hover:shadow-green-500/20 transition-all duration-300 transform hover:scale-105 cursor-pointer">
                 <div className="absolute -top-4 -right-4 w-12 h-12 bg-green rounded-full flex items-center justify-center shadow-lg">
                   <span className="text-white font-bold text-lg">06</span>
                 </div>
@@ -180,12 +180,12 @@ export default function Downloads() {
                 <p className="text-silver-100 text-base leading-relaxed">Realiza la transferencia con el importe seleccionado</p>
               </div>
             </div>
-          </div>
-
+            </div>
+            
           {/* Tarjeta 7 - Izquierda */}
           <div className="relative mb-16 lg:mb-20">
             <div className="lg:w-5/12 lg:mr-auto">
-              <div className="bg-black/70 p-8 rounded-2xl border border-silver-500/20 hover:border-green/40 transition-all duration-500 transform hover:scale-105 hover:shadow-lg hover:shadow-green/20 cursor-pointer">
+              <div className="bg-black/70 p-8 rounded-2xl border border-silver-500/20 hover:border-green-500 hover:bg-black/50 hover:shadow-lg hover:shadow-green-500/20 transition-all duration-300 transform hover:scale-105 cursor-pointer">
                 <div className="absolute -top-4 -left-4 w-12 h-12 bg-green rounded-full flex items-center justify-center shadow-lg">
                   <span className="text-white font-bold text-lg">07</span>
                 </div>
@@ -193,12 +193,12 @@ export default function Downloads() {
                 <p className="text-silver-100 text-base leading-relaxed">Firma su depósito nominal e inicia con su remuneración</p>
               </div>
             </div>
-          </div>
-
+            </div>
+            
           {/* Tarjeta 8 - Derecha */}
           <div className="relative mb-16 lg:mb-20">
             <div className="lg:w-5/12 lg:ml-auto">
-              <div className="bg-black/70 p-8 rounded-2xl border border-silver-500/20 hover:border-green/40 transition-all duration-500 transform hover:scale-105 hover:shadow-lg hover:shadow-green/20 cursor-pointer">
+              <div className="bg-black/70 p-8 rounded-2xl border border-silver-500/20 hover:border-green-500 hover:bg-black/50 hover:shadow-lg hover:shadow-green-500/20 transition-all duration-300 transform hover:scale-105 cursor-pointer">
                 <div className="absolute -top-4 -right-4 w-12 h-12 bg-green rounded-full flex items-center justify-center shadow-lg">
                   <span className="text-white font-bold text-lg">08</span>
                 </div>
@@ -211,7 +211,7 @@ export default function Downloads() {
           {/* Tarjeta 9 - Izquierda */}
           <div className="relative mb-16 lg:mb-20">
             <div className="lg:w-5/12 lg:mr-auto">
-              <div className="bg-black/70 p-8 rounded-2xl border border-silver-500/20 hover:border-green/40 transition-all duration-500 transform hover:scale-105 hover:shadow-lg hover:shadow-green/20 cursor-pointer">
+              <div className="bg-black/70 p-8 rounded-2xl border border-silver-500/20 hover:border-green-500 hover:bg-black/50 hover:shadow-lg hover:shadow-green-500/20 transition-all duration-300 transform hover:scale-105 cursor-pointer">
                 <div className="absolute -top-4 -left-4 w-12 h-12 bg-green rounded-full flex items-center justify-center shadow-lg">
                   <span className="text-white font-bold text-lg">09</span>
                 </div>

@@ -34,9 +34,9 @@ export default function Security() {
   ];
 
   return (
-    <section id="seguridad" className="py-10 bg-transparent">
+    <section id="seguridad" className="pt-10 pb-6 bg-transparent">
       <div className="container mx-auto px-6">
-        <div className="text-center mb-16">
+        <div className="text-center mb-12">
           <h2 className="font-georgia text-4xl md:text-5xl font-bold text-white mb-6">
             <span className="block md:hidden">
               <span className="block max-w-[320px] mx-auto">Porque invertir en Renta fija</span>
