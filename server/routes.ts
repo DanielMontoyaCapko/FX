@@ -507,7 +507,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const updates = {
         ...updateData,
         reviewedBy: req.user!.id,
-        reviewedAt: new Date(),
+        reviewedAt: new Date().toISOString().slice(0, 19).replace('T', ' '),
       };
       
       const kyc = await storage.updateKyc(kycId, updates);

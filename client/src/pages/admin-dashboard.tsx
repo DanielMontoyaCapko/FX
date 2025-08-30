@@ -890,7 +890,9 @@ export default function AdminDashboard() {
         notes: editingKyc.notes || ''
       } : { 
         status: editingKyc.status,
-        notes: editingKyc.notes || ''
+        notes: editingKyc.notes || '',
+        documentType: editingKyc.documentType,
+        documentNumber: editingKyc.documentNumber
       };
       
       const response = await fetch(url, {
@@ -3435,7 +3437,7 @@ export default function AdminDashboard() {
                 </div>
 
                 {/* Documents */}
-                {editingKyc.documentsUrls && editingKyc.documentsUrls.length > 0 && (
+                {editingKyc.documentsUrls && Array.isArray(editingKyc.documentsUrls) && editingKyc.documentsUrls.length > 0 && (
                   <div>
                     <Label className="text-emerald-300 text-sm mb-2 block">Documentos Subidos</Label>
                     <div className="space-y-2">
@@ -3458,9 +3460,60 @@ export default function AdminDashboard() {
                     </div>
                   </div>
                 )}
+                {editingKyc.documentsUrls && typeof editingKyc.documentsUrls === 'string' && editingKyc.documentsUrls !== '[]' && (
+                  <div>
+                    <Label className="text-emerald-300 text-sm mb-2 block">Documentos Subidos</Label>
+                    <div className="space-y-2">
+                      {JSON.parse(editingKyc.documentsUrls).map((url: string, idx: number) => (
+                        <div key={idx} className="flex items-center justify-between p-3 bg-black/30 rounded border border-emerald-500/15">
+                          <div className="flex items-center gap-3">
+                            <FileText className="w-4 h-4 text-emerald-400" />
+                            <span className="text-emerald-50">{url.split('/').pop()}</span>
+                          </div>
+                          <Button 
+                            variant="outline" 
+                            size="sm" 
+                            className="border-emerald-500/20 text-emerald-50"
+                            onClick={() => handleViewDocuments(JSON.parse(editingKyc.documentsUrls))}
+                          >
+                            Ver
+                          </Button>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
 
                 {/* Review Form */}
                 <div className="space-y-4">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                      <Label className="text-emerald-300 text-sm mb-2 block">Tipo de Documento</Label>
+                      <Select
+                        value={editingKyc.documentType || 'DNI'}
+                        onValueChange={(value) => setEditingKyc({...editingKyc, documentType: value})}
+                      >
+                        <SelectTrigger className="bg-black/50 border-emerald-500/20 text-emerald-50">
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent className="bg-black/40 border-emerald-500/15 text-emerald-50">
+                          <SelectItem value="DNI">DNI</SelectItem>
+                          <SelectItem value="Pasaporte">Pasaporte</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                    
+                    <div>
+                      <Label className="text-emerald-300 text-sm mb-2 block">Número de Documento</Label>
+                      <Input
+                        value={editingKyc.documentNumber || ''}
+                        onChange={(e) => setEditingKyc({...editingKyc, documentNumber: e.target.value})}
+                        placeholder="Ingrese número de documento"
+                        className="bg-black/50 border-emerald-500/20 text-emerald-50 placeholder:text-emerald-200/60"
+                      />
+                    </div>
+                  </div>
+
                   <div>
                     <Label className="text-emerald-300 text-sm mb-2 block">Estado KYC</Label>
                     <Select
