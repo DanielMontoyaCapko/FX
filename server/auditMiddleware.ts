@@ -149,8 +149,9 @@ async function logAuditEntry(
       newValues,
       description,
       ipAddress,
-      userAgent
-    });;
+      userAgent,
+      createdAt: new Date().toISOString()
+    });
 
   } catch (error) {
     console.error('[AUDIT] Error logging audit entry:', error);

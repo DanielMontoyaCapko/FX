@@ -166,7 +166,6 @@ export const insertContractSchema = createInsertSchema(contracts).omit({
 
 export const insertAuditLogSchema = createInsertSchema(auditLogs).omit({
   id: true,
-  createdAt: true,
 });
 
 export const insertClientActivityLogSchema = createInsertSchema(clientActivityLogs).omit({
