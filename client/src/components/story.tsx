@@ -61,7 +61,7 @@ export default function Story() {
               
               {/* Columna Derecha - Foto centrada */}
               <div className="text-center flex flex-col items-center justify-center">
-                <div className="w-48 h-48 bg-green/20 rounded-lg flex items-center justify-center border border-green/30 overflow-hidden">
+                <div className="w-80 h-96 bg-green/20 rounded-lg flex items-center justify-center border border-green/30 overflow-hidden">
                   <img 
                     src="/attached_assets/Raul.jpg" 
                     alt="Raúl - Fundador de Nakama&Partners"
