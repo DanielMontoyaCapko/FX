@@ -149,7 +149,7 @@ function DepositoView({
       </div>
 
       {/* Condición previa de firma */}
-      <Card className="bg-black/40 border border-emerald-500/15 rounded-2xl transition-all duration-300 hover:border-emerald-500/25 hover:bg-black/50 hover:shadow-lg hover:shadow-emerald-500/20">
+      <Card className="bg-black/40 border border-emerald-500/15 rounded-2xl">
         <CardContent className="p-6">
           <div className="flex items-center gap-2 mb-3">
             <ShieldCheck className="w-5 h-5 text-emerald-400" />
@@ -184,7 +184,7 @@ function DepositoView({
       </Card>
 
       {/* Paso 1: Nueva aportación */}
-      <Card className="bg-black/40 border border-emerald-500/15 rounded-2xl transition-all duration-300 hover:border-emerald-500/25 hover:bg-black/50 hover:shadow-lg hover:shadow-emerald-500/20">
+      <Card className="bg-black/40 border border-emerald-500/15 rounded-2xl">
         <CardContent className="p-6 space-y-6">
           <div className="rounded-xl border border-emerald-500/15 bg-black/30 p-5">
             <div className="flex items-center justify-between">
@@ -527,7 +527,7 @@ function RetiroView({
         <p className="text-emerald-200/80">Solicita un retiro a cuenta bancaria o wallet</p>
       </div>
 
-      <Card className="bg-black/40 border border-emerald-500/15 rounded-2xl transition-all duration-300 hover:border-emerald-500/25 hover:bg-black/50 hover:shadow-lg hover:shadow-emerald-500/20">
+      <Card className="bg-black/40 border border-emerald-500/15 rounded-2xl">
         <CardContent className="p-6 space-y-6 max-h-[72vh] overflow-y-auto">
           {!hasActiveDeposit ? (
             <div className="text-emerald-200/80 text-sm">
@@ -933,7 +933,6 @@ export default function PartnerDashboard() {
   // Filtros CONTRATOS
   const [showContractFilters, setShowContractFilters] = useState(false);
   const [contractSort, setContractSort] = useState<"" | "amountDesc" | "amountAsc" | "endAsc" | "endDesc">("");
-  const [contractQuickFilter, setContractQuickFilter] = useState<"all" | "vigentes" | "vencidos">("all");
   const [contractFilters, setContractFilters] = useState({
     search: "",
     status: "",
@@ -1252,7 +1251,7 @@ export default function PartnerDashboard() {
               <p className="text-emerald-200/80">Gestiona tu información personal</p>
             </div>
 
-            <Card className="bg-black/40 border border-emerald-500/15 rounded-2xl transition-all duration-300 hover:border-emerald-500/25 hover:bg-black/50 hover:shadow-lg hover:shadow-emerald-500/20">
+            <Card className="bg-black/40 border border-emerald-500/15 rounded-2xl">
               <CardContent className="p-6">
                 <Tabs value={profileActiveTab} onValueChange={setProfileActiveTab} className="w-full">
                   <TabsList className="grid w-full grid-cols-2 bg-black/40 border border-emerald-500/15 rounded-xl">
@@ -1587,7 +1586,7 @@ export default function PartnerDashboard() {
                 ].map(({ label, value, note, icon: Icon }, i) => (
                   <Card
                     key={i}
-                    className="bg-black/40 border border-emerald-500/15 rounded-2xl transition-all duration-300 hover:border-emerald-500/25 hover:bg-black/50 hover:shadow-lg hover:shadow-emerald-500/20 shadow-[0_0_0_1px_rgba(16,185,129,0.12),0_20px_60px_-20px_rgba(16,185,129,0.25)]"
+                    className="bg-black/40 border border-emerald-500/15 rounded-2xl shadow-[0_0_0_1px_rgba(16,185,129,0.12),0_20px_60px_-20px_rgba(16,185,129,0.25)]"
                   >
                     <CardContent className="p-6">
                       <div className="flex items-center justify-between mb-4">
@@ -1603,36 +1602,50 @@ export default function PartnerDashboard() {
                 ))}
               </div>
 
+              {/* Progreso hacia tier */}
+              <Card className="bg-black/40 border border-emerald-500/15 rounded-2xl shadow-[0_0_0_1px_rgba(16,185,129,0.12),0_20px_60px_-20px_rgba(16,185,129,0.25)] mb-8">
+                <CardContent className="p-6">
+                  <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-6">
+                    <div>
+                      <p className="text-emerald-200/80 text-sm font-medium">Progreso hacia Diamond Partner</p>
+                      <div className="flex items-center gap-3">
+                        <span className="text-emerald-50 text-4xl md:text-5xl font-extrabold">
+                          {partnerStats.nextTierProgress}%
+                        </span>
+                        <Crown className="w-8 h-8 text-emerald-400" />
+                      </div>
+                      <p className="text-emerald-400 text-sm">Faltan $820K en volumen</p>
+                    </div>
 
+                    <div className="w-full md:max-w-xl">
+                      <Progress
+                        value={partnerStats.nextTierProgress}
+                        className="h-4 bg-emerald-900/30 rounded-full [&>div]:bg-gradient-to-r [&>div]:from-emerald-500 [&>div]:to-emerald-400"
+                      />
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
             </div>
 
             {/* Métricas superiores DINÁMICAS basadas en clientes */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
               {[
-                { label: "Clientes Activos", value: resumenStats.activeClients, icon: Users, clickable: true },
+                { label: "Clientes Activos", value: resumenStats.activeClients, icon: Users },
                 {
                   label: "Volumen Activo",
                   value: `$${resumenStats.activeVolume.toLocaleString()}`,
                   icon: TrendingUp,
-                  clickable: false,
                 },
-                { label: "Por vencer (≤30 días)", value: resumenStats.expiringSoon, icon: UserPlus, clickable: false },
-              ].map(({ label, value, icon: Icon, clickable }, i) => (
-                <Card 
-                  key={i} 
-                  className={`bg-black/40 border border-emerald-500/15 rounded-2xl transition-all duration-300 hover:border-emerald-500/25 hover:bg-black/50 hover:shadow-lg hover:shadow-emerald-500/20 ${
-                    clickable ? 'cursor-pointer hover:bg-black/50 hover:border-emerald-500/25 transition-all duration-200 hover:shadow-[0_0_0_1px_rgba(16,185,129,0.2)]' : ''
-                  }`}
-                  onClick={clickable ? () => setActiveTab("clientes") : undefined}
-                >
+                { label: "Por vencer (≤30 días)", value: resumenStats.expiringSoon, icon: UserPlus },
+              ].map(({ label, value, icon: Icon }, i) => (
+                <Card key={i} className="bg-black/40 border border-emerald-500/15 rounded-2xl">
                   <CardContent className="p-6">
                     <div className="flex items-center justify-between">
                       <div>
                         <p className="text-emerald-200/80 text-sm font-medium">{label}</p>
                         <p className="text-emerald-50 text-3xl font-bold">{value}</p>
-                        <p className="text-emerald-400 text-xs">
-                          {clickable ? "Click para ver detalles" : "Actualizado"}
-                        </p>
+                        <p className="text-emerald-400 text-xs">Actualizado</p>
                       </div>
                       <Icon className="w-8 h-8 text-emerald-400" />
                     </div>
@@ -1642,7 +1655,7 @@ export default function PartnerDashboard() {
             </div>
 
             {/* Chart */}
-            <Card className="bg-black/40 border border-emerald-500/15 rounded-2xl transition-all duration-300 hover:border-emerald-500/25 hover:bg-black/50 hover:shadow-lg hover:shadow-emerald-500/20 mb-8">
+            <Card className="bg-black/40 border border-emerald-500/15 rounded-2xl mb-8">
               <CardHeader>
                 <CardTitle className="text-emerald-50">
                   <span className="inline-flex items-center gap-4">
@@ -1720,7 +1733,7 @@ export default function PartnerDashboard() {
               </div>
 
               {showFilters && (
-                <Card className="bg-black/40 border border-emerald-500/15 rounded-2xl transition-all duration-300 hover:border-emerald-500/25 hover:bg-black/50 hover:shadow-lg hover:shadow-emerald-500/20">
+                <Card className="bg-black/40 border border-emerald-500/15 rounded-2xl">
                   <CardContent className="p-6">
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                       {/* Orden */}
@@ -1862,7 +1875,7 @@ export default function PartnerDashboard() {
             </div>
 
             {/* Cartera */}
-            <Card className="bg-black/40 border border-emerald-500/15 rounded-2xl transition-all duration-300 hover:border-emerald-500/25 hover:bg-black/50 hover:shadow-lg hover:shadow-emerald-500/20">
+            <Card className="bg-black/40 border border-emerald-500/15 rounded-2xl">
               {/* Encabezado izquierda + botón */}
               <CardHeader className="items-start">
                 <CardTitle className="text-emerald-50">Cartera de Clientes</CardTitle>
@@ -2204,7 +2217,7 @@ export default function PartnerDashboard() {
                   {showContractFilters ? "Ocultar Filtros" : "Mostrar Filtros"}
                 </Button>
 
-                {(Object.values(contractFilters).some((v) => v !== "") || contractSort !== "" || contractQuickFilter !== "all") && (
+                {(Object.values(contractFilters).some((v) => v !== "") || contractSort !== "") && (
                   <Button
                     variant="ghost"
                     onClick={() => {
@@ -2220,7 +2233,6 @@ export default function PartnerDashboard() {
                         vencimiento: "",
                       });
                       setContractSort("");
-                      setContractQuickFilter("all");
                     }}
                     className="text-emerald-200 hover:text-emerald-50"
                   >
@@ -2231,7 +2243,7 @@ export default function PartnerDashboard() {
               </div>
 
               {showContractFilters && (
-                <Card className="bg-black/40 border border-emerald-500/15 rounded-2xl transition-all duration-300 hover:border-emerald-500/25 hover:bg-black/50 hover:shadow-lg hover:shadow-emerald-500/20">
+                <Card className="bg-black/40 border border-emerald-500/15 rounded-2xl">
                   <CardContent className="p-6">
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                       {/* Búsqueda */}
@@ -2422,12 +2434,6 @@ export default function PartnerDashboard() {
                   const daysLeft = Math.ceil((end.getTime() - Date.now()) / 86400000);
                   const matchVenc = !vencLimit || (daysLeft > 0 && daysLeft <= vencLimit);
 
-                  // Aplicar filtro rápido
-                  const matchQuickFilter =
-                    contractQuickFilter === "all" ||
-                    (contractQuickFilter === "vigentes" && c.status === "Vigente") ||
-                    (contractQuickFilter === "vencidos" && c.status === "Vencido");
-
                   return (
                     matchSearch &&
                     matchStatus &&
@@ -2436,8 +2442,7 @@ export default function PartnerDashboard() {
                     matchAmount &&
                     matchFrom &&
                     matchTo &&
-                    matchVenc &&
-                    matchQuickFilter
+                    matchVenc
                   );
                 })
                 .sort((a, b) => {
@@ -2450,44 +2455,6 @@ export default function PartnerDashboard() {
 
               return (
                 <div className="space-y-4">
-                  {/* Tarjetas de filtro rápido */}
-                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
-                    {[
-                      { key: "all", value: String(filtered.length), label: "Total Contratos" },
-                      { key: "vigentes", value: String(filtered.filter(c => c.status === "Vigente").length), label: "Vigentes" },
-                      { key: "vencidos", value: String(filtered.filter(c => c.status === "Vencido").length), label: "Vencidos" },
-                    ].map(({ key, value, label }) => {
-                      const active = contractQuickFilter === (key as typeof contractQuickFilter);
-                      const baseBorder =
-                        key === "vigentes" ? "border-emerald-500/25" :
-                        key === "vencidos" ? "border-red-500/20" :
-                                            "border-emerald-500/15";
-                      const baseText =
-                        key === "vigentes" ? "text-emerald-400" :
-                        key === "vencidos" ? "text-red-400" :
-                                            "text-emerald-50";
-
-                      return (
-                        <Card
-                          key={key}
-                          role="button"
-                          onClick={() => setContractQuickFilter(key as typeof contractQuickFilter)}
-                          className={[
-                            "bg-black/40 rounded-2xl cursor-pointer select-none transition-all border",
-                            baseBorder,
-                            active ? "ring-1 ring-emerald-400/60" : "",
-                            "hover:shadow-[0_0_0_1px_rgba(16,185,129,0.25),0_10px_30px_-12px_rgba(16,185,129,0.35)]",
-                          ].join(" ")}
-                        >
-                          <CardContent className="p-4 text-center">
-                            <div className={`text-2xl font-bold ${baseText}`}>{value}</div>
-                            <p className="text-emerald-200/80 text-sm">{label}</p>
-                          </CardContent>
-                        </Card>
-                      );
-                    })}
-                  </div>
-
                   <div className="flex items-center justify-between">
                     <h3 className="text-xl font-semibold text-emerald-50">Listado de Contratos</h3>
                     <p className="text-emerald-200/80">
@@ -2628,7 +2595,7 @@ export default function PartnerDashboard() {
               </TabsList>
 
               <TabsContent value="calendario" className="mt-6">
-                <Card className="bg-black/40 border border-emerald-500/15 rounded-2xl transition-all duration-300 hover:border-emerald-500/25 hover:bg-black/50 hover:shadow-lg hover:shadow-emerald-500/20">
+                <Card className="bg-black/40 border border-emerald-500/15 rounded-2xl">
                   <CardHeader className="space-y-4">
                     <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
                       <div className="flex items-center gap-3">
@@ -2695,7 +2662,7 @@ export default function PartnerDashboard() {
               </TabsContent>
 
               <TabsContent value="material" className="mt-6">
-                <Card className="bg-black/40 border border-emerald-500/15 rounded-2xl transition-all duration-300 hover:border-emerald-500/25 hover:bg-black/50 hover:shadow-lg hover:shadow-emerald-500/20">
+                <Card className="bg-black/40 border border-emerald-500/15 rounded-2xl">
                   <CardHeader>
                     <div className="flex items-center gap-3">
                       <Download className="w-6 h-6 text-emerald-400" />

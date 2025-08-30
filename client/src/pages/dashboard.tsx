@@ -36,8 +36,6 @@ import {
   FileText,
   Trash2,
   PlusCircle,
-  Building2,
-  Handshake,
 
 } from "lucide-react";
 import logoImg from "@/assets/Logo-removeBG_1752488347081.png";
@@ -215,7 +213,7 @@ function DepositoView({
       </div>
 
       {/* Condición previa de firma */}
-      <Card className="bg-black/40 border border-emerald-500/15 rounded-2xl transition-all duration-300 hover:border-emerald-500/25 hover:bg-black/50 hover:shadow-lg hover:shadow-emerald-500/20">
+      <Card className="bg-black/40 border border-emerald-500/15 rounded-2xl">
         <CardContent className="p-6">
           <div className="flex items-center gap-2 mb-3">
             <ShieldCheck className="w-5 h-5 text-emerald-400" />
@@ -250,7 +248,7 @@ function DepositoView({
       </Card>
 
       {/* Paso 1: Nueva aportación */}
-      <Card className="bg-black/40 border border-emerald-500/15 rounded-2xl transition-all duration-300 hover:border-emerald-500/25 hover:bg-black/50 hover:shadow-lg hover:shadow-emerald-500/20">
+      <Card className="bg-black/40 border border-emerald-500/15 rounded-2xl">
         <CardContent className="p-6 space-y-6">
           <div className="rounded-xl border border-emerald-500/15 bg-black/30 p-5">
             <div className="flex items-center justify-between">
@@ -594,7 +592,7 @@ function RetiroView({
         <p className="text-emerald-200/80">Solicita un retiro a cuenta bancaria o wallet</p>
       </div>
 
-      <Card className="bg-black/40 border border-emerald-500/15 rounded-2xl transition-all duration-300 hover:border-emerald-500/25 hover:bg-black/50 hover:shadow-lg hover:shadow-emerald-500/20">
+      <Card className="bg-black/40 border border-emerald-500/15 rounded-2xl">
         <CardContent className="p-6 space-y-6 max-h-[72vh] overflow-y-auto">
           {!hasActiveDeposit ? (
             <div className="text-emerald-200/80 text-sm">
@@ -844,7 +842,7 @@ function ProductInfoView({ onBack, goToDeposit }: { onBack: () => void; goToDepo
         </div>
       </div>
 
-      <Card className="bg-black/40 border border-emerald-500/15 rounded-2xl transition-all duration-300 hover:border-emerald-500/25 hover:bg-black/50 hover:shadow-lg hover:shadow-emerald-500/20">
+      <Card className="bg-black/40 border border-emerald-500/15 rounded-2xl">
         <CardContent className="p-6 space-y-6">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             {[
@@ -1062,14 +1060,18 @@ export default function Dashboard() {
     { 
       titulo: "Depósito Bancario", 
       descripcion: "Confirmación de depósito a plazo fijo con detalles de inversión", 
+      tipo: "PDF", 
       fecha: "2025-01-25", 
+      estado: "Disponible", 
       categoria: "Producto",
       archivo: "/attached_assets/07. Depósito Bancario_1756335354455.pdf"
     },
     { 
       titulo: "Contrato de Colaboración Partner Para Captación de Inversores", 
       descripcion: "Acuerdo de colaboración comercial para asesores y partners", 
+      tipo: "DOCX", 
       fecha: "2025-01-25", 
+      estado: "Disponible", 
       categoria: "Legal",
       archivo: "/attached_assets/08. CONTRATO DE COLABORACIÓN PARTNER PARA CAPTACIÓN DE INVERSORES_1756335354457.docx"
     },
@@ -1376,7 +1378,7 @@ export default function Dashboard() {
               <p className="text-emerald-200/80">Gestiona tu información personal</p>
             </div>
 
-            <Card className="bg-black/40 border border-emerald-500/15 rounded-2xl transition-all duration-300 hover:border-emerald-500/25 hover:bg-black/50 hover:shadow-lg hover:shadow-emerald-500/20">
+            <Card className="bg-black/40 border border-emerald-500/15 rounded-2xl">
               <CardContent className="p-6">
                 <Tabs value={profileActiveTab} onValueChange={setProfileActiveTab} className="w-full">
                   <TabsList className="grid w-full grid-cols-2 bg-black/40 border border-emerald-500/15 rounded-xl">
@@ -1713,8 +1715,21 @@ export default function Dashboard() {
             {/* -------------------------- Vista por defecto -------------------------- */}
             {activeProductsView === "default" ? (
               <div className="mb-8">
+                {/* Hero */}
+                <div
+                  className="relative h-80 rounded-2xl overflow-hidden mb-8 border border-emerald-500/15"
+                  style={{ backgroundImage: `url(${landscapeSvg})`, backgroundSize: "cover", backgroundPosition: "center" }}
+                >
+                  <div className="absolute inset-0 bg-gradient-to-b from-black/70 via-[#0A1713]/80 to-[#0E2A1F]/80 flex items-center justify-center">
+                    <div className="text-center">
+                      <h1 className="text-4xl font-bold text-emerald-50 mb-2">Productos Disponibles</h1>
+                      <p className="text-emerald-200/80 text-lg">Descubre nuestras opciones de inversión</p>
+                    </div>
+                  </div>
+                </div>
+
                 {/* Action Buttons */}
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8 max-w-md mx-auto">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
                   <Button
                     variant="outline"
                     className="border-emerald-500/30 text-emerald-50 hover:bg-emerald-900/10 hover:border-emerald-400 py-4 rounded-xl"
@@ -1733,27 +1748,27 @@ export default function Dashboard() {
                   </Button>
                 </div>
 
-                {/* Producto destacado centrado */}
-                <div className="flex justify-center mb-8">
-                  <Card className="bg-black/40 border border-emerald-500/15 hover:border-emerald-400 hover:shadow-[0_16px_40px_-20px_rgba(16,185,129,0.45)] transition-all rounded-2xl max-w-md w-full">
-                    <CardContent className="p-8">
-                      <div className="flex items-center gap-3 mb-6">
-                        <h2 className="text-2xl font-bold text-emerald-50">Plazo fijo 9% 175 días</h2>
-                        <Badge className="bg-emerald-500 text-black text-sm px-3 py-1">175 días</Badge>
+                {/* Products Grid (producto 9%) */}
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
+                  <Card className="bg-black/40 border border-emerald-500/15 hover:border-emerald-400 hover:shadow-[0_16px_40px_-20px_rgba(16,185,129,0.45)] transition-all rounded-2xl">
+                    <CardContent className="p-6">
+                      <div className="flex items-center gap-3 mb-4">
+                        <h2 className="text-xl font-bold text-emerald-50">Plazo fijo 9% 175 días</h2>
+                        <Badge className="bg-emerald-500 text-black">175 días</Badge>
                       </div>
-                      <p className="text-emerald-200/80 mb-8 leading-relaxed">
+                      <p className="text-emerald-200/80 mb-6 leading-relaxed text-sm">
                         Depósito bancario con un 9% de rentabilidad anual, mediante préstamo participativo y
                         cesión de la pignoración al cliente depositante.
                       </p>
-                      <div className="flex items-center justify-between mb-8">
+                      <div className="flex items-center justify-between mb-6">
                         <div>
-                          <p className="text-4xl font-bold text-emerald-400">9.00%</p>
-                          <p className="text-emerald-200/80 text-sm">Rentabilidad anual</p>
+                          <p className="text-3xl font-bold text-emerald-400">9.00%</p>
+                          <p className="text-emerald-200/80 text-xs">Rentabilidad anual</p>
                         </div>
                         <Badge className="bg-emerald-900/30 text-emerald-200 border border-emerald-500/20">No renovable</Badge>
                       </div>
                       <Button
-                        className="w-full rounded-xl bg-gradient-to-r from-emerald-600 to-emerald-500 hover:from-emerald-500 hover:to-emerald-400 text-white py-3 text-lg"
+                        className="w-full rounded-xl bg-gradient-to-r from-emerald-600 to-emerald-500 hover:from-emerald-500 hover:to-emerald-400 text-white"
                         onClick={() => setActiveProductsView("producto-detalle")}
                       >
                         VER DETALLES
@@ -1821,7 +1836,7 @@ export default function Dashboard() {
                   </div>
 
                   {showMPFilters && (
-                    <Card className="bg-black/40 border border-emerald-500/15 rounded-2xl transition-all duration-300 hover:border-emerald-500/25 hover:bg-black/50 hover:shadow-lg hover:shadow-emerald-500/20">
+                    <Card className="bg-black/40 border border-emerald-500/15 rounded-2xl">
                       <CardContent className="p-6">
                         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                           <div className="space-y-2">
@@ -2148,7 +2163,7 @@ export default function Dashboard() {
               </div>
 
               {showCFilters && (
-                <Card className="bg-black/40 border border-emerald-500/15 rounded-2xl transition-all duration-300 hover:border-emerald-500/25 hover:bg-black/50 hover:shadow-lg hover:shadow-emerald-500/20">
+                <Card className="bg-black/40 border border-emerald-500/15 rounded-2xl">
                   <CardContent className="p-6">
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                       <div className="space-y-2">
@@ -2230,7 +2245,7 @@ export default function Dashboard() {
                     c.titulo.toLowerCase().includes(q) ||
                     c.descripcion.toLowerCase().includes(q);
 
-                  const matchesEstado = true; // Ya no hay estado
+                  const matchesEstado = !cFilters.estado || c.estado === cFilters.estado;
                   const matchesTipo = !cFilters.tipo || c.categoria === cFilters.tipo;
 
                   const t = new Date(c.fecha).getTime();
@@ -2251,23 +2266,27 @@ export default function Dashboard() {
                         <div className="flex-1">
                           <div className="flex items-center gap-3 mb-2">
                             <div className="w-10 h-10 bg-emerald-500 rounded-lg flex items-center justify-center">
-                              {doc.categoria === "Producto" ? (
-                                <Building2 className="h-5 w-5 text-black" />
-                              ) : (
-                                <Handshake className="h-5 w-5 text-black" />
-                              )}
+                              <Download className="h-5 w-5 text-black" />
                             </div>
                             <div>
                               <h4 className="text-lg font-semibold text-emerald-50">{doc.titulo}</h4>
                               <p className="text-emerald-200/80 text-sm">{doc.descripcion}</p>
                             </div>
                           </div>
-                          <div className="text-sm mt-4">
+                          <div className="grid grid-cols-2 md:grid-cols-3 gap-4 text-sm mt-4">
+                            <div>
+                              <p className="text-emerald-200/80">Tipo</p>
+                              <p className="text-emerald-50 font-medium">{doc.tipo}</p>
+                            </div>
                             <div>
                               <p className="text-emerald-200/80">Fecha</p>
                               <p className="text-emerald-50 font-medium">
                                 {new Date(doc.fecha).toLocaleDateString("es-ES")}
                               </p>
+                            </div>
+                            <div>
+                              <p className="text-emerald-200/80">Estado</p>
+                              <Badge className="bg-emerald-500 text-black">{doc.estado}</Badge>
                             </div>
                           </div>
                         </div>
@@ -2277,9 +2296,7 @@ export default function Dashboard() {
                             onClick={() => {
                               const link = document.createElement('a');
                               link.href = doc.archivo;
-                              // Extraer la extensión del archivo del path
-                              const extension = doc.archivo.split('.').pop() || 'pdf';
-                              link.download = `${doc.titulo}.${extension}`;
+                              link.download = `${doc.titulo}.${doc.tipo.toLowerCase()}`;
                               document.body.appendChild(link);
                               link.click();
                               document.body.removeChild(link);
@@ -2305,14 +2322,14 @@ export default function Dashboard() {
                     !q ||
                     c.titulo.toLowerCase().includes(q) ||
                     c.descripcion.toLowerCase().includes(q);
-                  const matchesEstado = true; // Ya no hay estado
+                  const matchesEstado = !cFilters.estado || c.estado === cFilters.estado;
                   const matchesTipo = !cFilters.tipo || c.categoria === cFilters.tipo;
                   const t = new Date(c.fecha).getTime();
                   const fromOk = !cFilters.dateFrom || t >= new Date(cFilters.dateFrom).getTime();
                   const toOk = !cFilters.dateTo || t <= new Date(cFilters.dateTo).getTime();
                   return matchesSearch && matchesEstado && matchesTipo && fromOk && toOk;
                 }).length === 0 && (
-                <Card className="bg-black/30 border border-emerald-500/15 transition-all duration-300 hover:border-emerald-500/25 hover:bg-black/40 hover:shadow-lg hover:shadow-emerald-500/20 border-dashed rounded-2xl">
+                <Card className="bg-black/30 border border-emerald-500/15 border-dashed rounded-2xl">
                   <CardContent className="p-8">
                     <div className="text-center text-emerald-200/80">
                       <Download className="h-12 w-12 mx-auto mb-4 text-emerald-400" />
@@ -2335,18 +2352,9 @@ export default function Dashboard() {
         ) : (
           /* ------------------------------- INICIO (home) ------------------------------- */
           <div>
-            <div className="mb-8 flex justify-between items-start">
-              <div>
-                <h1 className="text-3xl font-bold text-emerald-50">Dashboard</h1>
-                <p className="text-emerald-200/80">Vista general de tu actividad</p>
-              </div>
-              <Button 
-                onClick={handleDownloadStatement} 
-                className="rounded-xl bg-emerald-700 hover:bg-emerald-600 text-white px-6 py-2"
-              >
-                <Download className="h-4 w-4 mr-2" />
-                Descargar Estado de Cuenta
-              </Button>
+            <div className="mb-8">
+              <h1 className="text-3xl font-bold text-emerald-50">Dashboard</h1>
+              <p className="text-emerald-200/80">Vista general de tu actividad</p>
             </div>
 
             {/* KPIs (3 tarjetas) */}
@@ -2354,7 +2362,7 @@ export default function Dashboard() {
               {kpis.map((kpi, i) => (
                 <Card
                   key={i}
-                  className="bg-black/40 border border-emerald-500/15 rounded-2xl transition-all duration-300 hover:border-emerald-500/25 hover:bg-black/50 hover:shadow-lg hover:shadow-emerald-500/20 hover:shadow-[0_16px_40px_-20px_rgba(16,185,129,0.45)] transition-all"
+                  className="bg-black/40 border border-emerald-500/15 rounded-2xl hover:shadow-[0_16px_40px_-20px_rgba(16,185,129,0.45)] transition-all"
                 >
                   <CardContent className="p-6">
                     <div className="flex items-center justify-between">
@@ -2374,9 +2382,6 @@ export default function Dashboard() {
                     {kpi.title === "Progreso en Meses" && (
                       <ProgressBar percent={percentMeses} monthsRemaining={mesesRestantes} />
                     )}
-                    {kpi.title === "Beneficio Total Estimado" && (
-                      <ProgressBar percent={percentMeses} monthsRemaining={mesesRestantes} />
-                    )}
 
                   </CardContent>
                 </Card>
@@ -2384,7 +2389,7 @@ export default function Dashboard() {
             </div>
 
             {/* Producto destacado + gráfica (proyección a 10 años) */}
-            <Card className="bg-black/40 border border-emerald-500/15 rounded-2xl transition-all duration-300 hover:border-emerald-500/25 hover:bg-black/50 hover:shadow-lg hover:shadow-emerald-500/20 mb-8">
+            <Card className="bg-black/40 border border-emerald-500/15 rounded-2xl mb-8">
               <CardContent className="p-8">
                 <div className="text-center mb-6">
                   <h2 className="text-2xl font-bold text-emerald-50 mb-2">Un Producto Sólido, Simple y Rentable</h2>
@@ -2419,19 +2424,8 @@ export default function Dashboard() {
                 </CardContent>
               </Card>
 
-              {/* Botón Calcular Nueva Inversión */}
-              <div className="mt-8 mb-6 flex justify-center">
-                <Button
-                  onClick={handleCalculateInvestment}
-                  className="rounded-xl bg-gradient-to-r from-emerald-600 to-emerald-500 hover:from-emerald-500 hover:to-emerald-400 text-white px-8 py-3 text-lg"
-                >
-                  <Calculator className="h-5 w-5 mr-3" />
-                  Calcular Nueva Inversión
-                </Button>
-              </div>
-
               {/* Actividad reciente */}
-            <Card className="bg-black/40 border border-emerald-500/15 rounded-2xl transition-all duration-300 hover:border-emerald-500/25 hover:bg-black/50 hover:shadow-lg hover:shadow-emerald-500/20">
+            <Card className="bg-black/40 border border-emerald-500/15 rounded-2xl">
               <CardHeader>
                 <CardTitle className="text-emerald-50">Actividad reciente</CardTitle>
                 <CardDescription className="text-emerald-200/80">
@@ -2483,9 +2477,22 @@ export default function Dashboard() {
             </Card>
 
 
-              {/* Espacio para futuras acciones */}
+              {/* Acciones rápidas */}
               <div className="mt-8">
-                {/* El botón de descargar estado de cuenta ahora está en la esquina superior derecha */}
+                <h2 className="text-xl font-bold text-emerald-50 mb-4">Acciones Rápidas</h2>
+                <div className="flex flex-col sm:flex-row gap-4">
+                  <Button onClick={handleDownloadStatement} className="rounded-xl bg-emerald-700 hover:bg-emerald-600 text-white">
+                    <Download className="h-4 w-4 mr-2" />
+                    Descargar Estado de Cuenta
+                  </Button>
+                  <Button
+                    onClick={handleCalculateInvestment}
+                    className="rounded-xl bg-gradient-to-r from-emerald-600 to-emerald-500 hover:from-emerald-500 hover:to-emerald-400 text-white"
+                  >
+                    <Calculator className="h-4 w-4 mr-2" />
+                    Calcular Nueva Inversión
+                  </Button>
+                </div>
               </div>
             </div>
           )}       
@@ -2581,7 +2588,7 @@ function HistorialActivityView({ onBack }: { onBack: () => void }) {
       </div>
 
       {/* Descripción */}
-      <Card className="bg-black/40 border border-emerald-500/15 rounded-2xl transition-all duration-300 hover:border-emerald-500/25 hover:bg-black/50 hover:shadow-lg hover:shadow-emerald-500/20 mb-6">
+      <Card className="bg-black/40 border border-emerald-500/15 rounded-2xl mb-6">
         <CardContent className="p-6">
           <p className="text-emerald-200/80">
             Aquí puedes ver un registro de todas las actividades realizadas en tu cuenta.
@@ -2591,7 +2598,7 @@ function HistorialActivityView({ onBack }: { onBack: () => void }) {
 
       {/* Lista de actividades */}
       {isLoading ? (
-        <Card className="bg-black/40 border border-emerald-500/15 rounded-2xl transition-all duration-300 hover:border-emerald-500/25 hover:bg-black/50 hover:shadow-lg hover:shadow-emerald-500/20">
+        <Card className="bg-black/40 border border-emerald-500/15 rounded-2xl">
           <CardContent className="p-6">
             <div className="text-center text-emerald-200/80">
               <div className="animate-spin w-8 h-8 border-2 border-emerald-400 border-t-transparent rounded-full mx-auto mb-4"></div>
@@ -2638,7 +2645,7 @@ function HistorialActivityView({ onBack }: { onBack: () => void }) {
           ))}
         </div>
       ) : (
-        <Card className="bg-black/30 border border-emerald-500/15 transition-all duration-300 hover:border-emerald-500/25 hover:bg-black/40 hover:shadow-lg hover:shadow-emerald-500/20 border-dashed rounded-2xl">
+        <Card className="bg-black/30 border border-emerald-500/15 border-dashed rounded-2xl">
           <CardContent className="p-8">
             <div className="text-center text-emerald-200/80">
               <FileText className="h-12 w-12 mx-auto mb-4 text-emerald-400" />

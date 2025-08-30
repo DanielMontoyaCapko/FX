@@ -29,22 +29,11 @@ export default function Login() {
   useScrollToTop();
   const [, setLocation] = useLocation();
   const { toast } = useToast();
-  const { login, register, isLoading } = useAuth();
+  const { login, isLoading } = useAuth();
 
   const [loginForm, setLoginForm] = useState({ email: "", password: "" });
   const [showPassword, setShowPassword] = useState(false);
   const [variant, setVariant] = useState<1 | 2 | 3>(DEFAULT_VARIANT);
-  
-  // Estado para el formulario de registro
-  const [showRegister, setShowRegister] = useState(false);
-  const [registerForm, setRegisterForm] = useState({
-    name: "",
-    email: "",
-    password: "",
-    confirmPassword: ""
-  });
-  const [showRegisterPassword, setShowRegisterPassword] = useState(false);
-  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
   useEffect(() => {
     if (typeof window !== "undefined") {
@@ -81,73 +70,19 @@ export default function Login() {
     }
   };
 
-  const handleRegister = async (e: React.FormEvent) => {
-    e.preventDefault();
-
-    if (!registerForm.name || !registerForm.email || !registerForm.password || !registerForm.confirmPassword) {
-      toast({
-        title: "Campos requeridos",
-        description: "Por favor complete todos los campos.",
-        variant: "destructive",
-      });
-      return;
-    }
-
-    if (registerForm.password !== registerForm.confirmPassword) {
-      toast({
-        title: "Contraseñas no coinciden",
-        description: "Las contraseñas deben ser iguales.",
-        variant: "destructive",
-      });
-      return;
-    }
-
-    if (registerForm.password.length < 6) {
-      toast({
-        title: "Contraseña muy corta",
-        description: "La contraseña debe tener al menos 6 caracteres.",
-        variant: "destructive",
-      });
-      return;
-    }
-
-    const result = await register(registerForm.email, registerForm.password, registerForm.name, 'client');
-
-    if (result.success) {
-      toast({ 
-        title: "¡Registro exitoso!", 
-        description: "Tu cuenta ha sido creada. Ahora puedes iniciar sesión." 
-      });
-      // Limpiar formulario y volver al login
-      setRegisterForm({
-        name: "",
-        email: "",
-        password: "",
-        confirmPassword: ""
-      });
-      setShowRegister(false);
-    } else {
-      toast({
-        title: "Error en el registro",
-        description: result.error || "No se pudo crear la cuenta. Inténtalo de nuevo.",
-        variant: "destructive",
-      });
-    }
-  };
-
   // ---------- Bloques UI ----------
   const BrandHeader = () => (
     <div className="flex flex-col items-center text-center">
       <img
         src={logoImg}
         alt="Logo"
-        className="w-14 h-14 md:w-36 md:h-36 mb-3 drop-shadow-[0_0_18px_rgba(16,185,129,0.35)]"
+        className="w-16 h-16 md:w-40 md:h-40 mb-3 drop-shadow-[0_0_18px_rgba(16,185,129,0.35)]"
       />
       <div className="space-y-0.5">
-        <h1 className="font-cormorant text-2xl md:text-3xl font-bold text-emerald-50 leading-tight">
+        <h1 className="font-cormorant text-3xl md:text-4xl font-bold text-emerald-50 leading-tight">
           Nakama Partner
         </h1>
-        <p className="text-emerald-300 text-sm md:text-base tracking-wide">Acceso Corporativo</p>
+        <p className="text-emerald-300 text-base md:text-lg tracking-wide">Portal de Asesores</p>
       </div>
     </div>
   );
@@ -179,16 +114,16 @@ export default function Login() {
     >
       {/* ⬇️ Centrado perfecto del título y descripción en X e Y */}
       <CardHeader className="text-center">
-        <div className="flex flex-col items-center justify-center min-h-[80px] space-y-2 md:space-y-3">
-          <CardTitle className="text-xl md:text-2xl text-emerald-50">Iniciar Sesión</CardTitle>
-          <CardDescription className="text-emerald-200/80 text-xs md:text-sm">
+        <div className="flex flex-col items-center justify-center min-h-[90px] space-y-2 md:space-y-3">
+          <CardTitle className="text-2xl md:text-3xl text-emerald-50">Iniciar Sesión</CardTitle>
+          <CardDescription className="text-emerald-200/80 text-sm md:text-base">
             Ingresa tus credenciales para continuar
           </CardDescription>
         </div>
       </CardHeader>
 
-      <CardContent className="p-4 md:p-6">
-        <form onSubmit={handleLogin} className="space-y-4 md:space-y-5">
+      <CardContent className="p-5 md:p-8">
+        <form onSubmit={handleLogin} className="space-y-5 md:space-y-6">
           {/* Email */}
           <div className="space-y-2">
             <Label htmlFor="email" className="text-emerald-100 text-sm md:text-base">
@@ -265,35 +200,6 @@ export default function Login() {
           >
             {isLoading ? "Ingresando..." : "Iniciar Sesión"}
           </Button>
-
-          {/* Separador */}
-          <div className="relative">
-            <div className="absolute inset-0 flex items-center">
-              <span className="w-full border-t border-emerald-500/20" />
-            </div>
-            <div className="relative flex justify-center text-xs uppercase">
-              <span className="bg-black/40 px-2 text-emerald-200/60">O</span>
-            </div>
-          </div>
-
-          {/* Botón de registro */}
-          <Button
-            type="button"
-            onClick={() => setShowRegister(true)}
-            variant="outline"
-            className={[
-              "w-full rounded-2xl h-11 md:h-12",
-              "border-emerald-500/30 text-emerald-50",
-              "hover:bg-emerald-900/10 hover:border-emerald-400",
-              "text-[15px] md:text-base font-semibold",
-            ].join(" ")}
-          >
-            Crear cuenta de cliente
-          </Button>
-
-          <p className="text-center text-[11.5px] text-emerald-200/70">
-            Al continuar aceptas los Términos y la Política de Privacidad.
-          </p>
         </form>
       </CardContent>
     </Card>
@@ -310,24 +216,24 @@ export default function Login() {
           "shadow-[0_0_0_1px_rgba(16,185,129,0.12),0_24px_70px_-20px_rgba(16,185,129,0.35)]",
         ].join(" ")}
       >
-        <CardHeader className="space-y-0.5 text-left pb-1">
-          <CardTitle className="text-[14px] md:text-[16px] leading-tight text-emerald-50">
+        <CardHeader className="space-y-1 text-left pb-3 md:pb-4">
+          <CardTitle className="text-[20px] md:text-[22px] leading-tight text-emerald-50">
             Accede a tu cuenta
           </CardTitle>
-          <CardDescription className="text-emerald-200/80 text-[11px]">
+          <CardDescription className="text-emerald-200/80 text-[14px]">
             Usa tu correo corporativo para iniciar sesión
           </CardDescription>
         </CardHeader>
 
-        <CardContent className="pt-0 pb-2">
-          <form onSubmit={handleLogin} className="space-y-2">
+        <CardContent className="pt-0 pb-6 md:pb-7">
+          <form onSubmit={handleLogin} className="space-y-4.5 md:space-y-5">
             {/* Email */}
-            <div className="space-y-0.5">
-              <Label htmlFor="email" className="text-emerald-100 text-xs">
+            <div className="space-y-1.5">
+              <Label htmlFor="email" className="text-emerald-100 text-sm md:text-[15px]">
                 Email
               </Label>
               <div className="relative">
-                <User className="absolute left-4 top-1/2 -translate-y-1/2 h-[16px] w-[16px] text-emerald-300/80" />
+                <User className="absolute left-4 top-1/2 -translate-y-1/2 h-[18px] w-[18px] text-emerald-300/80" />
                 <Input
                   id="email"
                   type="email"
@@ -337,24 +243,24 @@ export default function Login() {
                   onChange={(e) =>
                     setLoginForm((prev) => ({ ...prev, email: e.target.value }))
                   }
-                                  className={[
-                  "h-8 md:h-9 pl-8 md:pl-9 pr-3 text-[12px] leading-none",
-                  "bg-emerald-950/40 text-emerald-50 placeholder:text-emerald-200/50",
-                  "border border-emerald-500/20",
-                  "focus-visible:ring-2 focus-visible:ring-emerald-400 focus-visible:ring-offset-0",
-                ].join(" ")}
+                  className={[
+                    "h-11 md:h-12 pl-11 md:pl-12 pr-4 text-[14.5px] md:text-[15px] leading-none",
+                    "bg-emerald-950/40 text-emerald-50 placeholder:text-emerald-200/50",
+                    "border border-emerald-500/20",
+                    "focus-visible:ring-2 focus-visible:ring-emerald-400 focus-visible:ring-offset-0",
+                  ].join(" ")}
                   required
                 />
               </div>
             </div>
 
             {/* Password */}
-            <div className="space-y-0.5">
-              <Label htmlFor="password" className="text-emerald-100 text-xs">
+            <div className="space-y-1.5">
+              <Label htmlFor="password" className="text-emerald-100 text-sm md:text-[15px]">
                 Contraseña
               </Label>
               <div className="relative">
-                <Lock className="absolute left-4 top-1/2 -translate-y-1/2 h-[16px] w-[16px] text-emerald-300/80" />
+                <Lock className="absolute left-4 top-1/2 -translate-y-1/2 h-[18px] w-[18px] text-emerald-300/80" />
                 <Input
                   id="password"
                   type={showPassword ? "text" : "password"}
@@ -364,12 +270,12 @@ export default function Login() {
                   onChange={(e) =>
                     setLoginForm((prev) => ({ ...prev, password: e.target.value }))
                   }
-                                  className={[
-                  "h-8 md:h-9 pl-8 md:pl-9 pr-8 md:pr-9 text-[12px] leading-none",
-                  "bg-emerald-950/40 text-emerald-50 placeholder:text-emerald-200/50",
-                  "border border-emerald-500/20",
-                  "focus-visible:ring-2 focus-visible:ring-emerald-400 focus-visible:ring-offset-0",
-                ].join(" ")}
+                  className={[
+                    "h-11 md:h-12 pl-11 md:pl-12 pr-11 md:pr-12 text-[14.5px] md:text-[15px] leading-none",
+                    "bg-emerald-950/40 text-emerald-50 placeholder:text-emerald-200/50",
+                    "border border-emerald-500/20",
+                    "focus-visible:ring-2 focus-visible:ring-emerald-400 focus-visible:ring-offset-0",
+                  ].join(" ")}
                   required
                 />
                 <button
@@ -379,9 +285,9 @@ export default function Login() {
                   aria-label={showPassword ? "Ocultar contraseña" : "Mostrar contraseña"}
                 >
                   {showPassword ? (
-                    <EyeOff className="h-[16px] w-[16px]" />
+                    <EyeOff className="h-[18px] w-[18px]" />
                   ) : (
-                    <Eye className="h-[16px] w-[16px]" />
+                    <Eye className="h-[18px] w-[18px]" />
                   )}
                 </button>
               </div>
@@ -391,10 +297,10 @@ export default function Login() {
             <Button
               type="submit"
               className={[
-                "w-full rounded-xl h-8 md:h-9",
+                "w-full rounded-xl h-11 md:h-12",
                 "bg-gradient-to-r from-emerald-600 to-emerald-500",
                 "hover:from-emerald-500 hover:to-emerald-400",
-                "text-[12px] font-semibold",
+                "text-[15px] font-semibold",
                 "shadow-[0_12px_34px_-10px_rgba(16,185,129,0.55)]",
               ].join(" ")}
               disabled={isLoading}
@@ -402,224 +308,13 @@ export default function Login() {
               {isLoading ? "Ingresando..." : "Iniciar Sesión"}
             </Button>
 
-            {/* Separador */}
-            <div className="relative">
-              <div className="absolute inset-0 flex items-center">
-                <span className="w-full border-t border-emerald-500/20" />
-              </div>
-              <div className="relative flex justify-center text-xs">
-                <span className="bg-black/50 px-2 text-emerald-200/60">o</span>
-              </div>
-            </div>
-
-            {/* Botón para crear cuenta */}
-            <Button
-              type="button"
-              onClick={() => setShowRegister(true)}
-              variant="outline"
-              className={[
-                "w-full rounded-xl h-8 md:h-9",
-                "border-emerald-500/30 text-emerald-50",
-                "hover:bg-emerald-900/10 hover:border-emerald-400",
-                "text-[12px] font-semibold",
-              ].join(" ")}
-            >
-              Crear cuenta de cliente
-            </Button>
-
-            <p className="text-[9px] text-emerald-200/70 text-center">
+            <p className="text-[11.5px] text-emerald-200/70 text-center">
               Al continuar aceptas los Términos y la Política de Privacidad.
             </p>
           </form>
         </CardContent>
       </Card>
     </div>
-  );
-
-  const RegisterFormCard = () => (
-    <Card
-      className={[
-        "rounded-3xl bg-black/40 backdrop-blur-sm",
-        "border border-emerald-500/15",
-        "shadow-[0_0_0_1px_rgba(16,185,129,0.12),0_24px_70px_-20px_rgba(16,185,129,0.28)]",
-      ].join(" ")}
-    >
-      <CardHeader className="text-center">
-        <div className="flex flex-col items-center justify-center min-h-[60px] space-y-1 md:space-y-2">
-          <CardTitle className="text-lg md:text-xl text-emerald-50">Crear Cuenta de Cliente</CardTitle>
-          <CardDescription className="text-emerald-200/80 text-xs">
-            Solo para clientes. Partners y admins se crean desde el dashboard.
-          </CardDescription>
-        </div>
-      </CardHeader>
-
-      <CardContent className="p-3 md:p-4">
-        <form onSubmit={handleRegister} className="space-y-3 md:space-y-4">
-          {/* Nombre */}
-          <div className="space-y-1">
-            <Label htmlFor="name" className="text-emerald-100 text-sm">
-              Nombre completo
-            </Label>
-            <div className="relative">
-              <User className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-emerald-300/80" />
-              <Input
-                id="name"
-                type="text"
-                autoComplete="name"
-                placeholder="Tu nombre completo"
-                value={registerForm.name}
-                onChange={(e) =>
-                  setRegisterForm((prev) => ({ ...prev, name: e.target.value }))
-                }
-                className={[
-                  "h-10 md:h-11 pl-10 pr-3 text-sm",
-                  "bg-emerald-950/40 text-emerald-50 placeholder:text-emerald-200/50",
-                  "border border-emerald-500/20",
-                  "focus-visible:ring-2 focus-visible:ring-emerald-400 focus-visible:ring-offset-0",
-                ].join(" ")}
-                required
-              />
-            </div>
-          </div>
-
-          {/* Email */}
-          <div className="space-y-1">
-            <Label htmlFor="register-email" className="text-emerald-100 text-sm">
-              Email
-            </Label>
-            <div className="relative">
-              <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-emerald-300/80" />
-              <Input
-                id="register-email"
-                type="email"
-                autoComplete="email"
-                placeholder="tu@email.com"
-                value={registerForm.email}
-                onChange={(e) =>
-                  setRegisterForm((prev) => ({ ...prev, email: e.target.value }))
-                }
-                className={[
-                  "h-10 md:h-11 pl-10 pr-3 text-sm",
-                  "bg-emerald-950/40 text-emerald-50 placeholder:text-emerald-200/50",
-                  "border border-emerald-500/20",
-                  "focus-visible:ring-2 focus-visible:ring-emerald-400 focus-visible:ring-offset-0",
-                ].join(" ")}
-                required
-              />
-            </div>
-          </div>
-
-          {/* Contraseña */}
-          <div className="space-y-1">
-            <Label htmlFor="register-password" className="text-emerald-100 text-sm">
-              Contraseña
-            </Label>
-            <div className="relative">
-              <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-emerald-300/80" />
-              <Input
-                id="register-password"
-                type={showRegisterPassword ? "text" : "password"}
-                autoComplete="new-password"
-                placeholder="Mínimo 6 caracteres"
-                value={registerForm.password}
-                onChange={(e) =>
-                  setRegisterForm((prev) => ({ ...prev, password: e.target.value }))
-                }
-                className={[
-                  "h-10 md:h-11 pl-10 pr-10 text-sm",
-                  "bg-emerald-950/40 text-emerald-50 placeholder:text-emerald-200/50",
-                  "border border-emerald-500/20",
-                  "focus-visible:ring-2 focus-visible:ring-emerald-400 focus-visible:ring-offset-0",
-                ].join(" ")}
-                required
-              />
-              <button
-                type="button"
-                onClick={() => setShowRegisterPassword((s) => !s)}
-                className="absolute right-3 top-1/2 -translate-y-1/2 text-emerald-300/80 hover:text-emerald-200"
-                aria-label={showRegisterPassword ? "Ocultar contraseña" : "Mostrar contraseña"}
-              >
-                {showRegisterPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
-              </button>
-            </div>
-          </div>
-
-          {/* Confirmar Contraseña */}
-          <div className="space-y-1">
-            <Label htmlFor="confirm-password" className="text-emerald-100 text-sm">
-              Confirmar contraseña
-            </Label>
-            <div className="relative">
-              <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-emerald-300/80" />
-              <Input
-                id="confirm-password"
-                type={showConfirmPassword ? "text" : "password"}
-                autoComplete="new-password"
-                placeholder="Repite tu contraseña"
-                value={registerForm.confirmPassword}
-                onChange={(e) =>
-                  setRegisterForm((prev) => ({ ...prev, confirmPassword: e.target.value }))
-                }
-                className={[
-                  "h-10 md:h-11 pl-10 pr-10 text-sm",
-                  "bg-emerald-950/40 text-emerald-50 placeholder:text-emerald-200/50",
-                  "border border-emerald-500/20",
-                  "focus-visible:ring-2 focus-visible:ring-emerald-400 focus-visible:ring-offset-0",
-                ].join(" ")}
-                required
-              />
-              <button
-                type="button"
-                onClick={() => setShowConfirmPassword((s) => !s)}
-                className="absolute right-3 top-1/2 -translate-y-1/2 text-emerald-300/80 hover:text-emerald-200"
-                aria-label={showConfirmPassword ? "Ocultar contraseña" : "Mostrar contraseña"}
-              >
-                {showConfirmPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
-              </button>
-            </div>
-          </div>
-
-          {/* Submit */}
-          <Button
-            type="submit"
-            className={[
-              "w-full rounded-2xl h-10 md:h-11",
-              "bg-gradient-to-r from-emerald-600 to-emerald-500",
-              "hover:from-emerald-500 hover:to-emerald-400",
-              "text-sm font-semibold",
-              "shadow-[0_12px_34px_-10px_rgba(16,185,129,0.55)]",
-            ].join(" ")}
-            disabled={isLoading}
-          >
-            {isLoading ? "Creando cuenta..." : "Crear cuenta"}
-          </Button>
-
-          {/* Botón para volver al login */}
-          <Button
-            type="button"
-            onClick={() => setShowRegister(false)}
-            variant="ghost"
-            className="w-full text-emerald-200 hover:text-emerald-50 hover:bg-emerald-900/20 text-sm py-2"
-          >
-            ¿Ya tienes cuenta? Iniciar sesión
-          </Button>
-
-          <p className="text-center text-[10px] text-emerald-200/70">
-            Al crear la cuenta aceptas los Términos y la Política de Privacidad.
-          </p>
-
-          {/* Botón para volver al login */}
-          <Button
-            type="button"
-            onClick={() => setShowRegister(false)}
-            variant="ghost"
-            className="w-full text-emerald-200 hover:text-emerald-50 hover:bg-emerald-900/20 text-sm py-2"
-          >
-            ¿Ya tienes cuenta? Iniciar sesión
-          </Button>
-        </form>
-      </CardContent>
-    </Card>
   );
 
   const LoginFormCardV3Centered = () => (
@@ -739,13 +434,13 @@ export default function Login() {
   );
 
   const ValueItem = ({ icon: Icon, title, desc }: { icon: any; title: string; desc: string }) => (
-    <div className="flex items-start gap-1.5">
+    <div className="flex items-start gap-3">
       <div className="mt-0.5">
-        <Icon className="h-3.5 w-3.5 text-emerald-400" />
+        <Icon className="h-5 w-5 text-emerald-400" />
       </div>
       <div>
-        <p className="text-emerald-50 font-medium text-xs">{title}</p>
-        <p className="text-emerald-200/80 text-[10px]">{desc}</p>
+        <p className="text-emerald-50 font-medium text-[15px]">{title}</p>
+        <p className="text-emerald-200/80 text-sm">{desc}</p>
       </div>
     </div>
   );
@@ -803,7 +498,7 @@ export default function Login() {
       ].join(" ")}
     >
       {BackButton()}
-      <div className="w-full max-w-sm md:max-w-md space-y-7 md:space-y-9">
+      <div className="w-full max-w-md md:max-w-lg space-y-8 md:space-y-10">
         {BrandHeader()}
         {LoginFormCard()}
       </div>
@@ -821,36 +516,36 @@ export default function Login() {
     >
       {BackButton()}
 
-      <div className="grid md:grid-cols-2 gap-3 lg:gap-4 items-center max-w-4xl mx-auto py-0 md:py-0 w-full">
+      <div className="grid md:grid-cols-2 gap-8 lg:gap-10 items-center max-w-5xl mx-auto py-10 md:py-0 w-full">
         {/* Columna izquierda */}
         <div className="order-2 md:order-1">
-          <div className="flex items-center gap-2 mb-3">
+          <div className="flex items-center gap-4 mb-5">
             <img
               src={logoImg}
               alt="Logo"
-              className="w-10 h-10 md:w-14 md:h-14 drop-shadow-[0_0_14px_rgba(16,185,129,0.35)]"
+              className="w-14 h-14 md:w-20 md:h-20 drop-shadow-[0_0_14px_rgba(16,185,129,0.35)]"
             />
             <div>
-              <h1 className="font-cormorant text-xl lg:text-2xl font-bold text-emerald-50 leading-tight">
+              <h1 className="font-cormorant text-3xl lg:text-4xl font-bold text-emerald-50 leading-tight">
                 Nakama Partner
               </h1>
-              <p className="text-emerald-300 text-xs">Acceso Corporativo</p>
+              <p className="text-emerald-300 text-base">Portal de Asesores</p>
             </div>
           </div>
 
-          <div className="mb-1">
-            <div className="inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-xs bg-emerald-500/10 border border-emerald-400/20 text-emerald-200">
-              <Sparkles className="h-3 w-3" />
+          <div className="mb-3">
+            <div className="inline-flex items-center gap-2 rounded-full px-3 py-1 text-xs md:text-sm bg-emerald-500/10 border border-emerald-400/20 text-emerald-200">
+              <Sparkles className="h-4 w-4" />
               Acceso exclusivo para asesores & clientes
             </div>
           </div>
 
-          <p className="text-emerald-100/90 text-xs mb-3 max-w-prose">
+          <p className="text-emerald-100/90 text-sm md:text-base mb-7 max-w-prose">
             Gestiona tus comisiones, monitoriza referidos en tiempo real y recibe soporte prioritario desde un único lugar.
             Todo con seguridad de nivel empresarial.
           </p>
 
-          <div className="grid sm:grid-cols-2 gap-1.5">
+          <div className="grid sm:grid-cols-2 gap-4">
             <ValueItem icon={ShieldCheck} title="Seguridad reforzada" desc="Cifrado y acceso por rol." />
             <ValueItem icon={Clock} title="Eficiencia" desc="Actualizaciones en tiempo real." />
             <ValueItem icon={Sparkles} title="Experiencia cuidada" desc="Interfaz clara y sin fricciones." />
@@ -861,7 +556,7 @@ export default function Login() {
         {/* Columna derecha */}
         <div className="order-1 md:order-2 w-full max-w-sm md:max-w-md md:ml-auto">
           {/* Cabecera compacta + form */}
-          {showRegister ? RegisterFormCard() : LoginFormCardV2()}
+          {LoginFormCardV2()}
         </div>
       </div>
     </div>

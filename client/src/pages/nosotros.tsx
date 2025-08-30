@@ -32,20 +32,22 @@ export default function Nosotros() {
         <section className="py-10 bg-transparent">
           <div className="container mx-auto px-6">
             <div className="max-w-4xl mx-auto">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-16 mb-16">
-                <div className="bg-black/70 p-12 rounded-2xl border border-emerald-500/15 transition-all duration-300 hover:border-emerald-500/25 hover:bg-black/50 hover:shadow-lg hover:shadow-emerald-500/20 cursor-pointer min-h-[400px] flex flex-col justify-center">
-                  <h2 className="font-playfair text-4xl font-bold text-white mb-8 text-center">Misión</h2>
-                  <p className="text-silver-100 leading-relaxed text-center text-lg">
-                    Protegemos y hacemos crecer el patrimonio de nuestros clientes con estructuras 
-                    financieras sólidas y transparentes, en entornos seguros.
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-12 mb-16">
+                <div className="bg-black/70 p-8 rounded-xl border border-silver-500/20">
+                  <h2 className="font-playfair text-3xl font-bold text-white mb-6">Nuestra Misión</h2>
+                  <p className="text-silver-100 leading-relaxed">
+                    Proteger y hacer crecer el patrimonio de nuestros clientes mediante estructuras 
+                    financieras sólidas, transparentes y legalmente blindadas. Ofrecemos tranquilidad 
+                    en un mundo financiero lleno de incertidumbre.
                   </p>
                 </div>
                 
-                <div className="bg-black/70 p-12 rounded-2xl border border-emerald-500/15 transition-all duration-300 hover:border-emerald-500/25 hover:bg-black/50 hover:shadow-lg hover:shadow-emerald-500/20 cursor-pointer min-h-[400px] flex flex-col justify-center">
-                  <h2 className="font-playfair text-4xl font-bold text-white mb-8 text-center">Visión</h2>
-                  <p className="text-silver-100 leading-relaxed text-center text-lg">
-                    Ser la referencia en inversiones conservadoras, priorizando la seguridad del capital 
-                    y construyendo relaciones de confianza duraderas.
+                <div className="bg-black/70 p-8 rounded-xl border border-silver-500/20">
+                  <h2 className="font-playfair text-3xl font-bold text-white mb-6">Nuestra Visión</h2>
+                  <p className="text-silver-100 leading-relaxed">
+                    Ser la referencia en inversiones conservadoras, donde la seguridad del capital 
+                    es prioritaria y la rentabilidad es constante y predecible. Construimos relaciones 
+                    de confianza duraderas.
                   </p>
                 </div>
               </div>

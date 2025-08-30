@@ -32,7 +32,7 @@ export default function Calculadora() {
               </h2>
               
               <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-                <div className="bg-black/50 p-6 rounded-xl border border-emerald-500/15 transition-all duration-300 hover:border-emerald-500/25 hover:bg-black/60 hover:shadow-lg hover:shadow-emerald-500/20 cursor-pointer text-center">
+                <div className="bg-black/50 p-6 rounded-xl border border-silver-500/20 text-center">
                   <div className="w-16 h-16 bg-green/20 rounded-lg mx-auto mb-4 flex items-center justify-center">
                     <span className="text-green font-bold text-xl">1</span>
                   </div>
@@ -40,7 +40,7 @@ export default function Calculadora() {
                   <p className="text-silver-100">Retire su capital inicial más los intereses generados.</p>
                 </div>
                 
-                <div className="bg-black/50 p-6 rounded-xl border border-emerald-500/15 transition-all duration-300 hover:border-emerald-500/25 hover:bg-black/60 hover:shadow-lg hover:shadow-emerald-500/20 cursor-pointer text-center">
+                <div className="bg-black/50 p-6 rounded-xl border border-silver-500/20 text-center">
                   <div className="w-16 h-16 bg-green/20 rounded-lg mx-auto mb-4 flex items-center justify-center">
                     <span className="text-green font-bold text-xl">2</span>
                   </div>
@@ -48,7 +48,7 @@ export default function Calculadora() {
                   <p className="text-silver-100">Renueve su inversión con condiciones preferentes.</p>
                 </div>
                 
-                <div className="bg-black/50 p-6 rounded-xl border border-emerald-500/15 transition-all duration-300 hover:border-emerald-500/25 hover:bg-black/60 hover:shadow-lg hover:shadow-emerald-500/20 cursor-pointer text-center">
+                <div className="bg-black/50 p-6 rounded-xl border border-silver-500/20 text-center">
                   <div className="w-16 h-16 bg-green/20 rounded-lg mx-auto mb-4 flex items-center justify-center">
                     <span className="text-green font-bold text-xl">3</span>
                   </div>

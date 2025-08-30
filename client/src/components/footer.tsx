@@ -15,7 +15,7 @@ export default function Footer() {
               Protegiendo patrimonios con estructura, transparencia y rentabilidad fija.
             </p>
           </div>
-
+          
           <div>
             <h3 className="font-semibold text-white mb-4">Enlaces Legales</h3>
             <ul className="space-y-2 text-sm">
@@ -26,7 +26,7 @@ export default function Footer() {
               <li><a href="/politica-cookies" className="text-silver-100 hover:text-green transition-colors">Política de cookies</a></li>
             </ul>
           </div>
-
+          
           <div>
             <h3 className="font-semibold text-white mb-4">Información</h3>
             <ul className="space-y-2 text-sm">
@@ -35,12 +35,12 @@ export default function Footer() {
               <li><a href="#" className="text-silver-100 hover:text-green transition-colors">Contacto Legal</a></li>
             </ul>
           </div>
-
+          
           <div>
             <h3 className="font-semibold text-white mb-4">Contacto</h3>
-            <p className="text-silver-100 text-sm mb-2">info@nakamapartners.com</p>
-            <p className="text-silver-100 text-sm mb-4">+34 675 558 429</p>
-
+            <p className="text-silver-100 text-sm mb-2">dpo@nakamapartners.com</p>
+            <p className="text-silver-100 text-sm mb-4">+34 XXX XXX XXX</p>
+            
             <div className="flex space-x-4">
               <a href="#" className="text-silver-100 hover:text-green transition-colors">
                 <Linkedin className="text-xl w-5 h-5" />
@@ -54,7 +54,7 @@ export default function Footer() {
             </div>
           </div>
         </div>
-
+        
         <div className="border-t border-silver-500/20 pt-8 text-center">
           <p className="text-silver-100 text-sm">© 2025 Nakama&Partners. Todos los derechos reservados.</p>
         </div>
