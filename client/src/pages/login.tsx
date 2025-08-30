@@ -803,7 +803,7 @@ export default function Login() {
       ].join(" ")}
     >
       {BackButton()}
-      <div className="w-full max-w-sm md:max-w-md space-y-7 md:space-y-9">
+      <div className="w-full max-w-[342px] md:max-w-[410px] space-y-7 md:space-y-9">
         {BrandHeader()}
         {LoginFormCard()}
       </div>
@@ -821,7 +821,7 @@ export default function Login() {
     >
       {BackButton()}
 
-      <div className="grid md:grid-cols-2 gap-3 lg:gap-4 items-center max-w-4xl mx-auto py-0 md:py-0 w-full">
+      <div className="grid md:grid-cols-2 gap-3 lg:gap-4 items-center max-w-[720px] mx-auto py-0 md:py-0 w-full">
         {/* Columna izquierda */}
         <div className="order-2 md:order-1">
           <div className="flex items-center gap-2 mb-3">
@@ -859,7 +859,7 @@ export default function Login() {
         </div>
 
         {/* Columna derecha */}
-        <div className="order-1 md:order-2 w-full max-w-sm md:max-w-md md:ml-auto">
+        <div className="order-1 md:order-2 w-full max-w-[342px] md:max-w-[410px] md:ml-auto">
           {/* Cabecera compacta + form */}
           {showRegister ? RegisterFormCard() : LoginFormCardV2()}
         </div>
@@ -878,8 +878,8 @@ export default function Login() {
     >
       {BackButton()}
 
-      <div className="max-w-6xl mx-auto w-full">
-        <div className="grid lg:grid-cols-[1fr_minmax(0,500px)_340px] gap-8 items-center">
+      <div className="max-w-[1080px] mx-auto w-full">
+        <div className="grid lg:grid-cols-[1fr_minmax(0,450px)_306px] gap-8 items-center">
           {/* Izquierda */}
           <div className="hidden lg:flex flex-col gap-5">
             <div className="flex items-center gap-4">
@@ -920,7 +920,7 @@ export default function Login() {
           </div>
 
           {/* Centro */}
-          <div className="w-full max-w-sm md:max-w-md mx-auto">
+          <div className="w-full max-w-[342px] md:max-w-[410px] mx-auto">
             {LoginFormCardV3Centered()}
           </div>
 
