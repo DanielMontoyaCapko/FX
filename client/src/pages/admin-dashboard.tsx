@@ -878,9 +878,10 @@ export default function AdminDashboard() {
       const token = localStorage.getItem("token");
       // Si no hay ID, crear un nuevo registro KYC
       const isNewRecord = !editingKyc.id;
-      const url = isNewRecord ? '/api/kyc' : `/api/admin/kyc/${editingKyc.id}`;
+      const url = isNewRecord ? '/api/admin/kyc' : `/api/admin/kyc/${editingKyc.id}`;
       const method = isNewRecord ? 'POST' : 'PUT';
       const body = isNewRecord ? {
+        userId: editingKyc.userId,
         fullName: editingKyc.fullName || editingKyc.userName || '',
         documentType: editingKyc.documentType || 'DNI',
         documentNumber: editingKyc.documentNumber || '',

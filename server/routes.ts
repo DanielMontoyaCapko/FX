@@ -537,6 +537,55 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Create KYC record for a specific user (admin only)
+  app.post('/api/admin/kyc', authMiddleware, requireRole('admin'), async (req: AuthRequest, res) => {
+    try {
+      const { userId, fullName, documentType, documentNumber, country, status, notes } = req.body;
+      
+      if (!userId) {
+        return res.status(400).json({ error: 'userId is required' });
+      }
+      
+      // Check if user already has KYC record
+      const existingKyc = await storage.getKycByUserId(userId);
+      
+      if (existingKyc) {
+        // Update existing record
+        const updates = {
+          fullName: fullName || existingKyc.fullName,
+          documentType: documentType || existingKyc.documentType,
+          documentNumber: documentNumber || existingKyc.documentNumber,
+          country: country || existingKyc.country,
+          status: status || 'pending',
+          reviewedBy: req.user!.id,
+          reviewedAt: new Date(),
+        };
+        
+        const kyc = await storage.updateKyc(existingKyc.id, updates);
+        res.json({ success: true, kyc });
+      } else {
+        // Create new record
+        const kycData = {
+          userId,
+          fullName: fullName || '',
+          documentType: documentType || 'DNI',
+          documentNumber: documentNumber || '',
+          country: country || '',
+          status: status || 'pending',
+          documentsUrls: JSON.stringify([]),
+          reviewedBy: req.user!.id,
+          reviewedAt: new Date(),
+        };
+        
+        const kyc = await storage.createKyc(kycData);
+        res.json({ success: true, kyc });
+      }
+    } catch (error) {
+      console.error('Error creating/updating KYC for user:', error);
+      res.status(500).json({ error: 'Failed to create/update KYC record' });
+    }
+  });
+
   // Update contract status
   app.put('/api/admin/contracts/:id', authMiddleware, requireRole('admin'), auditContract.update, async (req, res) => {
     try {
