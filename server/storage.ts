@@ -1,6 +1,6 @@
 import { leads, calculatorResults, users, kyc, products, contracts, auditLogs, clientActivityLogs, type Lead, type InsertLead, type CalculatorResult, type InsertCalculatorResult, type User, type InsertUser, type Kyc, type InsertKyc, type Product, type InsertProduct, type Contract, type InsertContract, type AuditLog, type ClientActivityLog, type InsertClientActivityLog } from "@shared/sqlite-schema";
 import { db } from "./db";
-import { eq, desc, gte, lte, and } from "drizzle-orm";
+import { eq, desc, gte, lte, and, or } from "drizzle-orm";
 import bcrypt from "bcryptjs";
 
 export interface IStorage {
@@ -108,25 +108,47 @@ export class DatabaseStorage implements IStorage {
   }
 
   async getAllKyc(): Promise<any[]> {
-    const result = await db
-      .select({
-        id: kyc.id,
-        userId: kyc.userId,
-        userName: users.name,
-        userEmail: users.email,
-        fullName: kyc.fullName,
-        documentType: kyc.documentType,
-        documentNumber: kyc.documentNumber,
-        country: kyc.country,
-        status: kyc.status,
-        documentsUrls: kyc.documentsUrls,
-        rejectionReason: kyc.rejectionReason,
-        reviewedBy: kyc.reviewedBy,
-        reviewedAt: kyc.reviewedAt,
-        createdAt: kyc.createdAt,
-      })
-      .from(kyc)
-      .leftJoin(users, eq(kyc.userId, users.id));
+    // Get all users with role 'client' or 'partner'
+    const eligibleUsers = await db
+      .select()
+      .from(users)
+      .where(
+        or(
+          eq(users.role, 'client'),
+          eq(users.role, 'partner')
+        )
+      );
+
+    // Get all existing KYC records
+    const existingKyc = await db.select().from(kyc);
+    
+    // Create a map of KYC records by userId for quick lookup
+    const kycMap = new Map();
+    existingKyc.forEach(kycRecord => {
+      kycMap.set(kycRecord.userId, kycRecord);
+    });
+
+    // Build result array including all eligible users
+    const result = eligibleUsers.map(user => {
+      const userKyc = kycMap.get(user.id);
+      
+      return {
+        id: userKyc?.id || null,
+        userId: user.id,
+        userName: user.name,
+        userEmail: user.email,
+        fullName: userKyc?.fullName || null,
+        documentType: userKyc?.documentType || null,
+        documentNumber: userKyc?.documentNumber || null,
+        country: userKyc?.country || null,
+        status: userKyc?.status || 'pending',
+        documentsUrls: userKyc?.documentsUrls || null,
+        rejectionReason: userKyc?.rejectionReason || null,
+        reviewedBy: userKyc?.reviewedBy || null,
+        reviewedAt: userKyc?.reviewedAt || null,
+        createdAt: userKyc?.createdAt || user.createdAt,
+      };
+    });
     
     return result;
   }
