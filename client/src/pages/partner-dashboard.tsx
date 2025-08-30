@@ -788,6 +788,7 @@ export default function PartnerDashboard() {
 
   // Foto y teléfono (como en el dashboard de clientes)
   const [profilePhoto, setProfilePhoto] = useState<string | null>(null);
+  const [phoneNumber, setPhoneNumber] = useState("646 123 456");
 
   // Tooltip responsive: right en desktop, bottom en móvil
   const [tooltipSide, setTooltipSide] = useState<"right" | "bottom">("bottom");
@@ -1172,64 +1173,6 @@ export default function PartnerDashboard() {
 
   // ====== CONTROL DE TABS DE PERFIL ======
   const [profileActiveTab, setProfileActiveTab] = useState("personal");
-  
-  // Estado para el formulario de información personal
-  const [personalForm, setPersonalForm] = useState({
-    nombre: '',
-    apellidos: '',
-    telefono: '',
-    fechaNacimiento: '',
-    pais: 'espana',
-    direccion: ''
-  });
-  const [isUpdatingProfile, setIsUpdatingProfile] = useState(false);
-
-  // Cargar datos del usuario al cargar el componente
-  useEffect(() => {
-    if (user) {
-      setPersonalForm({
-        nombre: user.name || '',
-        apellidos: user.apellidos || '',
-        telefono: user.telefono || '',
-        fechaNacimiento: user.fechaNacimiento || '',
-        pais: user.pais || 'espana',
-        direccion: user.direccion || ''
-      });
-    }
-  }, [user]);
-
-  // Función para actualizar información personal
-  const handlePersonalFormSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setIsUpdatingProfile(true);
-    
-    try {
-      const token = localStorage.getItem('token');
-      const response = await fetch('/api/me/profile', {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`
-        },
-        body: JSON.stringify(personalForm)
-      });
-
-      const data = await response.json();
-      
-      if (data.success) {
-        // Actualizar los datos del usuario localmente
-        await refetch(); // Refrescar los datos del usuario desde la API
-        alert('Información personal actualizada correctamente');
-      } else {
-        throw new Error(data.error || 'Error al actualizar la información');
-      }
-    } catch (error) {
-      console.error('Error updating profile:', error);
-      alert('Error al actualizar la información personal. Por favor, inténtalo de nuevo.');
-    } finally {
-      setIsUpdatingProfile(false);
-    }
-  };
 
   return (
     <div
@@ -1328,7 +1271,7 @@ export default function PartnerDashboard() {
                   </TabsList>
 
                   <TabsContent value="personal" className="mt-6">
-                    <form onSubmit={handlePersonalFormSubmit} className="space-y-6">
+                    <form className="space-y-6">
                       {/* Profile Photo */}
                       <div className="flex flex-col items-center mb-8">
                         <div className="relative mb-4">
@@ -1353,22 +1296,11 @@ export default function PartnerDashboard() {
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <div>
                           <Label htmlFor="nombre" className="text-emerald-50">Nombre</Label>
-                          <Input 
-                            id="nombre" 
-                            value={personalForm.nombre}
-                            onChange={(e) => setPersonalForm({...personalForm, nombre: e.target.value})}
-                            className="bg-black/50 border-emerald-500/20 text-emerald-50" 
-                            required
-                          />
+                          <Input id="nombre" defaultValue="Test" className="bg-black/50 border-emerald-500/20 text-emerald-50" />
                         </div>
                         <div>
                           <Label htmlFor="apellidos" className="text-emerald-50">Apellidos</Label>
-                          <Input 
-                            id="apellidos" 
-                            value={personalForm.apellidos}
-                            onChange={(e) => setPersonalForm({...personalForm, apellidos: e.target.value})}
-                            className="bg-black/50 border-emerald-500/20 text-emerald-50" 
-                          />
+                          <Input id="apellidos" defaultValue="Placeholder" className="bg-black/50 border-emerald-500/20 text-emerald-50" />
                         </div>
                       </div>
 
@@ -1377,7 +1309,7 @@ export default function PartnerDashboard() {
                           <Label htmlFor="email" className="text-emerald-50">Correo Electrónico</Label>
                           <Input
                             id="email"
-                            value={user?.email || ''}
+                            defaultValue="test@test.com"
                             disabled
                             className="bg-black/60 border-emerald-500/20 text-emerald-300/80 cursor-not-allowed"
                           />
@@ -1388,8 +1320,8 @@ export default function PartnerDashboard() {
                             <Phone className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-emerald-300/70" />
                             <Input
                               id="telefono"
-                              value={personalForm.telefono}
-                              onChange={(e) => setPersonalForm({...personalForm, telefono: e.target.value})}
+                              value={phoneNumber}
+                              onChange={(e) => setPhoneNumber(e.target.value)}
                               placeholder="Ej: +34 646 123 456"
                               className="bg-black/50 border-emerald-500/20 text-emerald-50 pl-10"
                             />
@@ -1400,19 +1332,13 @@ export default function PartnerDashboard() {
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <div>
                           <Label htmlFor="fecha-nacimiento" className="text-emerald-50">Fecha de Nacimiento</Label>
-                          <Input 
-                            id="fecha-nacimiento" 
-                            type="date"
-                            value={personalForm.fechaNacimiento}
-                            onChange={(e) => setPersonalForm({...personalForm, fechaNacimiento: e.target.value})}
-                            className="bg-black/50 border-emerald-500/20 text-emerald-50" 
-                          />
+                          <Input id="fecha-nacimiento" defaultValue="25/02/1962" className="bg-black/50 border-emerald-500/20 text-emerald-50" />
                         </div>
                         <div>
                           <Label htmlFor="fecha-registro" className="text-emerald-50">Fecha de Registro</Label>
                           <Input
                             id="fecha-registro"
-                            value={user?.createdAt ? new Date(user.createdAt).toLocaleDateString() : ''}
+                            defaultValue="15/01/2024"
                             disabled
                             className="bg-black/60 border-emerald-500/20 text-emerald-300/80 cursor-not-allowed"
                           />
@@ -1422,10 +1348,7 @@ export default function PartnerDashboard() {
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <div>
                           <Label htmlFor="pais" className="text-emerald-50">País</Label>
-                          <Select 
-                            value={personalForm.pais} 
-                            onValueChange={(value) => setPersonalForm({...personalForm, pais: value})}
-                          >
+                          <Select defaultValue="espana">
                             <SelectTrigger className="bg-black/50 border-emerald-500/20 text-emerald-50">
                               <SelectValue />
                             </SelectTrigger>
@@ -1445,9 +1368,7 @@ export default function PartnerDashboard() {
                         <Label htmlFor="direccion" className="text-emerald-50">Dirección</Label>
                         <Input
                           id="direccion"
-                          value={personalForm.direccion}
-                          onChange={(e) => setPersonalForm({...personalForm, direccion: e.target.value})}
-                          placeholder="Introduce tu dirección completa"
+                          defaultValue="Calle Nueva Era 45, 2ºA, 08035 Barcelona"
                           className="bg-black/50 border-emerald-500/20 text-emerald-50"
                         />
                       </div>
@@ -1455,10 +1376,9 @@ export default function PartnerDashboard() {
                       <div className="pt-4">
                         <Button
                           type="submit"
-                          disabled={isUpdatingProfile}
-                          className="w-full rounded-xl bg-gradient-to-r from-emerald-600 to-emerald-500 hover:from-emerald-500 hover:to-emerald-400 text-white font-semibold disabled:opacity-50"
+                          className="w-full rounded-xl bg-gradient-to-r from-emerald-600 to-emerald-500 hover:from-emerald-500 hover:to-emerald-400 text-white font-semibold"
                         >
-                          {isUpdatingProfile ? 'ACTUALIZANDO...' : 'ACTUALIZAR INFORMACIÓN PERSONAL'}
+                          ACTUALIZAR INFORMACIÓN PERSONAL
                         </Button>
                       </div>
                     </form>
