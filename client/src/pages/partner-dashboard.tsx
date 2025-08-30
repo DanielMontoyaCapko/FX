@@ -2396,6 +2396,11 @@ export default function PartnerDashboard() {
                 },
               ];
 
+              // Calcular estadísticas antes del filtro
+              const allContracts = contractsData.length;
+              const vigentesCount = contractsData.filter(c => c.status === "Vigente").length;
+              const vencidosCount = contractsData.filter(c => c.status === "Vencido").length;
+
               const q = contractFilters.search.trim().toLowerCase();
               const min = contractFilters.amountMin ? parseFloat(contractFilters.amountMin) : -Infinity;
               const max = contractFilters.amountMax ? parseFloat(contractFilters.amountMax) : Infinity;
@@ -2453,9 +2458,9 @@ export default function PartnerDashboard() {
                   {/* Tarjetas de filtro rápido */}
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
                     {[
-                      { key: "all", value: String(filtered.length), label: "Total Contratos" },
-                      { key: "vigentes", value: String(filtered.filter(c => c.status === "Vigente").length), label: "Vigentes" },
-                      { key: "vencidos", value: String(filtered.filter(c => c.status === "Vencido").length), label: "Vencidos" },
+                      { key: "all", value: String(allContracts), label: "Total Contratos" },
+                      { key: "vigentes", value: String(vigentesCount), label: "Vigentes" },
+                      { key: "vencidos", value: String(vencidosCount), label: "Vencidos" },
                     ].map(({ key, value, label }) => {
                       const active = contractQuickFilter === (key as typeof contractQuickFilter);
                       const baseBorder =
