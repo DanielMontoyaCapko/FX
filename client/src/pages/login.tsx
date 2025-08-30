@@ -141,7 +141,7 @@ export default function Login() {
       <img
         src={logoImg}
         alt="Logo"
-        className="w-14 h-14 md:w-36 md:h-36 mb-3 drop-shadow-[0_0_18px_rgba(16,185,129,0.35)]"
+        className="w-12 h-12 md:w-28 md:h-28 mb-3 drop-shadow-[0_0_18px_rgba(16,185,129,0.35)]"
       />
       <div className="space-y-0.5">
         <h1 className="font-cormorant text-2xl md:text-3xl font-bold text-emerald-50 leading-tight">
@@ -179,7 +179,7 @@ export default function Login() {
     >
       {/* ⬇️ Centrado perfecto del título y descripción en X e Y */}
       <CardHeader className="text-center">
-        <div className="flex flex-col items-center justify-center min-h-[80px] space-y-2 md:space-y-3">
+        <div className="flex flex-col items-center justify-center min-h-[70px] space-y-1 md:space-y-2">
           <CardTitle className="text-xl md:text-2xl text-emerald-50">Iniciar Sesión</CardTitle>
           <CardDescription className="text-emerald-200/80 text-xs md:text-sm">
             Ingresa tus credenciales para continuar
@@ -188,7 +188,7 @@ export default function Login() {
       </CardHeader>
 
       <CardContent className="p-4 md:p-6">
-        <form onSubmit={handleLogin} className="space-y-4 md:space-y-5">
+        <form onSubmit={handleLogin} className="space-y-3 md:space-y-4">
           {/* Email */}
           <div className="space-y-2">
             <Label htmlFor="email" className="text-emerald-100 text-sm md:text-base">
@@ -828,7 +828,7 @@ export default function Login() {
             <img
               src={logoImg}
               alt="Logo"
-              className="w-10 h-10 md:w-14 md:h-14 drop-shadow-[0_0_14px_rgba(16,185,129,0.35)]"
+              className="w-8 h-8 md:w-12 md:h-12 drop-shadow-[0_0_14px_rgba(16,185,129,0.35)]"
             />
             <div>
               <h1 className="font-cormorant text-xl lg:text-2xl font-bold text-emerald-50 leading-tight">
@@ -883,11 +883,11 @@ export default function Login() {
           {/* Izquierda */}
           <div className="hidden lg:flex flex-col gap-5">
             <div className="flex items-center gap-4">
-              <img
-                src={logoImg}
-                alt="Logo"
-                className="w-14 h-14 md:w-24 md:h-24 drop-shadow-[0_0_14px_rgba(16,185,129,0.35)]"
-              />
+                          <img
+              src={logoImg}
+              alt="Logo"
+              className="w-12 h-12 md:w-20 md:h-20 drop-shadow-[0_0_14px_rgba(16,185,129,0.35)]"
+            />
               <div>
                 <h2 className="font-cormorant text-3xl font-bold text-emerald-50 leading-tight">
                   Nakama Partner
