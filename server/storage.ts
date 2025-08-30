@@ -335,12 +335,36 @@ export class DatabaseStorage implements IStorage {
     
     const ninetyDaysFromNow = new Date(now_date.getTime() + (90 * 24 * 60 * 60 * 1000)).toISOString().slice(0, 19).replace('T', ' ');
 
-    // Para SQLite, no hacer comparaciones de fechas por ahora para evitar errores
-    const contractsMaturing30: any[] = [];
+    // Calculate contracts maturing in 30, 60, 90 days using SQLite-compatible date strings
+    const contractsMaturing30 = await db
+      .select()
+      .from(contracts)
+      .where(
+        and(
+          eq(contracts.status, 'active'),
+          lte(contracts.endDate, thirtyDaysFromNow)
+        )
+      );
 
-    const contractsMaturing60: any[] = [];
+    const contractsMaturing60 = await db
+      .select()
+      .from(contracts)
+      .where(
+        and(
+          eq(contracts.status, 'active'),
+          lte(contracts.endDate, sixtyDaysFromNow)
+        )
+      );
 
-    const contractsMaturing90: any[] = [];
+    const contractsMaturing90 = await db
+      .select()
+      .from(contracts)
+      .where(
+        and(
+          eq(contracts.status, 'active'),
+          lte(contracts.endDate, ninetyDaysFromNow)
+        )
+      );
 
     const liquidity30Days = contractsMaturing30.reduce((sum, contract) => 
       sum + parseFloat(contract.amount), 0);
@@ -355,8 +379,12 @@ export class DatabaseStorage implements IStorage {
     const uniqueClientIds = new Set(activeContracts.map(c => c.userId));
     const activeClients = uniqueClientIds.size;
 
-    // Get new clients this month (simplified for SQLite)
-    const newClientsMonth: any[] = [];
+    // Get new clients this month (users who created their first contract this month)
+    const newClientsMonth = await db
+      .select({ userId: contracts.userId })
+      .from(contracts)
+      .where(gte(contracts.createdAt, startOfMonth))
+      .groupBy(contracts.userId);
 
     // Calculate average ticket per client (total AUM / active clients)
     const averageTicketPerClient = activeClients > 0 ? totalAUM / activeClients : 0;
@@ -396,13 +424,14 @@ export class DatabaseStorage implements IStorage {
     const pendingKycPercentage = totalKyc > 0 ? (pendingKyc / totalKyc) * 100 : 0;
 
     // Calculate renewal rates (simplified - contracts that were renewed vs expired)
+    const nowString = now.toISOString().slice(0, 19).replace('T', ' ');
     const expiredContracts = await db
       .select()
       .from(contracts)
       .where(
         and(
           eq(contracts.status, 'completed'),
-          lte(contracts.endDate, now)
+          lte(contracts.endDate, nowString)
         )
       );
 
@@ -450,6 +479,7 @@ export class DatabaseStorage implements IStorage {
     // Inactive partners (partners without new clients in 3 months)
     const threeMonthsAgo = new Date(now);
     threeMonthsAgo.setMonth(threeMonthsAgo.getMonth() - 3);
+    const threeMonthsAgoString = threeMonthsAgo.toISOString().slice(0, 19).replace('T', ' ');
     
     // Simplified calculation for inactive partners
     const inactivePartners = Math.max(0, allPartners.length - activePartners);
