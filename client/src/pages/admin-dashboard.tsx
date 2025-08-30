@@ -61,12 +61,14 @@ import {
   Legend
 } from "recharts";
 import logoImg from "@/assets/Logo-removeBG_1753542032142.png";
+import { generateAdminStatementPDF } from "@/utils/generateAdminStatementPDF";
 
 interface DashboardStats {
   totalUsers: number;
   totalProducts: number;
   totalContracts: number;
   pendingKyc: number;
+  rejectedKyc: number;
 }
 
 interface KycData {
@@ -236,6 +238,7 @@ export default function AdminDashboard() {
     totalProducts: products.length,
     totalContracts: contracts.length,
     pendingKyc: kyc.filter((k: KycData) => k.status === "pending").length,
+    rejectedKyc: kyc.filter((k: KycData) => k.status === "rejected").length,
   };
 
   // ===== SEARCH & FILTER STATES =====
@@ -384,6 +387,45 @@ export default function AdminDashboard() {
   const handleLogout = () => {
     logout();
     setLocation("/login");
+  };
+
+  const handleDownloadAdminPDF = async () => {
+    try {
+      console.log('Iniciando descarga de PDF admin...');
+      
+      const currentDate = new Date();
+      const currentMonth = currentDate.toLocaleDateString('es-ES', { month: 'long', year: 'numeric' });
+      
+      const adminData = {
+        fecha: currentDate.toLocaleDateString('es-ES'),
+        periodo: currentMonth,
+        totalUsers: stats.totalUsers,
+        totalProducts: stats.totalProducts,
+        totalContracts: stats.totalContracts,
+        pendingKyc: stats.pendingKyc,
+        financialKpis: financialKpis ? {
+          totalAUM: financialKpis.totalAUM,
+          newCapitalMonth: financialKpis.newCapitalMonth,
+          withdrawnCapitalMonth: financialKpis.withdrawnCapitalMonth,
+          netCapitalGrowth: financialKpis.netCapitalGrowth,
+          averageInvestment: financialKpis.averageInvestment,
+          activeClients: financialKpis.activeClients,
+          clientRetention: financialKpis.clientRetention,
+          monthlyEvolution: financialKpis.monthlyEvolution
+        } : undefined,
+        kycStats: kycChartData,
+        contractsStats: contractsChartData
+      };
+
+      console.log('Datos del admin para PDF:', adminData);
+      
+      await generateAdminStatementPDF(adminData);
+      
+      console.log('PDF admin descargado exitosamente');
+    } catch (error) {
+      console.error('Error al generar PDF admin:', error);
+      alert('Error al generar el PDF. Por favor revisa la consola para más detalles.');
+    }
   };
 
   // Chart data
@@ -1001,25 +1043,37 @@ export default function AdminDashboard() {
       <main className="ml-64 p-8">
         {activeTab === "dashboard" && (
           <div>
-            <h1 className="text-3xl font-bold text-emerald-50 mb-8">Panel de Administración</h1>
+            <div className="flex items-center justify-between mb-8">
+              <h1 className="text-3xl font-bold text-emerald-50">Panel de Administración</h1>
+              <Button
+                onClick={handleDownloadAdminPDF}
+                className="bg-emerald-600 hover:bg-emerald-500 text-white"
+              >
+                <Download className="w-4 h-4 mr-2" />
+                Descargar Estado de Cuenta PDF
+              </Button>
+            </div>
 
             {/* Stats Cards */}
-            <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+            <div className="grid grid-cols-1 md:grid-cols-5 gap-6 mb-8">
               {[
-                { label: "Usuarios Totales", value: stats.totalUsers, icon: Users },
-                { label: "Productos Totales", value: stats.totalProducts, icon: Package },
-                { label: "Contratos Totales", value: stats.totalContracts, icon: FileText },
-                { label: "KYC Pendientes", value: stats.pendingKyc, icon: FileCheck, warn: true },
-              ].map(({ label, value, icon: Icon, warn }, i) => (
+                { label: "Usuarios Totales", value: stats.totalUsers, icon: Users, targetTab: "usuarios" },
+                { label: "Productos Totales", value: stats.totalProducts, icon: Package, targetTab: "productos" },
+                { label: "Contratos Totales", value: stats.totalContracts, icon: FileText, targetTab: "contratos" },
+                { label: "KYC Pendientes", value: stats.pendingKyc, icon: FileCheck, warn: true, targetTab: "kyc" },
+                { label: "KYC Rechazados", value: stats.rejectedKyc, icon: AlertTriangle, warn: true, targetTab: "kyc" },
+              ].map(({ label, value, icon: Icon, warn, targetTab }, i) => (
                 <Card
                   key={i}
-                  className="bg-black/40 border border-emerald-500/15 rounded-2xl shadow-[0_0_0_1px_rgba(16,185,129,0.12),0_20px_60px_-20px_rgba(16,185,129,0.25)]"
+                  className="bg-black/40 border border-emerald-500/15 rounded-2xl transition-all duration-300 hover:border-emerald-500/25 hover:bg-black/50 hover:shadow-lg hover:shadow-emerald-500/20 cursor-pointer"
+                  onClick={() => setActiveTab(targetTab)}
                 >
                   <CardContent className="p-6">
                     <div className="flex items-center justify-between">
                       <div>
                         <p className="text-emerald-200/80 text-sm font-medium">{label}</p>
                         <p className="text-emerald-50 text-3xl font-bold">{value}</p>
+                        <p className="text-emerald-400 text-xs">Click para ver detalles</p>
                       </div>
                       <Icon className={`w-8 h-8 ${warn ? "text-amber-400" : "text-emerald-400"}`} />
                     </div>
@@ -1030,7 +1084,7 @@ export default function AdminDashboard() {
 
             {/* Charts */}
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
-              <Card className="bg-black/40 border border-emerald-500/15 rounded-2xl">
+              <Card className="bg-black/40 border border-emerald-500/15 rounded-2xl transition-all duration-300 hover:border-emerald-500/25 hover:bg-black/50 hover:shadow-lg hover:shadow-emerald-500/20">
                 <CardHeader>
                   <CardTitle className="text-emerald-50">Estado KYC</CardTitle>
                   <CardDescription className="text-emerald-200/80">Distribución de estados</CardDescription>
@@ -1056,7 +1110,7 @@ export default function AdminDashboard() {
                 </CardContent>
               </Card>
 
-              <Card className="bg-black/40 border border-emerald-500/15 rounded-2xl">
+              <Card className="bg-black/40 border border-emerald-500/15 rounded-2xl transition-all duration-300 hover:border-emerald-500/25 hover:bg-black/50 hover:shadow-lg hover:shadow-emerald-500/20">
                 <CardHeader>
                   <CardTitle className="text-emerald-50">Estado Contratos</CardTitle>
                   <CardDescription className="text-emerald-200/80">Distribución de estados</CardDescription>
@@ -1087,8 +1141,8 @@ export default function AdminDashboard() {
             {financialKpis && (
               <div className="mb-8">
                 <h2 className="text-2xl font-bold text-emerald-50 mb-6">KPIs Financieros</h2>
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
-                  <Card className="bg-black/40 border border-emerald-500/15 rounded-2xl shadow-[0_0_0_1px_rgba(16,185,129,0.12),0_20px_60px_-20px_rgba(16,185,129,0.25)]">
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6 mb-6">
+                  <Card className="bg-black/40 border border-emerald-500/15 rounded-2xl transition-all duration-300 hover:border-emerald-500/25 hover:bg-black/50 hover:shadow-lg hover:shadow-emerald-500/20 shadow-[0_0_0_1px_rgba(16,185,129,0.12),0_20px_60px_-20px_rgba(16,185,129,0.25)]">
                     <CardContent className="p-6">
                       <div className="flex items-center justify-between">
                         <div>
@@ -1100,7 +1154,7 @@ export default function AdminDashboard() {
                     </CardContent>
                   </Card>
 
-                  <Card className="bg-black/40 border border-emerald-500/15 rounded-2xl shadow-[0_0_0_1px_rgba(16,185,129,0.12),0_20px_60px_-20px_rgba(16,185,129,0.25)]">
+                  <Card className="bg-black/40 border border-emerald-500/15 rounded-2xl transition-all duration-300 hover:border-emerald-500/25 hover:bg-black/50 hover:shadow-lg hover:shadow-emerald-500/20 shadow-[0_0_0_1px_rgba(16,185,129,0.12),0_20px_60px_-20px_rgba(16,185,129,0.25)]">
                     <CardContent className="p-6">
                       <div className="flex items-center justify-between">
                         <div>
@@ -1112,7 +1166,7 @@ export default function AdminDashboard() {
                     </CardContent>
                   </Card>
 
-                  <Card className="bg-black/40 border border-emerald-500/15 rounded-2xl shadow-[0_0_0_1px_rgba(16,185,129,0.12),0_20px_60px_-20px_rgba(16,185,129,0.25)]">
+                  <Card className="bg-black/40 border border-emerald-500/15 rounded-2xl transition-all duration-300 hover:border-emerald-500/25 hover:bg-black/50 hover:shadow-lg hover:shadow-emerald-500/20 shadow-[0_0_0_1px_rgba(16,185,129,0.12),0_20px_60px_-20px_rgba(16,185,129,0.25)]">
                     <CardContent className="p-6">
                       <div className="flex items-center justify-between">
                         <div>
@@ -1124,7 +1178,7 @@ export default function AdminDashboard() {
                     </CardContent>
                   </Card>
 
-                  <Card className="bg-black/40 border border-emerald-500/15 rounded-2xl shadow-[0_0_0_1px_rgba(16,185,129,0.12),0_20px_60px_-20px_rgba(16,185,129,0.25)]">
+                  <Card className="bg-black/40 border border-emerald-500/15 rounded-2xl transition-all duration-300 hover:border-emerald-500/25 hover:bg-black/50 hover:shadow-lg hover:shadow-emerald-500/20 shadow-[0_0_0_1px_rgba(16,185,129,0.12),0_20px_60px_-20px_rgba(16,185,129,0.25)]">
                     <CardContent className="p-6">
                       <div className="flex items-center justify-between">
                         <div>
@@ -1140,7 +1194,7 @@ export default function AdminDashboard() {
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-                  <Card className="bg-black/40 border border-emerald-500/15 rounded-2xl shadow-[0_0_0_1px_rgba(16,185,129,0.12),0_20px_60px_-20px_rgba(16,185,129,0.25)]">
+                  <Card className="bg-black/40 border border-emerald-500/15 rounded-2xl transition-all duration-300 hover:border-emerald-500/25 hover:bg-black/50 hover:shadow-lg hover:shadow-emerald-500/20 shadow-[0_0_0_1px_rgba(16,185,129,0.12),0_20px_60px_-20px_rgba(16,185,129,0.25)]">
                     <CardContent className="p-6">
                       <div className="flex items-center justify-between">
                         <div>
@@ -1152,7 +1206,7 @@ export default function AdminDashboard() {
                     </CardContent>
                   </Card>
 
-                  <Card className="bg-black/40 border border-emerald-500/15 rounded-2xl shadow-[0_0_0_1px_rgba(16,185,129,0.12),0_20px_60px_-20px_rgba(16,185,129,0.25)]">
+                  <Card className="bg-black/40 border border-emerald-500/15 rounded-2xl transition-all duration-300 hover:border-emerald-500/25 hover:bg-black/50 hover:shadow-lg hover:shadow-emerald-500/20 shadow-[0_0_0_1px_rgba(16,185,129,0.12),0_20px_60px_-20px_rgba(16,185,129,0.25)]">
                     <CardContent className="p-6">
                       <div className="flex items-center justify-between">
                         <div>
@@ -1164,7 +1218,7 @@ export default function AdminDashboard() {
                     </CardContent>
                   </Card>
 
-                  <Card className="bg-black/40 border border-emerald-500/15 rounded-2xl shadow-[0_0_0_1px_rgba(16,185,129,0.12),0_20px_60px_-20px_rgba(16,185,129,0.25)]">
+                  <Card className="bg-black/40 border border-emerald-500/15 rounded-2xl transition-all duration-300 hover:border-emerald-500/25 hover:bg-black/50 hover:shadow-lg hover:shadow-emerald-500/20 shadow-[0_0_0_1px_rgba(16,185,129,0.12),0_20px_60px_-20px_rgba(16,185,129,0.25)]">
                     <CardContent className="p-6">
                       <div className="flex items-center justify-between">
                         <div>
@@ -1176,7 +1230,7 @@ export default function AdminDashboard() {
                     </CardContent>
                   </Card>
 
-                  <Card className="bg-black/40 border border-emerald-500/15 rounded-2xl shadow-[0_0_0_1px_rgba(16,185,129,0.12),0_20px_60px_-20px_rgba(16,185,129,0.25)]">
+                  <Card className="bg-black/40 border border-emerald-500/15 rounded-2xl transition-all duration-300 hover:border-emerald-500/25 hover:bg-black/50 hover:shadow-lg hover:shadow-emerald-500/20 shadow-[0_0_0_1px_rgba(16,185,129,0.12),0_20px_60px_-20px_rgba(16,185,129,0.25)]">
                     <CardContent className="p-6">
                       <div className="flex items-center justify-between">
                         <div>
@@ -1196,7 +1250,7 @@ export default function AdminDashboard() {
               <div className="mb-8">
                 <h2 className="text-2xl font-bold text-emerald-50 mb-6">KPIs de Clientes</h2>
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
-                  <Card className="bg-black/40 border border-emerald-500/15 rounded-2xl shadow-[0_0_0_1px_rgba(16,185,129,0.12),0_20px_60px_-20px_rgba(16,185,129,0.25)]">
+                  <Card className="bg-black/40 border border-emerald-500/15 rounded-2xl transition-all duration-300 hover:border-emerald-500/25 hover:bg-black/50 hover:shadow-lg hover:shadow-emerald-500/20 shadow-[0_0_0_1px_rgba(16,185,129,0.12),0_20px_60px_-20px_rgba(16,185,129,0.25)]">
                     <CardContent className="p-6">
                       <div className="flex items-center justify-between">
                         <div>
@@ -1208,7 +1262,7 @@ export default function AdminDashboard() {
                     </CardContent>
                   </Card>
 
-                  <Card className="bg-black/40 border border-emerald-500/15 rounded-2xl shadow-[0_0_0_1px_rgba(16,185,129,0.12),0_20px_60px_-20px_rgba(16,185,129,0.25)]">
+                  <Card className="bg-black/40 border border-emerald-500/15 rounded-2xl transition-all duration-300 hover:border-emerald-500/25 hover:bg-black/50 hover:shadow-lg hover:shadow-emerald-500/20 shadow-[0_0_0_1px_rgba(16,185,129,0.12),0_20px_60px_-20px_rgba(16,185,129,0.25)]">
                     <CardContent className="p-6">
                       <div className="flex items-center justify-between">
                         <div>
@@ -1220,7 +1274,7 @@ export default function AdminDashboard() {
                     </CardContent>
                   </Card>
 
-                  <Card className="bg-black/40 border border-emerald-500/15 rounded-2xl shadow-[0_0_0_1px_rgba(16,185,129,0.12),0_20px_60px_-20px_rgba(16,185,129,0.25)]">
+                  <Card className="bg-black/40 border border-emerald-500/15 rounded-2xl transition-all duration-300 hover:border-emerald-500/25 hover:bg-black/50 hover:shadow-lg hover:shadow-emerald-500/20 shadow-[0_0_0_1px_rgba(16,185,129,0.12),0_20px_60px_-20px_rgba(16,185,129,0.25)]">
                     <CardContent className="p-6">
                       <div className="flex items-center justify-between">
                         <div>
@@ -1232,7 +1286,7 @@ export default function AdminDashboard() {
                     </CardContent>
                   </Card>
 
-                  <Card className="bg-black/40 border border-emerald-500/15 rounded-2xl shadow-[0_0_0_1px_rgba(16,185,129,0.12),0_20px_60px_-20px_rgba(16,185,129,0.25)]">
+                  <Card className="bg-black/40 border border-emerald-500/15 rounded-2xl transition-all duration-300 hover:border-emerald-500/25 hover:bg-black/50 hover:shadow-lg hover:shadow-emerald-500/20 shadow-[0_0_0_1px_rgba(16,185,129,0.12),0_20px_60px_-20px_rgba(16,185,129,0.25)]">
                     <CardContent className="p-6">
                       <div className="flex items-center justify-between">
                         <div>
@@ -1244,10 +1298,23 @@ export default function AdminDashboard() {
                       </div>
                     </CardContent>
                   </Card>
+
+                  <Card className="bg-black/40 border border-emerald-500/15 rounded-2xl transition-all duration-300 hover:border-emerald-500/25 hover:bg-black/50 hover:shadow-lg hover:shadow-emerald-500/20 shadow-[0_0_0_1px_rgba(16,185,129,0.12),0_20px_60px_-20px_rgba(16,185,129,0.25)]">
+                    <CardContent className="p-6">
+                      <div className="flex items-center justify-between">
+                        <div>
+                          <p className="text-emerald-200/80 text-sm font-medium">KYC Rechazados</p>
+                          <p className="text-emerald-50 text-2xl font-bold">{stats.rejectedKyc}</p>
+                          <p className="text-emerald-200/60 text-xs">({((stats.rejectedKyc / (stats.pendingKyc + stats.rejectedKyc)) * 100 || 0).toFixed(1)}%)</p>
+                        </div>
+                        <AlertTriangle className="w-8 h-8 text-red-400" />
+                      </div>
+                    </CardContent>
+                  </Card>
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  <Card className="bg-black/40 border border-emerald-500/15 rounded-2xl shadow-[0_0_0_1px_rgba(16,185,129,0.12),0_20px_60px_-20px_rgba(16,185,129,0.25)]">
+                  <Card className="bg-black/40 border border-emerald-500/15 rounded-2xl transition-all duration-300 hover:border-emerald-500/25 hover:bg-black/50 hover:shadow-lg hover:shadow-emerald-500/20 shadow-[0_0_0_1px_rgba(16,185,129,0.12),0_20px_60px_-20px_rgba(16,185,129,0.25)]">
                     <CardContent className="p-6">
                       <div className="flex items-center justify-between mb-4">
                         <div>
@@ -1271,7 +1338,7 @@ export default function AdminDashboard() {
                     </CardContent>
                   </Card>
 
-                  <Card className="bg-black/40 border border-emerald-500/15 rounded-2xl shadow-[0_0_0_1px_rgba(16,185,129,0.12),0_20px_60px_-20px_rgba(16,185,129,0.25)]">
+                  <Card className="bg-black/40 border border-emerald-500/15 rounded-2xl transition-all duration-300 hover:border-emerald-500/25 hover:bg-black/50 hover:shadow-lg hover:shadow-emerald-500/20 shadow-[0_0_0_1px_rgba(16,185,129,0.12),0_20px_60px_-20px_rgba(16,185,129,0.25)]">
                     <CardContent className="p-6">
                       <div className="flex items-center justify-between mb-4">
                         <div>
@@ -1301,7 +1368,7 @@ export default function AdminDashboard() {
               <div className="mb-8">
                 <h2 className="text-2xl font-bold text-emerald-50 mb-6">KPIs de Partners</h2>
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
-                  <Card className="bg-black/40 border border-emerald-500/15 rounded-2xl shadow-[0_0_0_1px_rgba(16,185,129,0.12),0_20px_60px_-20px_rgba(16,185,129,0.25)]">
+                  <Card className="bg-black/40 border border-emerald-500/15 rounded-2xl transition-all duration-300 hover:border-emerald-500/25 hover:bg-black/50 hover:shadow-lg hover:shadow-emerald-500/20 shadow-[0_0_0_1px_rgba(16,185,129,0.12),0_20px_60px_-20px_rgba(16,185,129,0.25)]">
                     <CardContent className="p-6">
                       <div className="flex items-center justify-between">
                         <div>
@@ -1313,7 +1380,7 @@ export default function AdminDashboard() {
                     </CardContent>
                   </Card>
 
-                  <Card className="bg-black/40 border border-emerald-500/15 rounded-2xl shadow-[0_0_0_1px_rgba(16,185,129,0.12),0_20px_60px_-20px_rgba(16,185,129,0.25)]">
+                  <Card className="bg-black/40 border border-emerald-500/15 rounded-2xl transition-all duration-300 hover:border-emerald-500/25 hover:bg-black/50 hover:shadow-lg hover:shadow-emerald-500/20 shadow-[0_0_0_1px_rgba(16,185,129,0.12),0_20px_60px_-20px_rgba(16,185,129,0.25)]">
                     <CardContent className="p-6">
                       <div className="flex items-center justify-between">
                         <div>
@@ -1325,7 +1392,7 @@ export default function AdminDashboard() {
                     </CardContent>
                   </Card>
 
-                  <Card className="bg-black/40 border border-emerald-500/15 rounded-2xl shadow-[0_0_0_1px_rgba(16,185,129,0.12),0_20px_60px_-20px_rgba(16,185,129,0.25)]">
+                  <Card className="bg-black/40 border border-emerald-500/15 rounded-2xl transition-all duration-300 hover:border-emerald-500/25 hover:bg-black/50 hover:shadow-lg hover:shadow-emerald-500/20 shadow-[0_0_0_1px_rgba(16,185,129,0.12),0_20px_60px_-20px_rgba(16,185,129,0.25)]">
                     <CardContent className="p-6">
                       <div className="flex items-center justify-between">
                         <div>
@@ -1337,7 +1404,7 @@ export default function AdminDashboard() {
                     </CardContent>
                   </Card>
 
-                  <Card className="bg-black/40 border border-emerald-500/15 rounded-2xl shadow-[0_0_0_1px_rgba(16,185,129,0.12),0_20px_60px_-20px_rgba(16,185,129,0.25)]">
+                  <Card className="bg-black/40 border border-emerald-500/15 rounded-2xl transition-all duration-300 hover:border-emerald-500/25 hover:bg-black/50 hover:shadow-lg hover:shadow-emerald-500/20 shadow-[0_0_0_1px_rgba(16,185,129,0.12),0_20px_60px_-20px_rgba(16,185,129,0.25)]">
                     <CardContent className="p-6">
                       <div className="flex items-center justify-between">
                         <div>
@@ -1352,7 +1419,7 @@ export default function AdminDashboard() {
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  <Card className="bg-black/40 border border-emerald-500/15 rounded-2xl shadow-[0_0_0_1px_rgba(16,185,129,0.12),0_20px_60px_-20px_rgba(16,185,129,0.25)]">
+                  <Card className="bg-black/40 border border-emerald-500/15 rounded-2xl transition-all duration-300 hover:border-emerald-500/25 hover:bg-black/50 hover:shadow-lg hover:shadow-emerald-500/20 shadow-[0_0_0_1px_rgba(16,185,129,0.12),0_20px_60px_-20px_rgba(16,185,129,0.25)]">
                     <CardContent className="p-6">
                       <div className="flex items-center justify-between mb-4">
                         <div>
@@ -1374,7 +1441,7 @@ export default function AdminDashboard() {
                     </CardContent>
                   </Card>
 
-                  <Card className="bg-black/40 border border-emerald-500/15 rounded-2xl shadow-[0_0_0_1px_rgba(16,185,129,0.12),0_20px_60px_-20px_rgba(16,185,129,0.25)]">
+                  <Card className="bg-black/40 border border-emerald-500/15 rounded-2xl transition-all duration-300 hover:border-emerald-500/25 hover:bg-black/50 hover:shadow-lg hover:shadow-emerald-500/20 shadow-[0_0_0_1px_rgba(16,185,129,0.12),0_20px_60px_-20px_rgba(16,185,129,0.25)]">
                     <CardContent className="p-6">
                       <div className="flex items-center justify-between mb-4">
                         <div>
@@ -1400,7 +1467,7 @@ export default function AdminDashboard() {
               <div className="mb-8">
                 <h2 className="text-2xl font-bold text-emerald-50 mb-6">KPIs Operativos / Riesgo</h2>
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
-                  <Card className="bg-black/40 border border-emerald-500/15 rounded-2xl shadow-[0_0_0_1px_rgba(16,185,129,0.12),0_20px_60px_-20px_rgba(16,185,129,0.25)]">
+                  <Card className="bg-black/40 border border-emerald-500/15 rounded-2xl transition-all duration-300 hover:border-emerald-500/25 hover:bg-black/50 hover:shadow-lg hover:shadow-emerald-500/20 shadow-[0_0_0_1px_rgba(16,185,129,0.12),0_20px_60px_-20px_rgba(16,185,129,0.25)]">
                     <CardContent className="p-6">
                       <div className="flex items-center justify-between">
                         <div>
@@ -1412,7 +1479,7 @@ export default function AdminDashboard() {
                     </CardContent>
                   </Card>
 
-                  <Card className="bg-black/40 border border-emerald-500/15 rounded-2xl shadow-[0_0_0_1px_rgba(16,185,129,0.12),0_20px_60px_-20px_rgba(16,185,129,0.25)]">
+                  <Card className="bg-black/40 border border-emerald-500/15 rounded-2xl transition-all duration-300 hover:border-emerald-500/25 hover:bg-black/50 hover:shadow-lg hover:shadow-emerald-500/20 shadow-[0_0_0_1px_rgba(16,185,129,0.12),0_20px_60px_-20px_rgba(16,185,129,0.25)]">
                     <CardContent className="p-6">
                       <div className="flex items-center justify-between">
                         <div>
@@ -1424,7 +1491,7 @@ export default function AdminDashboard() {
                     </CardContent>
                   </Card>
 
-                  <Card className="bg-black/40 border border-emerald-500/15 rounded-2xl shadow-[0_0_0_1px_rgba(16,185,129,0.12),0_20px_60px_-20px_rgba(16,185,129,0.25)]">
+                  <Card className="bg-black/40 border border-emerald-500/15 rounded-2xl transition-all duration-300 hover:border-emerald-500/25 hover:bg-black/50 hover:shadow-lg hover:shadow-emerald-500/20 shadow-[0_0_0_1px_rgba(16,185,129,0.12),0_20px_60px_-20px_rgba(16,185,129,0.25)]">
                     <CardContent className="p-6">
                       <div className="flex items-center justify-between">
                         <div>
@@ -1436,7 +1503,7 @@ export default function AdminDashboard() {
                     </CardContent>
                   </Card>
 
-                  <Card className="bg-black/40 border border-emerald-500/15 rounded-2xl shadow-[0_0_0_1px_rgba(16,185,129,0.12),0_20px_60px_-20px_rgba(16,185,129,0.25)]">
+                  <Card className="bg-black/40 border border-emerald-500/15 rounded-2xl transition-all duration-300 hover:border-emerald-500/25 hover:bg-black/50 hover:shadow-lg hover:shadow-emerald-500/20 shadow-[0_0_0_1px_rgba(16,185,129,0.12),0_20px_60px_-20px_rgba(16,185,129,0.25)]">
                     <CardContent className="p-6">
                       <div className="flex items-center justify-between">
                         <div>
@@ -1449,21 +1516,8 @@ export default function AdminDashboard() {
                   </Card>
                 </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                  <Card className="bg-black/40 border border-emerald-500/15 rounded-2xl shadow-[0_0_0_1px_rgba(16,185,129,0.12),0_20px_60px_-20px_rgba(16,185,129,0.25)]">
-                    <CardContent className="p-6">
-                      <div className="flex items-center justify-between mb-4">
-                        <div>
-                          <p className="text-emerald-200/80 text-sm font-medium">Tiempo Medio Resolución</p>
-                          <p className="text-emerald-50 text-2xl font-bold">{financialKpis.operationalKpis?.avgResolutionTimeHours || 0}h</p>
-                          <p className="text-emerald-200/60 text-xs">promedio por incidencia</p>
-                        </div>
-                        <Timer className="w-8 h-8 text-purple-400" />
-                      </div>
-                    </CardContent>
-                  </Card>
-
-                  <Card className="bg-black/40 border border-emerald-500/15 rounded-2xl shadow-[0_0_0_1px_rgba(16,185,129,0.12),0_20px_60px_-20px_rgba(16,185,129,0.25)]">
+                <div className="grid grid-cols-1 md:grid-cols-1 gap-6">
+                  <Card className="bg-black/40 border border-emerald-500/15 rounded-2xl transition-all duration-300 hover:border-emerald-500/25 hover:bg-black/50 hover:shadow-lg hover:shadow-emerald-500/20 shadow-[0_0_0_1px_rgba(16,185,129,0.12),0_20px_60px_-20px_rgba(16,185,129,0.25)]">
                     <CardContent className="p-6">
                       <div className="flex items-center justify-between mb-4">
                         <div>
@@ -1472,21 +1526,6 @@ export default function AdminDashboard() {
                           <p className="text-emerald-200/60 text-xs">clientes verificados</p>
                         </div>
                         <CheckCircle className="w-8 h-8 text-green-400" />
-                      </div>
-                    </CardContent>
-                  </Card>
-
-                  <Card className="bg-black/40 border border-emerald-500/15 rounded-2xl shadow-[0_0_0_1px_rgba(16,185,129,0.12),0_20px_60px_-20px_rgba(16,185,129,0.25)]">
-                    <CardContent className="p-6">
-                      <div className="flex items-center justify-between mb-4">
-                        <div>
-                          <p className="text-emerald-200/80 text-sm font-medium">Incidencias Compliance</p>
-                          <p className={`text-2xl font-bold ${(financialKpis.operationalKpis?.complianceIssues || 0) === 0 ? 'text-emerald-50' : 'text-red-50'}`}>
-                            {financialKpis.operationalKpis?.complianceIssues || 0}
-                          </p>
-                          <p className="text-emerald-200/60 text-xs">auditoría normativas</p>
-                        </div>
-                        <Shield className={`w-8 h-8 ${(financialKpis.operationalKpis?.complianceIssues || 0) === 0 ? 'text-emerald-400' : 'text-red-400'}`} />
                       </div>
                     </CardContent>
                   </Card>
@@ -1499,7 +1538,7 @@ export default function AdminDashboard() {
               <div className="mb-8">
                 <h2 className="text-2xl font-bold text-emerald-50 mb-6">KPIs Estratégicos / de Negocio</h2>
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                  <Card className="bg-black/40 border border-emerald-500/15 rounded-2xl shadow-[0_0_0_1px_rgba(16,185,129,0.12),0_20px_60px_-20px_rgba(16,185,129,0.25)]">
+                  <Card className="bg-black/40 border border-emerald-500/15 rounded-2xl transition-all duration-300 hover:border-emerald-500/25 hover:bg-black/50 hover:shadow-lg hover:shadow-emerald-500/20 shadow-[0_0_0_1px_rgba(16,185,129,0.12),0_20px_60px_-20px_rgba(16,185,129,0.25)]">
                     <CardContent className="p-6">
                       <div className="flex items-center justify-between mb-4">
                         <div>
@@ -1512,7 +1551,7 @@ export default function AdminDashboard() {
                     </CardContent>
                   </Card>
 
-                  <Card className="bg-black/40 border border-emerald-500/15 rounded-2xl shadow-[0_0_0_1px_rgba(16,185,129,0.12),0_20px_60px_-20px_rgba(16,185,129,0.25)]">
+                  <Card className="bg-black/40 border border-emerald-500/15 rounded-2xl transition-all duration-300 hover:border-emerald-500/25 hover:bg-black/50 hover:shadow-lg hover:shadow-emerald-500/20 shadow-[0_0_0_1px_rgba(16,185,129,0.12),0_20px_60px_-20px_rgba(16,185,129,0.25)]">
                     <CardContent className="p-6">
                       <div className="flex items-center justify-between mb-4">
                         <div>
@@ -1527,7 +1566,7 @@ export default function AdminDashboard() {
                     </CardContent>
                   </Card>
 
-                  <Card className="bg-black/40 border border-emerald-500/15 rounded-2xl shadow-[0_0_0_1px_rgba(16,185,129,0.12),0_20px_60px_-20px_rgba(16,185,129,0.25)]">
+                  <Card className="bg-black/40 border border-emerald-500/15 rounded-2xl transition-all duration-300 hover:border-emerald-500/25 hover:bg-black/50 hover:shadow-lg hover:shadow-emerald-500/20 shadow-[0_0_0_1px_rgba(16,185,129,0.12),0_20px_60px_-20px_rgba(16,185,129,0.25)]">
                     <CardContent className="p-6">
                       <div className="flex items-center justify-between mb-4">
                         <div>
@@ -1547,7 +1586,7 @@ export default function AdminDashboard() {
             {financialKpis?.businessHealth && (
               <div className="mb-8">
                 <h2 className="text-2xl font-bold text-emerald-50 mb-6">Semáforo de Salud del Negocio</h2>
-                <Card className="bg-black/40 border border-emerald-500/15 rounded-2xl shadow-[0_0_0_1px_rgba(16,185,129,0.12),0_20px_60px_-20px_rgba(16,185,129,0.25)]">
+                <Card className="bg-black/40 border border-emerald-500/15 rounded-2xl transition-all duration-300 hover:border-emerald-500/25 hover:bg-black/50 hover:shadow-lg hover:shadow-emerald-500/20 shadow-[0_0_0_1px_rgba(16,185,129,0.12),0_20px_60px_-20px_rgba(16,185,129,0.25)]">
                   <CardContent className="p-8">
                     <div className="flex items-center justify-center">
                       <div className="flex flex-col items-center space-y-4">
@@ -1586,7 +1625,7 @@ export default function AdminDashboard() {
             {financialKpis?.monthlyEvolution && (
               <div className="mb-8">
                 <h2 className="text-2xl font-bold text-emerald-50 mb-6">Evolución Mensual</h2>
-                <Card className="bg-black/40 border border-emerald-500/15 rounded-2xl shadow-[0_0_0_1px_rgba(16,185,129,0.12),0_20px_60px_-20px_rgba(16,185,129,0.25)]">
+                <Card className="bg-black/40 border border-emerald-500/15 rounded-2xl transition-all duration-300 hover:border-emerald-500/25 hover:bg-black/50 hover:shadow-lg hover:shadow-emerald-500/20 shadow-[0_0_0_1px_rgba(16,185,129,0.12),0_20px_60px_-20px_rgba(16,185,129,0.25)]">
                   <CardContent className="p-8 space-y-8">
                     {/* Capital Evolution */}
                     <div>
@@ -1779,7 +1818,7 @@ export default function AdminDashboard() {
 
             {/* Panel de filtros avanzados */}
             {showUserFilters && (
-              <Card className="bg-black/40 border border-emerald-500/15 rounded-2xl mb-6">
+              <Card className="bg-black/40 border border-emerald-500/15 rounded-2xl transition-all duration-300 hover:border-emerald-500/25 hover:bg-black/50 hover:shadow-lg hover:shadow-emerald-500/20 mb-6">
                 <CardContent className="p-6">
                   <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
                     <div className="space-y-2">
@@ -1914,7 +1953,7 @@ export default function AdminDashboard() {
             )}
 
             {/* Tabla de usuarios (SIN columna de género) */}
-            <Card className="bg-black/40 border border-emerald-500/15 rounded-2xl">
+            <Card className="bg-black/40 border border-emerald-500/15 rounded-2xl transition-all duration-300 hover:border-emerald-500/25 hover:bg-black/50 hover:shadow-lg hover:shadow-emerald-500/20">
               <CardContent className="p-0">
                 <div className="overflow-x-auto">
                   <table className="w-full">
@@ -2169,7 +2208,7 @@ export default function AdminDashboard() {
             </div>
 
             {showKycFilters && (
-              <Card className="bg-black/40 border border-emerald-500/15 rounded-2xl mb-6">
+              <Card className="bg-black/40 border border-emerald-500/15 rounded-2xl transition-all duration-300 hover:border-emerald-500/25 hover:bg-black/50 hover:shadow-lg hover:shadow-emerald-500/20 mb-6">
                 <CardContent className="p-6">
                   <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
                     <div className="space-y-2">
@@ -2263,7 +2302,7 @@ export default function AdminDashboard() {
             )}
 
             {/* Tabla KYC */}
-            <Card className="bg-black/40 border border-emerald-500/15 rounded-2xl">
+            <Card className="bg-black/40 border border-emerald-500/15 rounded-2xl transition-all duration-300 hover:border-emerald-500/25 hover:bg-black/50 hover:shadow-lg hover:shadow-emerald-500/20">
               <CardContent className="p-0">
                 <div className="overflow-x-auto">
                   <table className="w-full">
@@ -2409,7 +2448,7 @@ export default function AdminDashboard() {
 
             {/* Panel filtros productos */}
             {showProductFilters && (
-              <Card className="bg-black/40 border border-emerald-500/15 rounded-2xl mb-6">
+              <Card className="bg-black/40 border border-emerald-500/15 rounded-2xl transition-all duration-300 hover:border-emerald-500/25 hover:bg-black/50 hover:shadow-lg hover:shadow-emerald-500/20 mb-6">
                 <CardContent className="p-6">
                   <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
                     <div className="space-y-2">
@@ -2525,7 +2564,7 @@ export default function AdminDashboard() {
             )}
 
             {/* Tabla productos */}
-            <Card className="bg-black/40 border border-emerald-500/15 rounded-2xl">
+            <Card className="bg-black/40 border border-emerald-500/15 rounded-2xl transition-all duration-300 hover:border-emerald-500/25 hover:bg-black/50 hover:shadow-lg hover:shadow-emerald-500/20">
               <CardContent className="p-0">
                 <div className="overflow-x-auto">
                   <table className="w-full">
@@ -2745,7 +2784,7 @@ export default function AdminDashboard() {
 
             {/* Panel filtros contratos */}
             {showContractFilters && (
-              <Card className="bg-black/40 border border-emerald-500/15 rounded-2xl mb-6">
+              <Card className="bg-black/40 border border-emerald-500/15 rounded-2xl transition-all duration-300 hover:border-emerald-500/25 hover:bg-black/50 hover:shadow-lg hover:shadow-emerald-500/20 mb-6">
                 <CardContent className="p-6">
                   <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
                     <div className="space-y-2">
@@ -2845,7 +2884,7 @@ export default function AdminDashboard() {
             )}
 
             {/* Tabla contratos */}
-            <Card className="bg-black/40 border border-emerald-500/15 rounded-2xl">
+            <Card className="bg-black/40 border border-emerald-500/15 rounded-2xl transition-all duration-300 hover:border-emerald-500/25 hover:bg-black/50 hover:shadow-lg hover:shadow-emerald-500/20">
               <CardContent className="p-0">
                 <div className="overflow-x-auto">
                   <table className="w-full">
@@ -2948,7 +2987,7 @@ export default function AdminDashboard() {
                 <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-emerald-500"></div>
               </div>
             ) : (
-              <Card className="bg-black/40 border border-emerald-500/15 rounded-2xl shadow-[0_0_0_1px_rgba(16,185,129,0.12),0_20px_60px_-20px_rgba(16,185,129,0.25)]">
+              <Card className="bg-black/40 border border-emerald-500/15 rounded-2xl transition-all duration-300 hover:border-emerald-500/25 hover:bg-black/50 hover:shadow-lg hover:shadow-emerald-500/20 shadow-[0_0_0_1px_rgba(16,185,129,0.12),0_20px_60px_-20px_rgba(16,185,129,0.25)]">
                 <CardContent className="p-6">
                   {auditLogs.length === 0 ? (
                     <div className="text-center py-12">
@@ -3109,7 +3148,7 @@ export default function AdminDashboard() {
                         value: lastDeposit ? new Date(lastDeposit.createdAt).toLocaleDateString("es-ES") : "-",
                       },
                     ].map(({ label, value }, i) => (
-                      <Card key={i} className="bg-black/40 border border-emerald-500/15 rounded-2xl">
+                      <Card key={i} className="bg-black/40 border border-emerald-500/15 rounded-2xl transition-all duration-300 hover:border-emerald-500/25 hover:bg-black/50 hover:shadow-lg hover:shadow-emerald-500/20">
                         <CardContent className="p-6">
                           <p className="text-emerald-200/80 text-sm">{label}</p>
                           <p className="text-emerald-50 text-2xl font-bold">{value}</p>
@@ -3120,7 +3159,7 @@ export default function AdminDashboard() {
 
                   {/* Datos personales y estado KYC */}
                   <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
-                    <Card className="bg-black/40 border border-emerald-500/15 rounded-2xl">
+                    <Card className="bg-black/40 border border-emerald-500/15 rounded-2xl transition-all duration-300 hover:border-emerald-500/25 hover:bg-black/50 hover:shadow-lg hover:shadow-emerald-500/20">
                       <CardHeader>
                         <CardTitle className="text-emerald-50">Datos personales</CardTitle>
                         <CardDescription className="text-emerald-200/80">
@@ -3161,7 +3200,7 @@ export default function AdminDashboard() {
                       </CardContent>
                     </Card>
 
-                    <Card className="bg-black/40 border border-emerald-500/15 rounded-2xl">
+                    <Card className="bg-black/40 border border-emerald-500/15 rounded-2xl transition-all duration-300 hover:border-emerald-500/25 hover:bg-black/50 hover:shadow-lg hover:shadow-emerald-500/20">
                       <CardHeader>
                         <CardTitle className="text-emerald-50">Verificación KYC</CardTitle>
                         <CardDescription className="text-emerald-200/80">
@@ -3213,7 +3252,7 @@ export default function AdminDashboard() {
                   </div>
 
                   {/* Contratos del cliente */}
-                  <Card className="bg-black/40 border border-emerald-500/15 rounded-2xl">
+                  <Card className="bg-black/40 border border-emerald-500/15 rounded-2xl transition-all duration-300 hover:border-emerald-500/25 hover:bg-black/50 hover:shadow-lg hover:shadow-emerald-500/20">
                     <CardHeader>
                       <CardTitle className="text-emerald-50">Contratos del cliente</CardTitle>
                       <CardDescription className="text-emerald-200/80">

@@ -1,6 +1,5 @@
 import { Button } from "@/components/ui/button";
 import { Handshake, CheckCircle, ShieldQuestion, Star, Users } from "lucide-react";
-import { useLocation } from "wouter";
 
 export default function Advisors() {
   const benefits = [
@@ -26,10 +25,9 @@ export default function Advisors() {
     }
   ];
 
-  const [, setLocation] = useLocation();
-  
-  const goToContact = () => {
-    setLocation("/contacto");
+  const scheduleCalendly = () => {
+    // In a real implementation, this would open Calendly widget
+    console.log("Opening Calendly for scheduling");
   };
 
   return (
@@ -74,10 +72,10 @@ export default function Advisors() {
           
           <div className="text-center">
             <Button 
-              onClick={goToContact}
+              onClick={scheduleCalendly}
               className="gradient-navy px-8 py-4 text-white font-semibold hover:opacity-90 h-auto"
             >
-              Quiero más información
+              Agendar reunión
             </Button>
           </div>
         </div>

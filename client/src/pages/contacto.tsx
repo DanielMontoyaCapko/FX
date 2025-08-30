@@ -1,13 +1,19 @@
 import Header from "@/components/header";
-import Downloads from "@/components/downloads";
 import Advisors from "@/components/advisors";
-import FinalCTA from "@/components/final-cta";
 import Footer from "@/components/footer";
+import { Button } from "@/components/ui/button";
+import { Calendar } from "lucide-react";
 
 import { useScrollToTop } from "@/hooks/useScrollToTop";
 
 export default function Contacto() {
   useScrollToTop();
+  
+  const scheduleCalendly = () => {
+    // In a real implementation, this would open Calendly widget
+    console.log("Opening Calendly for scheduling");
+  };
+  
   return (
     <div className={[
       "min-h-screen text-white relative",
@@ -35,7 +41,7 @@ export default function Contacto() {
           <div className="container mx-auto px-6">
             <div className="max-w-4xl mx-auto">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
-                <div className="contact-info-card bg-black/70 p-8 rounded-xl border border-silver-500/20 transition-all duration-500 hover:border-green/40 cursor-pointer">
+                <div className="contact-info-card bg-black/70 p-8 rounded-xl border border-emerald-500/15 transition-all duration-300 hover:border-emerald-500/25 hover:bg-black/50 hover:shadow-lg hover:shadow-emerald-500/20 cursor-pointer text-center">
                   <h2 className="font-georgia text-3xl font-bold text-white mb-6">Información de Contacto</h2>
                   
                   <div className="space-y-4">
@@ -46,7 +52,7 @@ export default function Contacto() {
                     
                     <div>
                       <h3 className="font-semibold text-white mb-2">Teléfono</h3>
-                      <p className="text-silver-100">+34 XXX XXX XXX</p>
+                      <p className="text-silver-100">+34.675.558.429</p>
                     </div>
                     
                     <div>
@@ -59,37 +65,47 @@ export default function Contacto() {
                       <p className="text-silver-100">Lunes a Viernes: 9:00 - 18:00 CET</p>
                     </div>
                   </div>
+                  
+                  <div className="mt-8 pt-6 border-t border-emerald-500/20">
+                    <Button 
+                      onClick={scheduleCalendly}
+                      className="w-full bg-emerald-600 text-white hover:bg-emerald-500 transition-colors"
+                    >
+                      <Calendar className="mr-2 h-4 w-4" />
+                      Agendar reunión privada
+                    </Button>
+                  </div>
                 </div>
                 
-                <div className="contact-offices-card bg-black/70 p-8 rounded-xl border border-silver-500/20 transition-all duration-500 hover:border-green/40 cursor-pointer">
+                <div className="contact-offices-card bg-black/70 p-8 rounded-xl border border-emerald-500/15 transition-all duration-300 hover:border-emerald-500/25 hover:bg-black/50 hover:shadow-lg hover:shadow-emerald-500/20 cursor-pointer text-center">
                   <h2 className="font-georgia text-3xl font-bold text-white mb-6">Oficinas</h2>
                   
                   <div className="space-y-6">
                     <div>
                       <h3 className="font-semibold text-white mb-2">Oficina Principal</h3>
                       <p className="text-silver-100">
-                        Paseo de la Castellana, 123<br />
-                        28046 Madrid, España
+                        España<br />
+                        Pg. de Gràcia, 19, L'Eixample, 08007 Barcelona
                       </p>
                     </div>
                     
                     <div>
                       <h3 className="font-semibold text-white mb-2">Oficina Internacional</h3>
                       <p className="text-silver-100">
-                        Dubai International Financial Centre<br />
-                        Dubai, Emiratos Árabes Unidos
+                        Emiratos Árabes Unidos<br />
+                        Dubai Integrated economic Zones Authority<br />
+                        Premises DSO-IFZA<br />
+                        Building name: Dubai Silicon Oasis
                       </p>
                     </div>
                   </div>
                 </div>
               </div>
             </div>
-          </div>
+                    </div>
         </section>
         
-        <Downloads />
         <Advisors />
-        <FinalCTA />
       </main>
       <Footer />
       </div>

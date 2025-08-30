@@ -6,9 +6,9 @@ export default function Comparison() {
       risk: "Bajo",
       liquidity: "Alta",
       guarantee: "Sí",
-      riskColor: "text-green-400",
-      liquidityColor: "text-green-400",
-      guaranteeColor: "text-green-400"
+      riskColor: "text-green",
+      liquidityColor: "text-green",
+      guaranteeColor: "text-green"
     },
     {
       product: "Fondo Conservador",
@@ -26,9 +26,9 @@ export default function Comparison() {
       risk: "Nula",
       liquidity: "Alta",
       guarantee: "Sí (Pignorado)",
-      riskColor: "text-green-400",
-      liquidityColor: "text-green-400",
-      guaranteeColor: "text-green-400",
+      riskColor: "text-green",
+      liquidityColor: "text-green",
+      guaranteeColor: "text-green",
       highlighted: true
     }
   ];
@@ -38,7 +38,7 @@ export default function Comparison() {
       <div className="container mx-auto px-6">
         <div className="text-center mb-12">
           <h2 className="font-georgia text-4xl md:text-5xl font-bold text-white mb-6">
-            <span className="text-green">Comparativa</span> con Otras Opciones de Inversión
+            <span className="text-emerald-400">Comparativa</span> con Otras Opciones de Inversión
           </h2>
         </div>
         
@@ -57,7 +57,7 @@ export default function Comparison() {
               {data.map((row, index) => (
                 <tr 
                   key={index} 
-                  className={`border-b border-silver-500/20 ${row.highlighted ? 'bg-green/10 border border-gold' : ''}`}
+                  className={`border-b border-silver-500/20 ${row.highlighted ? 'bg-green/10 border border-green/30' : ''}`}
                 >
                   <td className={`p-6 ${row.highlighted ? 'text-white font-semibold' : 'text-silver-100'}`}>
                     {row.product}
