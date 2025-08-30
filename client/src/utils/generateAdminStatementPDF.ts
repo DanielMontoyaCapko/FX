@@ -167,17 +167,40 @@ export async function generateAdminStatementPDF(data: AdminDashboardData) {
   
   generalKpis.forEach((kpi, idx) => {
     const ry = y + kpiRowH * (idx + 1);
+    
+    // Verificar si necesitamos nueva página
+    if (ry > 780) {
+      doc.addPage();
+      y = 60; // Reiniciar posición Y en nueva página
+      // Volver a dibujar el encabezado de la tabla
+      doc.setFontSize(10);
+      setTextRGB(doc, [255, 255, 255]);
+      setFillRGB(doc, BRAND.primary600);
+      doc.rect(40, y - 12, 520, 24, "F");
+      doc.text("Métrica", 56, y + 2);
+      doc.text("Valor", 200, y + 2);
+      doc.text("Estado", 350, y + 2);
+      doc.text("Tendencia", 450, y + 2);
+    }
+    
+    const actualRy = ry > 780 ? y + kpiRowH * (idx % 10 + 1) : ry;
     if (idx % 2 === 0) {
       setFillRGB(doc, [240, 253, 244]);
-      doc.rect(40, ry - 16, 520, kpiRowH, "F");
+      doc.rect(40, actualRy - 16, 520, kpiRowH, "F");
     }
-    doc.text(kpi.title, 56, ry);
-    doc.text(kpi.value, 200, ry);
-    doc.text(kpi.change, 350, ry);
-    doc.text(kpi.trending === "up" ? "↗" : "↘", 450, ry);
+    doc.text(kpi.title, 56, actualRy);
+    doc.text(kpi.value, 200, actualRy);
+    doc.text(kpi.change, 350, actualRy);
+    doc.text(kpi.trending === "up" ? "↗" : "↘", 450, actualRy);
   });
 
-  y += kpiRowH * generalKpis.length + 40;
+  y += kpiRowH * Math.min(generalKpis.length, 10) + 40;
+  
+  // Verificar si necesitamos nueva página antes de la siguiente sección
+  if (y > 720) {
+    doc.addPage();
+    y = 60;
+  }
 
   // Distribución de KYC
   sectionHeading(doc, "Estado de Verificaciones KYC", y);
@@ -660,6 +683,12 @@ export async function generateAdminStatementPDF(data: AdminDashboardData) {
     });
 
     y += rowH * Math.min(8, data.recentActivity.length) + 40;
+  }
+
+  // Verificar si necesitamos nueva página para información adicional
+  if (y > 680) {
+    doc.addPage();
+    y = 60;
   }
 
   // Información Adicional

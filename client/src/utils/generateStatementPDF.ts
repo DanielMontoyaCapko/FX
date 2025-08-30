@@ -136,17 +136,40 @@ export async function generateStatementPDF(data: StatementData) {
   
   data.kpis.forEach((kpi, idx) => {
     const ry = y + kpiRowH * (idx + 1);
+    
+    // Verificar si necesitamos nueva página
+    if (ry > 780) {
+      doc.addPage();
+      y = 60; // Reiniciar posición Y en nueva página
+      // Volver a dibujar el encabezado de la tabla
+      doc.setFontSize(10);
+      setTextRGB(doc, [255, 255, 255]);
+      setFillRGB(doc, BRAND.primary600);
+      doc.rect(40, y - 12, 520, 24, "F");
+      doc.text("Métrica", 56, y + 2);
+      doc.text("Valor", 200, y + 2);
+      doc.text("Estado", 350, y + 2);
+      doc.text("Tendencia", 450, y + 2);
+    }
+    
+    const actualRy = ry > 780 ? y + kpiRowH * (idx % 10 + 1) : ry;
     if (idx % 2 === 0) {
       setFillRGB(doc, [240, 253, 244]);
-      doc.rect(40, ry - 16, 520, kpiRowH, "F");
+      doc.rect(40, actualRy - 16, 520, kpiRowH, "F");
     }
-    doc.text(kpi.title, 56, ry);
-    doc.text(kpi.value, 200, ry);
-    doc.text(kpi.change, 350, ry);
-    doc.text(kpi.trending === "up" ? "↗" : "↘", 450, ry);
+    doc.text(kpi.title, 56, actualRy);
+    doc.text(kpi.value, 200, actualRy);
+    doc.text(kpi.change, 350, actualRy);
+    doc.text(kpi.trending === "up" ? "↗" : "↘", 450, actualRy);
   });
 
-  y += kpiRowH * data.kpis.length + 40;
+  y += kpiRowH * Math.min(data.kpis.length, 10) + 40;
+  
+  // Verificar si necesitamos nueva página antes de la siguiente sección
+  if (y > 720) {
+    doc.addPage();
+    y = 60;
+  }
 
   // Productos Activos
   if (data.productosActivos.length > 0) {
@@ -168,17 +191,42 @@ export async function generateStatementPDF(data: StatementData) {
     
     data.productosActivos.forEach((prod, idx) => {
       const ry = y + prodRowH * (idx + 1);
+      
+      // Verificar si necesitamos nueva página
+      if (ry > 780) {
+        doc.addPage();
+        y = 60;
+        // Volver a dibujar encabezado de productos activos
+        sectionHeading(doc, "Productos Activos (continuación)", y);
+        y += 24;
+        doc.setFontSize(10);
+        setTextRGB(doc, [255, 255, 255]);
+        setFillRGB(doc, BRAND.primary600);
+        doc.rect(40, y - 12, 520, 24, "F");
+        doc.text("Producto", 56, y + 2);
+        doc.text("Estado", 200, y + 2);
+        doc.text("Cantidad", 300, y + 2);
+        doc.text("Rentabilidad", 420, y + 2);
+      }
+      
+      const actualRy = ry > 780 ? y + prodRowH * (idx % 20 + 1) : ry;
       if (idx % 2 === 0) {
         setFillRGB(doc, [240, 253, 244]);
-        doc.rect(40, ry - 16, 520, prodRowH, "F");
+        doc.rect(40, actualRy - 16, 520, prodRowH, "F");
       }
-      doc.text(prod.nombre, 56, ry);
-      doc.text(prod.estado, 200, ry);
-      doc.text(prod.cantidad, 300, ry);
-      doc.text(prod.rentabilidad, 420, ry);
+      doc.text(prod.nombre, 56, actualRy);
+      doc.text(prod.estado, 200, actualRy);
+      doc.text(prod.cantidad, 300, actualRy);
+      doc.text(prod.rentabilidad, 420, actualRy);
     });
 
-    y += prodRowH * data.productosActivos.length + 40;
+    y += prodRowH * Math.min(data.productosActivos.length, 20) + 40;
+    
+    // Verificar si necesitamos nueva página antes de la siguiente sección
+    if (y > 720) {
+      doc.addPage();
+      y = 60;
+    }
   }
 
   // Transacciones Recientes
@@ -202,18 +250,44 @@ export async function generateStatementPDF(data: StatementData) {
     
     data.transacciones.forEach((tx, idx) => {
       const ry = y + txRowH * (idx + 1);
+      
+      // Verificar si necesitamos nueva página
+      if (ry > 780) {
+        doc.addPage();
+        y = 60;
+        // Volver a dibujar encabezado de transacciones
+        sectionHeading(doc, "Transacciones Recientes (continuación)", y);
+        y += 24;
+        doc.setFontSize(10);
+        setTextRGB(doc, [255, 255, 255]);
+        setFillRGB(doc, BRAND.primary600);
+        doc.rect(40, y - 12, 520, 24, "F");
+        doc.text("Fecha", 56, y + 2);
+        doc.text("Tipo", 150, y + 2);
+        doc.text("Descripción", 250, y + 2);
+        doc.text("Cantidad", 400, y + 2);
+        doc.text("Estado", 480, y + 2);
+      }
+      
+      const actualRy = ry > 780 ? y + txRowH * (idx % 25 + 1) : ry;
       if (idx % 2 === 0) {
         setFillRGB(doc, [240, 253, 244]);
-        doc.rect(40, ry - 16, 520, txRowH, "F");
+        doc.rect(40, actualRy - 16, 520, txRowH, "F");
       }
-      doc.text(tx.fecha, 56, ry);
-      doc.text(tx.tipo, 150, ry);
-      doc.text(tx.descripcion, 250, ry);
-      doc.text(eur(tx.cantidad), 400, ry);
-      doc.text(tx.estado, 480, ry);
+      doc.text(tx.fecha, 56, actualRy);
+      doc.text(tx.tipo, 150, actualRy);
+      doc.text(tx.descripcion, 250, actualRy);
+      doc.text(eur(tx.cantidad), 400, actualRy);
+      doc.text(tx.estado, 480, actualRy);
     });
 
-    y += txRowH * data.transacciones.length + 40;
+    y += txRowH * Math.min(data.transacciones.length, 25) + 40;
+    
+    // Verificar si necesitamos nueva página antes de la siguiente sección
+    if (y > 720) {
+      doc.addPage();
+      y = 60;
+    }
   }
 
   // Actividad Reciente
@@ -234,15 +308,38 @@ export async function generateStatementPDF(data: StatementData) {
     
     data.actividadReciente.forEach((act, idx) => {
       const ry = y + actRowH * (idx + 1);
+      
+      // Verificar si necesitamos nueva página
+      if (ry > 780) {
+        doc.addPage();
+        y = 60;
+        // Volver a dibujar encabezado de actividad reciente
+        sectionHeading(doc, "Actividad Reciente (continuación)", y);
+        y += 24;
+        doc.setFontSize(10);
+        setTextRGB(doc, [255, 255, 255]);
+        setFillRGB(doc, BRAND.primary600);
+        doc.rect(40, y - 12, 520, 24, "F");
+        doc.text("Acción", 56, y + 2);
+        doc.text("Fecha", 350, y + 2);
+      }
+      
+      const actualRy = ry > 780 ? y + actRowH * (idx % 25 + 1) : ry;
       if (idx % 2 === 0) {
         setFillRGB(doc, [240, 253, 244]);
-        doc.rect(40, ry - 16, 520, actRowH, "F");
+        doc.rect(40, actualRy - 16, 520, actRowH, "F");
       }
-      doc.text(act.action, 56, ry);
-      doc.text(act.createdAt, 350, ry);
+      doc.text(act.action, 56, actualRy);
+      doc.text(act.createdAt, 350, actualRy);
     });
 
-    y += actRowH * data.actividadReciente.length + 40;
+    y += actRowH * Math.min(data.actividadReciente.length, 25) + 40;
+  }
+
+  // Verificar si necesitamos nueva página para información adicional
+  if (y > 680) {
+    doc.addPage();
+    y = 60;
   }
 
   // Información Adicional
