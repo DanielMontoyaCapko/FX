@@ -833,7 +833,21 @@ export default function AdminDashboard() {
   };
 
   const handleEditKyc = (k: KycData) => {
-    setEditingKyc(k);
+    // Si el usuario no tiene registro KYC, crear uno temporal
+    if (!k.id) {
+      const tempKyc = {
+        ...k,
+        status: 'pending',
+        fullName: k.fullName || k.userName || '',
+        documentType: k.documentType || '',
+        documentNumber: k.documentNumber || '',
+        country: k.country || '',
+        documentsUrls: k.documentsUrls || []
+      };
+      setEditingKyc(tempKyc);
+    } else {
+      setEditingKyc(k);
+    }
     setShowKycDialog(true);
   };
 
@@ -862,10 +876,26 @@ export default function AdminDashboard() {
     if (!editingKyc) return;
     try {
       const token = localStorage.getItem("token");
-      const response = await fetch(`/api/admin/kyc/${editingKyc.id}`, {
-        method: "PUT",
+      // Si no hay ID, crear un nuevo registro KYC
+      const isNewRecord = !editingKyc.id;
+      const url = isNewRecord ? '/api/kyc' : `/api/admin/kyc/${editingKyc.id}`;
+      const method = isNewRecord ? 'POST' : 'PUT';
+      const body = isNewRecord ? {
+        fullName: editingKyc.fullName || editingKyc.userName || '',
+        documentType: editingKyc.documentType || 'DNI',
+        documentNumber: editingKyc.documentNumber || '',
+        country: editingKyc.country || '',
+        status: editingKyc.status,
+        notes: editingKyc.notes || ''
+      } : { 
+        status: editingKyc.status,
+        notes: editingKyc.notes || ''
+      };
+      
+      const response = await fetch(url, {
+        method,
         headers: { Authorization: `Bearer ${token}`, "Content-Type": "application/json" },
-        body: JSON.stringify({ status: editingKyc.status }),
+        body: JSON.stringify(body),
       });
 
       if (response.ok) {
@@ -3385,21 +3415,21 @@ export default function AdminDashboard() {
                 <div className="grid grid-cols-2 gap-4 p-4 bg-black/30 rounded-lg border border-emerald-500/15">
                   <div>
                     <Label className="text-emerald-300 text-sm">Usuario</Label>
-                    <div className="text-emerald-50">{editingKyc.fullName}</div>
+                    <div className="text-emerald-50">{editingKyc.fullName || editingKyc.userName || '-'}</div>
                   </div>
                   <div>
                     <Label className="text-emerald-300 text-sm">Email</Label>
-                    <div className="text-emerald-50">{editingKyc.userEmail}</div>
+                    <div className="text-emerald-50">{editingKyc.userEmail || '-'}</div>
                   </div>
                   <div>
                     <Label className="text-emerald-300 text-sm">Documento</Label>
                     <div className="text-emerald-50">
-                      {editingKyc.documentType.toUpperCase()} - {editingKyc.documentNumber}
+                      {editingKyc.documentType ? editingKyc.documentType.toUpperCase() : '-'} - {editingKyc.documentNumber || '-'}
                     </div>
                   </div>
                   <div>
                     <Label className="text-emerald-300 text-sm">País</Label>
-                    <div className="text-emerald-50">{editingKyc.country}</div>
+                    <div className="text-emerald-50">{editingKyc.country || '-'}</div>
                   </div>
                 </div>
 
@@ -3431,35 +3461,33 @@ export default function AdminDashboard() {
                 {/* Review Form */}
                 <div className="space-y-4">
                   <div>
-                    <Label className="text-emerald-300 text-sm mb-2 block">Decisión</Label>
+                    <Label className="text-emerald-300 text-sm mb-2 block">Estado KYC</Label>
                     <Select
-                      value={kycReviewStatus}
-                      onValueChange={(value: "approved" | "rejected") => setKycReviewStatus(value)}
+                      value={editingKyc.status || 'pending'}
+                      onValueChange={(value) => setEditingKyc({...editingKyc, status: value})}
                     >
                       <SelectTrigger className="bg-black/50 border-emerald-500/20 text-emerald-50">
                         <SelectValue />
                       </SelectTrigger>
                       <SelectContent className="bg-black/40 border-emerald-500/15 text-emerald-50">
-                        <SelectItem value="approved">✅ Aprobar</SelectItem>
-                        <SelectItem value="rejected">❌ Rechazar</SelectItem>
+                        <SelectItem value="pending">🟡 Pendiente</SelectItem>
+                        <SelectItem value="approved">✅ Aprobado</SelectItem>
+                        <SelectItem value="rejected">❌ Rechazado</SelectItem>
                       </SelectContent>
                     </Select>
                   </div>
 
-                  {kycReviewStatus === "rejected" && (
-                    <div>
-                      <Label className="text-emerald-300 text-sm mb-2 block">
-                        Motivo del Rechazo <span className="text-red-400">*</span>
-                      </Label>
-                      <textarea
-                        value={rejectionReason}
-                        onChange={(e) => setRejectionReason(e.target.value)}
-                        placeholder="Describe el motivo del rechazo..."
-                        className="w-full h-24 p-3 bg-black/50 border border-emerald-500/20 rounded text-emerald-50 placeholder-emerald-400/60 resize-none"
-                        required
-                      />
-                    </div>
-                  )}
+                  <div>
+                    <Label className="text-emerald-300 text-sm mb-2 block">
+                      Notas (Opcional)
+                    </Label>
+                    <textarea
+                      value={editingKyc.notes || ''}
+                      onChange={(e) => setEditingKyc({...editingKyc, notes: e.target.value})}
+                      placeholder="Agregar notas sobre el estado KYC..."
+                      className="w-full h-24 p-3 bg-black/50 border border-emerald-500/20 rounded text-emerald-50 placeholder-emerald-400/60 resize-none"
+                    />
+                  </div>
                 </div>
 
                 <DialogFooter className="flex gap-2">
@@ -3472,28 +3500,10 @@ export default function AdminDashboard() {
                     Cancelar
                   </Button>
                   <Button 
-                    onClick={async () => {
-                      if (kycReviewStatus === "rejected" && !rejectionReason.trim()) {
-                        alert("Por favor, proporciona un motivo para el rechazo");
-                        return;
-                      }
-                      
-                      try {
-                        await kycReviewMutation.mutateAsync({
-                          kycId: editingKyc.id,
-                          status: kycReviewStatus,
-                          rejectionReason: kycReviewStatus === "rejected" ? rejectionReason : undefined,
-                        });
-                        handleCloseKycDialog();
-                      } catch (error) {
-                        console.error('Error reviewing KYC:', error);
-                      }
-                    }}
-                    disabled={kycReviewMutation.isPending}
+                    onClick={handleUpdateKycForm}
                     className="bg-gradient-to-r from-emerald-600 to-emerald-500 hover:from-emerald-500 hover:to-emerald-400 text-white"
                   >
-                    {kycReviewMutation.isPending ? "Procesando..." : 
-                     kycReviewStatus === "approved" ? "Aprobar Documentos" : "Rechazar Documentos"}
+                    Actualizar Estado
                   </Button>
                 </DialogFooter>
               </div>
