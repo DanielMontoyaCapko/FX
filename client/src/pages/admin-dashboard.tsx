@@ -3128,8 +3128,8 @@ export default function AdminDashboard() {
                                 </div>
                               </div>
                               <div className="text-right text-sm text-emerald-200/60">
-                                <div>{new Date(log.createdAt).toLocaleDateString("es-ES")}</div>
-                                <div>{new Date(log.createdAt).toLocaleTimeString("es-ES", { hour: "2-digit", minute: "2-digit" })}</div>
+                                <div>{log.createdAt && !isNaN(Date.parse(log.createdAt)) ? new Date(log.createdAt).toLocaleDateString("es-ES") : "Fecha no disponible"}</div>
+                                <div>{log.createdAt && !isNaN(Date.parse(log.createdAt)) ? new Date(log.createdAt).toLocaleTimeString("es-ES", { hour: "2-digit", minute: "2-digit" }) : "--:--"}</div>
                                 {log.ipAddress && (
                                   <div className="text-xs mt-1">IP: {log.ipAddress}</div>
                                 )}
