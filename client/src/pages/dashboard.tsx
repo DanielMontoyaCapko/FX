@@ -265,20 +265,6 @@ function DepositoView({
                   >
                     Renta Fija 9%
                   </Button>
-                  <Button
-                    variant={productoElegido === "variable" ? "default" : "outline"}
-                    onClick={() => setProductoElegido("variable")}
-                    className={productoElegido === "variable" ? "bg-emerald-600 hover:bg-emerald-500" : "border-emerald-500/30 hover:bg-emerald-900/10"}
-                  >
-                    Variable
-                  </Button>
-                  <Button
-                    variant={productoElegido === "mixto" ? "default" : "outline"}
-                    onClick={() => setProductoElegido("mixto")}
-                    className={productoElegido === "mixto" ? "bg-emerald-600 hover:bg-emerald-500" : "border-emerald-500/30 hover:bg-emerald-900/10"}
-                  >
-                    Mixto
-                  </Button>
                 </div>
               </div>
               <Button disabled={!puedeIniciarAportacion} className="rounded-xl">
