@@ -2001,16 +2001,23 @@ export default function AdminDashboard() {
                           <td className="p-4 text-emerald-50">{u.sponsor || "-"}</td>
                           <td className="p-4 text-emerald-50">{u.grade}</td>
                           <td className="p-4">
-                            <Badge
-                              variant={u.verificationStatus === "verified" ? "default" : "secondary"}
-                              className={
-                                u.verificationStatus === "verified"
-                                  ? "bg-emerald-500 text-black"
-                                  : "bg-emerald-900/30 text-emerald-200"
-                              }
-                            >
-                              {u.verificationStatus === "verified" ? "Verificado" : "Pendiente"}
-                            </Badge>
+                            {(() => {
+                              const userKyc = kyc.find(k => k.userId === u.id);
+                              const kycStatus = userKyc?.status || 'pending';
+                              return (
+                                <Badge
+                                  className={
+                                    kycStatus === "approved"
+                                      ? "bg-emerald-500 text-black"
+                                      : kycStatus === "pending"
+                                      ? "bg-amber-500 text-black"
+                                      : "bg-red-500 text-white"
+                                  }
+                                >
+                                  {kycStatus === "approved" ? "Aprobado" : kycStatus === "pending" ? "Pendiente" : "Rechazado"}
+                                </Badge>
+                              );
+                            })()}
                           </td>
                           <td className="p-4 text-emerald-50">
                             {new Date(u.createdAt).toLocaleDateString("es-ES")}
@@ -3681,6 +3688,12 @@ export default function AdminDashboard() {
                     <Label className="text-emerald-200 font-medium">Sponsor</Label>
                     <div className="p-3 bg-black/40 border border-emerald-500/20 rounded-lg text-emerald-50">
                       {selectedUserProfile.sponsor || "No asignado"}
+                    </div>
+                  </div>
+                  <div className="space-y-2">
+                    <Label className="text-emerald-200 font-medium">País</Label>
+                    <div className="p-3 bg-black/40 border border-emerald-500/20 rounded-lg text-emerald-50">
+                      {selectedUserProfile.country || "-"}
                     </div>
                   </div>
                   <div className="space-y-2">
