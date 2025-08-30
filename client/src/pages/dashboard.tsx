@@ -916,36 +916,108 @@ export default function Dashboard() {
 
   const handleLogout = () => setLocation("/login");
 
-  const handlePhotoUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
+  const handlePhotoUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (!file) return;
-    const reader = new FileReader();
-    reader.onload = (e) => setProfilePhoto(e.target?.result as string);
-    reader.readAsDataURL(file);
+    
+    // Validar tipo y tamaño del archivo
+    if (!file.type.startsWith('image/')) {
+      alert('Por favor selecciona solo archivos de imagen');
+      return;
+    }
+    
+    if (file.size > 5 * 1024 * 1024) { // 5MB máximo
+      alert('La imagen debe ser menor a 5MB');
+      return;
+    }
+    
+    try {
+      // Subir la imagen al servidor
+      const formData = new FormData();
+      formData.append('profilePhoto', file);
+      
+      const response = await fetch('/api/me/profile-photo', {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${localStorage.getItem('token')}`,
+        },
+        body: formData,
+      });
+      
+      if (!response.ok) {
+        throw new Error('Error al subir la imagen');
+      }
+      
+      const result = await response.json();
+      
+      // Actualizar el estado local
+      setProfilePhoto(result.profilePhotoUrl);
+      
+      // Mostrar confirmación
+      alert('Foto de perfil actualizada correctamente');
+      
+      // Recargar los datos del usuario
+      queryClient.invalidateQueries({ queryKey: ["/api/me"] });
+      
+    } catch (error) {
+      console.error('Error uploading profile photo:', error);
+      alert('Error al subir la imagen. Inténtalo de nuevo.');
+    }
   };
 
   const handleDownloadStatement = async () => {
     try {
+      // Validar que los datos estén disponibles
+      if (!capitalInvertido || capitalInvertido <= 0) {
+        alert("Error: No hay datos de inversión disponibles");
+        return;
+      }
+      
+      // Generar detalle mensual real con fechas correctas
+      const detalleMensual = [];
+      const fechaInicio = new Date();
+      fechaInicio.setMonth(fechaInicio.getMonth() - mesesTranscurridos);
+      
+      for (let i = 0; i < mesesTranscurridos; i++) {
+        const mes = new Date(fechaInicio);
+        mes.setMonth(fechaInicio.getMonth() + i);
+        const label = mes.toLocaleDateString("es-ES", { month: "long", year: "numeric" });
+        const importe = (capitalInvertido * 0.09) / 12;
+        detalleMensual.push({ label, importe: Math.round(importe) });
+      }
+      
+      // Obtener nombre real del cliente
+      const nombreCliente = user?.name || user?.email?.split('@')[0] || "Cliente";
+      
+      // Generar período actual
+      const periodoActual = new Date().toLocaleDateString("es-ES", { month: "long", year: "numeric" });
+      
       await generateStatementPDF({
-        cliente: "Juan Cliente",
-        periodo: "Enero 2025",
-        fecha: new Date().toLocaleDateString("es-ES"),
-        capitalInvertido: 50000,
+        cliente: nombreCliente,
+        periodo: periodoActual,
+        fecha: new Date().toLocaleDateString("es-ES", { 
+          day: "2-digit", 
+          month: "2-digit", 
+          year: "numeric" 
+        }),
+        capitalInvertido: capitalInvertido,
         rentabilidadAnualPct: 9.0,
-        mesesTranscurridos: 3,
-        mesesTotales: 12,
-        beneficioAcumulado: 1125,
-        valorTotalActual: 51125,
-        detalleMensual: [
-          { label: "Enero 2025", importe: 375 },
-          { label: "Febrero 2025", importe: 375 },
-          { label: "Marzo 2025", importe: 375 },
-        ],
-        proyeccion: { beneficioTotal: 4500, valorFinal: 54500 },
+        mesesTranscurridos: mesesTranscurridos,
+        mesesTotales: mesesTotales,
+        beneficioAcumulado: Math.round(beneficioAcumulado),
+        valorTotalActual: Math.round(valorTotalActual),
+        detalleMensual: detalleMensual,
+        proyeccion: { 
+          beneficioTotal: Math.round(beneficioTotal), 
+          valorFinal: Math.round(valorFinal) 
+        },
       });
       
       // Registrar actividad de descarga de estado de cuenta
       logActivity('Estado de cuenta descargado');
+      
+      // Mostrar confirmación
+      alert("Estado de cuenta descargado correctamente");
     } catch (error) {
       console.error("Error generating PDF:", error);
       alert("Error al generar el PDF. Inténtalo de nuevo.");
@@ -966,6 +1038,12 @@ export default function Dashboard() {
   // Para Capital Invertido: porcentaje de tiempo transcurrido del contrato
   const percentCapital = percentMeses; // Mismo cálculo basado en tiempo
   const beneficioEstimadoTotal = (capitalInvertido * 0.09 * mesesTotales) / 12; // 9% anual prorrateado
+  
+  // Cálculos para el estado de cuenta
+  const beneficioAcumulado = (capitalInvertido * 0.09 * mesesTranscurridos) / 12;
+  const valorTotalActual = capitalInvertido + beneficioAcumulado;
+  const beneficioTotal = (capitalInvertido * 0.09 * mesesTotales) / 12;
+  const valorFinal = capitalInvertido + beneficioTotal;
   
   // ===== KPIs =====
   const kpis = [
@@ -1206,6 +1284,11 @@ export default function Dashboard() {
         pais: userData.user.pais || "espana",
         direccion: userData.user.direccion || "",
       });
+      
+      // También cargar la foto de perfil si existe
+      if (userData.user.profilePhoto) {
+        setProfilePhoto(userData.user.profilePhoto);
+      }
     }
   }, [userData]);
 
@@ -1224,12 +1307,38 @@ export default function Dashboard() {
   
   const handleKycSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!kycFormData.fullName || !kycFormData.documentNumber || !kycFormData.documentsUrls.length) return;
+    
+    // Validar campos requeridos
+    if (!kycFormData.fullName.trim()) {
+      alert('El nombre completo es obligatorio');
+      return;
+    }
+    
+    if (!kycFormData.documentNumber.trim()) {
+      alert('El número de documento es obligatorio');
+      return;
+    }
+    
+    if (!kycFormData.documentsUrls.length) {
+      alert('Debes subir al menos un documento');
+      return;
+    }
     
     try {
       await kycMutation.mutateAsync(kycFormData);
+      
+      // Mostrar confirmación
+      const message = kycData?.kyc ? 
+        'Documentos KYC actualizados correctamente' : 
+        'Documentos KYC enviados correctamente. Estarán en revisión.';
+      alert(message);
+      
+      // Recargar los datos del KYC
+      queryClient.invalidateQueries({ queryKey: ["/api/kyc/me"] });
+      
     } catch (error) {
       console.error('Error submitting KYC:', error);
+      alert('Error al enviar los documentos KYC. Inténtalo de nuevo.');
     }
   };
 
@@ -1237,10 +1346,29 @@ export default function Dashboard() {
   const handleProfileSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
+    // Validar campos requeridos
+    if (!profileFormData.nombre.trim() || !profileFormData.apellidos.trim()) {
+      alert('El nombre y apellidos son obligatorios');
+      return;
+    }
+    
+    if (!profileFormData.telefono.trim()) {
+      alert('El número de teléfono es obligatorio');
+      return;
+    }
+    
     try {
       await profileMutation.mutateAsync(profileFormData);
+      
+      // Mostrar confirmación
+      alert('Perfil actualizado correctamente');
+      
+      // Recargar los datos del usuario
+      queryClient.invalidateQueries({ queryKey: ["/api/me"] });
+      
     } catch (error) {
       console.error('Error updating profile:', error);
+      alert('Error al actualizar el perfil. Inténtalo de nuevo.');
     }
   };
   
@@ -1395,6 +1523,24 @@ export default function Dashboard() {
                   </TabsList>
 
                   <TabsContent value="personal" className="mt-6">
+                    {userLoading ? (
+                      <div className="flex items-center justify-center py-12">
+                        <Loader2 className="w-8 h-8 animate-spin text-emerald-400" />
+                        <span className="ml-3 text-emerald-200">Cargando información del perfil...</span>
+                      </div>
+                    ) : !userData?.user ? (
+                      <div className="text-center py-12">
+                        <AlertTriangle className="w-12 h-12 text-amber-400 mx-auto mb-4" />
+                        <p className="text-amber-200 mb-2">No se pudieron cargar los datos del perfil</p>
+                        <Button 
+                          onClick={() => queryClient.invalidateQueries({ queryKey: ["/api/me"] })}
+                          variant="outline"
+                          className="border-amber-500/20 text-amber-300 hover:bg-amber-500/10"
+                        >
+                          Reintentar
+                        </Button>
+                      </div>
+                    ) : (
                     <form onSubmit={handleProfileSubmit} className="space-y-6">
                       {/* Profile Photo */}
                       <div className="flex flex-col items-center mb-8">
@@ -1419,23 +1565,27 @@ export default function Dashboard() {
 
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <div>
-                          <Label htmlFor="nombre" className="text-emerald-50">Nombre</Label>
+                          <Label htmlFor="nombre" className="text-emerald-50">Nombre <span className="text-red-400">*</span></Label>
                           <Input 
                             id="nombre" 
                             name="nombre" 
                             value={profileFormData.nombre}
                             onChange={(e) => setProfileFormData(prev => ({ ...prev, nombre: e.target.value }))}
                             className="bg-black/50 border-emerald-500/20 text-emerald-50" 
+                            placeholder="Tu nombre"
+                            required
                           />
                         </div>
                         <div>
-                          <Label htmlFor="apellidos" className="text-emerald-50">Apellidos</Label>
+                          <Label htmlFor="apellidos" className="text-emerald-50">Apellidos <span className="text-red-400">*</span></Label>
                           <Input 
                             id="apellidos" 
                             name="apellidos" 
                             value={profileFormData.apellidos}
                             onChange={(e) => setProfileFormData(prev => ({ ...prev, apellidos: e.target.value }))}
                             className="bg-black/50 border-emerald-500/20 text-emerald-50" 
+                            placeholder="Tus apellidos"
+                            required
                           />
                         </div>
                       </div>
@@ -1445,13 +1595,13 @@ export default function Dashboard() {
                           <Label htmlFor="email" className="text-emerald-50">Correo Electrónico</Label>
                           <Input
                             id="email"
-                            defaultValue="test@test.com"
+                            value={userData?.user?.email || "Cargando..."}
                             disabled
                             className="bg-black/60 border-emerald-500/20 text-emerald-300/80 cursor-not-allowed"
                           />
                         </div>
                         <div>
-                          <Label htmlFor="telefono" className="text-emerald-50">Número de Teléfono</Label>
+                          <Label htmlFor="telefono" className="text-emerald-50">Número de Teléfono <span className="text-red-400">*</span></Label>
                           <div className="relative">
                             <Phone className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-emerald-300/70" />
                             <Input
@@ -1461,6 +1611,7 @@ export default function Dashboard() {
                               onChange={(e) => setProfileFormData(prev => ({ ...prev, telefono: e.target.value }))}
                               placeholder="Ej: +34 646 123 456"
                               className="bg-black/50 border-emerald-500/20 text-emerald-50 pl-10"
+                              required
                             />
                           </div>
                         </div>
@@ -1472,16 +1623,20 @@ export default function Dashboard() {
                           <Input 
                             id="fecha-nacimiento" 
                             name="fecha-nacimiento" 
+                            type="date"
                             value={profileFormData.fechaNacimiento}
                             onChange={(e) => setProfileFormData(prev => ({ ...prev, fechaNacimiento: e.target.value }))}
                             className="bg-black/50 border-emerald-500/20 text-emerald-50" 
+                            max={new Date().toISOString().split('T')[0]}
                           />
                         </div>
                         <div>
                           <Label htmlFor="fecha-registro" className="text-emerald-50">Fecha de Registro</Label>
                           <Input
                             id="fecha-registro"
-                            defaultValue="15/01/2024"
+                            value={userData?.user?.createdAt ? 
+                              new Date(userData.user.createdAt).toLocaleDateString("es-ES") : 
+                              "Cargando..."}
                             disabled
                             className="bg-black/60 border-emerald-500/20 text-emerald-300/80 cursor-not-allowed"
                           />
@@ -1502,21 +1657,28 @@ export default function Dashboard() {
                             <option value="portugal">Portugal</option>
                             <option value="italia">Italia</option>
                             <option value="alemania">Alemania</option>
+                            <option value="reino-unido">Reino Unido</option>
+                            <option value="suiza">Suiza</option>
+                            <option value="belgica">Bélgica</option>
+                            <option value="paises-bajos">Países Bajos</option>
+                            <option value="austria">Austria</option>
+                            <option value="otros">Otros</option>
                           </select>
                         </div>
-                        <div />
+                        <div>
+                          <Label htmlFor="direccion" className="text-emerald-50">Dirección</Label>
+                          <Input
+                            id="direccion"
+                            name="direccion"
+                            value={profileFormData.direccion}
+                            onChange={(e) => setProfileFormData(prev => ({ ...prev, direccion: e.target.value }))}
+                            placeholder="Tu dirección completa"
+                            className="bg-black/50 border-emerald-500/20 text-emerald-50"
+                          />
+                        </div>
                       </div>
 
-                      <div>
-                        <Label htmlFor="direccion" className="text-emerald-50">Dirección</Label>
-                        <Input
-                          id="direccion"
-                          name="direccion"
-                          value={profileFormData.direccion}
-                          onChange={(e) => setProfileFormData(prev => ({ ...prev, direccion: e.target.value }))}
-                          className="bg-black/50 border-emerald-500/20 text-emerald-50"
-                        />
-                      </div>
+
 
                       <div className="pt-4">
                         <Button
@@ -1524,14 +1686,28 @@ export default function Dashboard() {
                           disabled={profileMutation.isPending}
                           className="w-full rounded-xl bg-gradient-to-r from-emerald-600 to-emerald-500 hover:from-emerald-500 hover:to-emerald-400 text-white font-semibold disabled:opacity-50"
                         >
-                          {profileMutation.isPending ? "ACTUALIZANDO..." : "ACTUALIZAR INFORMACIÓN PERSONAL"}
+                          {profileMutation.isPending ? (
+                            <>
+                              <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                              ACTUALIZANDO...
+                            </>
+                          ) : (
+                            "ACTUALIZAR INFORMACIÓN PERSONAL"
+                          )}
                         </Button>
                       </div>
                     </form>
+                    )}
                   </TabsContent>
 
                   {/* ====== KYC ====== */}
                   <TabsContent value="kyc" className="mt-6">
+                    {kycLoading ? (
+                      <div className="flex items-center justify-center py-12">
+                        <Loader2 className="w-8 h-8 animate-spin text-emerald-400" />
+                        <span className="ml-3 text-emerald-200">Cargando información KYC...</span>
+                      </div>
+                    ) : (
                     <div className="bg-black/40 rounded-xl p-8 border border-emerald-500/15">
                       <div className="flex items-center gap-4 mb-6">
                         <div className="bg-emerald-500/20 rounded-full p-3">
@@ -1539,7 +1715,14 @@ export default function Dashboard() {
                         </div>
                         <div className="flex-1">
                           <h3 className="text-2xl font-bold text-emerald-50 mb-1">Verificación KYC</h3>
-                          <p className="text-emerald-200/80">{kycMessage}</p>
+                          <p className="text-emerald-200/80">
+                            {kycStatus === "Aprobado" ? 
+                              "Tu verificación está completa y puedes operar sin límites" :
+                              kycStatus === "Rechazado" ? 
+                              "Revisa los comentarios y vuelve a enviar tus documentos" :
+                              "Completa tu verificación para poder operar sin restricciones"
+                            }
+                          </p>
                         </div>
                         <Badge className={`${kycBadgeClass} px-4 py-2 text-sm font-semibold`}>{kycStatus}</Badge>
                       </div>
@@ -1658,8 +1841,14 @@ export default function Dashboard() {
                               disabled={kycMutation.isPending || !kycFormData.fullName || !kycFormData.documentNumber || !kycFormData.documentsUrls?.length}
                               className="w-full bg-emerald-600 hover:bg-emerald-500 text-white disabled:opacity-50"
                             >
-                              {kycMutation.isPending ? "Enviando..." : 
-                               kycData?.kyc ? "Actualizar documentos" : "Enviar documentos"}
+                              {kycMutation.isPending ? (
+                                <>
+                                  <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                                  Enviando...
+                                </>
+                              ) : (
+                                kycData?.kyc ? "Actualizar documentos" : "Enviar documentos"
+                              )}
                             </Button>
                           )}
 
@@ -1689,6 +1878,7 @@ export default function Dashboard() {
                         </form>
                       </div>
                     </div>
+                    )}
                   </TabsContent>
                 </Tabs>
               </CardContent>
