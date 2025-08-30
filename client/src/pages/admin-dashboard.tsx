@@ -397,13 +397,70 @@ export default function AdminDashboard() {
       const currentDate = new Date();
       const currentMonth = currentDate.toLocaleDateString('es-ES', { month: 'long', year: 'numeric' });
       
+      // Calcular estadísticas detalladas
+      const userStats = {
+        total: users.length,
+        clients: users.filter((u: any) => u.role === "client").length,
+        partners: users.filter((u: any) => u.role === "partner").length,
+        admins: users.filter((u: any) => u.role === "admin").length,
+        verified: users.filter((u: any) => u.verificationStatus === "verified").length,
+        pending: users.filter((u: any) => u.verificationStatus === "pending").length,
+        byGrade: {
+          bronze: users.filter((u: any) => u.grade === "Bronze").length,
+          silver: users.filter((u: any) => u.grade === "Silver").length,
+          gold: users.filter((u: any) => u.grade === "Gold").length,
+          platinum: users.filter((u: any) => u.grade === "Platinum").length,
+        }
+      };
+
+      const kycStats = {
+        total: kyc.length,
+        approved: kyc.filter((k: any) => k.status === "approved").length,
+        pending: kyc.filter((k: any) => k.status === "pending").length,
+        rejected: kyc.filter((k: any) => k.status === "rejected").length,
+        byCountry: kyc.reduce((acc: any, k: any) => {
+          acc[k.country] = (acc[k.country] || 0) + 1;
+          return acc;
+        }, {})
+      };
+
+      const contractStats = {
+        total: contracts.length,
+        active: contracts.filter((c: any) => c.status === "active").length,
+        ready: contracts.filter((c: any) => c.status === "ready_to_start").length,
+        completed: contracts.filter((c: any) => c.status === "completed").length,
+        totalAmount: contracts.reduce((sum: number, c: any) => sum + (parseInt(c.amount) || 0), 0),
+        averageAmount: contracts.length > 0 ? 
+          contracts.reduce((sum: number, c: any) => sum + (parseInt(c.amount) || 0), 0) / contracts.length : 0
+      };
+
+      const productStats = {
+        total: products.length,
+        active: products.filter((p: any) => p.status === "active").length,
+        inactive: products.filter((p: any) => p.status === "inactive").length,
+        averageRate: products.length > 0 ? 
+          products.reduce((sum: number, p: any) => sum + (parseFloat(p.interestRate) || 0), 0) / products.length : 0,
+        totalTermDays: products.reduce((sum: number, p: any) => sum + (parseInt(p.termDays) || 0), 0)
+      };
+
       const adminData = {
         fecha: currentDate.toLocaleDateString('es-ES'),
         periodo: currentMonth,
+        // Métricas generales
         totalUsers: stats.totalUsers,
         totalProducts: stats.totalProducts,
         totalContracts: stats.totalContracts,
         pendingKyc: stats.pendingKyc,
+        rejectedKyc: stats.rejectedKyc,
+        // Estadísticas detalladas de usuarios
+        userStats: userStats,
+        // Estadísticas detalladas de KYC
+        kycStats: kycStats,
+        // Estadísticas detalladas de contratos
+        contractStats: contractStats,
+        // Estadísticas detalladas de productos
+        productStats: productStats,
+        // KPIs financieros
         financialKpis: financialKpis ? {
           totalAUM: financialKpis.totalAUM,
           newCapitalMonth: financialKpis.newCapitalMonth,
@@ -414,8 +471,11 @@ export default function AdminDashboard() {
           clientRetention: financialKpis.clientRetention,
           monthlyEvolution: financialKpis.monthlyEvolution
         } : undefined,
-        kycStats: kycChartData,
-        contractsStats: contractsChartData
+        // Datos para gráficos
+        kycChartData: kycChartData,
+        contractsChartData: contractsChartData,
+        // Actividad reciente
+        recentActivity: auditLogs.slice(0, 10)
       };
 
       console.log('Datos del admin para PDF:', adminData);
