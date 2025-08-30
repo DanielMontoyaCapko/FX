@@ -558,7 +558,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
           country: country || existingKyc.country,
           status: status || 'pending',
           reviewedBy: req.user!.id,
-          reviewedAt: new Date(),
+          reviewedAt: new Date().toISOString().slice(0, 19).replace('T', ' '),
         };
         
         const kyc = await storage.updateKyc(existingKyc.id, updates);
@@ -574,7 +574,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
           status: status || 'pending',
           documentsUrls: JSON.stringify([]),
           reviewedBy: req.user!.id,
-          reviewedAt: new Date(),
+          reviewedAt: new Date().toISOString().slice(0, 19).replace('T', ' '),
         };
         
         const kyc = await storage.createKyc(kycData);
