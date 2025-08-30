@@ -926,26 +926,54 @@ export default function Dashboard() {
 
   const handleDownloadStatement = async () => {
     try {
+      // Obtener datos reales del usuario
+      const userName = userData?.user?.name || "Usuario";
+      const currentDate = new Date();
+      const currentMonth = currentDate.toLocaleDateString('es-ES', { month: 'long', year: 'numeric' });
+      
+      // Calcular datos reales de la inversión
+      const beneficioAcumulado = (capitalInvertido * 0.09 * mesesTranscurridos) / 12;
+      const valorTotalActual = capitalInvertido + beneficioAcumulado;
+      const beneficioEstimadoTotal = (capitalInvertido * 0.09 * mesesTotales) / 12;
+      const valorFinal = capitalInvertido + beneficioEstimadoTotal;
+      
+      // Generar detalle mensual
+      const detalleMensual = [];
+      for (let i = 1; i <= mesesTranscurridos; i++) {
+        const mes = new Date(currentDate.getFullYear(), currentDate.getMonth() - mesesTranscurridos + i, 1);
+        const mesLabel = mes.toLocaleDateString('es-ES', { month: 'long', year: 'numeric' });
+        const importe = (capitalInvertido * 0.09) / 12;
+        detalleMensual.push({ label: mesLabel, importe: Math.round(importe) });
+      }
+
       await generateStatementPDF({
-        cliente: "Juan Cliente",
-        periodo: "Enero 2025",
-        fecha: new Date().toLocaleDateString("es-ES"),
-        capitalInvertido: 50000,
+        cliente: userName,
+        periodo: currentMonth,
+        fecha: currentDate.toLocaleDateString("es-ES"),
+        capitalInvertido: capitalInvertido,
         rentabilidadAnualPct: 9.0,
-        mesesTranscurridos: 3,
-        mesesTotales: 12,
-        beneficioAcumulado: 1125,
-        valorTotalActual: 51125,
-        detalleMensual: [
-          { label: "Enero 2025", importe: 375 },
-          { label: "Febrero 2025", importe: 375 },
-          { label: "Marzo 2025", importe: 375 },
-        ],
-        proyeccion: { beneficioTotal: 4500, valorFinal: 54500 },
+        mesesTranscurridos: mesesTranscurridos,
+        mesesTotales: mesesTotales,
+        beneficioAcumulado: Math.round(beneficioAcumulado),
+        valorTotalActual: Math.round(valorTotalActual),
+        detalleMensual: detalleMensual,
+        proyeccion: { 
+          beneficioTotal: Math.round(beneficioEstimadoTotal), 
+          valorFinal: Math.round(valorFinal) 
+        },
+        // Nuevos datos del dashboard
+        kpis: kpis,
+        productosActivos: productosActivos,
+        productosCompletados: productosCompletados,
+        transacciones: transacciones,
+        actividadReciente: recentActivityLogs.map((log: any) => ({
+          action: log.action,
+          createdAt: new Date(log.createdAt).toLocaleDateString("es-ES")
+        }))
       });
       
       // Registrar actividad de descarga de estado de cuenta
-      logActivity('Estado de cuenta descargado');
+      logActivity('Estado de cuenta completo descargado');
     } catch (error) {
       console.error("Error generating PDF:", error);
       alert("Error al generar el PDF. Inténtalo de nuevo.");
