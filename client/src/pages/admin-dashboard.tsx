@@ -328,6 +328,7 @@ export default function AdminDashboard() {
     role: "client",
     sponsor: "",
     grade: "Bronze",
+    country: "",
   });
 
   const [newProduct, setNewProduct] = useState({
@@ -433,7 +434,7 @@ export default function AdminDashboard() {
     { name: "Aprobados", value: kyc.filter((k) => k.status === "approved").length, color: "#22c55e" },
     { name: "Pendientes", value: kyc.filter((k) => k.status === "pending").length, color: "#f59e0b" },
     { name: "Rechazados", value: kyc.filter((k) => k.status === "rejected").length, color: "#ef4444" },
-  ];
+  ].filter(item => item.value > 0); // Solo mostrar elementos con valores > 0
 
   const contractsChartData = [
     { name: "Activos", value: contracts.filter((c) => c.status === "active").length, color: "#22c55e" },
@@ -813,7 +814,7 @@ export default function AdminDashboard() {
   const handleCloseUserDialog = () => {
     setShowUserDialog(false);
     setEditingUser(null);
-    setNewUser({ name: "", email: "", password: "", role: "client", sponsor: "", grade: "Bronze" });
+    setNewUser({ name: "", email: "", password: "", role: "client", sponsor: "", grade: "Bronze", country: "" });
   };
 
   const handleCloseProductDialog = () => {
@@ -1793,7 +1794,7 @@ export default function AdminDashboard() {
                   className="bg-gradient-to-r from-emerald-600 to-emerald-500 hover:from-emerald-500 hover:to-emerald-400 text-white"
                   onClick={() => {
                     setEditingUser(null);
-                    setNewUser({ name: "", email: "", password: "", role: "client", sponsor: "", grade: "Bronze" });
+                    setNewUser({ name: "", email: "", password: "", role: "client", sponsor: "", grade: "Bronze", country: "" });
                     setShowUserDialog(true);
                   }}
                 >
@@ -2135,6 +2136,18 @@ export default function AdminDashboard() {
                       id="sponsor"
                       value={newUser.sponsor}
                       onChange={(e) => setNewUser({ ...newUser, sponsor: e.target.value })}
+                      className="col-span-3 bg-black/50 border-emerald-500/20 text-emerald-50 placeholder:text-emerald-200/60"
+                      placeholder="Opcional"
+                    />
+                  </div>
+                  <div className="grid grid-cols-4 items-center gap-4">
+                    <Label htmlFor="country" className="text-right">
+                      País
+                    </Label>
+                    <Input
+                      id="country"
+                      value={newUser.country || ''}
+                      onChange={(e) => setNewUser({ ...newUser, country: e.target.value })}
                       className="col-span-3 bg-black/50 border-emerald-500/20 text-emerald-50 placeholder:text-emerald-200/60"
                       placeholder="Opcional"
                     />
