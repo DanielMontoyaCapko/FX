@@ -57,21 +57,21 @@ export default function Comparison() {
               {data.map((row, index) => (
                 <tr 
                   key={index} 
-                  className={`border-b border-silver-500/20 ${row.highlighted ? 'bg-green/10 border border-green/30' : ''}`}
+                  className={`border-b border-silver-500/20 ${row.highlighted ? 'bg-red-500/20 border border-red-500/30' : ''}`}
                 >
                   <td className={`p-6 ${row.highlighted ? 'text-white font-semibold' : 'text-silver-100'}`}>
                     {row.product}
                   </td>
-                  <td className={`p-6 text-center ${row.highlighted ? 'text-green font-bold text-xl' : 'text-silver-100'}`}>
+                  <td className={`p-6 text-center ${row.highlighted ? 'text-emerald-400 font-bold text-xl neon-text-green' : 'text-silver-100'}`}>
                     {row.return}
                   </td>
-                  <td className={`p-6 text-center ${row.riskColor} ${row.highlighted ? 'font-semibold' : ''}`}>
+                  <td className={`p-6 text-center ${row.highlighted ? 'text-emerald-400 font-semibold neon-text-green' : row.riskColor}`}>
                     {row.risk}
                   </td>
-                  <td className={`p-6 text-center ${row.liquidityColor} ${row.highlighted ? 'font-semibold' : ''}`}>
+                  <td className={`p-6 text-center ${row.highlighted ? 'text-emerald-400 font-semibold neon-text-green' : row.liquidityColor}`}>
                     {row.liquidity}
                   </td>
-                  <td className={`p-6 text-center ${row.guaranteeColor} ${row.highlighted ? 'font-semibold' : ''}`}>
+                  <td className={`p-6 text-center ${row.highlighted ? 'text-emerald-400 font-semibold neon-text-green' : row.guaranteeColor}`}>
                     {row.guarantee}
                   </td>
                 </tr>
