@@ -179,7 +179,7 @@ export default function Login() {
     >
       {/* ⬇️ Centrado perfecto del título y descripción en X e Y */}
       <CardHeader className="text-center">
-        <div className="flex flex-col items-center justify-center min-h-[70px] space-y-1 md:space-y-2">
+        <div className="flex flex-col items-center justify-center min-h-[60px] space-y-1 md:space-y-2">
           <CardTitle className="text-xl md:text-2xl text-emerald-50">Iniciar Sesión</CardTitle>
           <CardDescription className="text-emerald-200/80 text-xs md:text-sm">
             Ingresa tus credenciales para continuar
@@ -187,8 +187,8 @@ export default function Login() {
         </div>
       </CardHeader>
 
-      <CardContent className="p-4 md:p-6">
-        <form onSubmit={handleLogin} className="space-y-3 md:space-y-4">
+      <CardContent className="pt-2 px-4 pb-4 md:pt-3 md:px-6 md:pb-6">
+        <form onSubmit={handleLogin} className="space-y-2 md:space-y-3">
           {/* Email */}
           <div className="space-y-2">
             <Label htmlFor="email" className="text-emerald-100 text-sm md:text-base">
