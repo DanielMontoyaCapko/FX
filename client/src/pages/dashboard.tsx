@@ -1559,14 +1559,14 @@ export default function Dashboard() {
                       </div>
 
                       {/* Documents Uploaded */}
-                      {currentKyc?.documentsUrls && currentKyc.documentsUrls.length > 0 && (
+                      {currentKyc?.documentsUrls && Array.isArray(currentKyc.documentsUrls) && currentKyc.documentsUrls.length > 0 && (
                         <div className="mt-6 bg-emerald-500/10 border border-emerald-500/20 rounded-lg p-4">
                           <h4 className="text-emerald-300 font-semibold mb-4 flex items-center gap-2">
                             <FileText className="w-5 h-5" />
                             Documentos Subidos
                           </h4>
                           <div className="grid grid-cols-1 gap-3">
-                            {currentKyc.documentsUrls.map((docUrl, index) => (
+                            {currentKyc.documentsUrls.map((docUrl: string, index: number) => (
                               <div key={index} className="flex items-center justify-between bg-black/30 rounded-lg p-4 border border-emerald-500/15">
                                 <div className="flex items-center gap-3">
                                   <FileText className="w-5 h-5 text-emerald-400" />
@@ -1583,7 +1583,7 @@ export default function Dashboard() {
                                   size="sm"
                                   variant="outline"
                                   className="border-emerald-500/20 text-emerald-300 hover:bg-emerald-500/10"
-                                  onClick={() => handleViewDocuments(currentKyc.documentsUrls)}
+                                  onClick={() => handleViewDocuments(Array.isArray(currentKyc.documentsUrls) ? currentKyc.documentsUrls : [])}
                                 >
                                   Ver Documentos
                                 </Button>
@@ -1596,7 +1596,7 @@ export default function Dashboard() {
                             <Button
                               variant="outline"
                               className="w-full border-emerald-500/20 text-emerald-300 hover:bg-emerald-500/10"
-                              onClick={() => handleViewDocuments(currentKyc.documentsUrls)}
+                              onClick={() => handleViewDocuments(Array.isArray(currentKyc.documentsUrls) ? currentKyc.documentsUrls : [])}
                             >
                               <FileText className="w-4 h-4 mr-2" />
                               Ver Todos los Documentos
