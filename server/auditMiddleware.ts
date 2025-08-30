@@ -1,6 +1,6 @@
 import { Request, Response, NextFunction } from 'express';
 import { db } from './db';
-import { auditLogs, users } from '@shared/schema';
+import { auditLogs, users } from '@shared/sqlite-schema';
 import { eq } from 'drizzle-orm';
 import { AuthRequest } from './auth';
 

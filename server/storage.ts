@@ -1,4 +1,4 @@
-import { leads, calculatorResults, users, kyc, products, contracts, auditLogs, clientActivityLogs, type Lead, type InsertLead, type CalculatorResult, type InsertCalculatorResult, type User, type InsertUser, type Kyc, type InsertKyc, type Product, type InsertProduct, type Contract, type InsertContract, type AuditLog, type ClientActivityLog, type InsertClientActivityLog } from "@shared/schema";
+import { leads, calculatorResults, users, kyc, products, contracts, auditLogs, clientActivityLogs, type Lead, type InsertLead, type CalculatorResult, type InsertCalculatorResult, type User, type InsertUser, type Kyc, type InsertKyc, type Product, type InsertProduct, type Contract, type InsertContract, type AuditLog, type ClientActivityLog, type InsertClientActivityLog } from "@shared/sqlite-schema";
 import { db } from "./db";
 import { eq, desc, gte, lte, and } from "drizzle-orm";
 import bcrypt from "bcryptjs";
@@ -96,7 +96,7 @@ export class DatabaseStorage implements IStorage {
   async updateKyc(kycId: number, updates: any): Promise<Kyc> {
     const [updated] = await db
       .update(kyc)
-      .set({ ...updates, updatedAt: new Date() })
+      .set({ ...updates, updatedAt: new Date().toISOString().slice(0, 19).replace('T', ' ') })
       .where(eq(kyc.id, kycId))
       .returning();
     return updated;
@@ -168,7 +168,7 @@ export class DatabaseStorage implements IStorage {
     
     const result = await db
       .update(users)
-      .set({ ...updates, updatedAt: new Date() })
+      .set({ ...updates, updatedAt: new Date().toISOString().slice(0, 19).replace('T', ' ') })
       .where(eq(users.id, userId))
       .returning();
     return result[0];
@@ -260,10 +260,11 @@ export class DatabaseStorage implements IStorage {
 
   // Get financial KPIs for admin dashboard
   async getFinancialKPIs(): Promise<any> {
+    // For SQLite, use date strings instead of Date objects
     const now = new Date();
-    const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
-    const startOfPreviousMonth = new Date(now.getFullYear(), now.getMonth() - 1, 1);
-    const endOfPreviousMonth = new Date(now.getFullYear(), now.getMonth(), 0);
+    const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1).toISOString().slice(0, 19).replace('T', ' ');
+    const startOfPreviousMonth = new Date(now.getFullYear(), now.getMonth() - 1, 1).toISOString().slice(0, 19).replace('T', ' ');
+    const endOfPreviousMonth = new Date(now.getFullYear(), now.getMonth(), 0).toISOString().slice(0, 19).replace('T', ' ');
 
     // Get all active contracts
     const activeContracts = await db
@@ -325,15 +326,14 @@ export class DatabaseStorage implements IStorage {
     const averagePortfolioReturn = totalAmountForReturn > 0 ? 
       totalWeightedReturn / totalAmountForReturn : 0;
 
-    // Calculate liquidity by maturity (30, 60, 90 days)
-    const thirtyDaysFromNow = new Date();
-    thirtyDaysFromNow.setDate(thirtyDaysFromNow.getDate() + 30);
+    // Calculate liquidity by maturity (30, 60, 90 days) - use date strings for SQLite
+    const now_date = new Date();
+    const thirtyDaysFromNow = new Date(now_date.getTime() + (30 * 24 * 60 * 60 * 1000)).toISOString().slice(0, 19).replace('T', ' ');
     
-    const sixtyDaysFromNow = new Date();
-    sixtyDaysFromNow.setDate(sixtyDaysFromNow.getDate() + 60);
+    const sixtyDaysFromNow = new Date(now_date.getTime() + (60 * 24 * 60 * 60 * 1000)).toISOString().slice(0, 19).replace('T', ' ');
     
-    const ninetyDaysFromNow = new Date();
-    ninetyDaysFromNow.setDate(ninetyDaysFromNow.getDate() + 90);
+    
+    const ninetyDaysFromNow = new Date(now_date.getTime() + (90 * 24 * 60 * 60 * 1000)).toISOString().slice(0, 19).replace('T', ' ');
 
     const contractsMaturing30 = await db
       .select()

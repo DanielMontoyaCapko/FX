@@ -1,7 +1,7 @@
 import type { Express } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
-import { insertLeadSchema, insertCalculatorResultSchema, loginSchema, registerSchema, insertKycSchema, updateKycSchema } from "@shared/schema";
+import { insertLeadSchema, insertCalculatorResultSchema, loginSchema, registerSchema, insertKycSchema, updateKycSchema } from "@shared/sqlite-schema";
 import { generateToken, authMiddleware, requireRole, type AuthRequest } from "./auth";
 import { auditUser, auditKyc, auditProduct, auditContract } from "./auditMiddleware";
 import { z } from "zod";

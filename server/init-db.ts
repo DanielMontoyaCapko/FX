@@ -100,6 +100,7 @@ db.exec(`
     new_values TEXT,
     description TEXT,
     ip_address TEXT,
+    user_agent TEXT,
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (admin_id) REFERENCES users (id)
   );

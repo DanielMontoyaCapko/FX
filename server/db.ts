@@ -1,6 +1,6 @@
 import { drizzle } from 'drizzle-orm/better-sqlite3';
 import Database from 'better-sqlite3';
-import * as schema from "@shared/schema";
+import * as schema from "@shared/sqlite-schema";
 
 // Para desarrollo local, usar una base de datos SQLite
 console.log("Configurando base de datos SQLite para desarrollo...");
