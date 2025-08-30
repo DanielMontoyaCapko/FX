@@ -82,10 +82,10 @@ export default function GrowthChart({
             <Line 
               type="monotone" 
               dataKey="amount" 
-              stroke="#DAA520" 
+              stroke="#3f8358" 
               strokeWidth={3}
-              dot={{ fill: '#DAA520', strokeWidth: 2, r: 4 }}
-              activeDot={{ r: 6, fill: '#DAA520', stroke: '#ffffff', strokeWidth: 2 }}
+              dot={{ fill: '#3f8358', strokeWidth: 2, r: 4 }}
+              activeDot={{ r: 6, fill: '#3f8358', stroke: '#ffffff', strokeWidth: 2 }}
             />
           </LineChart>
         </ResponsiveContainer>
