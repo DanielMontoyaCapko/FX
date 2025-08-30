@@ -469,6 +469,11 @@ export default function AdminDashboard() {
           averageInvestment: financialKpis.averageInvestment,
           activeClients: financialKpis.activeClients,
           clientRetention: financialKpis.clientRetention,
+          monthlyGrowthRatio: financialKpis.monthlyGrowthRatio,
+          averagePortfolioReturn: financialKpis.averagePortfolioReturn,
+          liquidity30Days: financialKpis.liquidity30Days,
+          liquidity60Days: financialKpis.liquidity60Days,
+          liquidity90Days: financialKpis.liquidity90Days,
           monthlyEvolution: financialKpis.monthlyEvolution
         } : undefined,
         // Datos para gráficos
@@ -1235,7 +1240,7 @@ export default function AdminDashboard() {
             {financialKpis && (
               <div className="mb-8">
                 <h2 className="text-2xl font-bold text-emerald-50 mb-6">KPIs Financieros</h2>
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6 mb-6">
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
                   <Card className="bg-black/40 border border-emerald-500/15 rounded-2xl transition-all duration-300 hover:border-emerald-500/25 hover:bg-black/50 hover:shadow-lg hover:shadow-emerald-500/20 shadow-[0_0_0_1px_rgba(16,185,129,0.12),0_20px_60px_-20px_rgba(16,185,129,0.25)]">
                     <CardContent className="p-6">
                       <div className="flex items-center justify-between">

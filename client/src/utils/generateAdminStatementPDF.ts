@@ -67,11 +67,43 @@ export type AdminDashboardData = {
     averageInvestment: number;
     activeClients: number;
     clientRetention: number;
+    monthlyGrowthRatio: number;
+    averagePortfolioReturn: number;
+    liquidity30Days: number;
+    liquidity60Days: number;
+    liquidity90Days: number;
+    clientKpis?: {
+      newClientsMonth: number;
+      averageTicketPerClient: number;
+      pendingKyc: number;
+      renewalRate: number;
+    };
+    partnerKpis?: {
+      activePartners: number;
+      newPartnersMonth: number;
+      totalCommissionsMonth: number;
+      partnerConversionRatio: number;
+    };
+    operationalKpis?: {
+      contractsExpiring30Days: number;
+      contractsExpiring60Days: number;
+      contractsExpiring90Days: number;
+      kycCompletionRate: number;
+    };
+    strategicKpis?: {
+      clientRetentionRate: number;
+      clientGrowthRate: number;
+      totalRevenueYTD: number;
+    };
+    businessHealth?: {
+      status: string;
+      percentage: number;
+    };
     monthlyEvolution: Array<{
       month: string;
-      aum: number;
-      newCapital: number;
-      withdrawals: number;
+      capital: number;
+      clients: number;
+      revenue: number;
       retention: number;
     }>;
   };
@@ -230,16 +262,193 @@ export async function generateAdminStatementPDF(data: AdminDashboardData) {
 
     sectionHeading(doc, "KPIs Financieros", y);
     y += 24;
-    kv(doc, "Capital Total Gestionado", eur(data.financialKpis.totalAUM), 40, y);
-    kv(doc, "Clientes Activos", data.financialKpis.activeClients.toString(), 220, y);
-    kv(doc, "Inversión Promedio", eur(data.financialKpis.averageInvestment), 400, y);
-    y += 40;
-    kv(doc, "Nuevo Capital del Mes", eur(data.financialKpis.newCapitalMonth), 40, y);
-    kv(doc, "Capital Retirado del Mes", eur(data.financialKpis.withdrawnCapitalMonth), 220, y);
-    kv(doc, "Crecimiento Neto", eur(data.financialKpis.netCapitalGrowth), 400, y);
-    y += 40;
-    kv(doc, "Retención de Clientes", `${data.financialKpis.clientRetention.toFixed(1)}%`, 40, y);
-    y += 56;
+    
+    // Crear tabla de KPIs financieros con el mismo formato que las tarjetas
+    doc.setFontSize(10);
+    setTextRGB(doc, [255, 255, 255]);
+    setFillRGB(doc, BRAND.primary600);
+    doc.rect(40, y - 12, 520, 24, "F");
+    doc.text("Métrica", 56, y + 2);
+    doc.text("Valor", 200, y + 2);
+    doc.text("Estado", 350, y + 2);
+    doc.text("Tendencia", 450, y + 2);
+
+    doc.setFontSize(11);
+    setTextRGB(doc, [15, 23, 42]);
+    
+    const financialKpisData = [
+      { title: "Capital Total Gestionado", value: eur(data.financialKpis.totalAUM), change: "AUM total", trending: "up" },
+      { title: "Capital Nuevo del Mes", value: eur(data.financialKpis.newCapitalMonth), change: "Nuevas inversiones", trending: "up" },
+      { title: "Capital Retirado del Mes", value: eur(data.financialKpis.withdrawnCapitalMonth), change: "Retiros", trending: "down" },
+      { title: "Ratio Crecimiento Mensual", value: `${data.financialKpis.monthlyGrowthRatio >= 0 ? '+' : ''}${data.financialKpis.monthlyGrowthRatio.toFixed(2)}%`, change: "Evolución mensual", trending: data.financialKpis.monthlyGrowthRatio >= 0 ? "up" : "down" },
+      { title: "Rentabilidad Media Carteras", value: `${data.financialKpis.averagePortfolioReturn.toFixed(2)}%`, change: "Retorno promedio", trending: "up" },
+      { title: "Liquidez 30 días", value: eur(data.financialKpis.liquidity30Days), change: "Corto plazo", trending: "up" },
+      { title: "Liquidez 60 días", value: eur(data.financialKpis.liquidity60Days), change: "Medio plazo", trending: "up" },
+      { title: "Liquidez 90 días", value: eur(data.financialKpis.liquidity90Days), change: "Largo plazo", trending: "up" }
+    ];
+    
+    financialKpisData.forEach((kpi, idx) => {
+      const ry = y + kpiRowH * (idx + 1);
+      if (idx % 2 === 0) {
+        setFillRGB(doc, [240, 253, 244]);
+        doc.rect(40, ry - 16, 520, kpiRowH, "F");
+      }
+      doc.text(kpi.title, 56, ry);
+      doc.text(kpi.value, 200, ry);
+      doc.text(kpi.change, 350, ry);
+      doc.text(kpi.trending === "up" ? "↗" : "↘", 450, ry);
+    });
+
+    y += kpiRowH * financialKpisData.length + 40;
+
+    // KPIs de Clientes
+    sectionHeading(doc, "KPIs de Clientes", y);
+    y += 24;
+    
+    doc.setFontSize(10);
+    setTextRGB(doc, [255, 255, 255]);
+    setFillRGB(doc, BRAND.primary600);
+    doc.rect(40, y - 12, 520, 24, "F");
+    doc.text("Métrica", 56, y + 2);
+    doc.text("Valor", 200, y + 2);
+    doc.text("Estado", 350, y + 2);
+    doc.text("Tendencia", 450, y + 2);
+
+    doc.setFontSize(11);
+    setTextRGB(doc, [15, 23, 42]);
+    
+    const clientKpisData = [
+      { title: "Clientes Activos", value: data.financialKpis.activeClients.toString(), change: "Con contratos activos", trending: "up" },
+      { title: "Nuevos Clientes Mes", value: data.financialKpis.clientKpis?.newClientsMonth?.toString() || "0", change: "Nuevas incorporaciones", trending: "up" },
+      { title: "Ticket Promedio", value: eur(data.financialKpis.averageInvestment), change: "Inversión media", trending: "up" },
+      { title: "Tasa Renovación", value: `${data.financialKpis.clientKpis?.renewalRate?.toFixed(1) || "0"}%`, change: "Contratos renovados", trending: "up" },
+      { title: "KYC Pendientes", value: data.financialKpis.clientKpis?.pendingKyc?.toString() || "0", change: "Requieren verificación", trending: "down" }
+    ];
+    
+    clientKpisData.forEach((kpi, idx) => {
+      const ry = y + kpiRowH * (idx + 1);
+      if (idx % 2 === 0) {
+        setFillRGB(doc, [240, 253, 244]);
+        doc.rect(40, ry - 16, 520, kpiRowH, "F");
+      }
+      doc.text(kpi.title, 56, ry);
+      doc.text(kpi.value, 200, ry);
+      doc.text(kpi.change, 350, ry);
+      doc.text(kpi.trending === "up" ? "↗" : "↘", 450, ry);
+    });
+
+    y += kpiRowH * clientKpisData.length + 40;
+
+    // KPIs de Partners
+    sectionHeading(doc, "KPIs de Partners", y);
+    y += 24;
+    
+    doc.setFontSize(10);
+    setTextRGB(doc, [255, 255, 255]);
+    setFillRGB(doc, BRAND.primary600);
+    doc.rect(40, y - 12, 520, 24, "F");
+    doc.text("Métrica", 56, y + 2);
+    doc.text("Valor", 200, y + 2);
+    doc.text("Estado", 350, y + 2);
+    doc.text("Tendencia", 450, y + 2);
+
+    doc.setFontSize(11);
+    setTextRGB(doc, [15, 23, 42]);
+    
+    const partnerKpisData = [
+      { title: "Partners Activos", value: data.financialKpis.partnerKpis?.activePartners?.toString() || "0", change: "Asesores activos", trending: "up" },
+      { title: "Nuevos Partners Mes", value: data.financialKpis.partnerKpis?.newPartnersMonth?.toString() || "0", change: "Nuevas incorporaciones", trending: "up" },
+      { title: "Comisiones Mes", value: eur(data.financialKpis.partnerKpis?.totalCommissionsMonth || 0), change: "Ingresos por comisiones", trending: "up" },
+      { title: "Ratio Conversión", value: `${data.financialKpis.partnerKpis?.partnerConversionRatio?.toFixed(1) || "0"}`, change: "Clientes por partner", trending: "up" }
+    ];
+    
+    partnerKpisData.forEach((kpi, idx) => {
+      const ry = y + kpiRowH * (idx + 1);
+      if (idx % 2 === 0) {
+        setFillRGB(doc, [240, 253, 244]);
+        doc.rect(40, ry - 16, 520, kpiRowH, "F");
+      }
+      doc.text(kpi.title, 56, ry);
+      doc.text(kpi.value, 200, ry);
+      doc.text(kpi.change, 350, ry);
+      doc.text(kpi.trending === "up" ? "↗" : "↘", 450, ry);
+    });
+
+    y += kpiRowH * partnerKpisData.length + 40;
+
+    // KPIs Operativos
+    sectionHeading(doc, "KPIs Operativos", y);
+    y += 24;
+    
+    doc.setFontSize(10);
+    setTextRGB(doc, [255, 255, 255]);
+    setFillRGB(doc, BRAND.primary600);
+    doc.rect(40, y - 12, 520, 24, "F");
+    doc.text("Métrica", 56, y + 2);
+    doc.text("Valor", 200, y + 2);
+    doc.text("Estado", 350, y + 2);
+    doc.text("Tendencia", 450, y + 2);
+
+    doc.setFontSize(11);
+    setTextRGB(doc, [15, 23, 42]);
+    
+    const operationalKpisData = [
+      { title: "Contratos Vencen 30d", value: data.financialKpis.operationalKpis?.contractsExpiring30Days?.toString() || "0", change: "Vencimientos próximos", trending: "down" },
+      { title: "Contratos Vencen 60d", value: data.financialKpis.operationalKpis?.contractsExpiring60Days?.toString() || "0", change: "Vencimientos medios", trending: "down" },
+      { title: "Contratos Vencen 90d", value: data.financialKpis.operationalKpis?.contractsExpiring90Days?.toString() || "0", change: "Vencimientos largos", trending: "down" },
+      { title: "Tasa KYC Completado", value: `${data.financialKpis.operationalKpis?.kycCompletionRate?.toFixed(1) || "0"}%`, change: "Verificaciones completadas", trending: "up" }
+    ];
+    
+    operationalKpisData.forEach((kpi, idx) => {
+      const ry = y + kpiRowH * (idx + 1);
+      if (idx % 2 === 0) {
+        setFillRGB(doc, [240, 253, 244]);
+        doc.rect(40, ry - 16, 520, kpiRowH, "F");
+      }
+      doc.text(kpi.title, 56, ry);
+      doc.text(kpi.value, 200, ry);
+      doc.text(kpi.change, 350, ry);
+      doc.text(kpi.trending === "up" ? "↗" : "↘", 450, ry);
+    });
+
+    y += kpiRowH * operationalKpisData.length + 40;
+
+    // KPIs Estratégicos
+    sectionHeading(doc, "KPIs Estratégicos", y);
+    y += 24;
+    
+    doc.setFontSize(10);
+    setTextRGB(doc, [255, 255, 255]);
+    setFillRGB(doc, BRAND.primary600);
+    doc.rect(40, y - 12, 520, 24, "F");
+    doc.text("Métrica", 56, y + 2);
+    doc.text("Valor", 200, y + 2);
+    doc.text("Estado", 350, y + 2);
+    doc.text("Tendencia", 450, y + 2);
+
+    doc.setFontSize(11);
+    setTextRGB(doc, [15, 23, 42]);
+    
+    const strategicKpisData = [
+      { title: "Retención Clientes", value: `${data.financialKpis.strategicKpis?.clientRetentionRate?.toFixed(1) || "0"}%`, change: "Fidelización", trending: "up" },
+      { title: "Crecimiento Clientes", value: `${data.financialKpis.strategicKpis?.clientGrowthRate?.toFixed(1) || "0"}%`, change: "Expansión", trending: "up" },
+      { title: "Ingresos Totales YTD", value: eur(data.financialKpis.strategicKpis?.totalRevenueYTD || 0), change: "Rentabilidad", trending: "up" },
+      { title: "Salud del Negocio", value: data.financialKpis.businessHealth?.status || "Verde", change: "Estado general", trending: "up" }
+    ];
+    
+    strategicKpisData.forEach((kpi, idx) => {
+      const ry = y + kpiRowH * (idx + 1);
+      if (idx % 2 === 0) {
+        setFillRGB(doc, [240, 253, 244]);
+        doc.rect(40, ry - 16, 520, kpiRowH, "F");
+      }
+      doc.text(kpi.title, 56, ry);
+      doc.text(kpi.value, 200, ry);
+      doc.text(kpi.change, 350, ry);
+      doc.text(kpi.trending === "up" ? "↗" : "↘", 450, ry);
+    });
+
+    y += kpiRowH * strategicKpisData.length + 40;
 
     // Evolución mensual (últimos 6 meses)
     if (data.financialKpis.monthlyEvolution && data.financialKpis.monthlyEvolution.length > 0) {
@@ -251,9 +460,9 @@ export async function generateAdminStatementPDF(data: AdminDashboardData) {
       setFillRGB(doc, BRAND.primary600);
       doc.rect(40, y - 12, 520, 24, "F");
       doc.text("Mes", 56, y + 2);
-      doc.text("AUM", 156, y + 2);
-      doc.text("Nuevo Capital", 256, y + 2);
-      doc.text("Retiros", 356, y + 2);
+      doc.text("Capital", 156, y + 2);
+      doc.text("Clientes", 256, y + 2);
+      doc.text("Ingresos", 356, y + 2);
       doc.text("Retención %", 456, y + 2);
 
       doc.setFontSize(10);
@@ -266,9 +475,9 @@ export async function generateAdminStatementPDF(data: AdminDashboardData) {
           doc.rect(40, ry - 16, 520, rowH, "F");
         }
         doc.text(row.month, 56, ry);
-        doc.text(eur(row.aum), 156, ry);
-        doc.text(eur(row.newCapital), 256, ry);
-        doc.text(eur(row.withdrawals), 356, ry);
+        doc.text(eur(row.capital), 156, ry);
+        doc.text(row.clients.toString(), 256, ry);
+        doc.text(eur(row.revenue), 356, ry);
         doc.text(`${row.retention.toFixed(1)}%`, 456, ry);
       });
 
