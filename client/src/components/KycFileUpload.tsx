@@ -12,7 +12,7 @@ interface KycFileUploadProps {
 
 export function KycFileUpload({ onFilesUploaded, currentFiles = [], disabled = false }: KycFileUploadProps) {
   const [uploading, setUploading] = useState(false);
-  const [uploadedFiles, setUploadedFiles] = useState<string[]>(currentFiles);
+  const [uploadedFiles, setUploadedFiles] = useState<string[]>(Array.isArray(currentFiles) ? currentFiles : []);
   const [selectedText, setSelectedText] = useState<string>("");
   const fileInputRef = useRef<HTMLInputElement | null>(null);
 
@@ -70,7 +70,8 @@ export function KycFileUpload({ onFilesUploaded, currentFiles = [], disabled = f
         newUploadedFiles.push(downloadUrl);
       }
 
-      const allFiles = [...uploadedFiles, ...newUploadedFiles];
+      const safeUploadedFiles = Array.isArray(uploadedFiles) ? uploadedFiles : [];
+      const allFiles = [...safeUploadedFiles, ...newUploadedFiles];
       setUploadedFiles(allFiles);
       onFilesUploaded(allFiles);
     } catch (error) {
@@ -85,7 +86,8 @@ export function KycFileUpload({ onFilesUploaded, currentFiles = [], disabled = f
   };
 
   const removeFile = (index: number) => {
-    const newFiles = uploadedFiles.filter((_, i) => i !== index);
+    const safeUploadedFiles = Array.isArray(uploadedFiles) ? uploadedFiles : [];
+    const newFiles = safeUploadedFiles.filter((_, i) => i !== index);
     setUploadedFiles(newFiles);
     onFilesUploaded(newFiles);
   };
@@ -138,10 +140,10 @@ export function KycFileUpload({ onFilesUploaded, currentFiles = [], disabled = f
             Formatos soportados: PDF, JPG, PNG, GIF. Máximo 10MB por archivo.
           </p>
 
-          {uploadedFiles.length > 0 && (
+          {Array.isArray(uploadedFiles) && uploadedFiles.length > 0 && (
             <div className="mt-4 space-y-2">
               <Label className="text-emerald-300 text-sm">Archivos subidos:</Label>
-              {uploadedFiles.map((fileUrl, index) => (
+              {uploadedFiles.map((fileUrl: string, index: number) => (
                 <div key={index} className="flex items-center justify-between bg-black/30 rounded-lg p-3 border border-emerald-500/10">
                   <div className="flex items-center gap-3">
                     <FileText className="w-4 h-4 text-emerald-400" />
