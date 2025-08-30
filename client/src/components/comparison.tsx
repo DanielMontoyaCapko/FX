@@ -57,7 +57,7 @@ export default function Comparison() {
               {data.map((row, index) => (
                 <tr 
                   key={index} 
-                  className={`border-b border-silver-500/20 ${row.highlighted ? 'bg-red-500/20 border border-red-500/30' : ''}`}
+                  className="border-b border-silver-500/20"
                 >
                   <td className={`p-6 ${row.highlighted ? 'text-white font-semibold' : 'text-silver-100'}`}>
                     {row.product}
