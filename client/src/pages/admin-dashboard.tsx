@@ -495,9 +495,9 @@ export default function AdminDashboard() {
   const filteredKyc = kyc
     .filter((k) => {
       const matchesSearch =
-        k.fullName.toLowerCase().includes(kycSearch.toLowerCase()) ||
-        k.documentNumber.toLowerCase().includes(kycSearch.toLowerCase()) ||
-        k.id.toString().includes(kycSearch);
+        (k.fullName || '').toLowerCase().includes(kycSearch.toLowerCase()) ||
+        (k.documentNumber || '').toLowerCase().includes(kycSearch.toLowerCase()) ||
+        (k.id ? k.id.toString() : k.userName || '').includes(kycSearch);
       const matchesStatus = kycFilter === "all" || k.status === kycFilter;
       return matchesSearch && matchesStatus;
     })
@@ -514,8 +514,8 @@ export default function AdminDashboard() {
     .sort((a, b) => {
       if (kycSort === "created_desc") return +new Date(b.createdAt) - +new Date(a.createdAt);
       if (kycSort === "created_asc") return +new Date(a.createdAt) - +new Date(b.createdAt);
-      if (kycSort === "name_asc") return a.fullName.localeCompare(b.fullName);
-      if (kycSort === "name_desc") return b.fullName.localeCompare(a.fullName);
+      if (kycSort === "name_asc") return (a.fullName || a.userName || '').localeCompare(b.fullName || b.userName || '');
+      if (kycSort === "name_desc") return (b.fullName || b.userName || '').localeCompare(a.fullName || a.userName || '');
       return 0;
     });
 
