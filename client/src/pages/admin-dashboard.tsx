@@ -2317,12 +2317,12 @@ export default function AdminDashboard() {
                     </thead>
                     <tbody>
                       {filteredKyc.map((record) => (
-                        <tr key={record.id} className="border-b border-emerald-500/10">
-                          <td className="p-4 text-emerald-50">{record.id}</td>
-                          <td className="p-4 text-emerald-50">{record.fullName}</td>
-                          <td className="p-4 text-emerald-50">{record.documentType.toUpperCase()}</td>
-                          <td className="p-4 text-emerald-50">{record.documentNumber}</td>
-                          <td className="p-4 text-emerald-50">{record.country}</td>
+                        <tr key={record.userId || record.id} className="border-b border-emerald-500/10">
+                          <td className="p-4 text-emerald-50">{record.id || '-'}</td>
+                          <td className="p-4 text-emerald-50">{record.fullName || record.userName || '-'}</td>
+                          <td className="p-4 text-emerald-50">{record.documentType ? record.documentType.toUpperCase() : '-'}</td>
+                          <td className="p-4 text-emerald-50">{record.documentNumber || '-'}</td>
+                          <td className="p-4 text-emerald-50">{record.country || '-'}</td>
                           <td className="p-4">
                             <Badge
                               className={
