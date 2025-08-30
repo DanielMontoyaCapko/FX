@@ -2396,13 +2396,6 @@ export default function PartnerDashboard() {
                 },
               ];
 
-              // Calcular estadísticas TOTALES (sin filtros)
-              const totalStats = {
-                total: contractsData.length,
-                vigentes: contractsData.filter(c => c.status === "Vigente").length,
-                vencidos: contractsData.filter(c => c.status === "Vencido").length,
-              };
-
               const q = contractFilters.search.trim().toLowerCase();
               const min = contractFilters.amountMin ? parseFloat(contractFilters.amountMin) : -Infinity;
               const max = contractFilters.amountMax ? parseFloat(contractFilters.amountMax) : Infinity;
@@ -2410,8 +2403,7 @@ export default function PartnerDashboard() {
               const to = contractFilters.signedTo ? new Date(contractFilters.signedTo) : null;
               const vencLimit = contractFilters.vencimiento ? parseInt(contractFilters.vencimiento, 10) : null;
 
-              // Aplicar filtros EXCEPTO el filtro rápido para la lista
-              const filteredForList = contractsData
+              const filtered = contractsData
                 .filter((c) => {
                   const matchSearch =
                     !q ||
@@ -2430,6 +2422,12 @@ export default function PartnerDashboard() {
                   const daysLeft = Math.ceil((end.getTime() - Date.now()) / 86400000);
                   const matchVenc = !vencLimit || (daysLeft > 0 && daysLeft <= vencLimit);
 
+                  // Aplicar filtro rápido
+                  const matchQuickFilter =
+                    contractQuickFilter === "all" ||
+                    (contractQuickFilter === "vigentes" && c.status === "Vigente") ||
+                    (contractQuickFilter === "vencidos" && c.status === "Vencido");
+
                   return (
                     matchSearch &&
                     matchStatus &&
@@ -2438,7 +2436,8 @@ export default function PartnerDashboard() {
                     matchAmount &&
                     matchFrom &&
                     matchTo &&
-                    matchVenc
+                    matchVenc &&
+                    matchQuickFilter
                   );
                 })
                 .sort((a, b) => {
@@ -2449,24 +2448,14 @@ export default function PartnerDashboard() {
                   return 0;
                 });
 
-              // Aplicar filtro rápido SOLO a la lista de contratos
-              const filtered = filteredForList.filter((c) => {
-                const matchQuickFilter =
-                  contractQuickFilter === "all" ||
-                  (contractQuickFilter === "vigentes" && c.status === "Vigente") ||
-                  (contractQuickFilter === "vencidos" && c.status === "Vencido");
-                
-                return matchQuickFilter;
-              });
-
               return (
                 <div className="space-y-4">
-                  {/* Tarjetas de filtro rápido - SIEMPRE muestran totales */}
+                  {/* Tarjetas de filtro rápido */}
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
                     {[
-                      { key: "all", value: String(totalStats.total), label: "Total Contratos" },
-                      { key: "vigentes", value: String(totalStats.vigentes), label: "Vigentes" },
-                      { key: "vencidos", value: String(totalStats.vencidos), label: "Vencidos" },
+                      { key: "all", value: String(filtered.length), label: "Total Contratos" },
+                      { key: "vigentes", value: String(filtered.filter(c => c.status === "Vigente").length), label: "Vigentes" },
+                      { key: "vencidos", value: String(filtered.filter(c => c.status === "Vencido").length), label: "Vencidos" },
                     ].map(({ key, value, label }) => {
                       const active = contractQuickFilter === (key as typeof contractQuickFilter);
                       const baseBorder =
@@ -2502,7 +2491,7 @@ export default function PartnerDashboard() {
                   <div className="flex items-center justify-between">
                     <h3 className="text-xl font-semibold text-emerald-50">Listado de Contratos</h3>
                     <p className="text-emerald-200/80">
-                      {filtered.length} contrato{filtered.length !== 1 ? "s" : ""} mostrado{filtered.length !== 1 ? "s" : ""}
+                      {filtered.length} contrato{filtered.length !== 1 ? "s" : ""}
                     </p>
                   </div>
                   
